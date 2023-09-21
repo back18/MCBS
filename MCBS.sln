@@ -3,7 +3,61 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.ConsoleTerminal", "MCBS.ConsoleTerminal\MCBS.ConsoleTerminal.csproj", "{DFB95F39-4025-4B9C-9AEE-E8B8D0FD1682}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS", "MCBS\MCBS.csproj", "{B274BCA4-B44B-45B9-9C36-8C8D4A9B20BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.BlockForms", "MCBS.BlockForms\MCBS.BlockForms.csproj", "{A4C9BED0-9D76-4546-B925-4D4DFA5AF9B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications", "MCBS.SystemApplications\MCBS.SystemApplications.csproj", "{18A46E56-84AD-49BA-A6D0-CBD9A010F14D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft", "..\QuanLib.Minecraft\QuanLib.Minecraft\QuanLib.Minecraft.csproj", "{A0419ABA-7B7D-4C73-9C7C-E033A5F2087C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.API", "..\QuanLib.Minecraft\QuanLib.Minecraft.API\QuanLib.Minecraft.API.csproj", "{9BE53876-CFB5-4819-BB15-19A923E9E137}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.BDF", "..\QuanLib\QuanLib.BDF\QuanLib.BDF.csproj", "{2558DDDF-A740-4909-B440-E45819979A9D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.CommandLine.ConsoleTerminal", "..\QuanLib.CommandLine\QuanLib.CommandLine.ConsoleTerminal\QuanLib.CommandLine.ConsoleTerminal.csproj", "{40FB146A-4A86-417C-95DA-F9F30DE1147D}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFB95F39-4025-4B9C-9AEE-E8B8D0FD1682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFB95F39-4025-4B9C-9AEE-E8B8D0FD1682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFB95F39-4025-4B9C-9AEE-E8B8D0FD1682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFB95F39-4025-4B9C-9AEE-E8B8D0FD1682}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B274BCA4-B44B-45B9-9C36-8C8D4A9B20BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B274BCA4-B44B-45B9-9C36-8C8D4A9B20BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B274BCA4-B44B-45B9-9C36-8C8D4A9B20BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B274BCA4-B44B-45B9-9C36-8C8D4A9B20BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4C9BED0-9D76-4546-B925-4D4DFA5AF9B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4C9BED0-9D76-4546-B925-4D4DFA5AF9B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4C9BED0-9D76-4546-B925-4D4DFA5AF9B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4C9BED0-9D76-4546-B925-4D4DFA5AF9B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A46E56-84AD-49BA-A6D0-CBD9A010F14D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A46E56-84AD-49BA-A6D0-CBD9A010F14D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A46E56-84AD-49BA-A6D0-CBD9A010F14D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A46E56-84AD-49BA-A6D0-CBD9A010F14D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0419ABA-7B7D-4C73-9C7C-E033A5F2087C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0419ABA-7B7D-4C73-9C7C-E033A5F2087C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0419ABA-7B7D-4C73-9C7C-E033A5F2087C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0419ABA-7B7D-4C73-9C7C-E033A5F2087C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BE53876-CFB5-4819-BB15-19A923E9E137}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BE53876-CFB5-4819-BB15-19A923E9E137}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BE53876-CFB5-4819-BB15-19A923E9E137}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BE53876-CFB5-4819-BB15-19A923E9E137}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2558DDDF-A740-4909-B440-E45819979A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2558DDDF-A740-4909-B440-E45819979A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2558DDDF-A740-4909-B440-E45819979A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2558DDDF-A740-4909-B440-E45819979A9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

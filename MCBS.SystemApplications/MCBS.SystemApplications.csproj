@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="FileExplorer\Config\Default\Config.toml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="FileExplorer\Config\Default\Config.toml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCBS.BlockForms\MCBS.BlockForms.csproj" />
+    <ProjectReference Include="..\MCBS\MCBS.csproj" />
+  </ItemGroup>
+
+</Project>
