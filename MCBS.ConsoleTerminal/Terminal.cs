@@ -2,7 +2,7 @@
 using MCBS.Logging;
 using QuanLib;
 using QuanLib.CommandLine;
-using QuanLib.CommandLine.ConsoleCommand;
+using QuanLib.CommandLine.ConsoleTerminal;
 using QuanLib.Core;
 using System;
 using System.Collections.Generic;

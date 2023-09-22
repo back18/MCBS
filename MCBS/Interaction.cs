@@ -3,7 +3,6 @@ using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Selectors;
-using QuanLib.Minecraft.Snbt.Data;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;

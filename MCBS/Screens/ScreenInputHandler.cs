@@ -11,12 +11,12 @@ using System.Text;
 using System.Threading.Tasks;
 using CoreRCON.Parsers.Standard;
 using QuanLib.Minecraft.Selectors;
-using QuanLib.Minecraft.Snbt.Data;
 using QuanLib.Core;
 using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Command;
 using MCBS.Event;
 using QuanLib.Minecraft;
+using QuanLib.Minecraft.Snbt.Model;
 
 namespace MCBS.Screens
 {

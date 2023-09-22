@@ -1,7 +1,7 @@
 ﻿using MCBS.Event;
 using QuanLib.Core;
 using QuanLib.Core.Event;
-using QuanLib.Minecraft.Snbt.Data;
+using QuanLib.Minecraft.Snbt.Model;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

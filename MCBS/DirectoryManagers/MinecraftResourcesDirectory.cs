@@ -12,11 +12,11 @@ namespace MCBS.DirectoryManagers
         public MinecraftResourcesDirectory(string directory) : base(directory)
         {
             ResourcePacks = new(Combine("ResourcePacks"));
-            Languages = new(Combine("Languages"));
+            Vanilla = new(Combine("Vanilla"));
         }
 
         public ResourcePacksDirectory ResourcePacks { get; }
 
-        public LanguagesDirectory Languages { get; }
+        public VanillaDirectory Vanilla { get; }
     }
 }

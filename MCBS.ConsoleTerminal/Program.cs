@@ -64,18 +64,18 @@ namespace MCBS.ConsoleTerminal
                 switch (config.InstanceType)
                 {
                     case InstanceTypes.CLIENT:
-                        if (config.MinecraftMode == InstanceKeys.MCAPI)
+                        if (config.CommunicationMode == CommunicationMods.MCAPI)
                             minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword);
                         else
                             throw new InvalidOperationException();
                         break;
                     case InstanceTypes.SERVER:
-                        minecraftInstance = config.MinecraftMode switch
+                        minecraftInstance = config.CommunicationMode switch
                         {
-                            InstanceKeys.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
-                            InstanceKeys.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                            InstanceKeys.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                            InstanceKeys.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
+                            CommunicationMods.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
+                            CommunicationMods.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                            CommunicationMods.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                            CommunicationMods.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
                             _ => throw new InvalidOperationException(),
                         };
                         break;
