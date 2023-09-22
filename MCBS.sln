@@ -19,6 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.BDF", "..\QuanLib\Q
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.CommandLine.ConsoleTerminal", "..\QuanLib.CommandLine\QuanLib.CommandLine.ConsoleTerminal\QuanLib.CommandLine.ConsoleTerminal.csproj", "{40FB146A-4A86-417C-95DA-F9F30DE1147D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.CommandLine", "..\QuanLib.CommandLine\QuanLib.CommandLine\QuanLib.CommandLine.csproj", "{5907686C-6061-48A5-A987-BB7E0C4E138B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Core", "..\QuanLib\QuanLib.Core\QuanLib.Core.csproj", "{585045F2-699D-4418-9D0F-60B4D9053DEA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.ConsoleUtil", "..\QuanLib\QuanLib.ConsoleUtil\QuanLib.ConsoleUtil.csproj", "{824703AF-0F25-4753-AE15-C6B305EAE4CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +63,18 @@ Global
 		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
