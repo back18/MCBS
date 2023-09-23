@@ -2,6 +2,7 @@
 using QuanLib.Core.IO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,25 @@ namespace MCBS.Utility
                 using Stream stream = entry.Open();
                 string sha1 = HashUtil.GetHashString(stream, HashType.SHA1);
                 indexs.Add(entry.Name, sha1);
+            }
+
+            string json = JsonConvert.SerializeObject(indexs);
+            File.WriteAllText(savePath, json);
+        }
+
+        public static void BuildTextureIndex(string texturesDir, string savePath)
+        {
+            if (string.IsNullOrEmpty(texturesDir))
+                throw new ArgumentException($"“{nameof(texturesDir)}”不能为 null 或空。", nameof(texturesDir));
+            if (string.IsNullOrEmpty(savePath))
+                throw new ArgumentException($"“{nameof(savePath)}”不能为 null 或空。", nameof(savePath));
+
+            string[] files = Directory.GetFiles(texturesDir, "*.png");
+            Dictionary<string, string> indexs = new();
+            foreach (string file in files)
+            {
+                string sha1 = HashUtil.GetHashString(file, HashType.SHA1);
+                indexs.Add(Path.GetFileName(file), sha1);
             }
 
             string json = JsonConvert.SerializeObject(indexs);

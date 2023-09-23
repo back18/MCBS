@@ -37,7 +37,7 @@ namespace MCBS.ConsoleTerminal
                 ConfigManager.LoadAll();
                 SystemResourcesManager.LoadAll();
                 MinecraftResourcesManager.LoadAll();
-                TextureManager.Load(MCOS.MainDirectory.SystemResources.Textures.Control);
+                TextureManager.LoadInstance();
                 FFmpegResourcesLoader.LoadAll();
 #if TryCatch
             }

@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\QuanLib.CommandLine\QuanLib.CommandLine.ConsoleTerminal\QuanLib.CommandLine.ConsoleTerminal.csproj" />
-    <ProjectReference Include="..\MCBS\MCBS.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications\MCBS.SystemApplications.csproj" />
   </ItemGroup>
 
 </Project>

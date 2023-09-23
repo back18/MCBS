@@ -68,10 +68,10 @@ namespace MCBS.BlockForms
             PauseOrResume_Switch.ClientSize = new(16, 16);
             PauseOrResume_Switch.ClientLocation = this.LeftLayout(null, PauseOrResume_Switch, 2, TimeText_VideoTimeTextBox.TopLocation);
             PauseOrResume_Switch.Anchor = Direction.Bottom | Direction.Right;
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.GetTexture("Play"));
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.GetTexture("Play"));
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.GetTexture("Pause"));
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.GetTexture("Pause"));
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.Instance["Play"]);
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.Instance["Play"]);
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.Instance["Pause"]);
+            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.Instance["Pause"]);
             PauseOrResume_Switch.IsSelected = false;
             PauseOrResume_Switch.ControlSelected += PauseOrResume_Switch_OnSelected;
             PauseOrResume_Switch.ControlDeselected += PauseOrResume_Switch_ControlDeselected;

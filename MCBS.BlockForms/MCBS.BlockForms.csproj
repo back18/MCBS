@@ -7,6 +7,45 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SystemResource\TextureIndex.json" />
+    <None Remove="SystemResource\Textures\Close.png" />
+    <None Remove="SystemResource\Textures\Expand.png" />
+    <None Remove="SystemResource\Textures\Logo.png" />
+    <None Remove="SystemResource\Textures\Maximize.png" />
+    <None Remove="SystemResource\Textures\Minimize.png" />
+    <None Remove="SystemResource\Textures\OFF.png" />
+    <None Remove="SystemResource\Textures\OFF_Excessive.png" />
+    <None Remove="SystemResource\Textures\ON.png" />
+    <None Remove="SystemResource\Textures\ON_Excessive.png" />
+    <None Remove="SystemResource\Textures\Pause.png" />
+    <None Remove="SystemResource\Textures\Play.png" />
+    <None Remove="SystemResource\Textures\Restore.png" />
+    <None Remove="SystemResource\Textures\Shrink.png" />
+    <None Remove="SystemResource\Textures\Start.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SystemResource\TextureIndex.json" />
+    <EmbeddedResource Include="SystemResource\Textures\Close.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Expand.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Logo.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Maximize.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Minimize.png" />
+    <EmbeddedResource Include="SystemResource\Textures\OFF.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SystemResource\Textures\OFF_Excessive.png" />
+    <EmbeddedResource Include="SystemResource\Textures\ON.png" />
+    <EmbeddedResource Include="SystemResource\Textures\ON_Excessive.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Pause.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Play.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Restore.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Shrink.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Start.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MCBS\MCBS.csproj" />
   </ItemGroup>
 

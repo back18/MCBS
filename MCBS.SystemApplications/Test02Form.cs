@@ -77,7 +77,7 @@ namespace MCBS.SystemApplications
             comboButton1.Items.Add(Direction.Left);
 
             ClientPanel.SubControls.Add(iconTextBox1);
-            iconTextBox1.Icon_PictureBox.SetImage(TextureManager.GetTexture("Start"));
+            iconTextBox1.Icon_PictureBox.SetImage(TextureManager.Instance["Start"]);
             iconTextBox1.Text_Label.Text = "Minedows";
             iconTextBox1.AutoSetSize();
             iconTextBox1.ClientLocation = ClientPanel.RightLayout(textBox1, 2);

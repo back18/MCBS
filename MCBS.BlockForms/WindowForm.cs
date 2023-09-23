@@ -99,7 +99,7 @@ namespace MCBS.BlockForms
             ShowTitleBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ShowTitleBar_Button.ClientLocation = this.LeftLayout(null, ShowTitleBar_Button, 0, 0));
             ShowTitleBar_Button.Anchor = Direction.Top | Direction.Right;
-            ShowTitleBar_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Shrink"));
+            ShowTitleBar_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Shrink"]);
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;
             ShowTitleBar_Button.CursorLeave += ShowTitleBar_Button_CursorLeave;
             ShowTitleBar_Button.RightClick += ShowTitleBar_Button_RightClick;
@@ -252,7 +252,7 @@ namespace MCBS.BlockForms
                 Close_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 Close_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Red;
                 Close_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Red;
-                Close_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Close"));
+                Close_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Close"]);
                 Close_Button.RightClick += Exit_Button_RightClick;
 
                 MaximizeOrRestore_Switch.BorderWidth = 0;
@@ -263,10 +263,10 @@ namespace MCBS.BlockForms
                 MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID;
                 MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
                 MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.GetTexture("Maximize"));
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.GetTexture("Maximize"));
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.GetTexture("Restore"));
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.GetTexture("Restore"));
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.Instance["Maximize"]);
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.Instance["Maximize"]);
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.Instance["Restore"]);
+                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.Instance["Restore"]);
 
                 Minimize_Button.BorderWidth = 0;
                 Minimize_Button.ClientSize = new(16, 16);
@@ -275,7 +275,7 @@ namespace MCBS.BlockForms
                 Minimize_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 Minimize_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
                 Minimize_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                Minimize_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Minimize"));
+                Minimize_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Minimize"]);
                 Minimize_Button.RightClick += Minimize_Button_RightClick;
 
                 FullScreen_Button.BorderWidth = 0;
@@ -285,7 +285,7 @@ namespace MCBS.BlockForms
                 FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 FullScreen_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
                 FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Expand"));
+                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Expand"]);
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
             }
 

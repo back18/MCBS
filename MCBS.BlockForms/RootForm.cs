@@ -125,7 +125,7 @@ namespace MCBS.BlockForms
             ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ShowTaskBar_Button.ClientLocation = this.LeftLayout(null, ShowTaskBar_Button, 0, e.NewSize.Height - ShowTaskBar_Button.Height));
             ShowTaskBar_Button.Anchor = Direction.Bottom | Direction.Right;
-            ShowTaskBar_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Shrink"));
+            ShowTaskBar_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Shrink"]);
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
             ShowTaskBar_Button.CursorLeave += ShowTaskBar_Button_CursorLeave;
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
@@ -420,7 +420,7 @@ namespace MCBS.BlockForms
                 StartMenu_Switch.Skin.BackgroundBlockID_Hover = Skin.BackgroundBlockID;
                 StartMenu_Switch.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Orange;
                 StartMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
-                StartMenu_Switch.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Logo"));
+                StartMenu_Switch.Skin.SetAllBackgroundImage(TextureManager.Instance["Logo"]);
                 StartMenu_Switch.ControlSelected += StartMenu_Switch_ControlSelected;
                 StartMenu_Switch.ControlDeselected += StartMenu_Switch_ControlDeselected; ;
 
@@ -433,7 +433,7 @@ namespace MCBS.BlockForms
                 FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 FullScreen_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
                 FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.GetTexture("Expand"));
+                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Expand"]);
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
 
                 SubControls.Add(FormsMenu);
