@@ -20,7 +20,6 @@ namespace MCBS.ConsoleTerminal
     public static class Program
     {
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
-        private static readonly SystemConfig systemConfig = SystemConfig.Load(MCOS.MainDirectory.Configs.System);
 
         private static void Main(string[] args)
         {
@@ -93,8 +92,10 @@ namespace MCBS.ConsoleTerminal
 #endif
 
             mcos = MCOS.LoadInstance(minecraftInstance);
-            ApplicationLoader.LoadApplication(ref mcos, systemConfig.ExternalAppsFolder);
+            ApplicationLoader.LoadApplication(ref mcos, ConfigManager.SystemConfig.ExternalAppsFolder);
 
+            mcos.Start();
+            mcos.WaitForStop();
 
             Exit();
             return;
