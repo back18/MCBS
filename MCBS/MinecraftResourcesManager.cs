@@ -16,6 +16,9 @@ using MCBS.DirectoryManagers;
 using System.IO;
 using System.Security.Policy;
 using QuanLib.Core;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace MCBS
 {
@@ -25,9 +28,10 @@ namespace MCBS
 
         public static void LoadAll()
         {
+            LOGGER.Info("开始构建Minecraft资源文件");
             VersionDircetory directory = new(MCOS.MainDirectory.MinecraftResources.Vanilla.Combine(MinecraftConfig.GameVersion));
-            if (!directory.Exists())
-                DownloadResources(directory).Wait();
+            BuildResourcesAsync(directory).Wait();
+            LOGGER.Info("Minecraft资源文件构建完成");
 
             string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
             paths[0] = directory.Client;
@@ -59,7 +63,7 @@ namespace MCBS
             resources.Dispose();
         }
 
-        private static async Task DownloadResources(VersionDircetory directory)
+        private static async Task BuildResourcesAsync(VersionDircetory directory)
         {
             directory.CreateIfNotExists();
             directory.Languages.CreateIfNotExists();
@@ -71,50 +75,69 @@ namespace MCBS
                 _ => throw new InvalidOperationException()
             };
 
-            LOGGER.Info("正在下载: " + downloadProvider.VersionListUrl);
-            VersionList versionList = await VersionList.DownloadAsync(downloadProvider.VersionListUrl);
+            string versionJsonText;
+            if (File.Exists(directory.Version))
+            {
+                versionJsonText = File.ReadAllText(directory.Version);
+            }
+            else
+            {
+                LOGGER.Info("正在下载: " + downloadProvider.VersionListUrl);
+                VersionList versionList = await VersionList.DownloadAsync(downloadProvider.VersionListUrl);
 
-            if (!versionList.TryGetValue(MinecraftConfig.GameVersion, out var versionIndex))
-                throw new InvalidOperationException("未知的游戏版本：" + MinecraftConfig.GameVersion);
+                if (!versionList.TryGetValue(MinecraftConfig.GameVersion, out var versionIndex))
+                    throw new InvalidOperationException("未知的游戏版本：" + MinecraftConfig.GameVersion);
 
-            string versionJsonUrl = downloadProvider.RedirectUrl(versionIndex.Url);
-            LOGGER.Info("正在下载: " + versionJsonUrl);
-            VersionJson versionJson = await VersionJson.DownloadAsync(versionJsonUrl);
+                string versionJsonUrl = downloadProvider.RedirectUrl(versionIndex.Url);
+                LOGGER.Info("正在下载: " + versionJsonUrl);
+                byte[] byees = await DownloadUtil.DownloadBytesAsync(versionJsonUrl);
+                versionJsonText = Encoding.UTF8.GetString(byees);
+                await File.WriteAllBytesAsync(directory.Version, byees);
+            }
 
-            NetworkAssetIndex clientAssetIndex = versionJson.GetClientCore() ?? throw new InvalidOperationException("在版本Json文件找不到客户端核心资源索引");
-            await ConditionalDownload(directory.Client, clientAssetIndex, downloadProvider);
+            VersionJson versionJson = new(JObject.Parse(versionJsonText));
+
+            NetworkAssetIndex clientAssetIndex = versionJson.GetClientCore() ?? throw new InvalidOperationException("在版本Json文件找不到客户端核心文件的资源索引");
+            await ReadOrDownloadAsync(directory.Client, clientAssetIndex, downloadProvider);
 
             NetworkAssetIndex indexFileAssetIndex = versionJson.GetIndexFile() ?? throw new InvalidOperationException("在版本Json文件找不到索引文件的资源索引");
-            string assetListUrl = downloadProvider.RedirectUrl(indexFileAssetIndex.Url);
-            LOGGER.Info("正在下载: " + assetListUrl);
-            AssetList assetList = await AssetList.DownloadAsync(assetListUrl);
+            byte[] indexFileBytes = await ReadOrDownloadAsync(directory.Index, indexFileAssetIndex, downloadProvider);
+            string indexFileText = Encoding.UTF8.GetString(indexFileBytes);
+            AssetList assetList = new(JsonConvert.DeserializeObject<AssetList.Model>(indexFileText) ?? throw new FormatException());
 
-            string start = "minecraft/lang/";
+            string lang = "minecraft/lang/";
             foreach (var asset in assetList)
             {
-                if (asset.Key.StartsWith(start))
+                if (asset.Key.StartsWith(lang))
                 {
                     string url = downloadProvider.ToAssetUrl(asset.Value.Hash);
-                    string path = directory.Languages.Combine(asset.Key[start.Length..]);
+                    string path = directory.Languages.Combine(asset.Key[lang.Length..]);
                     NetworkAssetIndex networkAssetIndex = new(asset.Value.Hash, asset.Value.Size, url);
-                    await ConditionalDownload(path, networkAssetIndex, downloadProvider);
+                    await ReadOrDownloadAsync(path, networkAssetIndex, downloadProvider);
                 }
             }
         }
 
-        private static async Task ConditionalDownload(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
+        private static async Task<byte[]> ReadOrDownloadAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
         {
             if (string.IsNullOrEmpty(path))
                 throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
             if (networkAssetIndex is null)
                 throw new ArgumentNullException(nameof(networkAssetIndex));
 
-            if (File.Exists(path) && HashUtil.GetHashString(path, HashType.SHA1) == networkAssetIndex.Hash)
-                return;
+            byte[] bytes;
+            if (File.Exists(path))
+            {
+                bytes = await File.ReadAllBytesAsync(path);
+                string hash = HashUtil.GetHashString(bytes, HashType.SHA1);
+                if (hash == networkAssetIndex.Hash)
+                    return bytes;
+            }
 
             LOGGER.Info("正在下载: " + downloadProvider?.RedirectUrl(networkAssetIndex.Url) ?? networkAssetIndex.Url);
-            byte[] bytes = await networkAssetIndex.DownloadBytesAsync(downloadProvider);
+            bytes = await networkAssetIndex.DownloadBytesAsync(downloadProvider);
             await File.WriteAllBytesAsync(path, bytes);
+            return bytes;
         }
     }
 }

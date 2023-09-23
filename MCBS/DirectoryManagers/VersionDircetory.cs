@@ -13,10 +13,16 @@ namespace MCBS.DirectoryManagers
         {
             Languages = new(Combine("Languages"));
             Client = new(Combine("client.jar"));
+            Version = new(Combine("version.json"));
+            Index = new(Combine("index.json"));
         }
 
         public LanguagesDirectory Languages { get; }
 
         public string Client { get; }
+
+        public string Version { get; }
+
+        public string Index { get; }
     }
 }
