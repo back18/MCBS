@@ -63,11 +63,11 @@ namespace MCBS.Config
         public static void CreateIfNotExists()
         {
             MCOS.MainDirectory.Configs.CreateIfNotExists();
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Log4Net, "QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Minecraft, "QuanLib.Minecraft.BlockScreen.Config.Default.Minecraft.toml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.System, "QuanLib.Minecraft.BlockScreen.Config.Default.System.toml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Screen, "QuanLib.Minecraft.BlockScreen.Config.Default.Screen.toml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Registry, "QuanLib.Minecraft.BlockScreen.Config.Default.Registry.json");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Log4Net, "MCBS.Config.Default.log4net.xml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Minecraft, "MCBS.Config.Default.Minecraft.toml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.System, "MCBS.Config.Default.System.toml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Screen, "MCBS.Config.Default.Screen.toml");
+            CreateIfNotExists(MCOS.MainDirectory.Configs.Registry, "MCBS.Config.Default.Registry.json");
         }
 
         private static void CreateIfNotExists(string path, string resource)

@@ -34,15 +34,11 @@ namespace MCBS.ConsoleTerminal
             try
             {
 #endif
-                LOGGER.Info("开始加载资源文件");
                 ConfigManager.LoadAll();
                 SystemResourcesManager.LoadAll();
                 MinecraftResourcesManager.LoadAll();
                 TextureManager.Load(MCOS.MainDirectory.SystemResources.Textures.Control);
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                    FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.FullPath;
-                else
-                    FFmpegLoader.FFmpegPath = "/usr/lib/";
+                FFmpegResourcesLoader.LoadAll();
 #if TryCatch
             }
             catch (Exception ex)
@@ -60,31 +56,31 @@ namespace MCBS.ConsoleTerminal
             try
             {
 #endif
-                MinecraftConfig config = ConfigManager.MinecraftConfig;
-                switch (config.InstanceType)
-                {
-                    case InstanceTypes.CLIENT:
-                        if (config.CommunicationMode == CommunicationMods.MCAPI)
-                            minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword);
-                        else
-                            throw new InvalidOperationException();
-                        break;
-                    case InstanceTypes.SERVER:
-                        minecraftInstance = config.CommunicationMode switch
-                        {
-                            CommunicationMods.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
-                            CommunicationMods.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                            CommunicationMods.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                            CommunicationMods.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
-                            _ => throw new InvalidOperationException(),
-                        };
-                        break;
-                    default:
+            MinecraftConfig config = ConfigManager.MinecraftConfig;
+            switch (config.InstanceType)
+            {
+                case InstanceTypes.CLIENT:
+                    if (config.CommunicationMode == CommunicationMods.MCAPI)
+                        minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword);
+                    else
                         throw new InvalidOperationException();
-                }
+                    break;
+                case InstanceTypes.SERVER:
+                    minecraftInstance = config.CommunicationMode switch
+                    {
+                        CommunicationMods.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
+                        CommunicationMods.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                        CommunicationMods.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                        CommunicationMods.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
+                        _ => throw new InvalidOperationException(),
+                    };
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
 
-                minecraftInstance.Start();
-                Thread.Sleep(1000);
+            minecraftInstance.Start();
+            Thread.Sleep(1000);
 #if TryCatch
             }
             catch (Exception ex)

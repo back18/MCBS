@@ -12,6 +12,8 @@
     <None Remove="Config\Default\Registry.json" />
     <None Remove="Config\Default\Screen.toml" />
     <None Remove="Config\Default\System.toml" />
+    <None Remove="SystemResource\ffmpeg-master-latest-win64-gpl-shared.zip" />
+    <None Remove="SystemResource\FFmpegIndex.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +22,8 @@
     <EmbeddedResource Include="Config\Default\Registry.json" />
     <EmbeddedResource Include="Config\Default\Screen.toml" />
     <EmbeddedResource Include="Config\Default\System.toml" />
+    <EmbeddedResource Include="SystemResource\ffmpeg-master-latest-win64-gpl-shared.zip" />
+    <EmbeddedResource Include="SystemResource\FFmpegIndex.json" />
   </ItemGroup>
 
   <ItemGroup>

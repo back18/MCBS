@@ -31,26 +31,22 @@ namespace MCBS
             LOGGER.Info("开始构建Minecraft资源文件");
             VersionDircetory directory = new(MCOS.MainDirectory.MinecraftResources.Vanilla.Combine(MinecraftConfig.GameVersion));
             BuildResourcesAsync(directory).Wait();
-            LOGGER.Info("Minecraft资源文件构建完成");
+            LOGGER.Info("完成");
 
             string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
             paths[0] = directory.Client;
             for (int i = 1; i < paths.Length; i++)
                 paths[i] = MCOS.MainDirectory.MinecraftResources.ResourcePacks.Combine(MinecraftConfig.ResourcePackList[i]);
 
-            LOGGER.Info("开始加载Minecraft资源包");
-            LOGGER.Info($"共计{paths.Length}个资源包，资源包列表：");
+            LOGGER.Info($"开始加载Minecraft资源包，共计{paths.Length}个资源包，资源包列表：");
             foreach (string path in paths)
                 LOGGER.Info(Path.GetFileName(path));
             ResourceEntryManager resources = ResourcePackReader.Load(paths);
-            LOGGER.Info("Minecraft资源包加载完成，模组数量: " + resources.Count);
+            LOGGER.Info("完成，资源包数量: " + resources.Count);
 
             LOGGER.Info("开始加载Minecraft方块纹理");
-            LOGGER.Info($"已禁用{MinecraftConfig.BlockTextureBlacklist.Count}个方块纹理，方块纹理黑名单列表：");
-            foreach (var blockState in MinecraftConfig.BlockTextureBlacklist)
-                LOGGER.Info(blockState);
             BlockTextureManager.LoadInstance(resources, MinecraftConfig.BlockTextureBlacklist);
-            LOGGER.Info($"Minecraft方块纹理文件加载完成，方块数量: " + BlockTextureManager.Instance.Count);
+            LOGGER.Info("完成，方块数量: " + BlockTextureManager.Instance.Count);
 
             string? minecraftLanguageFilePath = directory.Languages.Combine(MinecraftConfig.Language + ".json");
             if (!File.Exists(minecraftLanguageFilePath))
@@ -58,7 +54,7 @@ namespace MCBS
 
             LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);
             LanguageManager.LoadInstance(resources, MinecraftConfig.Language, minecraftLanguageFilePath);
-            LOGGER.Info("Minecraft语言文件加载完成，语言条目数量: " + LanguageManager.Instance.Count);
+            LOGGER.Info("完成，语言条目数量: " + LanguageManager.Instance.Count);
 
             resources.Dispose();
         }

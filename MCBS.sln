@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Core", "..\QuanLib\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.ConsoleUtil", "..\QuanLib\QuanLib.ConsoleUtil\QuanLib.ConsoleUtil.csproj", "{824703AF-0F25-4753-AE15-C6B305EAE4CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCBS.Utility", "MCBS.Utility\MCBS.Utility.csproj", "{63F47106-9C5C-4E41-9E8D-9B07F671D702}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63F47106-9C5C-4E41-9E8D-9B07F671D702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63F47106-9C5C-4E41-9E8D-9B07F671D702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63F47106-9C5C-4E41-9E8D-9B07F671D702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63F47106-9C5C-4E41-9E8D-9B07F671D702}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
