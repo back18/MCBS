@@ -20,6 +20,7 @@ namespace MCBS.ConsoleTerminal
     public static class Program
     {
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly SystemConfig systemConfig = SystemConfig.Load(MCOS.MainDirectory.Configs.System);
 
         private static void Main(string[] args)
         {
@@ -92,22 +93,8 @@ namespace MCBS.ConsoleTerminal
 #endif
 
             mcos = MCOS.LoadInstance(minecraftInstance);
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.Services.ServicesAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.Desktop.DesktopAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.Settings.SettingsAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.ScreenManager.ScreenManagerAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.TaskManager.TaskManagerAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.FileExplorer.FileExplorerAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.Notepad.NotepadAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.Album.AlbumAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.Drawing.DrawingAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
-            mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.DataScreen.DataScreenAppInfo());
-            mcos.ApplicationManager.Items.Add(new Test01AppInfo());
-            mcos.ApplicationManager.Items.Add(new Test02AppInfo());
-            mcos.ApplicationManager.Items.Add(new Test03AppInfo());
-            mcos.Start();
-            mcos.WaitForStop();
+            ApplicationLoader.LoadApplication(ref mcos, systemConfig.ExternalAppsFolder);
+
 
             Exit();
             return;

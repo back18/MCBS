@@ -4,6 +4,12 @@ CrashAutoRestart = true
 #系统服务AppID
 ServicesAppID = "Services"
 
+#自定义程序设置
+EnableExternalApps = true
+
+#自定义程序加载位置
+ExternalAppsFolder = "./mods/"
+
 #启动项AppID列表
 StartupChecklist = [
     "Desktop"
