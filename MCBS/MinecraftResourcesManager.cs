@@ -106,6 +106,8 @@ namespace MCBS
             AssetList assetList = new(JsonConvert.DeserializeObject<AssetList.Model>(indexFileText) ?? throw new FormatException());
 
             string lang = "minecraft/lang/";
+            int langCount = 0;
+            List<Task> langTasks = new();
             foreach (var asset in assetList)
             {
                 if (asset.Key.StartsWith(lang))
@@ -113,9 +115,29 @@ namespace MCBS
                     string url = downloadProvider.ToAssetUrl(asset.Value.Hash);
                     string path = directory.Languages.Combine(asset.Key[lang.Length..]);
                     NetworkAssetIndex networkAssetIndex = new(asset.Value.Hash, asset.Value.Size, url);
-                    await ReadOrDownloadAsync(path, networkAssetIndex, downloadProvider);
+                    langTasks.Add(ReadOrDownloadAsync(path, networkAssetIndex, downloadProvider).ContinueWith((task) => Interlocked.Increment(ref langCount)));
                 }
             }
+
+            Task langTask = Task.WhenAll(langTasks.ToArray());
+            string empty = new(' ', 40);
+            int point = 0;
+            Console.CursorVisible = false;
+            while (true)
+            {
+                Console.CursorLeft = 0;
+                Console.Write(empty);
+                Console.CursorLeft = 0;
+                Console.Write($"共计{langTasks.Count}个语言文件，已加载{langCount}个" + new string('.', point++));
+                if (point > 3)
+                    point = 0;
+                if (langCount >= langTasks.Count && langTask.IsCompleted)
+                    break;
+                else
+                    Thread.Sleep(500);
+            }
+            Console.CursorVisible = true;
+            Console.WriteLine();
         }
 
         private static async Task<byte[]> ReadOrDownloadAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
@@ -125,19 +147,18 @@ namespace MCBS
             if (networkAssetIndex is null)
                 throw new ArgumentNullException(nameof(networkAssetIndex));
 
-            byte[] bytes;
             if (File.Exists(path))
             {
-                bytes = await File.ReadAllBytesAsync(path);
-                string hash = HashUtil.GetHashString(bytes, HashType.SHA1);
+                byte[] bytes1 = await File.ReadAllBytesAsync(path);
+                string hash = HashUtil.GetHashString(bytes1, HashType.SHA1);
                 if (hash == networkAssetIndex.Hash)
-                    return bytes;
+                    return bytes1;
             }
 
             LOGGER.Info("正在下载: " + downloadProvider?.RedirectUrl(networkAssetIndex.Url) ?? networkAssetIndex.Url);
-            bytes = await networkAssetIndex.DownloadBytesAsync(downloadProvider);
-            await File.WriteAllBytesAsync(path, bytes);
-            return bytes;
+            byte[] bytes2 = await networkAssetIndex.DownloadBytesAsync(downloadProvider);
+            await File.WriteAllBytesAsync(path, bytes2);
+            return bytes2;
         }
     }
 }
