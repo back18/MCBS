@@ -19,7 +19,7 @@ namespace MCBS
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
         private const string FFMPEG_INDEX_NAME = "MCBS.SystemResource.FFmpegIndex.json";
         private const string FFMPEG_NAME = "MCBS.SystemResource.ffmpeg-master-latest-win64-gpl-shared.zip";
-        private const string FFMPEG_BIN = "ffmpeg-master-latest-win64-gpl-shared";
+        private const string FFMPEG_BIN = "ffmpeg-master-latest-win64-gpl-shared/bin/";
 
         public static void LoadAll()
         {

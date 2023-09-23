@@ -16,9 +16,11 @@ namespace MCBS.Config
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
             ;
-            CrashAutoRestart = model.CrashAutoRestart;
-            ServicesAppID = model.ServicesAppID;
-            StartupChecklist = model.StartupChecklist;
+            this.CrashAutoRestart = model.CrashAutoRestart;
+            this.ServicesAppID = model.ServicesAppID;
+            this.StartupChecklist = model.StartupChecklist;
+            this.EnableExternalApps = model.EnableExternalApps;
+            this.ExternalAppsFolder = model.ExternalAppsFolder;
         }
 
         public bool CrashAutoRestart { get; }
@@ -26,6 +28,10 @@ namespace MCBS.Config
         public string ServicesAppID { get; }
 
         public IReadOnlyList<string> StartupChecklist { get; }
+
+        public bool EnableExternalApps { get; }
+
+        public string ExternalAppsFolder { get; }
 
         public static SystemConfig Load(string path)
         {
@@ -72,6 +78,12 @@ namespace MCBS.Config
 
             [Required(ErrorMessage = "配置项缺失")]
             public string[] StartupChecklist { get; set; }
+
+            public bool EnableExternalApps { get; set; }
+
+            [Required(ErrorMessage = "必须指定外部程序加载位置（即使未开启外部程序加载）")]
+            public string ExternalAppsFolder { get; set; }
+
 
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
