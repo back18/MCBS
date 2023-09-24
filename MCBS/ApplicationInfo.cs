@@ -3,6 +3,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +13,8 @@ namespace MCBS
     {
         static ApplicationInfo()
         {
-            DefaultIcon = Image.Load<Rgba32>(Path.Combine(MCOS.MainDirectory.SystemResources.Textures.Icon, "DefaultIcon.png"));
+            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MCBS.SystemResource.DefaultIcon.png") ?? throw new InvalidOperationException();
+            _defaultIcon = Image.Load<Rgba32>(stream);
         }
 
         protected ApplicationInfo(Type typeObject)
@@ -20,7 +22,9 @@ namespace MCBS
             TypeObject = typeObject;
         }
 
-        public static Image<Rgba32> DefaultIcon { get; }
+        private readonly static Image<Rgba32> _defaultIcon;
+
+        public static Image<Rgba32> DefaultIcon => _defaultIcon.Clone();
 
         public Type TypeObject { get; }
 
