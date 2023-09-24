@@ -19,7 +19,7 @@ namespace MCBS.Logging
         {
             if (!File.Exists(MCOS.MainDirectory.Configs.Log4Net))
             {
-                using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml") ?? throw new IndexOutOfRangeException();
+                using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml") ?? throw new InvalidOperationException();
                 using FileStream fileStream = new(MCOS.MainDirectory.Configs.Log4Net, FileMode.Create);
                 stream.CopyTo(fileStream);
                 Console.WriteLine($"配置文件“{MCOS.MainDirectory.Configs.Log4Net}”不存在，已创建默认配置文件");

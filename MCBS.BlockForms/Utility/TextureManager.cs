@@ -72,14 +72,14 @@ namespace MCBS.BlockForms.Utility
         private static Dictionary<string, Image<Rgba32>> Load()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            using Stream indexsStream = assembly.GetManifestResourceStream(TEXTURE_INDEX_NAME) ?? throw new IndexOutOfRangeException();
+            using Stream indexsStream = assembly.GetManifestResourceStream(TEXTURE_INDEX_NAME) ?? throw new InvalidOperationException();
             string indexsJson = indexsStream.ToUtf8Text();
-            Dictionary<string, string> indexs = JsonConvert.DeserializeObject<Dictionary<string, string>>(indexsJson) ?? throw new IndexOutOfRangeException();
+            Dictionary<string, string> indexs = JsonConvert.DeserializeObject<Dictionary<string, string>>(indexsJson) ?? throw new InvalidOperationException();
 
             Dictionary<string, Image<Rgba32>> result = new();
             foreach (var index in indexs)
             {
-                using Stream stream = assembly.GetManifestResourceStream($"{TEXTURES_NAMESPACE}.{index.Key}") ?? throw new IndexOutOfRangeException();
+                using Stream stream = assembly.GetManifestResourceStream($"{TEXTURES_NAMESPACE}.{index.Key}") ?? throw new InvalidOperationException();
                 result.Add(Path.GetFileNameWithoutExtension(index.Key), Image.Load<Rgba32>(stream));
             }
 

@@ -31,11 +31,11 @@ namespace MCBS
                 FFmpegLoader.FFmpegPath = MCOS.MainDirectory.FFmpeg.FullPath;
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
-                using Stream indexsStream = assembly.GetManifestResourceStream(FFMPEG_INDEX_NAME) ?? throw new IndexOutOfRangeException();
+                using Stream indexsStream = assembly.GetManifestResourceStream(FFMPEG_INDEX_NAME) ?? throw new InvalidOperationException();
                 string indexsJson = indexsStream.ToUtf8Text();
-                Dictionary<string, string> indexs = JsonConvert.DeserializeObject<Dictionary<string, string>>(indexsJson) ?? throw new IndexOutOfRangeException();
+                Dictionary<string, string> indexs = JsonConvert.DeserializeObject<Dictionary<string, string>>(indexsJson) ?? throw new InvalidOperationException();
 
-                using Stream ffmpegStream = assembly.GetManifestResourceStream(FFMPEG_NAME) ?? throw new IndexOutOfRangeException();
+                using Stream ffmpegStream = assembly.GetManifestResourceStream(FFMPEG_NAME) ?? throw new InvalidOperationException();
                 ZipPack zipPack = new(ffmpegStream);
 
                 foreach (var index in indexs)
