@@ -35,8 +35,8 @@ namespace MCBS.SystemApplications.Drawing
             Save_Button = new();
             DrawingBox = new();
 
-            MinSize = 16;
-            MaxSize = 1920;
+            MinSize = 4;
+            MaxSize = 4096;
         }
 
         private string? _save;
