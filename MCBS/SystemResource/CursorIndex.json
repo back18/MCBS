@@ -1,0 +1,32 @@
+[
+    {
+        "Type": "Default",
+        "Image": "Default.png",
+        "XOffset": 2,
+        "YOffset": 2
+    },
+    {
+        "Type": "HorizontalResize",
+        "Image": "HorizontalResize.png",
+        "XOffset": 5,
+        "YOffset": 3
+    },
+    {
+        "Type": "VerticalResize",
+        "Image": "VerticalResize.png",
+        "XOffset": 3,
+        "YOffset": 5
+    },
+    {
+        "Type": "LeftObliqueResize",
+        "Image": "LeftObliqueResize.png",
+        "XOffset": 5,
+        "YOffset": 5
+    },
+    {
+        "Type": "RightObliqueResize",
+        "Image": "RightObliqueResize.png",
+        "XOffset": 5,
+        "YOffset": 5
+    }
+]

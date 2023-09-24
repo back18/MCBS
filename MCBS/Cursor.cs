@@ -11,14 +11,16 @@ namespace MCBS
 {
     public class Cursor
     {
-        public Cursor(Json json)
+        public Cursor(string cursorType, Point offset, ArrayFrame frame)
         {
-            if (json is null)
-                throw new ArgumentNullException(nameof(json));
+            if (string.IsNullOrEmpty(cursorType))
+                throw new ArgumentException($"“{nameof(cursorType)}”不能为 null 或空。", nameof(cursorType));
+            if (frame is null)
+                throw new ArgumentNullException(nameof(frame));
 
-            CursorType = json.CursorType;
-            Offset = new(json.XOffset, json.YOffset);
-            Frame = ArrayFrame.FromJson(json.Frame);
+            CursorType = cursorType;
+            Offset = offset;
+            Frame = frame;
         }
 
         public string CursorType { get; }
@@ -26,17 +28,5 @@ namespace MCBS
         public Point Offset { get; }
 
         public ArrayFrame Frame { get; }
-
-        public class Json
-        {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-            public string CursorType { get; set; }
-
-            public int XOffset { get; set; }
-
-            public int YOffset { get; set; }
-
-            public FrameJson Frame { get; set; }
-        }
     }
 }

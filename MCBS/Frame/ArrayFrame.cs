@@ -364,30 +364,6 @@ namespace MCBS.Frame
             return new ArrayFrame(datas);
         }
 
-        public static ArrayFrame FromJson(FrameJson json)
-        {
-            if (json is null)
-                throw new ArgumentNullException(nameof(json));
-
-            try
-            {
-                string[,] ids = new string[json.Width, json.Height];
-                for (int x = 0; x < json.Width; x++)
-                    for (int y = 0; y < json.Height; y++)
-                        ids[x, y] = json.Map[json.Data[y][x]];
-                return new ArrayFrame(ids);
-            }
-            catch (Exception ex)
-            {
-                throw new FormatException("无法解析 FrameJson 对象", ex);
-            }
-        }
-
-        public static ArrayFrame FromJson(string json)
-        {
-            return FromJson(JsonConvert.DeserializeObject<FrameJson>(json) ?? throw new FormatException());
-        }
-
         public static ArrayFrame FromImage<T>(Facing facing, Image<T> image) where T : unmanaged, IPixel<T>
         {
             if (image is null)

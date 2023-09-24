@@ -12,6 +12,12 @@
     <None Remove="Config\Default\Registry.json" />
     <None Remove="Config\Default\Screen.toml" />
     <None Remove="Config\Default\System.toml" />
+    <None Remove="SystemResource\CursorIndex.json" />
+    <None Remove="SystemResource\Cursors\Default.png" />
+    <None Remove="SystemResource\Cursors\HorizontalResize.png" />
+    <None Remove="SystemResource\Cursors\LeftObliqueResize.png" />
+    <None Remove="SystemResource\Cursors\RightObliqueResize.png" />
+    <None Remove="SystemResource\Cursors\VerticalResize.png" />
     <None Remove="SystemResource\DefaultFont.bdf" />
     <None Remove="SystemResource\ffmpeg-master-latest-win64-gpl-shared.zip" />
     <None Remove="SystemResource\FFmpegIndex.json" />
@@ -23,6 +29,12 @@
     <EmbeddedResource Include="Config\Default\Registry.json" />
     <EmbeddedResource Include="Config\Default\Screen.toml" />
     <EmbeddedResource Include="Config\Default\System.toml" />
+    <EmbeddedResource Include="SystemResource\CursorIndex.json" />
+    <EmbeddedResource Include="SystemResource\Cursors\Default.png" />
+    <EmbeddedResource Include="SystemResource\Cursors\HorizontalResize.png" />
+    <EmbeddedResource Include="SystemResource\Cursors\LeftObliqueResize.png" />
+    <EmbeddedResource Include="SystemResource\Cursors\RightObliqueResize.png" />
+    <EmbeddedResource Include="SystemResource\Cursors\VerticalResize.png" />
     <EmbeddedResource Include="SystemResource\DefaultFont.bdf" />
     <EmbeddedResource Include="SystemResource\ffmpeg-master-latest-win64-gpl-shared.zip" />
     <EmbeddedResource Include="SystemResource\FFmpegIndex.json" />
