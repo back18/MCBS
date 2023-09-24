@@ -26,6 +26,28 @@ namespace MCBS
     {
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
 
+        public static BlockTextureManager BlockTextureManager
+        {
+            get
+            {
+                if (_BlockTextureManager is null)
+                    throw new InvalidOperationException();
+                return _BlockTextureManager;
+            }
+        }
+        private static BlockTextureManager? _BlockTextureManager;
+
+        public static LanguageManager LanguageManager
+        {
+            get
+            {
+                if (_LanguageManager is null)
+                    throw new InvalidOperationException();
+                return _LanguageManager;
+            }
+        }
+        private static LanguageManager? _LanguageManager;
+
         public static void LoadAll()
         {
             LOGGER.Info("开始构建Minecraft资源文件");
@@ -45,18 +67,19 @@ namespace MCBS
             LOGGER.Info("完成，资源包数量: " + resources.Count);
 
             LOGGER.Info("开始加载Minecraft方块纹理");
-            BlockTextureManager.LoadInstance(resources, MinecraftConfig.BlockTextureBlacklist);
-            LOGGER.Info("完成，方块数量: " + BlockTextureManager.Instance.Count);
+            _BlockTextureManager = BlockTextureManager.LoadInstance(resources, MinecraftConfig.BlockTextureBlacklist);
+            LOGGER.Info("完成，方块数量: " + _BlockTextureManager.Count);
 
             string? minecraftLanguageFilePath = directory.Languages.Combine(MinecraftConfig.Language + ".json");
             if (!File.Exists(minecraftLanguageFilePath))
                 minecraftLanguageFilePath = null;
 
             LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);
-            LanguageManager.LoadInstance(resources, MinecraftConfig.Language, minecraftLanguageFilePath);
-            LOGGER.Info("完成，语言条目数量: " + LanguageManager.Instance.Count);
+            _LanguageManager = LanguageManager.LoadInstance(resources, MinecraftConfig.Language, minecraftLanguageFilePath);
+            LOGGER.Info("完成，语言条目数量: " + _LanguageManager.Count);
 
             resources.Dispose();
+            LOGGER.Info("资源包内所有资源均已加载完成，资源包缓存已释放");
         }
 
         private static async Task BuildResourcesAsync(VersionDircetory directory)
