@@ -35,7 +35,7 @@ namespace MCBS.ConsoleTerminal
             {
 #endif
                 ConfigManager.LoadAll();
-                MinecraftResourcesManager.LoadAll();
+                MR.LoadAll();
                 SR.LoadAll();
                 TextureManager.LoadInstance();
                 FFmpegResourcesLoader.LoadAll();

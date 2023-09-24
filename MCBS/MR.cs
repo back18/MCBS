@@ -22,7 +22,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace MCBS
 {
-    public static class MinecraftResourcesManager
+    public static class MR
     {
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
 
