@@ -107,7 +107,7 @@ namespace MCBS.BlockForms
         public override void ActiveLayoutAll()
         {
             _lines.Clear();
-            BdfFont font = SystemResourcesManager.DefaultFont;
+            BdfFont font = SR.DefaultFont;
             string[] lines = _text.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             if (WordWrap)
             {

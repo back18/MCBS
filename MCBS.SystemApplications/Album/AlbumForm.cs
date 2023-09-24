@@ -282,7 +282,7 @@ namespace MCBS.SystemApplications.Album
 
         private void Path_TextBox_TextChanged(Control sender, QuanLib.Core.Event.TextChangedEventArgs e)
         {
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
+            if (SR.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;

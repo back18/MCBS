@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public static class SystemResourcesManager
+    public static class SR
     {
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
 

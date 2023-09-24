@@ -25,7 +25,7 @@ namespace MCBS.BlockForms
 
             _Spacing = 0;
 
-            ClientSize = new(SystemResourcesManager.DefaultFont.HalfWidth * 6, SystemResourcesManager.DefaultFont.Height);
+            ClientSize = new(SR.DefaultFont.HalfWidth * 6, SR.DefaultFont.Height);
         }
 
         public readonly PictureBox Icon_PictureBox;
@@ -81,7 +81,7 @@ namespace MCBS.BlockForms
 
         public override void AutoSetSize()
         {
-            Size size = SystemResourcesManager.DefaultFont.GetTotalSize(Text_Label.Text);
+            Size size = SR.DefaultFont.GetTotalSize(Text_Label.Text);
             size.Width += Icon_PictureBox.ImageFrame.FrameSize.Width;
             if (Icon_PictureBox.ImageFrame.FrameSize.Height > size.Height)
             {

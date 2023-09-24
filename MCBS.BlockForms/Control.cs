@@ -43,7 +43,7 @@ namespace MCBS.BlockForms
             _Text = string.Empty;
             _Visible = true;
             _ClientLocation = new(0, 0);
-            _ClientSize = new(SystemResourcesManager.DefaultFont.HalfWidth * 4, SystemResourcesManager.DefaultFont.Height);
+            _ClientSize = new(SR.DefaultFont.HalfWidth * 4, SR.DefaultFont.Height);
             _OffsetPosition = new(0, 0);
             _AutoSize = false;
             _BorderWidth = 1;

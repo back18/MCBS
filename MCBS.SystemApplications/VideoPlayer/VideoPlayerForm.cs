@@ -134,7 +134,7 @@ namespace MCBS.SystemApplications.VideoPlayer
 
         private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
         {
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
+            if (SR.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;

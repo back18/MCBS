@@ -188,8 +188,8 @@ namespace MCBS.Screens
                         frame.Overwrite(formFrame, context.Value.RootForm.ClientLocation);
                     if (context.Value.IsShowCursor)
                     {
-                        if (!SystemResourcesManager.CursorManager.TryGetValue(context.Value.CursorType, out var cursor))
-                            cursor = SystemResourcesManager.CursorManager[CursorType.Default];
+                        if (!SR.CursorManager.TryGetValue(context.Value.CursorType, out var cursor))
+                            cursor = SR.CursorManager[CursorType.Default];
                         frame.Overwrite(cursor.Frame, context.Value.Screen.InputHandler.CurrentPosition, cursor.Offset);
                     }
                     return frame;

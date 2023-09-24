@@ -177,7 +177,7 @@ namespace MCBS.SystemApplications.FileExplorer
             SimpleFilesBox.Text = e.NewText;
             Search_TextBox.Text = string.Empty;
 
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(Path_TextBox.Text).Width > Path_TextBox.ClientSize.Width)
+            if (SR.DefaultFont.GetTotalSize(Path_TextBox.Text).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
@@ -187,7 +187,7 @@ namespace MCBS.SystemApplications.FileExplorer
         {
             SimpleFilesBox.SearchText = e.NewText;
 
-            if (SystemResourcesManager.DefaultFont.GetTotalSize(Search_TextBox.Text).Width > Search_TextBox.ClientSize.Width)
+            if (SR.DefaultFont.GetTotalSize(Search_TextBox.Text).Width > Search_TextBox.ClientSize.Width)
                 Search_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Search_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
