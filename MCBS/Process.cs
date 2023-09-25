@@ -23,7 +23,7 @@ namespace MCBS
             ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
             Started += OnStarted;
             Stopped += OnStopped;
-            Application = Application.CreateApplication(ApplicationInfo.TypeObject);
+            Application = ApplicationInfo.CreateApplicationInstance();
             Initiator = initiator;
             MainThread = new(() =>
             {

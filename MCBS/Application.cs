@@ -41,20 +41,5 @@ namespace MCBS
         {
             return GetInfo()?.ApplicationDirectory;
         }
-
-        public static Application CreateApplication(Type appType)
-        {
-            if (appType is null)
-                throw new ArgumentNullException(nameof(appType));
-            if (!appType.IsSubclassOf(typeof(Application)))
-                throw new ArgumentException("Type对象不是Application", nameof(appType));
-
-            return Activator.CreateInstance(appType) as Application ?? throw new ArgumentException("无法构建Application对象", nameof(appType));
-        }
-
-        public static Application CreateApplication<T>() where T : Application
-        {
-            return CreateApplication(typeof(T));
-        }
     }
 }
