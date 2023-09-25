@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.DirectoryManagers
+namespace MCBS.Directorys
 {
-    public class LanguagesDirectory : DirectoryManager
+    public class FFmpegDirectory : DirectoryManager
     {
-        public LanguagesDirectory(string directory) : base(directory)
+        public FFmpegDirectory(string directory) : base(directory)
         {
         }
     }

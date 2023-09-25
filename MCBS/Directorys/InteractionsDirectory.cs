@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.DirectoryManagers
+namespace MCBS.Directorys
 {
-    public class ResourcePacksDirectory : DirectoryManager
+    public class InteractionsDirectory : DirectoryManager
     {
-        public ResourcePacksDirectory(string directory) : base(directory)
+        public InteractionsDirectory(string directory) : base(directory)
         {
         }
     }

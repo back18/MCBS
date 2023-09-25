@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.DirectoryManagers
+namespace MCBS.Directorys
 {
-    public class InteractionsDirectory : DirectoryManager
+    public class CursorsDirectory : DirectoryManager
     {
-        public InteractionsDirectory(string directory) : base(directory)
+        public CursorsDirectory(string directory) : base(directory)
         {
         }
     }
