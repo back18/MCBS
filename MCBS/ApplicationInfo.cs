@@ -25,8 +25,12 @@ namespace MCBS
                 throw new ArgumentException($"“{nameof(typeObject)}”必须继承自 {nameof(Application)}");
             if (typeObject.IsAbstract)
                 throw new ArgumentException($"“{nameof(typeObject)}”不能为抽象类型");
-            if (typeObject.GetConstructor(Type.EmptyTypes) is null)
+
+            var constructor = typeObject.GetConstructor(Type.EmptyTypes);
+            if (constructor is null)
                 throw new ArgumentException($"“{nameof(typeObject)}”必须有一个无参构造函数");
+            else if (!constructor.IsPublic)
+                throw new ArgumentException($"“{nameof(typeObject)}”的构造函数不是公共的");
 
             TypeObject = typeObject;
         }
