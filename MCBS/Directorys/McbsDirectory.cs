@@ -17,7 +17,6 @@ namespace MCBS.Directorys
             FFmpeg = new(Combine("FFmpeg"));
             MinecraftResources = new(Combine("MinecraftResources"));
             Saves = new(Combine("Saves"));
-            SystemResources = new(Combine("SystemResources"));
         }
 
         public ApplicationsDirectory Applications { get; }
@@ -31,7 +30,5 @@ namespace MCBS.Directorys
         public MinecraftResourcesDirectory MinecraftResources { get; }
 
         public SavesDirectory Saves { get; }
-
-        public SystemResourcesDirectory SystemResources { get; }
     }
 }
