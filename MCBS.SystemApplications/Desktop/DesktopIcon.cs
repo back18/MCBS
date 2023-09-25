@@ -43,7 +43,7 @@ namespace MCBS.SystemApplications.Desktop
             Icon_PictureBox.ClientLocation = new(3, 3);
             Icon_PictureBox.ClientSize = new(16, 16);
             Icon_PictureBox.DefaultResizeOptions.Size = Icon_PictureBox.ClientSize;
-            Icon_PictureBox.SetImage(_appInfo.Icon);
+            Icon_PictureBox.SetImage(_appInfo.GetIcon());
 
             Name_Label.BorderWidth = 1;
             Name_Label.Text = _appInfo.Name;

@@ -131,7 +131,7 @@ namespace MCBS.BlockForms
             if (appInfo is not null)
             {
                 Icon.Dispose();
-                Icon = appInfo.Icon;
+                Icon = appInfo.GetIcon();
                 Text = appInfo.Name;
             }
         }

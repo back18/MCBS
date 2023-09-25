@@ -21,7 +21,7 @@ namespace MCBS.SystemApplications.Desktop
             ID = DesktopApp.ID;
             Name = DesktopApp.Name;
             Version = Version.Parse("1.0");
-            Icon = DefaultIcon;
+            Icon = GetDefaultIcon();
             AppendToDesktop = false;
         }
 
@@ -33,8 +33,8 @@ namespace MCBS.SystemApplications.Desktop
 
         public override Version Version { get; }
 
-        public override Image<Rgba32> Icon { get; }
-
         public override bool AppendToDesktop { get; }
+
+        protected override Image<Rgba32> Icon { get; }
     }
 }

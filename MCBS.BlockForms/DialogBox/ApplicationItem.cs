@@ -25,7 +25,7 @@ namespace MCBS.BlockForms.DialogBox
         {
             base.Initialize();
 
-            Icon_PictureBox.SetImage(ApplicationInfo.Icon);
+            Icon_PictureBox.SetImage(ApplicationInfo.GetIcon());
             Text_Label.Text = ApplicationInfo.Name;
             Text_Label.AutoSetSize();
         }

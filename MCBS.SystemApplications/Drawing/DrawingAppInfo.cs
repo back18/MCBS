@@ -28,7 +28,7 @@ namespace MCBS.SystemApplications.Drawing
             }
             catch
             {
-                Icon = DefaultIcon;
+                Icon = GetDefaultIcon();
             }
             AppendToDesktop = true;
         }
@@ -41,8 +41,8 @@ namespace MCBS.SystemApplications.Drawing
 
         public override Version Version { get; }
 
-        public override Image<Rgba32> Icon { get; }
-
         public override bool AppendToDesktop { get; }
+
+        protected override Image<Rgba32> Icon { get; }
     }
 }

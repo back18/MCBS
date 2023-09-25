@@ -33,8 +33,6 @@ namespace MCBS
 
         private readonly static Image<Rgba32> _defaultIcon;
 
-        public static Image<Rgba32> DefaultIcon => _defaultIcon.Clone();
-
         public Type TypeObject { get; }
 
         public abstract PlatformID[] Platforms { get; }
@@ -45,9 +43,13 @@ namespace MCBS
 
         public abstract Version Version { get; }
 
-        public abstract Image<Rgba32> Icon { get; }
-
         public abstract bool AppendToDesktop { get; }
+
+        protected abstract Image<Rgba32> Icon { get; }
+
+        public virtual Image<Rgba32> GetIcon() => Icon.Clone();
+
+        public static Image<Rgba32> GetDefaultIcon() => _defaultIcon.Clone();
 
         public virtual Application CreateApplicationInstance()
         {

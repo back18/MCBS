@@ -27,7 +27,7 @@ namespace MCBS.SystemApplications.ScreenManager
             }
             catch
             {
-                Icon = DefaultIcon;
+                Icon = GetDefaultIcon();
             }
             AppendToDesktop = true;
         }
@@ -40,8 +40,8 @@ namespace MCBS.SystemApplications.ScreenManager
 
         public override Version Version { get; }
 
-        public override Image<Rgba32> Icon { get; }
-
         public override bool AppendToDesktop { get; }
+
+        protected override Image<Rgba32> Icon { get; }
     }
 }
