@@ -249,7 +249,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private void Open_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.GetApplicationDirectory();
+            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.ApplicationDirectory;
             if (string.IsNullOrEmpty(dir))
                 return;
             dir = Path.Combine(dir, "Saves");
@@ -259,7 +259,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private void Save_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.GetApplicationDirectory();
+            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.ApplicationDirectory;
             if (string.IsNullOrEmpty(dir))
                 return;
             dir = Path.Combine(dir, "Saves");

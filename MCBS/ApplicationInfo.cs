@@ -47,6 +47,8 @@ namespace MCBS
 
         protected abstract Image<Rgba32> Icon { get; }
 
+        public virtual string ApplicationDirectory => MCOS.MainDirectory.Applications.GetApplicationDirectory(ID);
+
         public virtual Image<Rgba32> GetIcon() => Icon.Clone();
 
         public static Image<Rgba32> GetDefaultIcon() => _defaultIcon.Clone();
@@ -58,11 +60,6 @@ namespace MCBS
                 throw new InvalidOperationException("无法创建应用程序实例");
 
             return application;
-        }
-
-        public string GetApplicationDirectory()
-        {
-            return MCOS.MainDirectory.Applications.GetApplicationDirectory(ID);
         }
 
         public override string ToString()

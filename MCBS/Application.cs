@@ -39,7 +39,7 @@ namespace MCBS
 
         public string? GetApplicationDirectory()
         {
-            return GetInfo()?.GetApplicationDirectory();
+            return GetInfo()?.ApplicationDirectory;
         }
 
         public static Application CreateApplication(Type appType)
