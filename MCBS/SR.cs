@@ -13,13 +13,13 @@ namespace MCBS
 {
     public static class SR
     {
+        private static LogImpl LOGGER => LogUtil.GetLogger();
+        public const string SYSTEM_RESOURCE_NAMESPACE = "MCBS.SystemResource";
+
         static SR()
         {
             McbsDirectory = new(Path.GetFullPath("MCBS"));
         }
-
-        private static LogImpl LOGGER => LogUtil.GetLogger();
-        public const string SYSTEM_RESOURCE_NAMESPACE = "MCBS.SystemResource";
 
         public static McbsDirectory McbsDirectory { get; }
 
