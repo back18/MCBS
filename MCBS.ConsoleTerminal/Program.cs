@@ -19,7 +19,7 @@ namespace MCBS.ConsoleTerminal
 {
     public static class Program
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         private static void Main(string[] args)
         {

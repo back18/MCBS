@@ -24,7 +24,7 @@ namespace MCBS
 {
     public static class MR
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         public static BlockTextureManager BlockTextureManager
         {

@@ -19,7 +19,7 @@ namespace MCBS
 {
     public class MediaFilePlayer : IDisposable
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         public MediaFilePlayer(string path, Facing facing, MediaOptions mediaOptions, ResizeOptions resizeOptions, bool enableAudio = true)
         {

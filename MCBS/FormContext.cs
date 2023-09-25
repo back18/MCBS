@@ -16,7 +16,7 @@ namespace MCBS
     /// </summary>
     public class FormContext
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         internal FormContext(Application application, IForm form)
         {

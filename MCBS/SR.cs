@@ -18,7 +18,7 @@ namespace MCBS
             McbsDirectory = new(Path.GetFullPath("MCBS"));
         }
 
-        private static LogImpl LOGGER => LogUtil.MainLogger;
+        private static LogImpl LOGGER => LogUtil.GetLogger();
         public const string SYSTEM_RESOURCE_NAMESPACE = "MCBS.SystemResource";
 
         public static McbsDirectory McbsDirectory { get; }

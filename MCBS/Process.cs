@@ -13,7 +13,7 @@ namespace MCBS
 {
     public class Process
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         internal Process(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
         {

@@ -6,6 +6,7 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
@@ -39,7 +40,7 @@ namespace MCBS.Logging
             _file.LockingModel = new FileAppender.MinimalLock();
             _file.ActivateOptions();
 
-            MainLogger = GetLogger("McbsMain");
+            _loggers = new();
         }
 
         private static readonly Hierarchy _repository;
@@ -48,19 +49,34 @@ namespace MCBS.Logging
 
         private static readonly RollingFileAppender _file;
 
-        public static LogImpl MainLogger { get; }
+        private static readonly Dictionary<string, LogImpl> _loggers;
+
+        public static LogImpl GetLogger()
+        {
+            StackFrame frame = new(1);
+            MethodBase? method = frame.GetMethod();
+            string? name = method?.DeclaringType?.FullName;
+            if (name is null)
+                return GetLogger("null");
+            return GetLogger(name);
+        }
 
         public static LogImpl GetLogger(string name)
         {
-            Logger logger = _repository.LoggerFactory.CreateLogger(_repository, name);
-            logger.Hierarchy = _repository;
-            logger.Parent = _repository.Root;
-            logger.Level = Level.All;
-            logger.Additivity = false;
-            logger.AddAppender(_console);
-            logger.AddAppender(_file);
+            lock (_loggers)
+            {
+                if (_loggers.TryGetValue(name, out var logImpl))
+                    return logImpl;
 
-            return new(logger);
+                Logger logger = _repository.LoggerFactory.CreateLogger(_repository, name);
+                logger.Hierarchy = _repository;
+                logger.Parent = _repository.Root;
+                logger.Level = Level.All;
+                logger.Additivity = false;
+                logger.AddAppender(_console);
+                logger.AddAppender(_file);
+                return new(logger);
+            }
         }
 
         public static void EnableConsoleOutput()

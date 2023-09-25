@@ -24,7 +24,7 @@ namespace MCBS.Screens
 {
     public class ScreenBuilder
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         public ScreenBuilder()
         {

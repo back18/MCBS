@@ -19,7 +19,7 @@ namespace MCBS.Screens
     /// </summary>
     public class ScreenContext
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         internal ScreenContext(Screen screen, IRootForm form)
         {

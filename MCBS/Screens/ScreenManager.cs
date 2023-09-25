@@ -23,7 +23,7 @@ namespace MCBS.Screens
 {
     public class ScreenManager
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         public ScreenManager()
         {

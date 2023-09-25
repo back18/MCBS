@@ -20,7 +20,7 @@ namespace MCBS
 {
     public class InteractionManager
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         public InteractionManager()
         {

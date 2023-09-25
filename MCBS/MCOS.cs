@@ -26,7 +26,7 @@ namespace MCBS
 {
     public class MCOS : UnmanagedRunnable
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         static MCOS()
         {
