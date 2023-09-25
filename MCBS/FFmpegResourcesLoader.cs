@@ -17,9 +17,9 @@ namespace MCBS
     public static class FFmpegResourcesLoader
     {
         private static readonly LogImpl LOGGER = LogUtil.MainLogger;
-        private const string FFMPEG_INDEX_NAME = "MCBS.SystemResource.FFmpegIndex.json";
-        private const string FFMPEG_NAME = "MCBS.SystemResource.ffmpeg-master-latest-win64-gpl-shared.zip";
-        private const string FFMPEG_BIN = "ffmpeg-master-latest-win64-gpl-shared/bin/";
+        private const string FFMPEG_INDEX_NAME = SR.SYSTEM_RESOURCE_NAMESPACE + ".FFmpegIndex.json";
+        private const string FFMPEG_NAME = SR.SYSTEM_RESOURCE_NAMESPACE + ".ffmpeg-master-latest-win64-gpl-shared.zip";
+        private const string FFMPEG_BIN_DIR = "ffmpeg-master-latest-win64-gpl-shared/bin/";
 
         public static void LoadAll()
         {
@@ -43,7 +43,7 @@ namespace MCBS
                     string file = Path.Combine(FFmpegLoader.FFmpegPath, index.Key);
                     if (!File.Exists(file) || HashUtil.GetHashString(file, HashType.SHA1) != index.Value)
                     {
-                        using Stream stream = zipPack[FFMPEG_BIN + index.Key].Open();
+                        using Stream stream = zipPack[FFMPEG_BIN_DIR + index.Key].Open();
                         using FileStream fileStream = new(file, FileMode.Create);
                         stream.CopyTo(fileStream);
                         LOGGER.Info("已还原: " + file);

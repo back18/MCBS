@@ -71,14 +71,14 @@ namespace MCBS
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
-            using Stream indexsStream = assembly.GetManifestResourceStream("MCBS.SystemResource.CursorIndex.json") ?? throw new InvalidOperationException();
+            using Stream indexsStream = assembly.GetManifestResourceStream(SR.SYSTEM_RESOURCE_NAMESPACE + ".CursorIndex.json") ?? throw new InvalidOperationException();
             string indexsJson = indexsStream.ToUtf8Text();
             CursorModel[] indexs = JsonConvert.DeserializeObject<CursorModel[]>(indexsJson) ?? throw new InvalidOperationException();
 
             Dictionary<string, Cursor> result = new();
             foreach (var index in indexs)
             {
-                using Stream stream = assembly.GetManifestResourceStream("MCBS.SystemResource.Cursors." + index.Image) ?? throw new InvalidOperationException();
+                using Stream stream = assembly.GetManifestResourceStream(SR.SYSTEM_RESOURCE_NAMESPACE + ".Cursors." + index.Image) ?? throw new InvalidOperationException();
                 var image = Image.Load<Rgba32>(stream);
                 ArrayFrame frame = ArrayFrame.FromImage(Facing.Zm, image, string.Empty);
                 Cursor cursor = new(index.Type, new(index.XOffset, index.YOffset), frame);
