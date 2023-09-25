@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="SystemResource\icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SystemResource\Icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCBS.BlockForms\MCBS.BlockForms.csproj" />
+  </ItemGroup>
+
+</Project>

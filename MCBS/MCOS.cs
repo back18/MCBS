@@ -1,4 +1,4 @@
-﻿//#define TryCatch
+﻿#define TryCatch
 
 using Newtonsoft.Json;
 using System;

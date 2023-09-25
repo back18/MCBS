@@ -9,7 +9,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\QuanLib.CommandLine\QuanLib.CommandLine.ConsoleTerminal\QuanLib.CommandLine.ConsoleTerminal.csproj" />
-    <ProjectReference Include="..\MCBS.SystemApplications\MCBS.SystemApplications.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.Album\MCBS.SystemApplications.Album.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.DataScreen\MCBS.SystemApplications.DataScreen.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.Desktop\MCBS.SystemApplications.Desktop.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.Drawing\MCBS.SystemApplications.Drawing.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.FileExplorer\MCBS.SystemApplications.FileExplorer.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.Notepad\MCBS.SystemApplications.Notepad.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.ScreenManager\MCBS.SystemApplications.ScreenManager.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.Services\MCBS.SystemApplications.Services.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.Settings\MCBS.SystemApplications.Settings.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.TaskManager\MCBS.SystemApplications.TaskManager.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.VideoPlayer\MCBS.SystemApplications.VideoPlayer.csproj" />
   </ItemGroup>
 
 </Project>

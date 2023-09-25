@@ -38,9 +38,6 @@ namespace MCBS.ConsoleTerminal
             mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.Drawing.DrawingAppInfo());
             mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.VideoPlayer.VideoPlayerAppInfo());
             mcos.ApplicationManager.Items.Add(new MCBS.SystemApplications.DataScreen.DataScreenAppInfo());
-            mcos.ApplicationManager.Items.Add(new Test01AppInfo());
-            mcos.ApplicationManager.Items.Add(new Test02AppInfo());
-            mcos.ApplicationManager.Items.Add(new Test03AppInfo());
         }
 
         public static void LoadExternalApp(ref MCOS mcos, string folderPath)
