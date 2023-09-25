@@ -21,7 +21,7 @@ namespace MCBS
         {
             if (typeObject is null)
                 throw new ArgumentNullException(nameof(typeObject));
-            if (!typeObject.IsAssignableFrom(typeof(Application)))
+            if (!typeObject.IsSubclassOf(typeof(Application)))
                 throw new ArgumentException($"“{nameof(typeObject)}”必须继承自 {nameof(Application)}");
             if (typeObject.IsAbstract)
                 throw new ArgumentException($"“{nameof(typeObject)}”不能为抽象类型");
@@ -47,7 +47,7 @@ namespace MCBS
 
         protected abstract Image<Rgba32> Icon { get; }
 
-        public virtual string ApplicationDirectory => MCOS.MainDirectory.Applications.GetApplicationDirectory(ID);
+        public virtual string ApplicationDirectory => SR.McbsDirectory.Applications.GetApplicationDirectory(ID);
 
         public virtual Image<Rgba32> GetIcon() => Icon.Clone();
 

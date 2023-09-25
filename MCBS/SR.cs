@@ -1,4 +1,5 @@
 ﻿using log4net.Core;
+using MCBS.DirectoryManagers;
 using MCBS.Logging;
 using QuanLib.BDF;
 using System;
@@ -12,8 +13,15 @@ namespace MCBS
 {
     public static class SR
     {
-        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
+        static SR()
+        {
+            McbsDirectory = new(Path.GetFullPath("MCBS"));
+        }
+
+        private static LogImpl LOGGER => LogUtil.MainLogger;
         public const string SYSTEM_RESOURCE_NAMESPACE = "MCBS.SystemResource";
+
+        public static McbsDirectory McbsDirectory { get; }
 
         public static BdfFont DefaultFont
         {

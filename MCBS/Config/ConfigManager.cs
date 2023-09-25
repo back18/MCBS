@@ -62,12 +62,12 @@ namespace MCBS.Config
 
         public static void CreateIfNotExists()
         {
-            MCOS.MainDirectory.Configs.CreateIfNotExists();
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Log4Net, "MCBS.Config.Default.log4net.xml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Minecraft, "MCBS.Config.Default.Minecraft.toml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.System, "MCBS.Config.Default.System.toml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Screen, "MCBS.Config.Default.Screen.toml");
-            CreateIfNotExists(MCOS.MainDirectory.Configs.Registry, "MCBS.Config.Default.Registry.json");
+            SR.McbsDirectory.Configs.CreateIfNotExists();
+            CreateIfNotExists(SR.McbsDirectory.Configs.Log4Net, "MCBS.Config.Default.log4net.xml");
+            CreateIfNotExists(SR.McbsDirectory.Configs.Minecraft, "MCBS.Config.Default.Minecraft.toml");
+            CreateIfNotExists(SR.McbsDirectory.Configs.System, "MCBS.Config.Default.System.toml");
+            CreateIfNotExists(SR.McbsDirectory.Configs.Screen, "MCBS.Config.Default.Screen.toml");
+            CreateIfNotExists(SR.McbsDirectory.Configs.Registry, "MCBS.Config.Default.Registry.json");
         }
 
         private static void CreateIfNotExists(string path, string resource)
@@ -88,10 +88,10 @@ namespace MCBS.Config
 
         public static void LoadAll()
         {
-            _MinecraftConfig = MinecraftConfig.Load(MCOS.MainDirectory.Configs.Minecraft);
-            _SystemConfig = SystemConfig.Load(MCOS.MainDirectory.Configs.System);
-            _ScreenConfig = ScreenConfig.Load(MCOS.MainDirectory.Configs.Screen);
-            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(MCOS.MainDirectory.Configs.Registry)) ?? throw new FormatException();
+            _MinecraftConfig = MinecraftConfig.Load(SR.McbsDirectory.Configs.Minecraft);
+            _SystemConfig = SystemConfig.Load(SR.McbsDirectory.Configs.System);
+            _ScreenConfig = ScreenConfig.Load(SR.McbsDirectory.Configs.Screen);
+            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(SR.McbsDirectory.Configs.Registry)) ?? throw new FormatException();
 
             LOGGER.Info("配置文件加载完成");
         }

@@ -51,14 +51,14 @@ namespace MCBS
         public static void LoadAll()
         {
             LOGGER.Info("开始构建Minecraft资源文件");
-            VersionDircetory directory = new(MCOS.MainDirectory.MinecraftResources.Vanilla.Combine(MinecraftConfig.GameVersion));
+            VersionDircetory directory = new(SR.McbsDirectory.MinecraftResources.Vanilla.Combine(MinecraftConfig.GameVersion));
             BuildResourcesAsync(directory).Wait();
             LOGGER.Info("完成");
 
             string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
             paths[0] = directory.Client;
             for (int i = 1; i < paths.Length; i++)
-                paths[i] = MCOS.MainDirectory.MinecraftResources.ResourcePacks.Combine(MinecraftConfig.ResourcePackList[i]);
+                paths[i] = SR.McbsDirectory.MinecraftResources.ResourcePacks.Combine(MinecraftConfig.ResourcePackList[i]);
 
             LOGGER.Info($"开始加载Minecraft资源包，共计{paths.Length}个资源包，资源包列表：");
             foreach (string path in paths)

@@ -23,7 +23,7 @@ namespace MCBS.SystemApplications.VideoPlayer
             Version = Version.Parse("1.0");
             try
             {
-                Icon = Image.Load<Rgba32>(Path.Combine(MCOS.MainDirectory.Applications.GetApplicationDirectory(ID), "Icon.png"));
+                Icon = Image.Load<Rgba32>(Path.Combine(SR.McbsDirectory.Applications.GetApplicationDirectory(ID), "Icon.png"));
             }
             catch
             {

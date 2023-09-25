@@ -17,14 +17,14 @@ namespace MCBS.Logging
     {
         static LogUtil()
         {
-            if (!File.Exists(MCOS.MainDirectory.Configs.Log4Net))
+            if (!File.Exists(SR.McbsDirectory.Configs.Log4Net))
             {
                 using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml") ?? throw new InvalidOperationException();
-                using FileStream fileStream = new(MCOS.MainDirectory.Configs.Log4Net, FileMode.Create);
+                using FileStream fileStream = new(SR.McbsDirectory.Configs.Log4Net, FileMode.Create);
                 stream.CopyTo(fileStream);
-                Console.WriteLine($"配置文件“{MCOS.MainDirectory.Configs.Log4Net}”不存在，已创建默认配置文件");
+                Console.WriteLine($"配置文件“{SR.McbsDirectory.Configs.Log4Net}”不存在，已创建默认配置文件");
             }
-            XmlConfigurator.Configure(new FileInfo(MCOS.MainDirectory.Configs.Log4Net));
+            XmlConfigurator.Configure(new FileInfo(SR.McbsDirectory.Configs.Log4Net));
             _repository = (Hierarchy)LogManager.GetRepository();
             _console = new();
             PatternLayout layout = new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n");

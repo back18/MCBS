@@ -27,13 +27,12 @@ namespace MCBS
 {
     public class MCOS : UnmanagedRunnable
     {
-        private static LogImpl LOGGER => LogUtil.MainLogger;
+        private static readonly LogImpl LOGGER = LogUtil.MainLogger;
 
         static MCOS()
         {
             _slock = new();
             IsLoaded = false;
-            MainDirectory = new(Path.GetFullPath("MCBS"));
         }
 
         private MCOS(MinecraftInstance minecraftInstance)
@@ -75,8 +74,6 @@ namespace MCBS
             }
         }
         private static MCOS? _Instance;
-
-        public static McbsDirectory MainDirectory { get; }
 
         internal readonly ConcurrentQueue<Action> TaskList;
 

@@ -22,7 +22,7 @@ namespace MCBS.SystemApplications.Desktop
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
-            WallpaperPath = Path.Combine(MCOS.MainDirectory.Applications.GetApplicationDirectory(DesktopApp.ID), "wallpaper.jpg");
+            WallpaperPath = Path.Combine(SR.McbsDirectory.Applications.GetApplicationDirectory(DesktopApp.ID), "wallpaper.jpg");
 
             ClientPanel = new();
         }
