@@ -19,6 +19,15 @@ namespace MCBS
 
         protected ApplicationInfo(Type typeObject)
         {
+            if (typeObject is null)
+                throw new ArgumentNullException(nameof(typeObject));
+            if (!typeObject.IsAssignableFrom(typeof(Application)))
+                throw new ArgumentException($"“{nameof(typeObject)}”必须继承自 {nameof(Application)}");
+            if (typeObject.IsAbstract)
+                throw new ArgumentException($"“{nameof(typeObject)}”不能为抽象类型");
+            if (typeObject.GetConstructor(Type.EmptyTypes) is null)
+                throw new ArgumentException($"“{nameof(typeObject)}”必须有一个无参构造函数");
+
             TypeObject = typeObject;
         }
 
@@ -39,6 +48,15 @@ namespace MCBS
         public abstract Image<Rgba32> Icon { get; }
 
         public abstract bool AppendToDesktop { get; }
+
+        public virtual Application CreateApplicationInstance()
+        {
+            var instance = Activator.CreateInstance(TypeObject);
+            if (instance is not Application application)
+                throw new InvalidOperationException("无法创建应用程序实例");
+
+            return application;
+        }
 
         public string GetApplicationDirectory()
         {
