@@ -101,8 +101,18 @@ namespace MCBS
             }
             else
             {
-                LOGGER.Info("正在下载: " + downloadProvider.VersionListUrl);
-                VersionList versionList = await VersionList.DownloadAsync(downloadProvider.VersionListUrl);
+                VersionList versionList;
+                try
+                {
+                    LOGGER.Info("正在下载: " + downloadProvider.VersionListUrl);
+                    versionList = await VersionList.DownloadAsync(downloadProvider.VersionListUrl);
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Warn("下载或解析失败，尝试切换到MOJANG官方下载源", ex);
+                    LOGGER.Info("正在下载: " + DownloadProvider.MOJANG_PROVIDER.VersionListUrl);
+                    versionList = await VersionList.DownloadAsync(DownloadProvider.MOJANG_PROVIDER.VersionListUrl);
+                }
 
                 if (!versionList.TryGetValue(MinecraftConfig.GameVersion, out var versionIndex))
                     throw new InvalidOperationException("未知的游戏版本：" + MinecraftConfig.GameVersion);
