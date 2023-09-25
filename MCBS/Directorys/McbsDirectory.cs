@@ -13,6 +13,7 @@ namespace MCBS.Directorys
         {
             Applications = new(Combine("Applications"));
             Configs = new(Combine("Configs"));
+            Logs = new(Combine("Logs"));
             FFmpeg = new(Combine("FFmpeg"));
             MinecraftResources = new(Combine("MinecraftResources"));
             Saves = new(Combine("Saves"));
@@ -22,6 +23,8 @@ namespace MCBS.Directorys
         public ApplicationsDirectory Applications { get; }
 
         public ConfigsDirectory Configs { get; }
+
+        public LogsDirectory Logs { get; }
 
         public FFmpegDirectory FFmpeg { get; }
 

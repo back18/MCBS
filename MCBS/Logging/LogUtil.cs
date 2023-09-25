@@ -6,6 +6,7 @@ using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -17,26 +18,35 @@ namespace MCBS.Logging
     {
         static LogUtil()
         {
-            if (!File.Exists(SR.McbsDirectory.Configs.Log4Net))
-            {
-                using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("QuanLib.Minecraft.BlockScreen.Config.Default.log4net.xml") ?? throw new InvalidOperationException();
-                using FileStream fileStream = new(SR.McbsDirectory.Configs.Log4Net, FileMode.Create);
-                stream.CopyTo(fileStream);
-                Console.WriteLine($"配置文件“{SR.McbsDirectory.Configs.Log4Net}”不存在，已创建默认配置文件");
-            }
+            SaveOldLogFile();
+
             XmlConfigurator.Configure(new FileInfo(SR.McbsDirectory.Configs.Log4Net));
             _repository = (Hierarchy)LogManager.GetRepository();
-            _console = new();
+
             PatternLayout layout = new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n");
             layout.ActivateOptions();
+
+            _console = new();
+            _console.Threshold = Level.All;
             _console.Layout = layout;
             _console.ActivateOptions();
+
+            _file = new();
+            _file.Threshold = Level.All;
+            _file.Layout = layout;
+            _file.Encoding = Encoding.UTF8;
+            _file.File = SR.McbsDirectory.Logs.Latest;
+            _file.LockingModel = new FileAppender.MinimalLock();
+            _file.ActivateOptions();
+
             MainLogger = GetLogger("McbsMain");
         }
 
         private static readonly Hierarchy _repository;
 
         private static readonly ConsoleAppender _console;
+
+        private static readonly RollingFileAppender _file;
 
         public static LogImpl MainLogger { get; }
 
@@ -48,6 +58,7 @@ namespace MCBS.Logging
             logger.Level = Level.All;
             logger.Additivity = false;
             logger.AddAppender(_console);
+            logger.AddAppender(_file);
 
             return new(logger);
         }
@@ -60,6 +71,29 @@ namespace MCBS.Logging
         public static void DisableConsoleOutput()
         {
             _console.Threshold = Level.Off;
+        }
+
+        private static void SaveOldLogFile()
+        {
+            FileInfo logFileInfo = new(SR.McbsDirectory.Logs.Latest);
+            if (!logFileInfo.Exists)
+                return;
+
+            byte[] logBytes = File.ReadAllBytes(SR.McbsDirectory.Logs.Latest);
+            string format = SR.McbsDirectory.Logs.Combine(logFileInfo.LastWriteTime.ToString("yyyy-MM-dd") + "-{0}.log.gz");
+            string path = string.Format(format, 1);
+            for (int i = 2; i < int.MaxValue; i++)
+            {
+                if (!File.Exists(path))
+                    break;
+                else
+                    path = string.Format(format, i);
+            }
+
+            using FileStream fileStream = new(path, FileMode.Create);
+            using GZipStream gZipStream = new(fileStream, CompressionMode.Compress);
+            gZipStream.Write(logBytes, 0, logBytes.Length);
+            logFileInfo.Delete();
         }
     }
 }
