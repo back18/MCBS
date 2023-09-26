@@ -38,7 +38,7 @@ namespace MCBS
 
         private readonly string _entity;
 
-        private static readonly string _dir = SR.McbsDirectory.Saves.Interactions.FullPath;
+        private static readonly string _dir = SR.McbsDirectory.SavesDir.InteractionsDir.FullPath;
 
         private readonly string _file;
 

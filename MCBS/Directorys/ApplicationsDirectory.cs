@@ -15,6 +15,9 @@ namespace MCBS.Directorys
 
         public string GetApplicationDirectory(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentException($"“{nameof(id)}”不能为 null 或空。", nameof(id));
+
             return Combine(id);
         }
     }

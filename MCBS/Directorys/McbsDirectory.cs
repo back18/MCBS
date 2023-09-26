@@ -11,24 +11,24 @@ namespace MCBS.Directorys
     {
         public McbsDirectory(string directory) : base(directory)
         {
-            Applications = new(Combine("Applications"));
-            Configs = new(Combine("Configs"));
-            Logs = new(Combine("Logs"));
-            FFmpeg = new(Combine("FFmpeg"));
-            MinecraftResources = new(Combine("MinecraftResources"));
-            Saves = new(Combine("Saves"));
+            ApplicationsDir = AddDirectory<ApplicationsDirectory>("Applications");
+            ConfigsDir = AddDirectory<ConfigsDirectory>("Configs");
+            LogsDir = AddDirectory<LogsDirectory>("Logs");
+            FFmpegDir = AddDirectory<FFmpegDirectory>("FFmpeg");
+            MinecraftResourcesDir = AddDirectory<MinecraftResourcesDirectory>("MinecraftResources");
+            SavesDir = AddDirectory<SavesDirectory>("Saves");
         }
 
-        public ApplicationsDirectory Applications { get; }
+        public ApplicationsDirectory ApplicationsDir { get; }
 
-        public ConfigsDirectory Configs { get; }
+        public ConfigsDirectory ConfigsDir { get; }
 
-        public LogsDirectory Logs { get; }
+        public LogsDirectory LogsDir { get; }
 
-        public FFmpegDirectory FFmpeg { get; }
+        public FFmpegDirectory FFmpegDir { get; }
 
-        public MinecraftResourcesDirectory MinecraftResources { get; }
+        public MinecraftResourcesDirectory MinecraftResourcesDir { get; }
 
-        public SavesDirectory Saves { get; }
+        public SavesDirectory SavesDir { get; }
     }
 }

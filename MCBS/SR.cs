@@ -19,6 +19,7 @@ namespace MCBS
         static SR()
         {
             McbsDirectory = new(Path.GetFullPath("MCBS"));
+            McbsDirectory.BuildDirectoryTree();
         }
 
         public static McbsDirectory McbsDirectory { get; }

@@ -32,7 +32,7 @@ namespace MCBS
 
         protected virtual void OnAddedApplication(ApplicationManager sender, ApplicationInfoEventArgs e)
         {
-            string dir = SR.McbsDirectory.Applications.GetApplicationDirectory(e.ApplicationInfo.ID);
+            string dir = SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(e.ApplicationInfo.ID);
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 

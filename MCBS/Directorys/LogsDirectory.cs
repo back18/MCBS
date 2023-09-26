@@ -11,9 +11,9 @@ namespace MCBS.Directorys
     {
         public LogsDirectory(string directory) : base(directory)
         {
-            Latest = Combine("Latest.log");
+            LatestFile = Combine("Latest.log");
         }
 
-        public string Latest { get; }
+        public string LatestFile { get; }
     }
 }

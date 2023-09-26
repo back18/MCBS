@@ -11,18 +11,18 @@ namespace MCBS.Directorys
     {
         public VersionDirectory(string directory) : base(directory)
         {
-            Languages = new(Combine("Languages"));
-            Client = new(Combine("client.jar"));
-            Version = new(Combine("version.json"));
-            Index = new(Combine("index.json"));
+            LanguagesDir = AddDirectory<LanguagesDirectory>("Languages");
+            ClientFile = Combine("client.jar");
+            VersionFile = Combine("client.jar");
+            IndexFile = Combine("client.jar");
         }
 
-        public LanguagesDirectory Languages { get; }
+        public LanguagesDirectory LanguagesDir { get; }
 
-        public string Client { get; }
+        public string ClientFile { get; }
 
-        public string Version { get; }
+        public string VersionFile { get; }
 
-        public string Index { get; }
+        public string IndexFile { get; }
     }
 }

@@ -126,10 +126,10 @@ namespace MCBS.Screens
 
         private void ReadScreens()
         {
-            if (!File.Exists(SR.McbsDirectory.Saves.ScreenSaves))
+            if (!File.Exists(SR.McbsDirectory.SavesDir.ScreenSavesFile))
                 return;
 
-            string json = File.ReadAllText(SR.McbsDirectory.Saves.ScreenSaves);
+            string json = File.ReadAllText(SR.McbsDirectory.SavesDir.ScreenSavesFile);
             ScreenOptions.Model[] items = JsonConvert.DeserializeObject<ScreenOptions.Model[]>(json) ?? throw new FormatException();
             foreach (var item in items)
             {
@@ -145,7 +145,7 @@ namespace MCBS.Screens
             foreach (var save in _saves)
                 items.Add(save.ToModel());
             string json = JsonConvert.SerializeObject(items);
-            File.WriteAllText(SR.McbsDirectory.Saves.ScreenSaves, json);
+            File.WriteAllText(SR.McbsDirectory.SavesDir.ScreenSavesFile, json);
         }
 
         public void HandleAllScreenInput()

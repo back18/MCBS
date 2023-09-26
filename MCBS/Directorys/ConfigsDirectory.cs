@@ -11,21 +11,21 @@ namespace MCBS.Directorys
     {
         public ConfigsDirectory(string directory) : base(directory)
         {
-            Minecraft = Combine("Minecraft.toml");
-            System = Combine("System.toml");
-            Screen = Combine("Screen.toml");
-            Registry = Combine("Registry.json");
-            Log4Net = Combine("log4net.xml");
+            MinecraftFile = Combine("Minecraft.toml");
+            SystemFile = Combine("System.toml");
+            ScreenFile = Combine("Screen.toml");
+            RegistryFile = Combine("Registry.json");
+            Log4NetFile = Combine("log4net.xml");
         }
 
-        public string Minecraft { get; }
+        public string MinecraftFile { get; }
 
-        public string System { get; }
+        public string SystemFile { get; }
 
-        public string Screen { get; }
+        public string ScreenFile { get; }
 
-        public string Registry { get; }
+        public string RegistryFile { get; }
 
-        public string Log4Net { get; }
+        public string Log4NetFile { get; }
     }
 }

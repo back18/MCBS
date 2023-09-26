@@ -21,7 +21,7 @@ namespace MCBS.Logging
         {
             SaveOldLogFile();
 
-            XmlConfigurator.Configure(new FileInfo(SR.McbsDirectory.Configs.Log4Net));
+            XmlConfigurator.Configure(new FileInfo(SR.McbsDirectory.ConfigsDir.Log4NetFile));
             _repository = (Hierarchy)LogManager.GetRepository();
 
             PatternLayout layout = new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n");
@@ -36,7 +36,7 @@ namespace MCBS.Logging
             _file.Threshold = Level.All;
             _file.Layout = layout;
             _file.Encoding = Encoding.UTF8;
-            _file.File = SR.McbsDirectory.Logs.Latest;
+            _file.File = SR.McbsDirectory.LogsDir.LatestFile;
             _file.LockingModel = new FileAppender.MinimalLock();
             _file.ActivateOptions();
 
@@ -91,12 +91,12 @@ namespace MCBS.Logging
 
         private static void SaveOldLogFile()
         {
-            FileInfo logFileInfo = new(SR.McbsDirectory.Logs.Latest);
+            FileInfo logFileInfo = new(SR.McbsDirectory.LogsDir.LatestFile);
             if (!logFileInfo.Exists)
                 return;
 
-            byte[] logBytes = File.ReadAllBytes(SR.McbsDirectory.Logs.Latest);
-            string format = SR.McbsDirectory.Logs.Combine(logFileInfo.LastWriteTime.ToString("yyyy-MM-dd") + "-{0}.log.gz");
+            byte[] logBytes = File.ReadAllBytes(SR.McbsDirectory.LogsDir.LatestFile);
+            string format = SR.McbsDirectory.LogsDir.Combine(logFileInfo.LastWriteTime.ToString("yyyy-MM-dd") + "-{0}.log.gz");
             string path = string.Format(format, 1);
             for (int i = 2; i < int.MaxValue; i++)
             {

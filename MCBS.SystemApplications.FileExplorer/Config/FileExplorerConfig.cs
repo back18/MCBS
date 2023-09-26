@@ -25,7 +25,7 @@ namespace MCBS.SystemApplications.FileExplorer.Config
 
         public static void CreateIfNotExists()
         {
-            string dir = SR.McbsDirectory.Applications.GetApplicationDirectory(FileExplorerApp.ID);
+            string dir = SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(FileExplorerApp.ID);
             string path = Path.Combine(dir, "Config.toml");
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
@@ -51,7 +51,7 @@ namespace MCBS.SystemApplications.FileExplorer.Config
 
         public static FileExplorerConfig Load()
         {
-            string path = Path.Combine(SR.McbsDirectory.Applications.GetApplicationDirectory(FileExplorerApp.ID), "Config.toml");
+            string path = Path.Combine(SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(FileExplorerApp.ID), "Config.toml");
             TomlTable table = Toml.ReadFile(path);
             Model model = table.Get<Model>();
 

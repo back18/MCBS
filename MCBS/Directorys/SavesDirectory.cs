@@ -11,12 +11,12 @@ namespace MCBS.Directorys
     {
         public SavesDirectory(string directory) : base(directory)
         {
-            Interactions = new(Combine("Interactions"));
-            ScreenSaves = Combine("ScreenSaves.json");
+            InteractionsDir = AddDirectory<InteractionsDirectory>("Interactions");
+            ScreenSavesFile = Combine("ScreenSaves.json");
         }
 
-        public InteractionsDirectory Interactions { get; }
+        public InteractionsDirectory InteractionsDir { get; }
 
-        public string ScreenSaves { get; }
+        public string ScreenSavesFile { get; }
     }
 }

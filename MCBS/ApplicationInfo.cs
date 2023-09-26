@@ -51,7 +51,7 @@ namespace MCBS
 
         protected abstract Image<Rgba32> Icon { get; }
 
-        public virtual string ApplicationDirectory => SR.McbsDirectory.Applications.GetApplicationDirectory(ID);
+        public virtual string ApplicationDirectory => SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(ID);
 
         public virtual Image<Rgba32> GetIcon() => Icon.Clone();
 

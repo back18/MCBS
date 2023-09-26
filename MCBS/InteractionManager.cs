@@ -41,7 +41,7 @@ namespace MCBS
 
         public void Initialize()
         {
-            string dir = SR.McbsDirectory.Saves.Interactions.FullPath;
+            string dir = SR.McbsDirectory.SavesDir.InteractionsDir.FullPath;
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 

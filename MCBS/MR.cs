@@ -55,9 +55,9 @@ namespace MCBS
             LOGGER.Info("完成");
 
             string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
-            paths[0] = directory.Client;
+            paths[0] = directory.ClientFile;
             for (int i = 1; i < paths.Length; i++)
-                paths[i] = SR.McbsDirectory.MinecraftResources.ResourcePacks.Combine(MinecraftConfig.ResourcePackList[i]);
+                paths[i] = SR.McbsDirectory.MinecraftResourcesDir.ResourcePacksDir.Combine(MinecraftConfig.ResourcePackList[i]);
 
             LOGGER.Info($"开始加载Minecraft资源包，共计{paths.Length}个资源包，资源包列表：");
             foreach (string path in paths)
@@ -69,7 +69,7 @@ namespace MCBS
             _BlockTextureManager = BlockTextureManager.LoadInstance(resources, MinecraftConfig.BlockTextureBlacklist);
             LOGGER.Info("完成，方块数量: " + _BlockTextureManager.Count);
 
-            string? minecraftLanguageFilePath = directory.Languages.Combine(MinecraftConfig.Language + ".json");
+            string? minecraftLanguageFilePath = directory.LanguagesDir.Combine(MinecraftConfig.Language + ".json");
             if (!File.Exists(minecraftLanguageFilePath))
                 minecraftLanguageFilePath = null;
 
@@ -86,9 +86,7 @@ namespace MCBS
             if (string.IsNullOrEmpty(version))
                 throw new ArgumentException($"“{nameof(version)}”不能为 null 或空。", nameof(version));
 
-            VersionDirectory directory = SR.McbsDirectory.MinecraftResources.Vanilla.GetVersionDirectory(version);
-            directory.CreateIfNotExists();
-            directory.Languages.CreateIfNotExists();
+            VersionDirectory directory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(version);
 
             DownloadProvider downloadProvider = MinecraftConfig.DownloadApi switch
             {
@@ -98,9 +96,9 @@ namespace MCBS
             };
 
             string versionJsonText;
-            if (File.Exists(directory.Version))
+            if (File.Exists(directory.VersionFile))
             {
-                versionJsonText = File.ReadAllText(directory.Version);
+                versionJsonText = File.ReadAllText(directory.VersionFile);
             }
             else
             {
@@ -124,16 +122,16 @@ namespace MCBS
                 LOGGER.Info("正在下载: " + versionJsonUrl);
                 byte[] byees = await DownloadUtil.DownloadBytesAsync(versionJsonUrl);
                 versionJsonText = Encoding.UTF8.GetString(byees);
-                await File.WriteAllBytesAsync(directory.Version, byees);
+                await File.WriteAllBytesAsync(directory.VersionFile, byees);
             }
 
             VersionJson versionJson = new(JObject.Parse(versionJsonText));
 
             NetworkAssetIndex clientAssetIndex = versionJson.GetClientCore() ?? throw new InvalidOperationException("在版本Json文件找不到客户端核心文件的资源索引");
-            await ReadOrDownloadAsync(directory.Client, clientAssetIndex, downloadProvider);
+            await ReadOrDownloadAsync(directory.ClientFile, clientAssetIndex, downloadProvider);
 
             NetworkAssetIndex indexFileAssetIndex = versionJson.GetIndexFile() ?? throw new InvalidOperationException("在版本Json文件找不到索引文件的资源索引");
-            byte[] indexFileBytes = await ReadOrDownloadAsync(directory.Index, indexFileAssetIndex, downloadProvider);
+            byte[] indexFileBytes = await ReadOrDownloadAsync(directory.IndexFile, indexFileAssetIndex, downloadProvider);
             string indexFileText = Encoding.UTF8.GetString(indexFileBytes);
             AssetList assetList = new(JsonConvert.DeserializeObject<AssetList.Model>(indexFileText) ?? throw new FormatException());
 
@@ -145,7 +143,7 @@ namespace MCBS
                 if (asset.Key.StartsWith(lang))
                 {
                     string url = downloadProvider.ToAssetUrl(asset.Value.Hash);
-                    string path = directory.Languages.Combine(asset.Key[lang.Length..]);
+                    string path = directory.LanguagesDir.Combine(asset.Key[lang.Length..]);
                     NetworkAssetIndex networkAssetIndex = new(asset.Value.Hash, asset.Value.Size, url);
                     langTasks.Add(ReadOrDownloadAsync(path, networkAssetIndex, downloadProvider).ContinueWith((task) => Interlocked.Increment(ref langCount)));
                 }

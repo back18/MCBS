@@ -27,8 +27,7 @@ namespace MCBS
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                SR.McbsDirectory.FFmpeg.CreateIfNotExists();
-                FFmpegLoader.FFmpegPath = SR.McbsDirectory.FFmpeg.FullPath;
+                FFmpegLoader.FFmpegPath = SR.McbsDirectory.FFmpegDir.FullPath;
                 Assembly assembly = Assembly.GetExecutingAssembly();
 
                 using Stream indexsStream = assembly.GetManifestResourceStream(FFMPEG_INDEX_NAME) ?? throw new InvalidOperationException();
