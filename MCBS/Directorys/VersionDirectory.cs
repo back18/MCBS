@@ -13,8 +13,8 @@ namespace MCBS.Directorys
         {
             LanguagesDir = AddDirectory<LanguagesDirectory>("Languages");
             ClientFile = Combine("client.jar");
-            VersionFile = Combine("client.jar");
-            IndexFile = Combine("client.jar");
+            VersionFile = Combine("version.json");
+            IndexFile = Combine("index.json");
         }
 
         public LanguagesDirectory LanguagesDir { get; }

@@ -87,6 +87,7 @@ namespace MCBS
                 throw new ArgumentException($"“{nameof(version)}”不能为 null 或空。", nameof(version));
 
             VersionDirectory directory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(version);
+            directory.BuildDirectoryTree();
 
             DownloadProvider downloadProvider = MinecraftConfig.DownloadApi switch
             {
