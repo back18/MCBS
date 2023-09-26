@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class VersionDircetory : DirectoryManager
+    public class VersionDirectory : DirectoryManager
     {
-        public VersionDircetory(string directory) : base(directory)
+        public VersionDirectory(string directory) : base(directory)
         {
             Languages = new(Combine("Languages"));
             Client = new(Combine("client.jar"));

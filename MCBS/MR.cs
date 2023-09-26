@@ -51,8 +51,7 @@ namespace MCBS
         public static void LoadAll()
         {
             LOGGER.Info("开始构建Minecraft资源文件");
-            VersionDircetory directory = new(SR.McbsDirectory.MinecraftResources.Vanilla.Combine(MinecraftConfig.GameVersion));
-            BuildResourcesAsync(directory).Wait();
+            VersionDirectory directory = BuildResourcesAsync(MinecraftConfig.GameVersion).Result;
             LOGGER.Info("完成");
 
             string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
@@ -82,8 +81,12 @@ namespace MCBS
             LOGGER.Info("资源包内所有资源均已加载完成，资源包缓存已释放");
         }
 
-        private static async Task BuildResourcesAsync(VersionDircetory directory)
+        private static async Task<VersionDirectory> BuildResourcesAsync(string version)
         {
+            if (string.IsNullOrEmpty(version))
+                throw new ArgumentException($"“{nameof(version)}”不能为 null 或空。", nameof(version));
+
+            VersionDirectory directory = SR.McbsDirectory.MinecraftResources.Vanilla.GetVersionDirectory(version);
             directory.CreateIfNotExists();
             directory.Languages.CreateIfNotExists();
 
@@ -167,6 +170,8 @@ namespace MCBS
             }
             Console.CursorVisible = true;
             Console.WriteLine();
+
+            return directory;
         }
 
         private static async Task<byte[]> ReadOrDownloadAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)

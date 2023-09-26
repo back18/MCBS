@@ -12,5 +12,10 @@ namespace MCBS.Directorys
         public VanillaDirectory(string directory) : base(directory)
         {
         }
+
+        public VersionDirectory GetVersionDirectory(string version)
+        {
+            return new VersionDirectory(Combine(version));
+        }
     }
 }
