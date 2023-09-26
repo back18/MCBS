@@ -2,6 +2,7 @@
 
 using log4net.Core;
 using MCBS.Config;
+using MCBS.Directorys;
 using MCBS.Event;
 using MCBS.Frame;
 using MCBS.Logging;
@@ -9,6 +10,7 @@ using MCBS.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
+using QuanLib.Minecraft.Directorys;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -126,10 +128,14 @@ namespace MCBS.Screens
 
         private void ReadScreens()
         {
-            if (!File.Exists(SR.McbsDirectory.SavesDir.ScreenSavesFile))
+            McbsSavesDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory();
+            if (directory is null)
                 return;
 
-            string json = File.ReadAllText(SR.McbsDirectory.SavesDir.ScreenSavesFile);
+            if (!File.Exists(directory.ScreenSavesFile))
+                return;
+
+            string json = File.ReadAllText(directory.ScreenSavesFile);
             ScreenOptions.Model[] items = JsonConvert.DeserializeObject<ScreenOptions.Model[]>(json) ?? throw new FormatException();
             foreach (var item in items)
             {
@@ -141,11 +147,15 @@ namespace MCBS.Screens
 
         private void SaveScreens()
         {
+            McbsSavesDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory();
+            if (directory is null)
+                return;
+
             List<ScreenOptions.Model> items = new();
             foreach (var save in _saves)
                 items.Add(save.ToModel());
             string json = JsonConvert.SerializeObject(items);
-            File.WriteAllText(SR.McbsDirectory.SavesDir.ScreenSavesFile, json);
+            File.WriteAllText(directory.ScreenSavesFile, json);
         }
 
         public void HandleAllScreenInput()

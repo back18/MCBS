@@ -1,4 +1,5 @@
 ﻿using log4net.Core;
+using MCBS.Directorys;
 using MCBS.Event;
 using MCBS.Logging;
 using Newtonsoft.Json;
@@ -41,11 +42,11 @@ namespace MCBS
 
         public void Initialize()
         {
-            string dir = SR.McbsDirectory.SavesDir.InteractionsDir.FullPath;
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            string[] files = Directory.GetFiles(dir, "*.json");
+            McbsSavesDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory();
+            if (directory is null)
+                return;
+            directory.CreateIfNotExists();
+            string[] files = directory.GetFiles("*.json");
             LOGGER.Info($"开始回收交互实体，共计{files.Length}个");
             foreach (string file in files)
             {

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MCBS.Directorys;
+using Newtonsoft.Json;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Sender;
@@ -21,6 +22,9 @@ namespace MCBS
 
         private Interaction(string playerName, Guid playerUUID, Guid entityUUID, EntityPos position)
         {
+            if (string.IsNullOrEmpty(playerName))
+                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
+
             PlayerName = playerName;
             PlayerUUID = playerUUID;
             EntityUUID = entityUUID;
@@ -29,7 +33,8 @@ namespace MCBS
 
             _player = PlayerUUID.ToString();
             _entity = EntityUUID.ToString();
-            _file = Path.Combine(_dir, _player + ".json");
+            _directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory()?.InteractionsDir ?? throw new InvalidOperationException("找不到交互实体数据文件夹");
+            _file = _directory.Combine(_player + ".json");
 
             _task = SaveJsonAsync();
         }
@@ -38,7 +43,7 @@ namespace MCBS
 
         private readonly string _entity;
 
-        private static readonly string _dir = SR.McbsDirectory.SavesDir.InteractionsDir.FullPath;
+        private readonly InteractionsDirectory _directory;
 
         private readonly string _file;
 
@@ -125,8 +130,7 @@ namespace MCBS
         private async Task SaveJsonAsync()
         {
             _task?.Wait();
-            if (!Directory.Exists(_dir))
-                Directory.CreateDirectory(_dir);
+            _directory.CreateIfNotExists();
             await File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(ToJson()));
         }
 

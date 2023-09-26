@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class SavesDirectory : DirectoryManager
+    public class McbsSavesDirectory : DirectoryManager
     {
-        public SavesDirectory(string directory) : base(directory)
+        public McbsSavesDirectory(string directory) : base(directory)
         {
             InteractionsDir = AddDirectory<InteractionsDirectory>("Interactions");
             ScreenSavesFile = Combine("ScreenSaves.json");

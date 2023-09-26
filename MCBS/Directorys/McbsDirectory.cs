@@ -16,7 +16,6 @@ namespace MCBS.Directorys
             LogsDir = AddDirectory<LogsDirectory>("Logs");
             FFmpegDir = AddDirectory<FFmpegDirectory>("FFmpeg");
             MinecraftResourcesDir = AddDirectory<MinecraftResourcesDirectory>("MinecraftResources");
-            SavesDir = AddDirectory<SavesDirectory>("Saves");
         }
 
         public ApplicationsDirectory ApplicationsDir { get; }
@@ -28,7 +27,5 @@ namespace MCBS.Directorys
         public FFmpegDirectory FFmpegDir { get; }
 
         public MinecraftResourcesDirectory MinecraftResourcesDir { get; }
-
-        public SavesDirectory SavesDir { get; }
     }
 }
