@@ -42,7 +42,7 @@ namespace MCBS
 
         public void Initialize()
         {
-            McbsSavesDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory();
+            InteractionsDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory()?.InteractionsDir;
             if (directory is null)
                 return;
             directory.CreateIfNotExists();
