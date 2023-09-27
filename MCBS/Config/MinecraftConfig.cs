@@ -84,8 +84,8 @@ namespace MCBS.Config
             message.AppendLine();
             int count = 0;
 
-            bool isConsole = model.CommunicationMode is CommunicationMods.CONSOLE or CommunicationMods.HYBRID;
-            bool isMcapi = model.CommunicationMode is CommunicationMods.MCAPI;
+            bool isConsole = model.CommunicationMode is CommunicationModes.CONSOLE or CommunicationModes.HYBRID;
+            bool isMcapi = model.CommunicationMode is CommunicationModes.MCAPI;
 
             if (!Validator.TryValidateObject(model, new(model), results, true))
             {
@@ -139,13 +139,13 @@ namespace MCBS.Config
                 count++;
             }
 
-            if (!(model.CommunicationMode is CommunicationMods.CONSOLE or CommunicationMods.HYBRID or CommunicationMods.RCON or CommunicationMods.MCAPI))
+            if (!(model.CommunicationMode is CommunicationModes.CONSOLE or CommunicationModes.HYBRID or CommunicationModes.RCON or CommunicationModes.MCAPI))
             {
                 message.AppendLine("[CommunicationMode]: Minecraft通信模式只能为 RCON, CONSOLE, HYBRID, MCAPI 中的其中之一");
                 count++;
             }
 
-            if (model.InstanceType == InstanceTypes.CLIENT && model.CommunicationMode != CommunicationMods.MCAPI)
+            if (model.InstanceType == InstanceTypes.CLIENT && model.CommunicationMode != CommunicationModes.MCAPI)
             {
                 message.AppendLine("[CommunicationMode]: 仅支持使用MCAPI与客户端进行通信");
                 count++;

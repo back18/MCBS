@@ -60,7 +60,7 @@ namespace MCBS.ConsoleTerminal
             switch (config.InstanceType)
             {
                 case InstanceTypes.CLIENT:
-                    if (config.CommunicationMode == CommunicationMods.MCAPI)
+                    if (config.CommunicationMode == CommunicationModes.MCAPI)
                         minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword);
                     else
                         throw new InvalidOperationException();
@@ -68,10 +68,10 @@ namespace MCBS.ConsoleTerminal
                 case InstanceTypes.SERVER:
                     minecraftInstance = config.CommunicationMode switch
                     {
-                        CommunicationMods.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
-                        CommunicationMods.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                        CommunicationMods.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                        CommunicationMods.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
+                        CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
+                        CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                        CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
+                        CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
                         _ => throw new InvalidOperationException(),
                     };
                     break;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config
 {
-    public static class CommunicationMods
+    public static class CommunicationModes
     {
         public const string RCON = IRconInstance.INSTANCE_KEY;
 
