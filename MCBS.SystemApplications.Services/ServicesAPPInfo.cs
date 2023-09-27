@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Services
 {
+    [ApplicationInfo]
     public class ServicesAppInfo : ApplicationInfo<ServicesApp>
     {
         public ServicesAppInfo()

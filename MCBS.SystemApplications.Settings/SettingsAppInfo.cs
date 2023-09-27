@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Settings
 {
+    [ApplicationInfo]
     public class SettingsAppInfo : ApplicationInfo<SettingsApp>
     {
         public SettingsAppInfo()

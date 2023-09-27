@@ -11,6 +11,7 @@ using System.Reflection;
 
 namespace MCBS.SystemApplications.Notepad
 {
+    [ApplicationInfo]
     public class NotepadAppInfo : ApplicationInfo<NotepadApp>
     {
         public NotepadAppInfo()

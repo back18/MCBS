@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Drawing
 {
+    [ApplicationInfo]
     public class DrawingAppInfo : ApplicationInfo<DrawingApp>
     {
         public DrawingAppInfo()

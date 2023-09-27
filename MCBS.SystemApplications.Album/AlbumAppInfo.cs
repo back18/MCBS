@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Album
 {
+    [ApplicationInfo]
     public class AlbumAppInfo : ApplicationInfo<AlbumApp>
     {
         public AlbumAppInfo()

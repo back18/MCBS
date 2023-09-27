@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.FileExplorer
 {
+    [ApplicationInfo]
     public class FileExplorerAppInfo : ApplicationInfo<FileExplorerApp>
     {
         public FileExplorerAppInfo()

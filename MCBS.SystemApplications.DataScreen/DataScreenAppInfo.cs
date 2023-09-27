@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.DataScreen
 {
+    [ApplicationInfo]
     public class DataScreenAppInfo : ApplicationInfo<DataScreenApp>
     {
         public DataScreenAppInfo()

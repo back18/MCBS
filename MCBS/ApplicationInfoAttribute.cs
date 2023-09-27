@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MCBS
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public class ApplicationAttribute : Attribute
+    public class ApplicationInfoAttribute : Attribute
     {
 
     }

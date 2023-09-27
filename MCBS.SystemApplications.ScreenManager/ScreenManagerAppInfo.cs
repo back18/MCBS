@@ -10,6 +10,7 @@ using System.Reflection;
 
 namespace MCBS.SystemApplications.ScreenManager
 {
+    [ApplicationInfo]
     public class ScreenManagerAppInfo : ApplicationInfo<ScreenManagerApp>
     {
         public ScreenManagerAppInfo()

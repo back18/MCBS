@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Desktop
 {
+    [ApplicationInfo]
     public class DesktopAppInfo : ApplicationInfo<DesktopApp>
     {
         public DesktopAppInfo()

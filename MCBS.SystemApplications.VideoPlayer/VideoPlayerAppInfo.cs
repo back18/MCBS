@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.VideoPlayer
 {
+    [ApplicationInfo]
     public class VideoPlayerAppInfo : ApplicationInfo<VideoPlayerApp>
     {
         public VideoPlayerAppInfo()

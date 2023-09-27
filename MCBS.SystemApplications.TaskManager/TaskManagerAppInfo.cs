@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.TaskManager
 {
+    [ApplicationInfo]
     public class TaskManagerAppInfo : ApplicationInfo<TaskManagerApp>
     {
         public TaskManagerAppInfo()
