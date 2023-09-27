@@ -63,6 +63,9 @@ namespace MCBS.Logging
 
         public static LogImpl GetLogger(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
+
             lock (_loggers)
             {
                 if (_loggers.TryGetValue(name, out var logImpl))
@@ -75,7 +78,9 @@ namespace MCBS.Logging
                 logger.Additivity = false;
                 logger.AddAppender(_console);
                 logger.AddAppender(_file);
-                return new(logger);
+                logImpl = new(logger);
+                _loggers.Add(name, logImpl);
+                return logImpl;
             }
         }
 
