@@ -79,9 +79,11 @@ namespace MCBS.Config
             if (!File.Exists(path))
             {
                 using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource) ?? throw new InvalidOperationException();
-                using FileStream fileStream = new(path, FileMode.Create);
+                FileStream fileStream = new(path, FileMode.Create);
                 stream.CopyTo(fileStream);
-                Console.WriteLine($"配置文件“{path}”不存在，已创建默认配置文件");
+                fileStream.Flush();
+                fileStream.Close();
+                LOGGER.Warn($"配置文件“{path}”不存在，已创建默认配置文件");
             }
         }
 

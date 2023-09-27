@@ -1,4 +1,5 @@
 ﻿using MCBS.BlockForms.SimpleFileSystem;
+using MCBS.Logging;
 using MCBS.SystemApplications.FileExplorer;
 using Nett;
 using Newtonsoft.Json.Linq;
@@ -45,7 +46,7 @@ namespace MCBS.SystemApplications.FileExplorer.Config
                 using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource) ?? throw new InvalidOperationException();
                 using FileStream fileStream = new(path, FileMode.Create);
                 stream.CopyTo(fileStream);
-                Console.WriteLine($"配置文件“{path}”不存在，已创建默认配置文件");
+                LogUtil.GetLogger().Warn($"配置文件“{path}”不存在，已创建默认配置文件");
             }
         }
 
