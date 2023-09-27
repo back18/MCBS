@@ -15,16 +15,16 @@ namespace MCBS.SystemApplications.Album
     {
         public AlbumAppInfo()
         {
+            ID = AlbumApp.ID;
+            Name = AlbumApp.Name;
+            Version = Version.Parse("1.0");
+            AppendToDesktop = true;
             Platforms = new PlatformID[]
             {
                 PlatformID.Win32NT,
                 PlatformID.Unix,
                 PlatformID.MacOSX
             };
-            ID = AlbumApp.ID;
-            Name = AlbumApp.Name;
-            Version = Version.Parse("1.0");
-            AppendToDesktop = true;
             try
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
@@ -38,8 +38,6 @@ namespace MCBS.SystemApplications.Album
             }
         }
 
-        public override PlatformID[] Platforms { get; }
-
         public override string ID { get; }
 
         public override string Name { get; }
@@ -47,6 +45,8 @@ namespace MCBS.SystemApplications.Album
         public override Version Version { get; }
 
         public override bool AppendToDesktop { get; }
+
+        protected override PlatformID[] Platforms { get; }
 
         protected override Image<Rgba32> Icon { get; }
     }

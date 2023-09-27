@@ -39,8 +39,6 @@ namespace MCBS
 
         public Type TypeObject { get; }
 
-        public abstract PlatformID[] Platforms { get; }
-
         public abstract string ID { get; }
 
         public abstract string Name { get; }
@@ -49,11 +47,30 @@ namespace MCBS
 
         public abstract bool AppendToDesktop { get; }
 
+        protected abstract PlatformID[] Platforms { get; }
+
         protected abstract Image<Rgba32> Icon { get; }
 
         public virtual string ApplicationDirectory => SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(ID);
 
-        public virtual Image<Rgba32> GetIcon() => Icon.Clone();
+        public PlatformID[] GetPlatforms()
+        {
+            PlatformID[] result = new PlatformID[Platforms.Length];
+            Platforms.CopyTo(result, Platforms.Length);
+            return result;
+        }
+
+        public bool PlatformCompatibility(PlatformID platformID)
+        {
+            return Platforms.Contains(platformID);
+        }
+
+        public bool PlatformCompatibility()
+        {
+            return PlatformCompatibility(Environment.OSVersion.Platform);
+        }
+
+        public Image<Rgba32> GetIcon() => Icon.Clone();
 
         public static Image<Rgba32> GetDefaultIcon() => _defaultIcon.Clone();
 
