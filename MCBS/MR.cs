@@ -50,10 +50,23 @@ namespace MCBS
 
         public static void LoadAll()
         {
-            LOGGER.Info("开始构建Minecraft资源文件");
-            VersionDirectory directory = BuildResourcesAsync(MinecraftConfig.GameVersion).Result;
-            LOGGER.Info("完成");
+            while (true)
+            {
+                LOGGER.Info("开始构建Minecraft资源文件");
+                try
+                {
+                    BuildResourcesAsync(MinecraftConfig.GameVersion).Wait();
+                    LOGGER.Info("完成");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Error("构建失败，将在3秒后重试...", ex);
+                    Thread.Sleep(3000);
+                }
+            }
 
+            VersionDirectory directory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
             string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
             paths[0] = directory.ClientFile;
             for (int i = 1; i < paths.Length; i++)
