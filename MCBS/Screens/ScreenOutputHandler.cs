@@ -30,7 +30,6 @@ namespace MCBS.Screens
             List<ScreenPixel> screenPixels = GetDifferencesPixels(frame);
             List<WorldPixel> worldPixels = ToWorldPixels(screenPixels);
             LastFrame = frame;
-            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             if (worldPixels.Count > 0)
             {
                 MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(worldPixels);
@@ -42,7 +41,6 @@ namespace MCBS.Screens
             List<ScreenPixel> screenPixels = GetDifferencesPixels(frame);
             List<WorldPixel> worldPixels = ToWorldPixels(screenPixels);
             LastFrame = frame;
-            MCOS.Instance.ScreenManager.HandleWaitAndTasks();
             if (worldPixels.Count > 0)
             {
                 await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(worldPixels);

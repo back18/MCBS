@@ -38,6 +38,7 @@ namespace MCBS
         {
             MinecraftInstance = minecraftInstance ?? throw new ArgumentNullException(nameof(minecraftInstance));
             ApplicationManager = new();
+            TaskManager = new();
             ScreenManager = new();
             ProcessManager = new();
             FormManager = new();
@@ -52,11 +53,7 @@ namespace MCBS
             ServicesAppID = ConfigManager.SystemConfig.ServicesAppID;
             StartupChecklist = ConfigManager.SystemConfig.StartupChecklist;
 
-            TaskList = new();
-            TempTaskList = new();
             _stopwatch = new();
-
-            _Instance = this;
         }
 
         private static readonly object _slock;
@@ -73,10 +70,6 @@ namespace MCBS
             }
         }
         private static MCOS? _Instance;
-
-        internal readonly ConcurrentQueue<Action> TaskList;
-
-        internal readonly ConcurrentQueue<Action> TempTaskList;
 
         private readonly Stopwatch _stopwatch;
 
@@ -97,6 +90,8 @@ namespace MCBS
         public MinecraftInstance MinecraftInstance { get; }
 
         public ApplicationManager ApplicationManager { get; }
+
+        public TaskManager TaskManager { get; }
 
         public ScreenManager ScreenManager { get; }
 
@@ -134,6 +129,7 @@ namespace MCBS
             MinecraftInstance.WaitForConnection();
             LOGGER.Info("成功连接到Minecraft服务器");
 
+            TaskManager.Initialize();
             ScreenManager.Initialize();
             InteractionManager.Initialize();
             MinecraftInstance.CommandSender.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} minecraft.used:minecraft.snowball");
@@ -153,37 +149,37 @@ namespace MCBS
             try
             {
 #endif
-            while (IsRuning)
-            {
-                PreviousFrameTime = SystemRunningTime;
-                NextFrameTime = PreviousFrameTime + FrameMinTime;
-                FrameCount++;
-
-                HandleScreenScheduling();
-                HandleProcessScheduling();
-                HandleFormScheduling();
-                HandleInteractionScheduling();
-
-                if (ScreenManager.IsCompletedOutput)
+                while (IsRuning)
                 {
-                    HandleScreenInput();
-                    HandleScreenBuild();
-                }
-                else
-                {
-                    AddTempTask(() => HandleScreenInput());
-                    AddTempTask(() => HandleScreenBuild());
-                    LagFrameCount++;
-                }
+                    PreviousFrameTime = SystemRunningTime;
+                    NextFrameTime = PreviousFrameTime + FrameMinTime;
+                    FrameCount++;
 
-                HandleBeforeFrame();
-                HandleUIRendering(out var frames);
-                HandleScreenOutput(frames);
-                HandleAfterFrame();
-                HandleSystemInterrupt();
+                    HandleScreenScheduling();
+                    HandleProcessScheduling();
+                    HandleFormScheduling();
+                    HandleInteractionScheduling();
 
-                SystemTimer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
-            }
+                    if (TaskManager.IsCompletedCurrentMainTask)
+                    {
+                        HandleScreenInput();
+                        HandleScreenBuild();
+                    }
+                    else
+                    {
+                        TaskManager.AddTask(() => HandleScreenInput());
+                        TaskManager.AddTask(() => HandleScreenBuild());
+                        LagFrameCount++;
+                    }
+
+                    HandleBeforeFrame();
+                    HandleUIRendering(out var frames);
+                    HandleScreenOutput(frames);
+                    HandleAfterFrame();
+                    HandleSystemInterrupt();
+
+                    SystemTimer.TotalTime.Add(SystemRunningTime - PreviousFrameTime);
+                }
 #if TryCatch
             }
             catch (Exception ex)
@@ -206,7 +202,7 @@ namespace MCBS
                         LOGGER.Info($"将在{i}秒后自动重启...");
                         Thread.Sleep(1000);
                     }
-                    ScreenManager.ClearOutputTask();
+                    TaskManager.Clear();
                     LOGGER.Info("开始重启...");
                     goto run;
                 }
@@ -327,8 +323,10 @@ namespace MCBS
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            _ = ScreenManager.HandleAllScreenOutputAsync(frames);
-            ScreenManager.WaitAllScreenPreviousOutputTask();
+            TaskManager.ResetCurrentMainTask();
+            Task task = ScreenManager.HandleAllScreenOutputAsync(frames);
+            TaskManager.SetCurrentMainTask(task);
+            TaskManager.WaitForPreviousMainTask();
 
             stopwatch.Stop();
             SystemTimer.ScreenOutput.Add(stopwatch.Elapsed);
@@ -460,22 +458,6 @@ namespace MCBS
                 throw new ArgumentNullException(nameof(screen));
 
             return ScreenManager.Items.Add(screen).LoadScreen();
-        }
-
-        public void AddTask(Action action)
-        {
-            if (action is null)
-                throw new ArgumentNullException(nameof(action));
-
-            TaskList.Enqueue(action);
-        }
-
-        public void AddTempTask(Action action)
-        {
-            if (action is null)
-                throw new ArgumentNullException(nameof(action));
-
-            TempTaskList.Enqueue(action);
         }
 
         internal Process RunServicesApp()

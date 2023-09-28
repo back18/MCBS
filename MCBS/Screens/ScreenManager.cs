@@ -32,7 +32,6 @@ namespace MCBS.Screens
             ScreenBuilder = new();
             Items = new(this);
 
-            _wait = false;
             _saves = new();
 
             AddedScreen += OnAddedScreen;
@@ -40,14 +39,6 @@ namespace MCBS.Screens
         }
 
         private readonly List<ScreenOptions> _saves;
-
-        private bool _wait;
-
-        private Task? _previous;
-
-        private Task? _current;
-
-        public bool IsCompletedOutput => _current?.IsCompleted ?? true;
 
         public ScreenBuilder ScreenBuilder { get; }
 
@@ -215,8 +206,6 @@ namespace MCBS.Screens
             if (frames is null)
                 throw new ArgumentNullException(nameof(frames));
 
-            _wait = false;
-            _previous = _current;
             List<Task> tasks = new();
             foreach (var frame in frames)
             {
@@ -224,45 +213,7 @@ namespace MCBS.Screens
                     tasks.Add(context.Screen.OutputHandler.HandleOutputAsync(frame.Value));
             }
 
-            _current = Task.WhenAll(tasks);
-            await _current;
-        }
-
-        public void WaitAllScreenPreviousOutputTask()
-        {
-            _previous?.Wait();
-        }
-
-        public void ClearOutputTask()
-        {
-            _previous = null;
-            _current = null;
-        }
-
-        public void HandleWaitAndTasks()
-        {
-            lock (this)
-            {
-                if (_wait)
-                    return;
-                _wait = true;
-
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                WaitAllScreenPreviousOutputTask();
-                stopwatch.Stop();
-
-                while (MCOS.Instance.TaskList.TryDequeue(out var task))
-                    task.Invoke();
-                if (stopwatch.ElapsedMilliseconds > 50)
-                {
-                    MCOS.Instance.TempTaskList.Clear();
-                }
-                else
-                {
-                    while (MCOS.Instance.TempTaskList.TryDequeue(out var task))
-                        task.Invoke();
-                }
-            }
+            await Task.WhenAll(tasks);
         }
 
         public class ScreenCollection : IDictionary<int, ScreenContext>
