@@ -23,7 +23,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
-            Thread.CurrentThread.Name = "MainThread";
+            Thread.CurrentThread.Name = "Main Thread";
             ConfigManager.CreateIfNotExists();
             LOGGER.Info("Starting!");
 

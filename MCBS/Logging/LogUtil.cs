@@ -55,10 +55,18 @@ namespace MCBS.Logging
         {
             StackFrame frame = new(1);
             MethodBase? method = frame.GetMethod();
-            string? name = method?.DeclaringType?.FullName;
-            if (name is null)
+            Type? type = method?.DeclaringType;
+            if (type is null)
                 return GetLogger("null");
-            return GetLogger(name);
+            return GetLogger(type);
+        }
+
+        public static LogImpl GetLogger(Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            return GetLogger(type.FullName ?? type.Name);
         }
 
         public static LogImpl GetLogger(string name)
