@@ -54,7 +54,15 @@ namespace MCBS
                 FFmpegLoader.FFmpegPath = "/usr/lib/";
             }
 
-            LOGGER.Info("完成");
+            try
+            {
+                FFmpegLoader.LoadFFmpeg();
+                LOGGER.Info("完成");
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Warn("FFmpeg加载失败，可能会影响到视频解码器/播放器组件的正常使用", ex);
+            }
         }
     }
 }
