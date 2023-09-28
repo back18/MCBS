@@ -1,6 +1,7 @@
 ﻿using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Graphics;
 using MCBS.Frame;
+using MCBS.Logging;
 using QuanLib.Core;
 using QuanLib.Minecraft;
 using SixLabors.ImageSharp;
@@ -27,7 +28,7 @@ namespace MCBS
             ResizeOptions.Size = size;
         }
 
-        public VideoDecoder(VideoStream video, Facing facing, ResizeOptions resizeOptions)
+        public VideoDecoder(VideoStream video, Facing facing, ResizeOptions resizeOptions) : base(LogUtil.GetLogger)
         {
             _video = video ?? throw new ArgumentNullException(nameof(video));
             ResizeOptions = resizeOptions ?? throw new ArgumentNullException(nameof(resizeOptions));

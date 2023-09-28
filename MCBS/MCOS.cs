@@ -34,7 +34,7 @@ namespace MCBS
             IsLoaded = false;
         }
 
-        private MCOS(MinecraftInstance minecraftInstance)
+        private MCOS(MinecraftInstance minecraftInstance) : base(LogUtil.GetLogger)
         {
             MinecraftInstance = minecraftInstance ?? throw new ArgumentNullException(nameof(minecraftInstance));
             ApplicationManager = new();

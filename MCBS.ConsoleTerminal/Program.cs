@@ -28,7 +28,7 @@ namespace MCBS.ConsoleTerminal
             LOGGER.Info("Starting!");
 
             Terminal terminal = new();
-            terminal.Start();
+            terminal.Start("Terminal Thread");
 
 #if TryCatch
             try
@@ -61,17 +61,17 @@ namespace MCBS.ConsoleTerminal
             {
                 case InstanceTypes.CLIENT:
                     if (config.CommunicationMode == CommunicationModes.MCAPI)
-                        minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword);
+                        minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger);
                     else
                         throw new InvalidOperationException();
                     break;
                 case InstanceTypes.SERVER:
                     minecraftInstance = config.CommunicationMode switch
                     {
-                        CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress),
-                        CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                        CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments)),
-                        CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword),
+                        CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, LogUtil.GetLogger),
+                        CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
+                        CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
+                        CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger),
                         _ => throw new InvalidOperationException(),
                     };
                     break;
@@ -79,7 +79,7 @@ namespace MCBS.ConsoleTerminal
                     throw new InvalidOperationException();
             }
 
-            minecraftInstance.Start();
+            minecraftInstance.Start("MinecraftInstance Thread");
             Thread.Sleep(1000);
 #if TryCatch
             }
@@ -94,7 +94,7 @@ namespace MCBS.ConsoleTerminal
             mcos = MCOS.LoadInstance(minecraftInstance);
             ApplicationLoader.LoadApplication(ref mcos, ConfigManager.SystemConfig.ExternalAppsFolder);
 
-            mcos.Start();
+            mcos.Start("System Thread");
             mcos.WaitForStop();
 
             Exit();
