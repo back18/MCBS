@@ -11,5 +11,6 @@
     "mp4": "VideoPlayer",
     "avi": "VideoPlayer",
     "wmv": "VideoPlayer",
-    "mkv": "VideoPlayer"
+    "mkv": "VideoPlayer",
+    "dll": "PackageManager"
 }
