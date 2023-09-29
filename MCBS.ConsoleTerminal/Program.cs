@@ -78,9 +78,6 @@ namespace MCBS.ConsoleTerminal
                 default:
                     throw new InvalidOperationException();
             }
-
-            minecraftInstance.Start("MinecraftInstance Thread");
-            Thread.Sleep(1000);
 #if TryCatch
             }
             catch (Exception ex)

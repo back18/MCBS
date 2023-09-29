@@ -41,8 +41,8 @@ namespace MCBS
         private MCOS(MinecraftInstance minecraftInstance) : base(LogUtil.GetLogger)
         {
             MinecraftInstance = minecraftInstance ?? throw new ArgumentNullException(nameof(minecraftInstance));
-            ApplicationManager = new();
             TaskManager = new();
+            ApplicationManager = new();
             ScreenManager = new();
             ProcessManager = new();
             FormManager = new();
@@ -93,9 +93,9 @@ namespace MCBS
 
         public MinecraftInstance MinecraftInstance { get; }
 
-        public ApplicationManager ApplicationManager { get; }
-
         public TaskManager TaskManager { get; }
+
+        public ApplicationManager ApplicationManager { get; }
 
         public ScreenManager ScreenManager { get; }
 
@@ -127,11 +127,13 @@ namespace MCBS
 
         private void Initialize()
         {
-            LOGGER.Info("开始初始化");
-
             LOGGER.Info("正在等待Minecraft服务器启动...");
             MinecraftInstance.WaitForConnection();
+            MinecraftInstance.Start();
+            Thread.Sleep(1000);
             LOGGER.Info("成功连接到Minecraft服务器");
+
+            LOGGER.Info("开始初始化");
 
             TaskManager.Initialize();
             ScreenManager.Initialize();
