@@ -11,35 +11,23 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public class Process
+    public class Process : RunnableBase
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        internal Process(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
+        internal Process(ApplicationInfo appInfo, string[] args, IForm? initiator = null) : base(LogUtil.GetLogger)
         {
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
 
+            _args = args;
             ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
-            Started += OnStarted;
-            Stopped += OnStopped;
             Application = ApplicationInfo.CreateApplicationInstance();
             Initiator = initiator;
-            MainThread = new(() =>
-            {
-                ProcessState = ProcessState.Running;
-                Started.Invoke(this, EventArgs.Empty);
-                LOGGER.Info($"进程“{MainThreadName}”已启动");
-                object? @return = Application.Main(args);
-                ProcessState = ProcessState.Stopped;
-                Stopped.Invoke(this, EventArgs.Empty);
-                LOGGER.Info($"进程“{MainThreadName}”已退出");
-            })
-            {
-                IsBackground = true
-            };
             ID = -1;
         }
+
+        private readonly string[] _args;
 
         public int ID { get; internal set; }
 
@@ -49,24 +37,31 @@ namespace MCBS
 
         public IForm? Initiator { get; }
 
-        public Thread MainThread { get; }
-
-        public string MainThreadName => $"{ApplicationInfo.ID} #{ID}";
+        public string MainThreadName => $"{ApplicationInfo.ID} AppThread #{ID}";
 
         public ProcessState ProcessState { get; private set; }
 
-        public event EventHandler<Process, EventArgs> Started;
-
-        public event EventHandler<Process, EventArgs> Stopped;
-
-        protected virtual void OnStarted(Process sender, EventArgs e) { }
-
-        protected virtual void OnStopped(Process sender, EventArgs e)
+        protected override void OnStarted(IRunnable sender, EventArgs e)
         {
+            base.OnStarted(sender, e);
+
+            if (Thread is not null)
+                Thread.IsBackground = true;
+        }
+
+        protected override void OnStopped(IRunnable sender, EventArgs e)
+        {
+            base.OnStopped(sender, e);
+
             foreach (var form in Application.GetForms())
-            {
                 form.CloseForm();
-            }
+        }
+
+        protected override void Run()
+        {
+            LOGGER.Info($"进程“{MainThreadName}”已开始运行");
+            object? result = Application.Main(_args);
+            LOGGER.Info($"进程“{MainThreadName}”停止开始运行，返回值为 {result ?? "null"}");
         }
 
         public void Handle()
@@ -76,26 +71,24 @@ namespace MCBS
                 case ProcessState.Unstarted:
                     break;
                 case ProcessState.Starting:
-                    if (!MainThread.IsAlive)
-                    {
-                        MainThread.Name = MainThreadName;
-                        MainThread.Start();
-                    }
+                    Start(MainThreadName);
+                    ProcessState = ProcessState.Running;
                     break;
                 case ProcessState.Running:
                     break;
                 case ProcessState.Stopped:
-                    if (MainThread.IsAlive)
+                    if (Thread is not null && Thread.IsAlive)
                     {
                         try
                         {
-                            MainThread.Abort();
+                            Thread.Abort();
                         }
                         catch
                         {
 
                         }
                     }
+                    Stop();
                     break;
                 default:
                     break;
