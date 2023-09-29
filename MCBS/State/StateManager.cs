@@ -17,7 +17,7 @@ namespace MCBS.State
             _contexts = stateInfos.ToDictionary(item => item.TargetState, item => item);
         }
 
-        private readonly ConcurrentQueue<T> _queue;
+        private readonly Queue<T> _queue;
 
         private readonly Dictionary<T, StateContext<T>> _contexts;
 
@@ -36,15 +36,22 @@ namespace MCBS.State
 
         public void AddNextState(T state)
         {
-            _queue.Enqueue(state);
+            lock (_queue)
+            {
+                _queue.Enqueue(state);
+            }
         }
 
         public void HandleAllState()
         {
-            while (_queue.TryDequeue(out var state) && _contexts.TryGetValue(state, out var context))
+            lock (_queue)
             {
-                if (context.TrySwitchToTargetState(CurrentState))
-                    CurrentState = state;
+                while (_queue.TryPeek(out var state))
+                {
+                    if (_contexts.TryGetValue(state, out var context) && context.TrySwitchToTargetState(CurrentState))
+                        CurrentState = state;
+                    _queue.Dequeue();
+                }
             }
         }
     }

@@ -486,7 +486,7 @@ namespace MCBS.BlockForms
                 if (e.Control is IForm form)
                 {
                     var context = MCOS.Instance.FormContextOf(form);
-                    if (context is null || context.FormState != FormState.Closed)
+                    if (context is null || context.StateManager.NextState != FormState.Closed)
                         return;
 
                     var icon = FormsMenu.TaskBarIconOf(form);
