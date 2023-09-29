@@ -1,4 +1,7 @@
-﻿using MCBS.Event;
+﻿using MCBS.Applications;
+using MCBS.Cursors;
+using MCBS.Event;
+using MCBS.Forms;
 using MCBS.Screens;
 using MCBS.UI;
 using QuanLib.Core;

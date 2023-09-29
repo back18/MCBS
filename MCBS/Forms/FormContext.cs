@@ -1,7 +1,9 @@
 ﻿using log4net.Core;
 using log4net.Repository.Hierarchy;
+using MCBS.Applications;
 using MCBS.Logging;
 using MCBS.Screens;
+using MCBS.State;
 using MCBS.UI;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Forms
 {
     /// <summary>
     /// 窗体运行时上下文
@@ -51,7 +53,7 @@ namespace MCBS
             }
 
             ID = -1;
-            StateMachine = new(FormState.NotLoaded, new StateContext<FormState>[]
+            StateManager = new(FormState.NotLoaded, new StateContext<FormState>[]
             {
                 new(FormState.NotLoaded, Array.Empty<FormState>(), HandleNotLoadedState),
                 new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize }, HandleActiveState),
@@ -66,9 +68,9 @@ namespace MCBS
 
         public int ID { get; internal set; }
 
-        public StateMachine<FormState> StateMachine { get; }
+        public StateManager<FormState> StateManager { get; }
 
-        public FormState FormState => StateMachine.CurrentState;
+        public FormState FormState => StateManager.CurrentState;
 
         public IRootForm RootForm { get; private set; }
 
@@ -129,28 +131,28 @@ namespace MCBS
 
         public void Handle()
         {
-            StateMachine.HandleAllState();
+            StateManager.HandleAllState();
         }
 
         public FormContext LoadForm()
         {
-            StateMachine.AddNextState(FormState.Active);
+            StateManager.AddNextState(FormState.Active);
             return this;
         }
 
         public void CloseForm()
         {
-            StateMachine.AddNextState(FormState.Closed);
+            StateManager.AddNextState(FormState.Closed);
         }
 
         public void MinimizeForm()
         {
-            StateMachine.AddNextState(FormState.Minimize);
+            StateManager.AddNextState(FormState.Minimize);
         }
 
         public void UnminimizeForm()
         {
-            StateMachine.AddNextState(FormState.Active);
+            StateManager.AddNextState(FormState.Active);
         }
 
         public void WaitForFormClose()

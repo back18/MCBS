@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MCBS.Event;
-using MCBS;
 using MCBS.Logging;
 using MCBS.UI;
+using MCBS.State;
 
 namespace MCBS.Screens
 {
@@ -27,10 +27,10 @@ namespace MCBS.Screens
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
             IsRestart = false;
             IsShowCursor = true;
-            CursorType = MCBS.CursorType.Default;
+            CursorType = Cursors.CursorType.Default;
 
             ID = -1;
-            StateMachine = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
+            StateManager = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
             {
                 new(ScreenState.NotLoaded, Array.Empty<ScreenState>(), HandleNotLoadedState),
                 new(ScreenState.Active, new ScreenState[] { ScreenState.NotLoaded }, HandleActiveState),
@@ -45,9 +45,9 @@ namespace MCBS.Screens
 
         public int ID { get; internal set; }
 
-        public StateMachine<ScreenState> StateMachine { get; }
+        public StateManager<ScreenState> StateManager { get; }
 
-        public ScreenState ScreenState => StateMachine.CurrentState;
+        public ScreenState ScreenState => StateManager.CurrentState;
 
         public Screen Screen { get; }
 
@@ -106,34 +106,34 @@ namespace MCBS.Screens
 
         public void Handle()
         {
-            StateMachine.HandleAllState();
+            StateManager.HandleAllState();
         }
 
         public ScreenContext LoadScreen()
         {
-            StateMachine.AddNextState(ScreenState.Active);
+            StateManager.AddNextState(ScreenState.Active);
             return this;
         }
 
         public void CloseScreen()
         {
-            StateMachine.AddNextState(ScreenState.Closed);
+            StateManager.AddNextState(ScreenState.Closed);
         }
 
         public void RestartScreen()
         {
-            StateMachine.AddNextState(ScreenState.Closed);
+            StateManager.AddNextState(ScreenState.Closed);
             IsRestart = true;
         }
 
         public void StartSleep()
         {
-            StateMachine.AddNextState(ScreenState.Sleep);
+            StateManager.AddNextState(ScreenState.Sleep);
         }
 
         public void StopSleep()
         {
-            StateMachine.AddNextState(ScreenState.Active);
+            StateManager.AddNextState(ScreenState.Active);
         }
 
         public override string ToString()

@@ -1,4 +1,5 @@
-﻿using MCBS.SystemApplications.FileExplorer.Config;
+﻿using MCBS.Applications;
+using MCBS.SystemApplications.FileExplorer.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;

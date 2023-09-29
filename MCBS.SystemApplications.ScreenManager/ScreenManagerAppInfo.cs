@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MCBS.Logging;
 using System.Reflection;
+using MCBS.Applications;
 
 namespace MCBS.SystemApplications.ScreenManager
 {

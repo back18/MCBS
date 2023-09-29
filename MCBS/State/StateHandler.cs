@@ -4,14 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.State
 {
-    public enum InteractionState
-    {
-        Active,
-
-        Offline,
-
-        Closed
-    }
+    public delegate bool StateHandler<T>(T current, T next) where T : Enum;
 }

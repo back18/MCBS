@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using MCBS.Frame;
 using QuanLib.Minecraft;
 
-namespace MCBS
+namespace MCBS.Cursors
 {
     public class CursorManager : IReadOnlyDictionary<string, Cursor>
     {

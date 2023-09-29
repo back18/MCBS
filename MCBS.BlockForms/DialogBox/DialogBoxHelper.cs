@@ -1,4 +1,7 @@
-﻿using MCBS.UI;
+﻿using MCBS.Applications;
+using MCBS.Forms;
+using MCBS.Processes;
+using MCBS.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +20,7 @@ namespace MCBS.BlockForms.DialogBox
                 throw new ArgumentNullException(nameof(initiator));
 
             MCOS os = MCOS.Instance;
-            Process? process = os.ProcessOf(initiator);
+            ProcessContext? process = os.ProcessOf(initiator);
             FormContext? context = os.FormContextOf(initiator);
             if (process is null || process.ProcessState == ProcessState.Stopped ||
                 context is null || context.FormState == FormState.Closed)

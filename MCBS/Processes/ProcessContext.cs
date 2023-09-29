@@ -1,5 +1,7 @@
 ﻿using log4net.Core;
+using MCBS.Applications;
 using MCBS.Logging;
+using MCBS.State;
 using MCBS.UI;
 using QuanLib.Core;
 using System;
@@ -9,13 +11,13 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Processes
 {
-    public class Process : RunnableBase
+    public class ProcessContext : RunnableBase
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        internal Process(ApplicationInfo appInfo, string[] args, IForm? initiator = null) : base(LogUtil.GetLogger)
+        internal ProcessContext(ApplicationInfo appInfo, string[] args, IForm? initiator = null) : base(LogUtil.GetLogger)
         {
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
@@ -25,7 +27,7 @@ namespace MCBS
             Application = ApplicationInfo.CreateApplicationInstance();
             Initiator = initiator;
             ID = -1;
-            StateMachine = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
+            StateManager = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
             {
                 new(ProcessState.Unstarted, Array.Empty<ProcessState>(), HandleUnstartedState),
                 new(ProcessState.Active, new ProcessState[] { ProcessState.Unstarted }, HandleActiveState),
@@ -37,9 +39,9 @@ namespace MCBS
 
         public int ID { get; internal set; }
 
-        public StateMachine<ProcessState> StateMachine { get; }
+        public StateManager<ProcessState> StateManager { get; }
 
-        public ProcessState ProcessState => StateMachine.CurrentState;
+        public ProcessState ProcessState => StateManager.CurrentState;
 
         public ApplicationInfo ApplicationInfo { get; }
 
@@ -95,7 +97,7 @@ namespace MCBS
 
         public void Handle()
         {
-            StateMachine.HandleAllState();
+            StateManager.HandleAllState();
         }
 
         protected override void Run()
@@ -105,15 +107,15 @@ namespace MCBS
             LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”停止开始运行，返回值为 {result ?? "null"}");
         }
 
-        public Process StartProcess()
+        public ProcessContext StartProcess()
         {
-            StateMachine.AddNextState(ProcessState.Active);
+            StateManager.AddNextState(ProcessState.Active);
             return this;
         }
 
         public void StopProcess()
         {
-            StateMachine.AddNextState(ProcessState.Stopped);
+            StateManager.AddNextState(ProcessState.Stopped);
         }
 
         public override string ToString()

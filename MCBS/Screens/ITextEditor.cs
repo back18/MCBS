@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Screens
 {
     public interface ITextEditor
     {

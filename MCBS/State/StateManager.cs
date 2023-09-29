@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.State
 {
-    public class StateMachine<T> where T : Enum
+    public class StateManager<T> where T : Enum
     {
-        public StateMachine(T defaultState, IEnumerable<StateContext<T>> stateInfos)
+        public StateManager(T defaultState, IEnumerable<StateContext<T>> stateInfos)
         {
             CurrentState = defaultState;
 

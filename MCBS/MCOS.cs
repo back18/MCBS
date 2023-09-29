@@ -21,6 +21,10 @@ using MCBS.Frame;
 using MCBS.Logging;
 using MCBS.UI;
 using MCBS.Config;
+using MCBS.Applications;
+using MCBS.Processes;
+using MCBS.Forms;
+using MCBS.Interactions;
 
 namespace MCBS
 {
@@ -382,7 +386,7 @@ namespace MCBS
             return null;
         }
 
-        public Process? ProcessOf(Application application)
+        public ProcessContext? ProcessOf(Application application)
         {
             if (application is null)
                 throw new ArgumentNullException(nameof(application));
@@ -394,7 +398,7 @@ namespace MCBS
             return null;
         }
 
-        public Process? ProcessOf(IForm form)
+        public ProcessContext? ProcessOf(IForm form)
         {
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
@@ -418,7 +422,7 @@ namespace MCBS
             return null;
         }
 
-        public Process RunApplication(ApplicationInfo appInfo, IForm? initiator = null)
+        public ProcessContext RunApplication(ApplicationInfo appInfo, IForm? initiator = null)
         {
             if (appInfo is null)
                 throw new ArgumentNullException(nameof(appInfo));
@@ -426,7 +430,7 @@ namespace MCBS
             return ProcessManager.Items.Add(appInfo, initiator).StartProcess();
         }
 
-        public Process RunApplication(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
+        public ProcessContext RunApplication(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
         {
             if (appInfo is null)
                 throw new ArgumentNullException(nameof(appInfo));
@@ -436,7 +440,7 @@ namespace MCBS
             return ProcessManager.Items.Add(appInfo, args, initiator).StartProcess();
         }
 
-        public Process RunApplication(string appID, string[] args, IForm? initiator = null)
+        public ProcessContext RunApplication(string appID, string[] args, IForm? initiator = null)
         {
             if (string.IsNullOrEmpty(appID))
                 throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
@@ -444,7 +448,7 @@ namespace MCBS
             return ProcessManager.Items.Add(ApplicationManager.Items[appID], args, initiator).StartProcess();
         }
 
-        public Process RunApplication(string appID, IForm? initiator = null)
+        public ProcessContext RunApplication(string appID, IForm? initiator = null)
         {
             if (string.IsNullOrEmpty(appID))
                 throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
@@ -460,7 +464,7 @@ namespace MCBS
             return ScreenManager.Items.Add(screen).LoadScreen();
         }
 
-        internal Process RunServicesApp()
+        internal ProcessContext RunServicesApp()
         {
             if (!ApplicationManager.Items[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
                 throw new InvalidOperationException("无效的ServicesAppID");

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.UI
+namespace MCBS.Forms
 {
     public enum FormState
     {

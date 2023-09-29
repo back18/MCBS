@@ -1,4 +1,5 @@
-﻿using MCBS.Event;
+﻿using MCBS.Applications;
+using MCBS.Event;
 using MCBS.UI;
 using QuanLib.Core;
 using System;
@@ -12,7 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Processes
 {
     public class ProcessManager
     {
@@ -43,7 +44,7 @@ namespace MCBS
             }
         }
 
-        public class ProcessCollection : IDictionary<int, Process>
+        public class ProcessCollection : IDictionary<int, ProcessContext>
         {
             public ProcessCollection(ProcessManager owner)
             {
@@ -54,28 +55,28 @@ namespace MCBS
 
             private readonly ProcessManager _owner;
 
-            private readonly ConcurrentDictionary<int, Process> _items;
+            private readonly ConcurrentDictionary<int, ProcessContext> _items;
 
             private int _id;
 
-            public Process this[int id] => _items[id];
+            public ProcessContext this[int id] => _items[id];
 
-            Process IDictionary<int, Process>.this[int key] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+            ProcessContext IDictionary<int, ProcessContext>.this[int key] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
             public ICollection<int> Keys => _items.Keys;
 
-            public ICollection<Process> Values => _items.Values;
+            public ICollection<ProcessContext> Values => _items.Values;
 
             public int Count => _items.Count;
 
             public bool IsReadOnly => false;
 
-            public Process Add(ApplicationInfo appInfo, IForm? initiator = null)
+            public ProcessContext Add(ApplicationInfo appInfo, IForm? initiator = null)
             {
                 return Add(appInfo, Array.Empty<string>(), initiator);
             }
 
-            public Process Add(ApplicationInfo APPInfo, string[] args, IForm? initiator = null)
+            public ProcessContext Add(ApplicationInfo APPInfo, string[] args, IForm? initiator = null)
             {
                 if (APPInfo is null)
                     throw new ArgumentNullException(nameof(APPInfo));
@@ -85,7 +86,7 @@ namespace MCBS
                 lock (this)
                 {
                     int id = _id;
-                    Process process = new(APPInfo, args, initiator);
+                    ProcessContext process = new(APPInfo, args, initiator);
                     process.ID = id;
                     _items.TryAdd(id, process);
                     _owner.AddedProcess.Invoke(_owner, new(process));
@@ -118,12 +119,12 @@ namespace MCBS
                 return _items.ContainsKey(id);
             }
 
-            public bool TryGetValue(int id, [MaybeNullWhen(false)] out Process process)
+            public bool TryGetValue(int id, [MaybeNullWhen(false)] out ProcessContext process)
             {
                 return _items.TryGetValue(id, out process);
             }
 
-            public IEnumerator<KeyValuePair<int, Process>> GetEnumerator()
+            public IEnumerator<KeyValuePair<int, ProcessContext>> GetEnumerator()
             {
                 return _items.GetEnumerator();
             }
@@ -133,27 +134,27 @@ namespace MCBS
                 return ((IEnumerable)_items).GetEnumerator();
             }
 
-            void ICollection<KeyValuePair<int, Process>>.Add(KeyValuePair<int, Process> item)
+            void ICollection<KeyValuePair<int, ProcessContext>>.Add(KeyValuePair<int, ProcessContext> item)
             {
                 throw new NotSupportedException();
             }
 
-            bool ICollection<KeyValuePair<int, Process>>.Remove(KeyValuePair<int, Process> item)
+            bool ICollection<KeyValuePair<int, ProcessContext>>.Remove(KeyValuePair<int, ProcessContext> item)
             {
                 throw new NotSupportedException();
             }
 
-            bool ICollection<KeyValuePair<int, Process>>.Contains(KeyValuePair<int, Process> item)
+            bool ICollection<KeyValuePair<int, ProcessContext>>.Contains(KeyValuePair<int, ProcessContext> item)
             {
                 throw new NotSupportedException();
             }
 
-            void ICollection<KeyValuePair<int, Process>>.CopyTo(KeyValuePair<int, Process>[] array, int arrayIndex)
+            void ICollection<KeyValuePair<int, ProcessContext>>.CopyTo(KeyValuePair<int, ProcessContext>[] array, int arrayIndex)
             {
                 throw new NotSupportedException();
             }
 
-            void IDictionary<int, Process>.Add(int key, Process value)
+            void IDictionary<int, ProcessContext>.Add(int key, ProcessContext value)
             {
                 throw new NotSupportedException();
             }

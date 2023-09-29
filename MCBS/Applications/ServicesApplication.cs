@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Applications
 {
     public abstract class ServicesApplication : Application
     {

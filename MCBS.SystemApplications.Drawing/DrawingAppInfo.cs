@@ -1,4 +1,4 @@
-﻿using MCBS;
+﻿using MCBS.Applications;
 using MCBS.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;

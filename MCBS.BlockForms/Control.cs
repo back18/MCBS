@@ -18,6 +18,7 @@ using MCBS.UI;
 using MCBS.Screens;
 using MCBS.Frame;
 using MCBS.BlockForms.Utility;
+using MCBS.Processes;
 
 namespace MCBS.BlockForms
 {
@@ -989,7 +990,7 @@ namespace MCBS.BlockForms
             }
         }
 
-        public Process? GetProcess()
+        public ProcessContext? GetProcess()
         {
             Form? form = GetForm();
             if (form is null)

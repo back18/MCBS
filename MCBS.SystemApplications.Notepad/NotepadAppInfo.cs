@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS;
 using MCBS.Logging;
 using System.Reflection;
+using MCBS.Applications;
 
 namespace MCBS.SystemApplications.Notepad
 {

@@ -1,4 +1,4 @@
-﻿using MCBS;
+﻿using MCBS.Processes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,11 @@ namespace MCBS.Event
 {
     public class ProcessEventArgs : EventArgs
     {
-        public ProcessEventArgs(Process process)
+        public ProcessEventArgs(ProcessContext process)
         {
             Process = process;
         }
 
-        public Process Process { get; }
+        public ProcessContext Process { get; }
     }
 }

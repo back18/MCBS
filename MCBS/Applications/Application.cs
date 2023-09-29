@@ -1,4 +1,5 @@
-﻿using MCBS.UI;
+﻿using MCBS.Forms;
+using MCBS.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Applications
 {
     public abstract class Application
     {

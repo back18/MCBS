@@ -1,4 +1,4 @@
-﻿using MCBS;
+﻿using MCBS.Applications;
 using MCBS.BlockForms.Utility;
 using MCBS.Event;
 using MCBS.UI;

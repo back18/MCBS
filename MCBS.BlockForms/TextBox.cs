@@ -1,4 +1,4 @@
-﻿using MCBS;
+﻿using MCBS.Cursors;
 using MCBS.Event;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp;

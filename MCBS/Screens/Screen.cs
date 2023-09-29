@@ -147,7 +147,6 @@ namespace MCBS.Screens
                 default:
                     throw new InvalidOperationException();
             }
-            ScreenRange = new(top, bottom, left, right);
 
             StartPosition = startPosition;
             XFacing = xFacing;
@@ -192,8 +191,6 @@ namespace MCBS.Screens
         public Size Size => new(Width, Height);
 
         public int TotalPixels => Width * Height;
-
-        public RectangleRange ScreenRange { get; }
 
         public string DefaultBackgroundBlcokID { get; set; }
 

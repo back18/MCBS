@@ -2,6 +2,7 @@
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Event;
+using MCBS.UI;
 using QuanLib.Core;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp;

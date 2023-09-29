@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Interactions
 {
     public class Interaction : IDisposable
     {
@@ -182,7 +182,7 @@ namespace MCBS
             result = new(player, playerUUID, entityUUID, position);
             return true;
 
-            fail:
+        fail:
             result = null;
             return false;
         }

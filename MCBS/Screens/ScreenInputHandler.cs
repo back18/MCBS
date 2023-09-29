@@ -17,6 +17,7 @@ using QuanLib.Minecraft.Command;
 using MCBS.Event;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Snbt.Model;
+using MCBS.Cursors;
 
 namespace MCBS.Screens
 {

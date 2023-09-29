@@ -1,5 +1,4 @@
-﻿using MCBS.Data;
-using MCBS.Frame;
+﻿using MCBS.Frame;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Cursors
 {
     public class Cursor
     {

@@ -8,6 +8,7 @@ using QuanLib.Minecraft.Block;
 using MCBS.Event;
 using MCBS.UI;
 using MCBS.BlockForms.Utility;
+using MCBS.Forms;
 
 namespace MCBS.BlockForms
 {

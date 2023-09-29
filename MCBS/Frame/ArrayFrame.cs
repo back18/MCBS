@@ -10,9 +10,9 @@ using QuanLib.Core.ExceptionHelper;
 using QuanLib.Minecraft.Block;
 using QuanLib.Core;
 using QuanLib.Minecraft.ResourcePack.Block;
-using MCBS.Data;
 using MCBS.Screens;
 using QuanLib.Minecraft;
+using MCBS.UI;
 
 namespace MCBS.Frame
 {

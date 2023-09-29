@@ -20,6 +20,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MCBS.Processes;
+using MCBS.Cursors;
+using MCBS.Applications;
 
 namespace MCBS.Screens
 {
@@ -96,7 +99,7 @@ namespace MCBS.Screens
         {
             foreach (var context in Items)
             {
-                var state = context.Value.StateMachine;
+                var state = context.Value.StateManager;
                 if (state.CurrentState == ScreenState.NotLoaded)
                 {
                     if (state.NextState == ScreenState.Active)
@@ -270,7 +273,7 @@ namespace MCBS.Screens
                     }
 
                     int id = _id;
-                    Process process = MCOS.Instance.RunServicesApp();
+                    ProcessContext process = MCOS.Instance.RunServicesApp();
                     IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
                     ScreenContext context = new(screen, rootForm);
                     context.ID = id;

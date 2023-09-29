@@ -1,4 +1,5 @@
-﻿using MCBS.Event;
+﻿using MCBS.Applications;
+using MCBS.Event;
 using MCBS.UI;
 using QuanLib.Core;
 using System;
@@ -11,7 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Forms
 {
     public class FormManager
     {

@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS
+namespace MCBS.Interactions
 {
     public class InteractionManager
     {
@@ -120,7 +120,7 @@ namespace MCBS
                     _owner.AddedInteraction.Invoke(_owner, new(interaction));
                     return true;
 
-                    err:
+                err:
                     interaction = null;
                     return false;
                 }

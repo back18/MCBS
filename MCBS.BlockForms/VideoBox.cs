@@ -2,6 +2,7 @@
 using FFMediaToolkit.Graphics;
 using MCBS.Event;
 using MCBS.Frame;
+using MCBS.UI;
 using Microsoft.VisualBasic;
 using NAudio.Midi;
 using NAudio.Wave;
