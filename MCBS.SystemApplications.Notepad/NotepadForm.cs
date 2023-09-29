@@ -26,7 +26,7 @@ namespace MCBS.SystemApplications.Notepad
         {
             base.Initialize();
 
-            ClientPanel.SubControls.Add(RichTextBox);
+            ClientPanel.ChildControls.Add(RichTextBox);
             RichTextBox.ClientLocation = new(2, 2);
             RichTextBox.Size = new(ClientPanel.ClientSize.Width - 4, ClientPanel.ClientSize.Height - 4);
             RichTextBox.Stretch = Direction.Bottom | Direction.Right;

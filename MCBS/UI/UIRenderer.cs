@@ -38,23 +38,23 @@ namespace MCBS.UI
                 _task = Task.Run(() => rendering.GetFrameCache() ?? throw new InvalidOperationException("无法获取帧缓存"));
             }
 
-            var subControls = (control as IContainerControl)?.GetSubControls();
-            if (subControls is null || !subControls.Any())
+            var childs = (control as IContainerControl)?.GetChildControls();
+            if (childs is null || !childs.Any())
                 return _task.Result.ToArrayFrame();
 
             List<(IControlRendering rendering, Task<ArrayFrame?> task)> tasks = new();
-            foreach (var subControl in subControls)
-                tasks.Add((subControl, Task.Run(() => Rendering(subControl))));
+            foreach (var Child in childs)
+                tasks.Add((Child, Task.Run(() => Rendering(Child))));
             Task.WaitAll(tasks.Select(i => i.task).ToArray());
             ArrayFrame frame = _task.Result;
 
-            foreach (var (subControl, task) in tasks)
+            foreach (var (Child, task) in tasks)
             {
                 if (task.Result is null)
                     continue;
 
-                frame.Overwrite(task.Result, subControl.GetRenderingLocation(), rendering.OffsetPosition);
-                DrawBorder(frame, subControl, rendering.OffsetPosition);
+                frame.Overwrite(task.Result, Child.GetRenderingLocation(), rendering.OffsetPosition);
+                DrawBorder(frame, Child, rendering.OffsetPosition);
             }
 
             return frame;

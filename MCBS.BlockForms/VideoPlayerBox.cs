@@ -40,7 +40,7 @@ namespace MCBS.BlockForms
         {
             base.Initialize();
 
-            SubControls.Add(VideoBox);
+            ChildControls.Add(VideoBox);
             VideoBox.BorderWidth = 0;
             VideoBox.DisplayPriority = -32;
             VideoBox.MaxDisplayPriority = -16;
@@ -49,7 +49,7 @@ namespace MCBS.BlockForms
             VideoBox.Played += VideoBox_Played;
             VideoBox.Paused += VideoBox_Paused;
 
-            SubControls.Add(ProgressBar_VideoProgressBar);
+            ChildControls.Add(ProgressBar_VideoProgressBar);
             ProgressBar_VideoProgressBar.Visible = false;
             ProgressBar_VideoProgressBar.Height = 6;
             ProgressBar_VideoProgressBar.Width = ClientSize.Width - 4;
@@ -57,12 +57,12 @@ namespace MCBS.BlockForms
             ProgressBar_VideoProgressBar.Anchor = Direction.Bottom | Direction.Left;
             ProgressBar_VideoProgressBar.Stretch = Direction.Left;
 
-            SubControls.Add(TimeText_VideoTimeTextBox);
+            ChildControls.Add(TimeText_VideoTimeTextBox);
             TimeText_VideoTimeTextBox.Visible = false;
             TimeText_VideoTimeTextBox.ClientLocation = this.TopLayout(ProgressBar_VideoProgressBar, TimeText_VideoTimeTextBox, 2);
             TimeText_VideoTimeTextBox.Anchor = Direction.Bottom | Direction.Left;
 
-            SubControls.Add(PauseOrResume_Switch);
+            ChildControls.Add(PauseOrResume_Switch);
             PauseOrResume_Switch.Visible = false;
             PauseOrResume_Switch.BorderWidth = 0;
             PauseOrResume_Switch.ClientSize = new(16, 16);
@@ -89,7 +89,7 @@ namespace MCBS.BlockForms
         {
             base.OnRightClick(sender, e);
 
-            if (SubControls.FirstHover is null or BlockForms.VideoBox)
+            if (ChildControls.FirstHover is null or BlockForms.VideoBox)
             {
                 if (PauseOrResume_Switch.Visible)
                 {
@@ -108,7 +108,7 @@ namespace MCBS.BlockForms
         {
             base.OnBeforeFrame(sender, e);
 
-            if (SubControls.FirstHover is null or BlockForms.VideoBox)
+            if (ChildControls.FirstHover is null or BlockForms.VideoBox)
             {
                 if (OverlayHideTime <= 0)
                     HideOverlay();

@@ -45,11 +45,11 @@ namespace MCBS.SystemApplications.DataScreen
             ClientPanel.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
             OnBeforeFrame(this, EventArgs.Empty);
 
-            ClientPanel.SubControls.Add(DayTime_Label);
+            ClientPanel.ChildControls.Add(DayTime_Label);
             DayTime_Label.ClientLocation = new(2, 2);
             DayTime_Label.Skin.SetAllBackgroundBlockID(Skin.BackgroundBlockID);
 
-            ClientPanel.SubControls.Add(GameTime_Label);
+            ClientPanel.ChildControls.Add(GameTime_Label);
             GameTime_Label.ClientLocation = new(2, 20);
             GameTime_Label.Skin.SetAllBackgroundBlockID(Skin.BackgroundBlockID);
         }

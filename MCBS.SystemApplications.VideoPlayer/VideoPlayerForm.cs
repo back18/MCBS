@@ -44,12 +44,12 @@ namespace MCBS.SystemApplications.VideoPlayer
         {
             base.Initialize();
 
-            ClientPanel.SubControls.Add(VideoPlayer);
+            ClientPanel.ChildControls.Add(VideoPlayer);
             VideoPlayer.BorderWidth = 0;
             VideoPlayer.Size = ClientPanel.ClientSize;
             VideoPlayer.Stretch = Direction.Bottom | Direction.Right;
 
-            ClientPanel.SubControls.Add(Setting_Switch);
+            ClientPanel.ChildControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
             Setting_Switch.OnText = "应用";
             Setting_Switch.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Pink);
@@ -58,7 +58,7 @@ namespace MCBS.SystemApplications.VideoPlayer
             Setting_Switch.Skin.BackgroundBlockID_Selected = Setting_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Lime;
             Setting_Switch.ClientLocation = new(2, 2);
 
-            ClientPanel.SubControls.Add(Path_TextBox);
+            ClientPanel.ChildControls.Add(Path_TextBox);
             Path_TextBox.ClientLocation = ClientPanel.RightLayout(Setting_Switch, 2);
             Path_TextBox.Width = ClientPanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
@@ -85,7 +85,7 @@ namespace MCBS.SystemApplications.VideoPlayer
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
-            if (ClientPanel.SubControls.FirstHover is null or VideoPlayerBox)
+            if (ClientPanel.ChildControls.FirstHover is null or VideoPlayerBox)
             {
                 if (Setting_Switch.Visible)
                 {
@@ -104,7 +104,7 @@ namespace MCBS.SystemApplications.VideoPlayer
         {
             base.OnBeforeFrame(sender, e);
 
-            if (ClientPanel.SubControls.FirstHover is null or VideoPlayerBox)
+            if (ClientPanel.ChildControls.FirstHover is null or VideoPlayerBox)
             {
                 if (OverlayHideTime <= 0)
                     HideOverlay();

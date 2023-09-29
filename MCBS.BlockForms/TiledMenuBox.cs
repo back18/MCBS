@@ -34,11 +34,11 @@ namespace MCBS.BlockForms
         }
         private int _MinWidth;
 
-        public override void AddedSubControlAndLayout(T control)
+        public override void AddedChildControlAndLayout(T control)
         {
-            SubControls.Add(control);
-            if (PreviousSubControl is not null)
-                control.ClientLocation = this.RightLayout(PreviousSubControl, Spacing);
+            ChildControls.Add(control);
+            if (PreviousChildControl is not null)
+                control.ClientLocation = this.RightLayout(PreviousChildControl, Spacing);
             else
                 control.ClientLocation = new(Spacing, Spacing);
 
@@ -51,9 +51,9 @@ namespace MCBS.BlockForms
             }
         }
 
-        public override void RemoveSubControlAndLayout(T control)
+        public override void RemoveChildControlAndLayout(T control)
         {
-            SubControls.Remove(control);
+            ChildControls.Remove(control);
 
             _items.Remove(control);
             foreach (var width in _widths)

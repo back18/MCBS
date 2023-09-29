@@ -39,7 +39,7 @@ namespace MCBS.BlockForms.DialogBox
             ClientSize = new(113, 86 + TitleBar.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel.SubControls.Add(ApplicationList_ListMenuBox);
+            ClientPanel.ChildControls.Add(ApplicationList_ListMenuBox);
             ApplicationList_ListMenuBox.ClientLocation = new(2, 2);
             ApplicationList_ListMenuBox.ClientSize = new(107, 60);
             ApplicationList_ListMenuBox.RightClick += ApplicationList_ListMenuBox_RightClick;
@@ -50,17 +50,17 @@ namespace MCBS.BlockForms.DialogBox
                 {
                     ApplicationItem item = new(appInfo);
                     item.ClientSize = new(96, 16);
-                    ApplicationList_ListMenuBox.AddedSubControlAndLayout(item);
+                    ApplicationList_ListMenuBox.AddedChildControlAndLayout(item);
                 }
             }
 
-            ClientPanel.SubControls.Add(Cancel_Button);
+            ClientPanel.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
             Cancel_Button.ClientLocation = ClientPanel.LeftLayout(null, Cancel_Button, 2, ApplicationList_ListMenuBox.BottomLocation + 3);
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
-            ClientPanel.SubControls.Add(OK_Button);
+            ClientPanel.ChildControls.Add(OK_Button);
             OK_Button.Text = "确认";
             OK_Button.ClientSize = new(32, 16);
             OK_Button.ClientLocation = ClientPanel.LeftLayout(Cancel_Button, OK_Button, 2);
@@ -69,8 +69,8 @@ namespace MCBS.BlockForms.DialogBox
 
         private void ApplicationList_ListMenuBox_RightClick(Control sender, CursorEventArgs e)
         {
-            var selecteds = ApplicationList_ListMenuBox.SubControls.GetSelecteds();
-            Control? selected = ApplicationList_ListMenuBox.SubControls.FirstSelected;
+            var selecteds = ApplicationList_ListMenuBox.ChildControls.GetSelecteds();
+            Control? selected = ApplicationList_ListMenuBox.ChildControls.FirstSelected;
             if (selecteds.Count > 1 && selected is not null)
             {
                 selected.IsSelected = false;
@@ -79,7 +79,7 @@ namespace MCBS.BlockForms.DialogBox
 
         private void OK_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            DialogResult = (ApplicationList_ListMenuBox.SubControls.FirstSelected as ApplicationItem)?.ApplicationInfo;
+            DialogResult = (ApplicationList_ListMenuBox.ChildControls.FirstSelected as ApplicationItem)?.ApplicationInfo;
             CloseForm();
         }
 

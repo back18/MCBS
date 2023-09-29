@@ -77,7 +77,7 @@ namespace MCBS.SystemApplications.Drawing
         {
             base.Initialize();
 
-            ClientPanel.SubControls.Add(Draw_Switch);
+            ClientPanel.ChildControls.Add(Draw_Switch);
             Draw_Switch.Text = "绘制";
             Draw_Switch.ClientLocation = ClientPanel.LeftLayout(null, Draw_Switch, 1, 1);
             Draw_Switch.Anchor = Direction.Top | Direction.Right;
@@ -85,21 +85,21 @@ namespace MCBS.SystemApplications.Drawing
             Draw_Switch.ControlDeselected += Draw_Switch_ControlDeselected;
             Draw_Switch.IsSelected = true;
 
-            ClientPanel.SubControls.Add(Zoom_Switch);
+            ClientPanel.ChildControls.Add(Zoom_Switch);
             Zoom_Switch.Text = "缩放";
             Zoom_Switch.ClientLocation = ClientPanel.BottomLayout(Draw_Switch, 1);
             Zoom_Switch.Anchor = Direction.Top | Direction.Right;
             Zoom_Switch.ControlSelected += Zoom_Switch_ControlSelected;
             Zoom_Switch.ControlDeselected += Zoom_Switch_ControlDeselected;
 
-            ClientPanel.SubControls.Add(Drag_Switch);
+            ClientPanel.ChildControls.Add(Drag_Switch);
             Drag_Switch.Text = "拖拽";
             Drag_Switch.ClientLocation = ClientPanel.BottomLayout(Zoom_Switch, 1);
             Drag_Switch.Anchor = Direction.Top | Direction.Right;
             Drag_Switch.ControlSelected += Drag_Switch_ControlSelected;
             Drag_Switch.ControlDeselected += Drag_Switch_ControlDeselected;
 
-            ClientPanel.SubControls.Add(PenWidth_NumberBox);
+            ClientPanel.ChildControls.Add(PenWidth_NumberBox);
             PenWidth_NumberBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Pink);
             PenWidth_NumberBox.MinNumberValue = 1;
             PenWidth_NumberBox.ClientLocation = ClientPanel.BottomLayout(Drag_Switch, 1);
@@ -107,7 +107,7 @@ namespace MCBS.SystemApplications.Drawing
             PenWidth_NumberBox.NumberValueChanged += PenWidth_NumberBox_NumberValueChanged;
             PenWidth_NumberBox.NumberValue = 5;
 
-            ClientPanel.SubControls.Add(MoreMenu_Switch);
+            ClientPanel.ChildControls.Add(MoreMenu_Switch);
             MoreMenu_Switch.Skin.BackgroundBlockID = MoreMenu_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
             MoreMenu_Switch.Skin.BackgroundBlockID_Selected = MoreMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
             MoreMenu_Switch.OffText = "更多";
@@ -124,34 +124,34 @@ namespace MCBS.SystemApplications.Drawing
             Undo_Button.Text = "撤销";
             Undo_Button.Skin.BackgroundBlockID = string.Empty;
             Undo_Button.RightClick += Undo_Button_RightClick;
-            More_ListMenuBox.AddedSubControlAndLayout(Undo_Button);
+            More_ListMenuBox.AddedChildControlAndLayout(Undo_Button);
 
             Redo_Button.Text = "重做";
             Redo_Button.Skin.BackgroundBlockID = string.Empty;
             Redo_Button.RightClick += Redo_Button_RightClick;
-            More_ListMenuBox.AddedSubControlAndLayout(Redo_Button);
+            More_ListMenuBox.AddedChildControlAndLayout(Redo_Button);
 
             FillButton.Text = "填充";
             FillButton.Skin.BackgroundBlockID = string.Empty;
             FillButton.RightClick += Fill_Button_RightClick;
-            More_ListMenuBox.AddedSubControlAndLayout(FillButton);
+            More_ListMenuBox.AddedChildControlAndLayout(FillButton);
 
             Create_Button.Text = "新建";
             Create_Button.Skin.BackgroundBlockID = string.Empty;
             Create_Button.RightClick += Create_Button_RightClick;
-            More_ListMenuBox.AddedSubControlAndLayout(Create_Button);
+            More_ListMenuBox.AddedChildControlAndLayout(Create_Button);
 
             Open_Button.Text = "打开";
             Open_Button.Skin.BackgroundBlockID = string.Empty;
             Open_Button.RightClick += Open_Button_RightClick;
-            More_ListMenuBox.AddedSubControlAndLayout(Open_Button);
+            More_ListMenuBox.AddedChildControlAndLayout(Open_Button);
 
             Save_Button.Text = "保存";
             Save_Button.Skin.BackgroundBlockID = string.Empty;
             Save_Button.RightClick += Save_Button_RightClick;
-            More_ListMenuBox.AddedSubControlAndLayout(Save_Button);
+            More_ListMenuBox.AddedChildControlAndLayout(Save_Button);
 
-            ClientPanel.SubControls.Add(DrawingBox);
+            ClientPanel.ChildControls.Add(DrawingBox);
             DrawingBox.ClientLocation = new(1, 1);
             DrawingBox.Size = new(ClientPanel.ClientSize.Width - Draw_Switch.Width - 3, ClientPanel.ClientSize.Height - 2);
             DrawingBox.Stretch = Direction.Bottom | Direction.Right;
@@ -204,13 +204,13 @@ namespace MCBS.SystemApplications.Drawing
 
         private void MoreMenu_Switch_ControlSelected(Control sender, EventArgs e)
         {
-            ClientPanel.SubControls.TryAdd(More_ListMenuBox);
+            ClientPanel.ChildControls.TryAdd(More_ListMenuBox);
             More_ListMenuBox.ClientLocation = new(sender.LeftLocation - More_ListMenuBox.Width - 1, sender.BottomLocation - More_ListMenuBox.Height + 1);
         }
 
         private void MoreMenu_Switch_ControlDeselected(Control sender, EventArgs e)
         {
-            ClientPanel.SubControls.Remove(More_ListMenuBox);
+            ClientPanel.ChildControls.Remove(More_ListMenuBox);
         }
 
         private void Undo_Button_RightClick(Control sender, CursorEventArgs e)

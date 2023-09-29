@@ -28,15 +28,15 @@ namespace MCBS.BlockForms
 
         public bool ShowTitleBar
         {
-            get => SubControls.Contains(TitleBar);
+            get => ChildControls.Contains(TitleBar);
             set
             {
                 if (value)
                 {
                     if (!ShowTitleBar)
                     {
-                        SubControls.TryAdd(TitleBar);
-                        SubControls.Remove(ShowTitleBar_Button);
+                        ChildControls.TryAdd(TitleBar);
+                        ChildControls.Remove(ShowTitleBar_Button);
                         ClientPanel?.LayoutSyncer?.Sync();
                     }
                 }
@@ -44,8 +44,8 @@ namespace MCBS.BlockForms
                 {
                     if (ShowTitleBar)
                     {
-                        SubControls.Remove(TitleBar);
-                        SubControls.TryAdd(ShowTitleBar_Button);
+                        ChildControls.Remove(TitleBar);
+                        ChildControls.TryAdd(ShowTitleBar_Button);
                         ClientPanel?.LayoutSyncer?.Sync();
                     }
                 }
@@ -73,9 +73,9 @@ namespace MCBS.BlockForms
         {
             base.Initialize();
 
-            SubControls.Add(TitleBar);
+            ChildControls.Add(TitleBar);
 
-            SubControls.Add(ClientPanel);
+            ChildControls.Add(ClientPanel);
             ClientPanel.BorderWidth = 0;
             ClientPanel.LayoutSyncer = new(this,
             (sender, e) => { },
@@ -238,7 +238,7 @@ namespace MCBS.BlockForms
                 if (_owner != ParentContainer)
                     throw new InvalidOperationException();
 
-                SubControls.Add(Title_IconTextBox);
+                ChildControls.Add(Title_IconTextBox);
                 Title_IconTextBox.KeepWhenClear = true;
                 Title_IconTextBox.AutoSize = true;
                 Title_IconTextBox.Icon_PictureBox.SetImage(_owner.Icon);
@@ -320,7 +320,7 @@ namespace MCBS.BlockForms
 
                 if (_owner.Moveing)
                     _owner.Moveing = false;
-                else if (_owner.IsSelected && _owner.AllowMove && GetSubControls().FirstHover is null or IconTextBox)
+                else if (_owner.IsSelected && _owner.AllowMove && GetChildControls().FirstHover is null or IconTextBox)
                 {
                     _owner.Moveing = true;
                     MoveAnchorPoint = e.Position;
@@ -365,26 +365,26 @@ namespace MCBS.BlockForms
 
             public override void ActiveLayoutAll()
             {
-                SubControls.Clear();
+                ChildControls.Clear();
                 if (ButtonsToShow.HasFlag(FormButtons.Close))
                 {
-                    Close_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Close_Button, 0, 0);
-                    SubControls.Add(Close_Button);
+                    Close_Button.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, Close_Button, 0, 0);
+                    ChildControls.Add(Close_Button);
                 }
                 if (ButtonsToShow.HasFlag(FormButtons.MaximizeOrRestore))
                 {
-                    MaximizeOrRestore_Switch.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, MaximizeOrRestore_Switch, 0, 0);
-                    SubControls.Add(MaximizeOrRestore_Switch);
+                    MaximizeOrRestore_Switch.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, MaximizeOrRestore_Switch, 0, 0);
+                    ChildControls.Add(MaximizeOrRestore_Switch);
                 }
                 if (ButtonsToShow.HasFlag(FormButtons.Minimize))
                 {
-                    Minimize_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, Minimize_Button, 0, 0);
-                    SubControls.Add(Minimize_Button);
+                    Minimize_Button.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, Minimize_Button, 0, 0);
+                    ChildControls.Add(Minimize_Button);
                 }
                 if (ButtonsToShow.HasFlag(FormButtons.FullScreen))
                 {
-                    FullScreen_Button.ClientLocation = this.LeftLayout(SubControls.RecentlyAddedControl, FullScreen_Button, 0, 0);
-                    SubControls.Add(FullScreen_Button);
+                    FullScreen_Button.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, FullScreen_Button, 0, 0);
+                    ChildControls.Add(FullScreen_Button);
                 }
             }
         }

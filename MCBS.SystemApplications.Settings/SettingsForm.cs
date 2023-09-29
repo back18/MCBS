@@ -25,13 +25,13 @@ namespace MCBS.SystemApplications.Settings
         {
             base.Initialize();
 
-            ClientPanel.SubControls.Add(GetInteraction_Button);
+            ClientPanel.ChildControls.Add(GetInteraction_Button);
             GetInteraction_Button.Text = "获取交互";
             GetInteraction_Button.ClientSize = new(64, 16);
             GetInteraction_Button.ClientLocation = new(2, 2);
             GetInteraction_Button.RightClick += GetInteraction_Button_RightClick;
 
-            ClientPanel.SubControls.Add(ClearInteraction_Button);
+            ClientPanel.ChildControls.Add(ClearInteraction_Button);
             ClearInteraction_Button.Text = "清除交互";
             ClearInteraction_Button.ClientSize = new(64, 16);
             ClearInteraction_Button.ClientLocation = ClientPanel.BottomLayout(GetInteraction_Button, 2);

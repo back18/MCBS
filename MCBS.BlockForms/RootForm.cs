@@ -56,15 +56,15 @@ namespace MCBS.BlockForms
 
         public bool ShowTaskBar
         {
-            get => SubControls.Contains(TaskBar);
+            get => ChildControls.Contains(TaskBar);
             set
             {
                 if (value)
                 {
                     if (!ShowTaskBar)
                     {
-                        SubControls.TryAdd(TaskBar);
-                        SubControls.Remove(ShowTaskBar_Button);
+                        ChildControls.TryAdd(TaskBar);
+                        ChildControls.Remove(ShowTaskBar_Button);
                         FormContainer?.LayoutSyncer?.Sync();
                     }
                 }
@@ -72,8 +72,8 @@ namespace MCBS.BlockForms
                 {
                     if (ShowTaskBar)
                     {
-                        SubControls.Remove(TaskBar);
-                        SubControls.TryAdd(ShowTaskBar_Button);
+                        ChildControls.Remove(TaskBar);
+                        ChildControls.TryAdd(ShowTaskBar_Button);
                         FormContainer?.LayoutSyncer?.Sync();
                     }
                 }
@@ -84,9 +84,9 @@ namespace MCBS.BlockForms
         {
             base.Initialize();
 
-            SubControls.Add(TaskBar);
+            ChildControls.Add(TaskBar);
 
-            SubControls.Add(FormContainer);
+            ChildControls.Add(FormContainer);
             FormContainer.LayoutSyncer?.Sync();
 
             StartMenu_ListMenuBox.ClientSize = new(70, 20 * 5 + 2);
@@ -98,27 +98,27 @@ namespace MCBS.BlockForms
             StartMenu_Label.Text = "==开始==";
             StartMenu_Label.ClientSize = new(64, 16);
             StartMenu_Label.Skin.SetAllBackgroundBlockID(string.Empty);
-            StartMenu_ListMenuBox.AddedSubControlAndLayout(StartMenu_Label);
+            StartMenu_ListMenuBox.AddedChildControlAndLayout(StartMenu_Label);
 
             Light_Switch.OnText = "点亮屏幕";
             Light_Switch.OffText = "熄灭屏幕";
             Light_Switch.ClientSize = new(64, 16);
             Light_Switch.RightClick += Light_Switch_RightClick;
-            StartMenu_ListMenuBox.AddedSubControlAndLayout(Light_Switch);
+            StartMenu_ListMenuBox.AddedChildControlAndLayout(Light_Switch);
 
             StartSleep_Button.Text = "进入休眠";
             StartSleep_Button.ClientSize = new(64, 16);
-            StartMenu_ListMenuBox.AddedSubControlAndLayout(StartSleep_Button);
+            StartMenu_ListMenuBox.AddedChildControlAndLayout(StartSleep_Button);
 
             CloseScreen_Button.Text = "关闭屏幕";
             CloseScreen_Button.ClientSize = new(64, 16);
             CloseScreen_Button.RightClick += CloseScreen_Button_RightClick;
-            StartMenu_ListMenuBox.AddedSubControlAndLayout(CloseScreen_Button);
+            StartMenu_ListMenuBox.AddedChildControlAndLayout(CloseScreen_Button);
 
             RestartScreen_Button.Text = "重启屏幕";
             RestartScreen_Button.ClientSize = new(64, 16);
             RestartScreen_Button.RightClick += RestartScreen_Button_RightClick;
-            StartMenu_ListMenuBox.AddedSubControlAndLayout(RestartScreen_Button);
+            StartMenu_ListMenuBox.AddedChildControlAndLayout(RestartScreen_Button);
 
             ShowTaskBar_Button.Visible = false;
             ShowTaskBar_Button.InvokeExternalCursorMove = true;
@@ -169,13 +169,13 @@ namespace MCBS.BlockForms
         {
             if (form == this)
                 return;
-            FormContainer.SubControls.Add(form);
+            FormContainer.ChildControls.Add(form);
             TrySwitchSelectedForm(form);
         }
 
         public bool RemoveForm(IForm form)
         {
-            if (!FormContainer.SubControls.Remove(form))
+            if (!FormContainer.ChildControls.Remove(form))
                 return false;
 
             form.IsSelected = false;
@@ -185,12 +185,12 @@ namespace MCBS.BlockForms
 
         public bool ContainsForm(IForm form)
         {
-            return FormContainer.SubControls.Contains(form);
+            return FormContainer.ChildControls.Contains(form);
         }
 
         public IEnumerable<IForm> GetAllForm()
         {
-            return FormContainer.SubControls;
+            return FormContainer.ChildControls;
         }
 
         public bool TrySwitchSelectedForm(IForm form)
@@ -198,12 +198,12 @@ namespace MCBS.BlockForms
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
 
-            if (!FormContainer.SubControls.Contains(form))
+            if (!FormContainer.ChildControls.Contains(form))
                 return false;
             if (!form.AllowSelected)
                 return false;
 
-            var selecteds = FormContainer.SubControls.GetSelecteds();
+            var selecteds = FormContainer.ChildControls.GetSelecteds();
             foreach (var selected in selecteds)
             {
                 if (!selected.AllowDeselected)
@@ -222,14 +222,14 @@ namespace MCBS.BlockForms
 
         public void SelectedMaxDisplayPriority()
         {
-            if (FormContainer.SubControls.Count > 0)
+            if (FormContainer.ChildControls.Count > 0)
             {
-                for (int i = FormContainer.SubControls.Count - 1; i >= 0; i--)
+                for (int i = FormContainer.ChildControls.Count - 1; i >= 0; i--)
                 {
-                    if (FormContainer.SubControls[i].AllowSelected)
+                    if (FormContainer.ChildControls[i].AllowSelected)
                     {
-                        FormContainer.SubControls[i].IsSelected = true;
-                        TaskBar.SwitchSelectedForm(FormContainer.SubControls[i]);
+                        FormContainer.ChildControls[i].IsSelected = true;
+                        TaskBar.SwitchSelectedForm(FormContainer.ChildControls[i]);
                         break;
                     }
                 }
@@ -250,13 +250,13 @@ namespace MCBS.BlockForms
                     if (_owner.ShowTaskBar)
                     {
                         ClientSize = new(e.NewSize.Width, e.NewSize.Height - _owner.TaskBar.Height);
-                        foreach (var form in SubControls)
+                        foreach (var form in ChildControls)
                             form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height - _owner.TaskBar.Height);
                     }
                     else
                     {
                         ClientSize = new(e.NewSize.Width, e.NewSize.Height);
-                        foreach (var form in SubControls)
+                        foreach (var form in ChildControls)
                             form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height + _owner.TaskBar.Height);
                     }
                 });
@@ -274,11 +274,11 @@ namespace MCBS.BlockForms
 
             public override void HandleCursorMove(CursorEventArgs e)
             {
-                foreach (var control in SubControls.Reverse())
+                foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        control.HandleCursorMove(new(control.ParentPos2SubPos(e.Position)));
+                        control.HandleCursorMove(new(control.ParentPos2ChildPos(e.Position)));
                     }
                 }
 
@@ -288,9 +288,9 @@ namespace MCBS.BlockForms
             public override bool HandleRightClick(CursorEventArgs e)
             {
                 bool result = false;
-                foreach (var control in SubControls.Reverse())
+                foreach (var control in ChildControls.Reverse())
                 {
-                    Point sub = control.ParentPos2SubPos(e.Position);
+                    Point child = control.ParentPos2ChildPos(e.Position);
                     if (control is Form form)
                     {
                         if (form.ResizeBorder != Direction.None)
@@ -299,10 +299,10 @@ namespace MCBS.BlockForms
                             result = true;
                             break;
                         }
-                        else if (form.IncludedOnControl(sub))
+                        else if (form.IncludedOnControl(child))
                         {
                             if (form.IsSelected)
-                                form.HandleRightClick(new(sub));
+                                form.HandleRightClick(new(child));
                             else
                                 _owner.TrySwitchSelectedForm(form);
                             result = true;
@@ -313,20 +313,20 @@ namespace MCBS.BlockForms
 
                 if (result)
                     return true;
-                else if (SubControls.FirstHover is null)
+                else if (ChildControls.FirstHover is null)
                     return false;
                 else
-                    return SubControls.FirstHover.HandleRightClick(new(SubControls.FirstHover.ParentPos2SubPos(e.Position)));
+                    return ChildControls.FirstHover.HandleRightClick(new(ChildControls.FirstHover.ParentPos2ChildPos(e.Position)));
             }
 
             public override bool HandleLeftClick(CursorEventArgs e)
             {
                 bool result = false;
-                foreach (var control in SubControls.Reverse())
+                foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleLeftClick(new(control.ParentPos2SubPos(e.Position)));
+                        result = control.HandleLeftClick(new(control.ParentPos2ChildPos(e.Position)));
                     }
                 }
 
@@ -336,11 +336,11 @@ namespace MCBS.BlockForms
             public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
             {
                 bool result = false;
-                foreach (var control in SubControls.Reverse())
+                foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
+                        result = control.HandleCursorSlotChanged(new(control.ParentPos2ChildPos(e.Position), e.OldSlot, e.NewSlot));
                     }
                 }
 
@@ -350,11 +350,11 @@ namespace MCBS.BlockForms
             public override bool HandleCursorItemChanged(CursorItemEventArgs e)
             {
                 bool result = false;
-                foreach (var control in SubControls.Reverse())
+                foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
+                        result = control.HandleCursorItemChanged(new(control.ParentPos2ChildPos(e.Position), e.Item));
                     }
                 }
 
@@ -364,11 +364,11 @@ namespace MCBS.BlockForms
             public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
             {
                 bool result = false;
-                foreach (var control in SubControls.Reverse())
+                foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleTextEditorUpdate(new(control.ParentPos2SubPos(e.Position), e.Text));
+                        result = control.HandleTextEditorUpdate(new(control.ParentPos2ChildPos(e.Position), e.Text));
                     }
                 }
 
@@ -411,7 +411,7 @@ namespace MCBS.BlockForms
                 if (_owner != ParentContainer)
                     throw new InvalidOperationException();
 
-                SubControls.Add(StartMenu_Switch);
+                ChildControls.Add(StartMenu_Switch);
                 StartMenu_Switch.BorderWidth = 0;
                 StartMenu_Switch.ClientLocation = new(0, 1);
                 StartMenu_Switch.ClientSize = new(16, 16);
@@ -425,7 +425,7 @@ namespace MCBS.BlockForms
                 StartMenu_Switch.ControlSelected += StartMenu_Switch_ControlSelected;
                 StartMenu_Switch.ControlDeselected += StartMenu_Switch_ControlDeselected; ;
 
-                SubControls.Add(FullScreen_Button);
+                ChildControls.Add(FullScreen_Button);
                 FullScreen_Button.BorderWidth = 0;
                 FullScreen_Button.ClientSize = new(16, 16);
                 FullScreen_Button.ClientLocation = this.LeftLayout(null, FullScreen_Button, 0, 1);
@@ -437,7 +437,7 @@ namespace MCBS.BlockForms
                 FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Expand"]);
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
 
-                SubControls.Add(FormsMenu);
+                ChildControls.Add(FormsMenu);
                 FormsMenu.Spacing = 0;
                 FormsMenu.MinWidth = 18;
                 FormsMenu.BorderWidth = 0;
@@ -445,8 +445,8 @@ namespace MCBS.BlockForms
                 FormsMenu.ClientLocation = new(StartMenu_Switch.RightLocation + 1, 0);
                 FormsMenu.Stretch = Direction.Right;
 
-                _owner.FormContainer.AddedSubControl += FormContainer_AddedSubControl;
-                _owner.FormContainer.RemovedSubControl += FormContainer_RemovedSubControl;
+                _owner.FormContainer.AddedChildControl += FormContainer_AddedChildControl;
+                _owner.FormContainer.RemovedChildControl += FormContainer_RemovedChildControl;
             }
 
             public void SwitchSelectedForm(IForm form)
@@ -456,7 +456,7 @@ namespace MCBS.BlockForms
 
             private void StartMenu_Switch_ControlSelected(Control sender, EventArgs e)
             {
-                _owner.SubControls.TryAdd(_owner.StartMenu_ListMenuBox);
+                _owner.ChildControls.TryAdd(_owner.StartMenu_ListMenuBox);
 
                 _owner.StartMenu_ListMenuBox.ClientLocation = new(0, Math.Max(_owner.ClientSize.Height - _owner.TaskBar.Height - _owner.StartMenu_ListMenuBox.Height, 0));
                 if (_owner.StartMenu_ListMenuBox.BottomToBorder < _owner.TaskBar.Height)
@@ -470,18 +470,18 @@ namespace MCBS.BlockForms
 
             private void StartMenu_Switch_ControlDeselected(Control sender, EventArgs e)
             {
-                _owner.SubControls.Remove(_owner.StartMenu_ListMenuBox);
+                _owner.ChildControls.Remove(_owner.StartMenu_ListMenuBox);
             }
 
-            private void FormContainer_AddedSubControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
+            private void FormContainer_AddedChildControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
             {
                 if (e.Control is IForm form && !FormsMenu.ContainsForm(form) && (MCOS.Instance.ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false))
                 {
-                    FormsMenu.AddedSubControlAndLayout(new TaskBarIcon(form));
+                    FormsMenu.AddedChildControlAndLayout(new TaskBarIcon(form));
                 }
             }
 
-            private void FormContainer_RemovedSubControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
+            private void FormContainer_RemovedChildControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
             {
                 if (e.Control is IForm form)
                 {
@@ -493,7 +493,7 @@ namespace MCBS.BlockForms
                     if (icon is null)
                         return;
 
-                    FormsMenu.RemoveSubControlAndLayout(icon);
+                    FormsMenu.RemoveChildControlAndLayout(icon);
                 }
             }
 

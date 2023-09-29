@@ -40,7 +40,7 @@ namespace MCBS.SystemApplications.Desktop
         {
             base.Initialize();
 
-            SubControls.Add(Icon_PictureBox);
+            ChildControls.Add(Icon_PictureBox);
             Icon_PictureBox.ClientLocation = new(3, 3);
             Icon_PictureBox.ClientSize = new(16, 16);
             Icon_PictureBox.DefaultResizeOptions.Size = Icon_PictureBox.ClientSize;
@@ -56,7 +56,7 @@ namespace MCBS.SystemApplications.Desktop
 
             if (ParentContainer?.AsControlCollection<Control>()?.Contains(Name_Label) ?? false)
             {
-                Point parent = this.SubPos2ParentPos(e.Position);
+                Point parent = this.ChildPos2ParentPos(e.Position);
                 parent.Y += 5;
                 Name_Label.ClientLocation = parent;
                 if (Name_Label.BottomToBorder < 0)

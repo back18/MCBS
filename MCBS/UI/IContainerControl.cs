@@ -8,6 +8,6 @@ namespace MCBS.UI
 {
     public interface IContainerControl : IControl
     {
-        public IReadOnlyControlCollection<IControl> GetSubControls();
+        public IReadOnlyControlCollection<IControl> GetChildControls();
     }
 }

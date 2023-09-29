@@ -41,7 +41,7 @@ namespace MCBS.BlockForms
             if (_owner != ParentContainer)
                 throw new InvalidOperationException();
 
-            SubControls.Add(CurrentTime_TextBox);
+            ChildControls.Add(CurrentTime_TextBox);
             CurrentTime_TextBox.BorderWidth = 0;
             CurrentTime_TextBox.AutoSize = true;
             CurrentTime_TextBox.Text = VideoPlayerBox.FromTimeSpan(_owner.VideoBox.CurrentPosition);
@@ -49,7 +49,7 @@ namespace MCBS.BlockForms
             CurrentTime_TextBox.Skin.BackgroundBlockID = string.Empty;
             CurrentTime_TextBox.TextEditorUpdate += CurrentTime_TextBox_TextEditorUpdate;
 
-            SubControls.Add(TotalTime_Label);
+            ChildControls.Add(TotalTime_Label);
             TotalTime_Label.BorderWidth = 0;
             TotalTime_Label.AutoSize = true;
             TotalTime_Label.Text = '/' + VideoPlayerBox.FromTimeSpan(_owner.VideoBox.TotalTime);

@@ -89,7 +89,7 @@ namespace MCBS.BlockForms
 
         public ContainerControl? ParentContainer { get; private set; }
 
-        public int Index => ParentContainer?.GetSubControls().IndexOf(this) ?? -1;
+        public int Index => ParentContainer?.GetChildControls().IndexOf(this) ?? -1;
 
         public bool FirstHandleRightClick { get; set; }
 
@@ -381,7 +381,7 @@ namespace MCBS.BlockForms
             {
                 _DisplayPriority = value;
                 if (!IsSelected)
-                    GenericParentContainer?.GetSubControls().Sort();
+                    GenericParentContainer?.GetChildControls().Sort();
             }
         }
         private int _DisplayPriority;
@@ -393,7 +393,7 @@ namespace MCBS.BlockForms
             {
                 _MaxDisplayPriority = value;
                 if (IsSelected)
-                    GenericParentContainer?.GetSubControls().Sort();
+                    GenericParentContainer?.GetChildControls().Sort();
             }
         }
         private int _MaxDisplayPriority;
@@ -495,7 +495,7 @@ namespace MCBS.BlockForms
                         ControlState ^= ControlState.Selected;
                         ControlDeselected.Invoke(this, EventArgs.Empty);
                     }
-                    GenericParentContainer?.GetSubControls().Sort();
+                    GenericParentContainer?.GetChildControls().Sort();
                 }
             }
         }
@@ -792,7 +792,7 @@ namespace MCBS.BlockForms
             {
                 if (included)
                 {
-                    Control? control = ParentContainer?.GetSubControls().FirstHover;
+                    Control? control = ParentContainer?.GetChildControls().FirstHover;
                     if (control is not null)
                     {
                         if (control.Index < Index)

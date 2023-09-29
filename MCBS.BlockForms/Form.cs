@@ -159,7 +159,7 @@ namespace MCBS.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            Point parent = this.SubPos2ParentPos(e.Position);
+            Point parent = this.ChildPos2ParentPos(e.Position);
             if (AllowResize && IsSelected && !IsMaximize)
             {
                 if (Resizeing)

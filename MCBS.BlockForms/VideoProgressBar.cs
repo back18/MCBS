@@ -46,7 +46,7 @@ namespace MCBS.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            if (_owner.SubControls.Contains(Time_Label))
+            if (_owner.ChildControls.Contains(Time_Label))
             {
                 Time_Label.Text = VideoPlayerBox.FromTimeSpan(GetProgressBarPosition(e.Position.X));
                 Time_Label.AutoSetSize();
@@ -59,14 +59,14 @@ namespace MCBS.BlockForms
         {
             base.OnCursorEnter(sender, e);
 
-            _owner.SubControls.TryAdd(Time_Label);
+            _owner.ChildControls.TryAdd(Time_Label);
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
         {
             base.OnCursorLeave(sender, e);
 
-            _owner.SubControls.Remove(Time_Label);
+            _owner.ChildControls.Remove(Time_Label);
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)

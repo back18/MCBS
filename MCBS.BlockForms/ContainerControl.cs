@@ -16,16 +16,16 @@ namespace MCBS.BlockForms
     {
         protected ContainerControl()
         {
-            SubControls = new(this);
+            ChildControls = new(this);
         }
 
-        public ControlCollection<TControl> SubControls { get; }
+        public ControlCollection<TControl> ChildControls { get; }
 
-        public override IReadOnlyControlCollection<Control> GetSubControls() => SubControls;
+        public override IReadOnlyControlCollection<Control> GetChildControls() => ChildControls;
 
         public override ControlCollection<T>? AsControlCollection<T>()
         {
-            if (SubControls is ControlCollection<T> result)
+            if (ChildControls is ControlCollection<T> result)
                 return result;
 
             return null;
@@ -33,7 +33,7 @@ namespace MCBS.BlockForms
 
         public override void ClearAllLayoutSyncer()
         {
-            foreach (Control control in SubControls)
+            foreach (Control control in ChildControls)
             {
                 control.ClearAllLayoutSyncer();
             }
@@ -46,16 +46,16 @@ namespace MCBS.BlockForms
     {
         protected ContainerControl()
         {
-            AddedSubControl += (sender, e) => { };
-            RemovedSubControl += (sender, e) => { };
+            AddedChildControl += (sender, e) => { };
+            RemovedChildControl += (sender, e) => { };
             LayoutAll += OnLayoutAll;
         }
 
         public abstract ControlCollection<T>? AsControlCollection<T>() where T : Control;
 
-        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> AddedSubControl;
+        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> AddedChildControl;
 
-        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> RemovedSubControl;
+        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> RemovedChildControl;
 
         public event EventHandler<AbstractContainer<Control>, SizeChangedEventArgs> LayoutAll;
 
@@ -73,7 +73,7 @@ namespace MCBS.BlockForms
 
         protected virtual void OnLayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
         {
-            foreach (var control in GetSubControls())
+            foreach (var control in GetChildControls())
             {
                 if (control.LayoutMode == LayoutMode.Auto)
                     control.HandleLayout(e);
@@ -82,8 +82,8 @@ namespace MCBS.BlockForms
 
         public override bool HandleRightClick(CursorEventArgs e)
         {
-            Control? control = GetSubControls().FirstHover;
-            if (control is not null && control.HandleRightClick(new(control.ParentPos2SubPos(e.Position))) && control.FirstHandleRightClick)
+            Control? control = GetChildControls().FirstHover;
+            if (control is not null && control.HandleRightClick(new(control.ParentPos2ChildPos(e.Position))) && control.FirstHandleRightClick)
                 return true;
 
             return TryHandleRightClick(e);
@@ -91,8 +91,8 @@ namespace MCBS.BlockForms
 
         public override bool HandleLeftClick(CursorEventArgs e)
         {
-            Control? control = GetSubControls().FirstHover;
-            if (control is not null && control.HandleLeftClick(new(control.ParentPos2SubPos(e.Position))) && control.FirstHandleLeftClick)
+            Control? control = GetChildControls().FirstHover;
+            if (control is not null && control.HandleLeftClick(new(control.ParentPos2ChildPos(e.Position))) && control.FirstHandleLeftClick)
                 return true;
 
             return TryHandleLeftClick(e);
@@ -100,8 +100,8 @@ namespace MCBS.BlockForms
 
         public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
         {
-            Control? control = GetSubControls().FirstHover;
-            if (control is not null && control.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot)) && control.FirstHandleCursorSlotChanged)
+            Control? control = GetChildControls().FirstHover;
+            if (control is not null && control.HandleCursorSlotChanged(new(control.ParentPos2ChildPos(e.Position), e.OldSlot, e.NewSlot)) && control.FirstHandleCursorSlotChanged)
                 return true;
 
             return TryHandleCursorSlotChanged(e);
@@ -109,8 +109,8 @@ namespace MCBS.BlockForms
 
         public override bool HandleCursorItemChanged(CursorItemEventArgs e)
         {
-            Control? control = GetSubControls().FirstHover;
-            if (control is not null && control.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item)) && control.FirstHandleCursorItemChanged)
+            Control? control = GetChildControls().FirstHover;
+            if (control is not null && control.HandleCursorItemChanged(new(control.ParentPos2ChildPos(e.Position), e.Item)) && control.FirstHandleCursorItemChanged)
                 return true;
 
             return TryHandleCursorItemChanged(e);
@@ -118,8 +118,8 @@ namespace MCBS.BlockForms
 
         public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
         {
-            Control? control = GetSubControls().FirstHover;
-            if (control is not null && control.HandleTextEditorUpdate(new(control.ParentPos2SubPos(e.Position), e.Text)) && control.FirstHandleTextEditorUpdate)
+            Control? control = GetChildControls().FirstHover;
+            if (control is not null && control.HandleTextEditorUpdate(new(control.ParentPos2ChildPos(e.Position), e.Text)) && control.FirstHandleTextEditorUpdate)
                 return true;
 
             return TryHandleTextEditorUpdate(e);
@@ -127,9 +127,9 @@ namespace MCBS.BlockForms
 
         public override void UpdateHoverState(CursorEventArgs e)
         {
-            foreach (var control in GetSubControls().ToArray())
+            foreach (var control in GetChildControls().ToArray())
             {
-                control.UpdateHoverState(new(control.ParentPos2SubPos(e.Position)));
+                control.UpdateHoverState(new(control.ParentPos2ChildPos(e.Position)));
             }
 
             base.UpdateHoverState(e);
@@ -164,7 +164,7 @@ namespace MCBS.BlockForms
 
                 ((IControl)item).SetGenericContainerControl(_owner);
                 RecentlyAddedControl = item;
-                _owner.AddedSubControl.Invoke(_owner, new(item));
+                _owner.AddedChildControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
             }
 
@@ -178,7 +178,7 @@ namespace MCBS.BlockForms
 
                 ((IControl)item).SetGenericContainerControl(null);
                 RecentlyRemovedControl = item;
-                _owner.RemovedSubControl.Invoke(_owner, new(item));
+                _owner.RemovedChildControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
                 return true;
             }

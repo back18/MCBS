@@ -52,12 +52,12 @@ namespace MCBS.UI
             return new(source.ClientLocation.X + source.BorderWidth, source.ClientLocation.Y + source.BorderWidth);
         }
 
-        public static Point ParentPos2SubPos(this IControl source, Point position)
+        public static Point ParentPos2ChildPos(this IControl source, Point position)
         {
             return new(position.X - source.ClientLocation.X + source.OffsetPosition.X - source.BorderWidth, position.Y - source.ClientLocation.Y + source.OffsetPosition.Y - source.BorderWidth);
         }
 
-        public static Point SubPos2ParentPos(this IControl source, Point position)
+        public static Point ChildPos2ParentPos(this IControl source, Point position)
         {
             return new(position.X + source.ClientLocation.X + source.OffsetPosition.X + source.BorderWidth, position.Y + source.ClientLocation.Y + source.OffsetPosition.Y + source.BorderWidth);
         }

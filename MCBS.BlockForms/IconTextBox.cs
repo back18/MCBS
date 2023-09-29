@@ -52,10 +52,10 @@ namespace MCBS.BlockForms
         {
             base.Initialize();
 
-            SubControls.Add(Icon_PictureBox);
+            ChildControls.Add(Icon_PictureBox);
             Icon_PictureBox.ImageFrameChanged += Icon_PictureBox_ImageFrameChanged;
 
-            SubControls.Add(Text_Label);
+            ChildControls.Add(Text_Label);
             Text_Label.TextChanged += Text_Label_TextChanged;
 
             ActiveLayoutAll();

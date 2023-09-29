@@ -151,7 +151,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
                 items = result;
             }
 
-            SubControls.Clear();
+            ChildControls.Clear();
 
             if (items.Count > 0)
             {
@@ -171,7 +171,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
                             Text = Path.Combine(Text, path.Text);
                         }
                     };
-                    SubControls.Add(path);
+                    ChildControls.Add(path);
                 }
                 this.ForceFillDownLayout(1, items);
                 PageSize = new(ClientSize.Width, items[^1].BottomLocation + 2);
@@ -218,7 +218,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
         public string[] GetSelecteds()
         {
             List<string> result = new();
-            foreach (var selected in SubControls.GetSelecteds())
+            foreach (var selected in ChildControls.GetSelecteds())
             {
                 if (selected is FileSystemItem item)
                     result.Add(item.FileSystemInfo.FullName);

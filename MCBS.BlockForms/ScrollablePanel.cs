@@ -72,14 +72,14 @@ namespace MCBS.BlockForms
         {
             base.Initialize();
 
-            SubControls.Add(VerticalScrollBar);
+            ChildControls.Add(VerticalScrollBar);
             VerticalScrollBar.Visible = false;
             VerticalScrollBar.KeepWhenClear = true;
             VerticalScrollBar.Width = 8;
             VerticalScrollBar.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) => { });
             VerticalScrollBar.RightClick += VerticalScrollBar_RightClick;
 
-            SubControls.Add(HorizontalScrollBar);
+            ChildControls.Add(HorizontalScrollBar);
             HorizontalScrollBar.Visible = false;
             HorizontalScrollBar.KeepWhenClear = true;
             HorizontalScrollBar.Height = 8;

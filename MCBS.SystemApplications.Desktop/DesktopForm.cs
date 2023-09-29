@@ -42,7 +42,7 @@ namespace MCBS.SystemApplications.Desktop
         {
             base.Initialize();
 
-            SubControls.Add(ClientPanel);
+            ChildControls.Add(ClientPanel);
             ClientPanel.ClientSize = ClientSize;
             ClientPanel.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ClientPanel.ClientSize = ClientSize);
@@ -56,16 +56,16 @@ namespace MCBS.SystemApplications.Desktop
         public override void ActiveLayoutAll()
         {
             MCOS os = MCOS.Instance;
-            ClientPanel.SubControls.Clear();
+            ClientPanel.ChildControls.Clear();
             foreach (var app in os.ApplicationManager.Items.Values)
                 if (app.AppendToDesktop)
-                    ClientPanel.SubControls.Add(new DesktopIcon(app));
+                    ClientPanel.ChildControls.Add(new DesktopIcon(app));
 
-            if (ClientPanel.SubControls.Count == 0)
+            if (ClientPanel.ChildControls.Count == 0)
                 return;
 
-            ClientPanel.ForceFillRightLayout(0, ClientPanel.SubControls);
-            ClientPanel.PageSize = new((ClientPanel.SubControls.RecentlyAddedControl ?? ClientPanel.SubControls[^1]).RightLocation + 1, ClientPanel.ClientSize.Height);
+            ClientPanel.ForceFillRightLayout(0, ClientPanel.ChildControls);
+            ClientPanel.PageSize = new((ClientPanel.ChildControls.RecentlyAddedControl ?? ClientPanel.ChildControls[^1]).RightLocation + 1, ClientPanel.ClientSize.Height);
             ClientPanel.OffsetPosition = new(0, 0);
             ClientPanel.RefreshHorizontalScrollBar();
         }

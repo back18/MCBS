@@ -16,7 +16,7 @@ namespace MCBS.BlockForms
 
         protected List<T> _items;
 
-        protected T? PreviousSubControl
+        protected T? PreviousChildControl
         {
             get
             {
@@ -43,8 +43,8 @@ namespace MCBS.BlockForms
         }
         private int _Spacing;
 
-        public abstract void AddedSubControlAndLayout(T control);
+        public abstract void AddedChildControlAndLayout(T control);
 
-        public abstract void RemoveSubControlAndLayout(T control);
+        public abstract void RemoveChildControlAndLayout(T control);
     }
 }

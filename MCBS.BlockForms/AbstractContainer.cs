@@ -15,42 +15,42 @@ namespace MCBS.BlockForms
     {
         protected AbstractContainer()
         {
-            AddedSubControl += OnAddedSubControl;
-            RemovedSubControl += OnRemovedSubControl;
+            AddedChildControl += OnAddedChildControl;
+            RemovedChildControl += OnRemovedChildControl;
         }
 
-        public Type SubControlType => typeof(TControl);
+        public Type ChildControlType => typeof(TControl);
 
-        public bool IsSubControlType<T>() => typeof(T) == SubControlType;
+        public bool IsChildControlType<T>() => typeof(T) == ChildControlType;
 
-        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> AddedSubControl;
+        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> AddedChildControl;
 
-        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> RemovedSubControl;
+        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> RemovedChildControl;
 
-        protected virtual void OnAddedSubControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
+        protected virtual void OnAddedChildControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
         {
             IControlInitializeHandling handling = e.Control;
             if (IsInitializeCompleted && !handling.IsInitializeCompleted)
                 handling.HandleAllInitialize();
         }
 
-        protected virtual void OnRemovedSubControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
+        protected virtual void OnRemovedChildControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
         {
 
         }
 
-        public abstract IReadOnlyControlCollection<TControl> GetSubControls();
+        public abstract IReadOnlyControlCollection<TControl> GetChildControls();
 
-        IReadOnlyControlCollection<IControl> IContainerControl.GetSubControls()
+        IReadOnlyControlCollection<IControl> IContainerControl.GetChildControls()
         {
-            return GetSubControls();
+            return GetChildControls();
         }
 
         public override void HandleInitialize()
         {
             base.HandleInitialize();
 
-            foreach (var control in GetSubControls())
+            foreach (var control in GetChildControls())
             {
                 control.HandleInitialize();
             }
@@ -60,7 +60,7 @@ namespace MCBS.BlockForms
         {
             base.HandleInitCompleted1();
 
-            foreach (var control in GetSubControls())
+            foreach (var control in GetChildControls())
             {
                 control.HandleInitCompleted1();
             }
@@ -70,7 +70,7 @@ namespace MCBS.BlockForms
         {
             base.HandleInitCompleted2();
 
-            foreach (var control in GetSubControls())
+            foreach (var control in GetChildControls())
             {
                 control.HandleInitCompleted2();
             }
@@ -80,7 +80,7 @@ namespace MCBS.BlockForms
         {
             base.HandleInitCompleted3();
 
-            foreach (var control in GetSubControls())
+            foreach (var control in GetChildControls())
             {
                 control.HandleInitCompleted3();
             }
@@ -88,9 +88,9 @@ namespace MCBS.BlockForms
 
         public override void HandleCursorMove(CursorEventArgs e)
         {
-            foreach (var control in GetSubControls().ToArray())
+            foreach (var control in GetChildControls().ToArray())
             {
-                control.HandleCursorMove(new(control.ParentPos2SubPos(e.Position)));
+                control.HandleCursorMove(new(control.ParentPos2ChildPos(e.Position)));
             }
 
             base.HandleCursorMove(e);
@@ -98,47 +98,47 @@ namespace MCBS.BlockForms
 
         public override bool HandleRightClick(CursorEventArgs e)
         {
-            TControl? control = GetSubControls().FirstHover;
-            control?.HandleRightClick(new(control.ParentPos2SubPos(e.Position)));
+            TControl? control = GetChildControls().FirstHover;
+            control?.HandleRightClick(new(control.ParentPos2ChildPos(e.Position)));
 
             return TryHandleRightClick(e);
         }
 
         public override bool HandleLeftClick(CursorEventArgs e)
         {
-            TControl? control = GetSubControls().FirstHover;
-            control?.HandleLeftClick(new(control.ParentPos2SubPos(e.Position)));
+            TControl? control = GetChildControls().FirstHover;
+            control?.HandleLeftClick(new(control.ParentPos2ChildPos(e.Position)));
 
             return TryHandleLeftClick(e);
         }
 
         public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
         {
-            TControl? control = GetSubControls().FirstHover;
-            control?.HandleCursorSlotChanged(new(control.ParentPos2SubPos(e.Position), e.OldSlot, e.NewSlot));
+            TControl? control = GetChildControls().FirstHover;
+            control?.HandleCursorSlotChanged(new(control.ParentPos2ChildPos(e.Position), e.OldSlot, e.NewSlot));
 
             return TryHandleCursorSlotChanged(e);
         }
 
         public override bool HandleCursorItemChanged(CursorItemEventArgs e)
         {
-            TControl? control = GetSubControls().FirstHover;
-            control?.HandleCursorItemChanged(new(control.ParentPos2SubPos(e.Position), e.Item));
+            TControl? control = GetChildControls().FirstHover;
+            control?.HandleCursorItemChanged(new(control.ParentPos2ChildPos(e.Position), e.Item));
 
             return TryHandleCursorItemChanged(e);
         }
 
         public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
         {
-            TControl? control = GetSubControls().FirstHover;
-            control?.HandleTextEditorUpdate(new(control.ParentPos2SubPos(e.Position), e.Text));
+            TControl? control = GetChildControls().FirstHover;
+            control?.HandleTextEditorUpdate(new(control.ParentPos2ChildPos(e.Position), e.Text));
 
             return TryHandleTextEditorUpdate(e);
         }
 
         public override void HandleBeforeFrame(EventArgs e)
         {
-            foreach (var control in GetSubControls().ToArray())
+            foreach (var control in GetChildControls().ToArray())
             {
                 control.HandleBeforeFrame(e);
             }
@@ -148,7 +148,7 @@ namespace MCBS.BlockForms
 
         public override void HandleAfterFrame(EventArgs e)
         {
-            foreach (var control in GetSubControls().ToArray())
+            foreach (var control in GetChildControls().ToArray())
             {
                 control.HandleAfterFrame(e);
             }

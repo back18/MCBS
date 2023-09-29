@@ -13,16 +13,16 @@ namespace MCBS.BlockForms
     {
         protected GenericContainerControl()
         {
-            SubControls = new(this);
+            ChildControls = new(this);
         }
 
-        public ControlCollection<TControl> SubControls { get; }
+        public ControlCollection<TControl> ChildControls { get; }
 
-        public override IReadOnlyControlCollection<IControl> GetSubControls() => SubControls;
+        public override IReadOnlyControlCollection<IControl> GetChildControls() => ChildControls;
 
         public override ControlCollection<T>? AsControlCollection<T>()
         {
-            if (SubControls is ControlCollection<T> result)
+            if (ChildControls is ControlCollection<T> result)
                 return result;
 
             return null;
@@ -33,15 +33,15 @@ namespace MCBS.BlockForms
     {
         protected GenericContainerControl()
         {
-            AddedSubControl += (sender, e) => { };
-            RemovedSubControl += (sender, e) => { };
+            AddedChildControl += (sender, e) => { };
+            RemovedChildControl += (sender, e) => { };
         }
 
         public abstract ControlCollection<T>? AsControlCollection<T>() where T : class, IControl;
 
-        public override event EventHandler<AbstractContainer<IControl>, ControlEventArgs<IControl>> AddedSubControl;
+        public override event EventHandler<AbstractContainer<IControl>, ControlEventArgs<IControl>> AddedChildControl;
 
-        public override event EventHandler<AbstractContainer<IControl>, ControlEventArgs<IControl>> RemovedSubControl;
+        public override event EventHandler<AbstractContainer<IControl>, ControlEventArgs<IControl>> RemovedChildControl;
 
         public class ControlCollection<T> : AbstractControlCollection<T> where T : class, IControl
         {
@@ -72,7 +72,7 @@ namespace MCBS.BlockForms
 
                 item.SetGenericContainerControl(_owner);
                 RecentlyAddedControl = item;
-                _owner.AddedSubControl.Invoke(_owner, new(item));
+                _owner.AddedChildControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
             }
 
@@ -86,7 +86,7 @@ namespace MCBS.BlockForms
 
                 item.SetGenericContainerControl(null);
                 RecentlyRemovedControl = item;
-                _owner.RemovedSubControl.Invoke(_owner, new(item));
+                _owner.RemovedChildControl.Invoke(_owner, new(item));
                 _owner.RequestUpdateFrame();
                 return true;
             }
