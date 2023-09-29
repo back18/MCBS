@@ -29,11 +29,11 @@ namespace MCBS
             {
                 ProcessState = ProcessState.Running;
                 Started.Invoke(this, EventArgs.Empty);
-                LOGGER.Info($"进程“{ToString()}”已启动");
+                LOGGER.Info($"进程“{MainThreadName}”已启动");
                 object? @return = Application.Main(args);
                 ProcessState = ProcessState.Stopped;
                 Stopped.Invoke(this, EventArgs.Empty);
-                LOGGER.Info($"进程“{ToString()}”已退出");
+                LOGGER.Info($"进程“{MainThreadName}”已退出");
             })
             {
                 IsBackground = true
@@ -50,6 +50,8 @@ namespace MCBS
         public IForm? Initiator { get; }
 
         public Thread MainThread { get; }
+
+        public string MainThreadName => $"{ApplicationInfo.ID} #{ID}";
 
         public ProcessState ProcessState { get; private set; }
 
@@ -76,7 +78,7 @@ namespace MCBS
                 case ProcessState.Starting:
                     if (!MainThread.IsAlive)
                     {
-                        MainThread.Name = $"{ApplicationInfo.ID}#{ID}";
+                        MainThread.Name = MainThreadName;
                         MainThread.Start();
                     }
                     break;

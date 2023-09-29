@@ -36,7 +36,7 @@ namespace MCBS
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            LOGGER.Info($"应用程序“{e.ApplicationInfo}”已加载");
+            LOGGER.Info($"应用程序“{e.ApplicationInfo.ID}”已加载");
         }
 
         //protected virtual void OnRemovedApplication(ApplicationManager sender, ApplicationInfoEventArgs e) { }

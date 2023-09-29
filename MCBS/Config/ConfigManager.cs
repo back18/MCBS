@@ -89,12 +89,14 @@ namespace MCBS.Config
 
         public static void LoadAll()
         {
+            LOGGER.Info("开始加载配置文件");
+
             _MinecraftConfig = MinecraftConfig.Load(SR.McbsDirectory.ConfigsDir.MinecraftFile);
             _SystemConfig = SystemConfig.Load(SR.McbsDirectory.ConfigsDir.SystemFile);
             _ScreenConfig = ScreenConfig.Load(SR.McbsDirectory.ConfigsDir.ScreenFile);
             _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(SR.McbsDirectory.ConfigsDir.RegistryFile)) ?? throw new FormatException();
 
-            LOGGER.Info("配置文件加载完成");
+            LOGGER.Info("完成");
         }
     }
 }

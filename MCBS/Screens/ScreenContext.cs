@@ -91,7 +91,7 @@ namespace MCBS.Screens
                     MCOS.Instance.RunStartupChecklist(RootForm);
                     BindEvents();
                     ScreenState = ScreenState.Active;
-                    LOGGER.Info($"屏幕“{ToString()}”已加载");
+                    LOGGER.Info($"屏幕“{Screen.StartPosition} #{ID}”已加载");
                     break;
                 case ScreenState.Active:
                     if (ScreenConfig.ScreenIdleTimeout != -1 && Screen.InputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
@@ -113,7 +113,7 @@ namespace MCBS.Screens
                     }
                     RootForm.CloseForm();
                     Screen.Stop();
-                    LOGGER.Info($"屏幕“{ToString()}”已卸载");
+                    LOGGER.Info($"屏幕“{Screen.StartPosition} #{ID}”已卸载");
                     break;
                 default:
                     break;

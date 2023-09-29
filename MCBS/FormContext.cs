@@ -90,7 +90,7 @@ namespace MCBS
                     }
                     Form.HandleFormLoad(EventArgs.Empty);
                     FormState = FormState.Active;
-                    LOGGER.Info($"窗体“{ToString()}”已打开");
+                    LOGGER.Info($"窗体“{Form.Text} #{ID}”已打开");
                     break;
                 case FormState.Active:
                     if (Form is not IRootForm && !RootForm.ContainsForm(Form))
@@ -112,7 +112,7 @@ namespace MCBS
                         RootForm.RemoveForm(Form);
                     }
                     Form.HandleFormClose(EventArgs.Empty);
-                    LOGGER.Info($"窗体“{ToString()}”已关闭");
+                    LOGGER.Info($"窗体“{Form.Text} #{ID}”已关闭");
                     _close.Set();
                     break;
                 default:
