@@ -53,7 +53,7 @@ namespace MCBS.BlockForms.Utility
 
         public int Count => _items.Count;
 
-        public Image<Rgba32> this[string key] => _items[key];
+        public Image<Rgba32> this[string key] => _items[key].Clone();
 
         public static TextureManager LoadInstance()
         {
@@ -93,7 +93,16 @@ namespace MCBS.BlockForms.Utility
 
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out Image<Rgba32> value)
         {
-            return _items.TryGetValue(key, out value);
+            if (_items.TryGetValue(key, out var image))
+            {
+                value = image.Clone();
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
         }
 
         public IEnumerator<KeyValuePair<string, Image<Rgba32>>> GetEnumerator()
