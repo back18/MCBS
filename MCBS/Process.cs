@@ -25,11 +25,21 @@ namespace MCBS
             Application = ApplicationInfo.CreateApplicationInstance();
             Initiator = initiator;
             ID = -1;
+            StateMachine = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
+            {
+                new(ProcessState.Unstarted, Array.Empty<ProcessState>(), HandleUnstartedState),
+                new(ProcessState.Active, new ProcessState[] { ProcessState.Unstarted }, HandleActiveState),
+                new(ProcessState.Stopped, new ProcessState[] { ProcessState.Active }, HandleStoppedState)
+            });
         }
 
         private readonly string[] _args;
 
         public int ID { get; internal set; }
+
+        public StateMachine<ProcessState> StateMachine { get; }
+
+        public ProcessState ProcessState => StateMachine.CurrentState;
 
         public ApplicationInfo ApplicationInfo { get; }
 
@@ -38,8 +48,6 @@ namespace MCBS
         public IForm? Initiator { get; }
 
         public string MainThreadName => $"{ApplicationInfo.ID} AppThread #{ID}";
-
-        public ProcessState ProcessState { get; private set; }
 
         protected override void OnStarted(IRunnable sender, EventArgs e)
         {
@@ -57,6 +65,39 @@ namespace MCBS
                 form.CloseForm();
         }
 
+        protected virtual bool HandleUnstartedState(ProcessState current, ProcessState next)
+        {
+            return false;
+        }
+
+        protected virtual bool HandleActiveState(ProcessState current, ProcessState next)
+        {
+            Start($"{ApplicationInfo.ID} AppThread #{ID}");
+            return true;
+        }
+
+        protected virtual bool HandleStoppedState(ProcessState current, ProcessState next)
+        {
+            if (Thread is not null && Thread.IsAlive)
+            {
+                try
+                {
+                    Thread.Abort();
+                }
+                catch
+                {
+
+                }
+            }
+            Stop();
+            return true;
+        }
+
+        public void Handle()
+        {
+            StateMachine.HandleAllState();
+        }
+
         protected override void Run()
         {
             LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”已开始运行");
@@ -64,46 +105,15 @@ namespace MCBS
             LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”停止开始运行，返回值为 {result ?? "null"}");
         }
 
-        public void Handle()
-        {
-            switch (ProcessState)
-            {
-                case ProcessState.Unstarted:
-                    break;
-                case ProcessState.Starting:
-                    Start(MainThreadName);
-                    ProcessState = ProcessState.Running;
-                    break;
-                case ProcessState.Running:
-                    break;
-                case ProcessState.Stopped:
-                    if (Thread is not null && Thread.IsAlive)
-                    {
-                        try
-                        {
-                            Thread.Abort();
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-                    Stop();
-                    break;
-                default:
-                    break;
-            }
-        }
-
         public Process StartProcess()
         {
-            ProcessState = ProcessState.Starting;
+            StateMachine.AddNextState(ProcessState.Active);
             return this;
         }
 
         public void StopProcess()
         {
-            ProcessState = ProcessState.Stopped;
+            StateMachine.AddNextState(ProcessState.Stopped);
         }
 
         public override string ToString()

@@ -10,9 +10,7 @@ namespace MCBS
     {
         Unstarted,
 
-        Starting,
-
-        Running,
+        Active,
 
         Stopped
     }

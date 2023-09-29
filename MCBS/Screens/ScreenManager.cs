@@ -1,7 +1,7 @@
 ﻿#define TryCatch
 
+using static MCBS.Config.ConfigManager;
 using log4net.Core;
-using MCBS.Config;
 using MCBS.Directorys;
 using MCBS.Event;
 using MCBS.Frame;
@@ -54,8 +54,8 @@ namespace MCBS.Screens
 
         public void Initialize()
         {
-            LOGGER.Info($"开始加载常驻屏幕，共计{ConfigManager.ScreenConfig.ResidentScreenList.Count}个");
-            foreach (var options in ConfigManager.ScreenConfig.ResidentScreenList)
+            LOGGER.Info($"开始加载常驻屏幕，共计{ScreenConfig.ResidentScreenList.Count}个");
+            foreach (var options in ScreenConfig.ResidentScreenList)
             {
 #if TryCatch
                 try
@@ -96,17 +96,30 @@ namespace MCBS.Screens
         {
             foreach (var context in Items)
             {
-                if (context.Value.ScreenState == ScreenState.Loading)
+                var state = context.Value.StateMachine;
+                if (state.CurrentState == ScreenState.NotLoaded)
                 {
-                    if (!_saves.ContainsScreenOption(context.Value.Screen))
-                        _saves.Add(new(context.Value.Screen));
-                    SaveScreens();
-
+                    if (state.NextState == ScreenState.Active)
+                    {
+                        if (!_saves.ContainsScreenOption(context.Value.Screen))
+                        {
+                            _saves.Add(new(context.Value.Screen));
+                            SaveScreens();
+                        }
+                    }
+                }
+                else if (state.CurrentState == ScreenState.Active)
+                {
+                    if (ScreenConfig.ScreenIdleTimeout != -1 && context.Value.Screen.InputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
+                    {
+                        context.Value.CloseScreen();
+                        LOGGER.Warn($"ID为{context.Value.ID}的屏幕已达到最大闲置时间，即将卸载");
+                    }
                 }
 
                 context.Value.Handle();
 
-                if (context.Value.ScreenState == ScreenState.Closed)
+                if (state.CurrentState == ScreenState.Closed)
                 {
                     Items.Remove(context.Key);
                     _saves.Remove(new(context.Value.Screen));

@@ -9,17 +9,17 @@ namespace MCBS
 {
     public class StateMachine<T> where T : Enum
     {
-        public StateMachine(T defaultState)
+        public StateMachine(T defaultState, IEnumerable<StateContext<T>> stateInfos)
         {
             CurrentState = defaultState;
 
-            _stateQueue = new();
-            _stateHandlers = new();
+            _queue = new();
+            _contexts = stateInfos.ToDictionary(item => item.TargetState, item => item);
         }
 
-        private readonly ConcurrentQueue<T> _stateQueue;
+        private readonly ConcurrentQueue<T> _queue;
 
-        private readonly Dictionary<T, StateHandler<T>> _stateHandlers;
+        private readonly Dictionary<T, StateContext<T>> _contexts;
 
         public T CurrentState { get; private set; }
 
@@ -27,37 +27,23 @@ namespace MCBS
         {
             get
             {
-                if (_stateQueue.TryPeek(out var state))
+                if (_queue.TryPeek(out var state))
                     return state;
                 else
                     return CurrentState;
             }
         }
 
-        public void SetStateHandler(T state, StateHandler<T> handler)
-        {
-            if (handler is null)
-                throw new ArgumentNullException(nameof(handler));
-
-            _stateHandlers[state] = handler;
-        }
-
         public void AddNextState(T state)
         {
-            _stateQueue.Enqueue(state);
+            _queue.Enqueue(state);
         }
 
         public void HandleAllState()
         {
-            while (_stateQueue.TryDequeue(out var state))
+            while (_queue.TryDequeue(out var state) && _contexts.TryGetValue(state, out var context))
             {
-                if (Equals(state, CurrentState))
-                    continue;
-
-                if (!_stateHandlers.TryGetValue(state, out var handler))
-                    continue;
-
-                if (handler.Invoke(CurrentState, state))
+                if (context.TrySwitchToTargetState(CurrentState))
                     CurrentState = state;
             }
         }

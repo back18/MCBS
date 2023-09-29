@@ -10,8 +10,6 @@ namespace MCBS.Screens
     {
         NotLoaded,
 
-        Loading,
-
         Active,
 
         Sleep,

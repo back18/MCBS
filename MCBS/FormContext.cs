@@ -50,22 +50,25 @@ namespace MCBS
                 }
             }
 
-            FormState = FormState.NotLoaded;
             ID = -1;
-            IsMinimize = false;
-            Runing = false;
+            StateMachine = new(FormState.NotLoaded, new StateContext<FormState>[]
+            {
+                new(FormState.NotLoaded, Array.Empty<FormState>(), HandleNotLoadedState),
+                new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize }, HandleActiveState),
+                new(FormState.Minimize, new FormState[] { FormState.Active }, HandleMinimizeState),
+                new(FormState.Closed, new FormState[] { FormState.Active, FormState.Minimize }, HandleClosedState)
+            });
+
             _close = new(false);
         }
 
-        internal readonly AutoResetEvent _close;
-
-        public FormState FormState { get; private set; }
+        private readonly AutoResetEvent _close;
 
         public int ID { get; internal set; }
 
-        public bool IsMinimize { get; private set; }
+        public StateMachine<FormState> StateMachine { get; }
 
-        public bool Runing { get; private set; }
+        public FormState FormState => StateMachine.CurrentState;
 
         public IRootForm RootForm { get; private set; }
 
@@ -73,94 +76,81 @@ namespace MCBS
 
         public IForm Form { get; }
 
-        public void Handle()
+        protected bool HandleNotLoadedState(FormState current, FormState next)
         {
-            switch (FormState)
+            return false;
+        }
+
+        protected bool HandleActiveState(FormState current, FormState next)
+        {
+            switch (current)
             {
                 case FormState.NotLoaded:
-                    break;
-                case FormState.Loading:
                     if (Form is IRootForm)
-                    {
-                        RootForm.HandleAllInitialize();
-                    }
+                        Form.HandleAllInitialize();
                     else if (!RootForm.ContainsForm(Form))
-                    {
                         RootForm.AddForm(Form);
-                    }
                     Form.HandleFormLoad(EventArgs.Empty);
-                    FormState = FormState.Active;
                     LOGGER.Info($"窗体“{Form.Text} #{ID}”已打开");
-                    break;
-                case FormState.Active:
-                    if (Form is not IRootForm && !RootForm.ContainsForm(Form))
-                    {
-                        RootForm.AddForm(Form);
-                    }
-                    Form.HandleFormUnminimize(EventArgs.Empty);
-                    break;
+                    return true;
                 case FormState.Minimize:
-                    if (Form is not IRootForm && RootForm.ContainsForm(Form))
-                    {
-                        RootForm.RemoveForm(Form);
-                    }
-                    Form.HandleFormMinimize(EventArgs.Empty);
-                    break;
-                case FormState.Closed:
-                    if (Form is not IRootForm && RootForm.ContainsForm(Form))
-                    {
-                        RootForm.RemoveForm(Form);
-                    }
-                    Form.HandleFormClose(EventArgs.Empty);
-                    LOGGER.Info($"窗体“{Form.Text} #{ID}”已关闭");
-                    _close.Set();
-                    break;
+                    if (Form is IRootForm)
+                        return false;
+                    if (!RootForm.ContainsForm(Form))
+                        RootForm.AddForm(Form);
+                    Form.HandleFormUnminimize(EventArgs.Empty);
+                    LOGGER.Info($"窗体“{Form.Text} #{ID}”已取消最小化");
+                    return true;
                 default:
-                    break;
+                    return false;
             }
+        }
+
+        protected bool HandleMinimizeState(FormState current, FormState next)
+        {
+            if (Form is IRootForm)
+                return false;
+            if (RootForm.ContainsForm(Form))
+                RootForm.RemoveForm(Form);
+            Form.HandleFormMinimize(EventArgs.Empty);
+            LOGGER.Info($"窗体“{Form.Text} #{ID}”已最小化");
+            return true;
+        }
+
+        protected bool HandleClosedState(FormState current, FormState next)
+        {
+            if (Form is not IRootForm && RootForm.ContainsForm(Form))
+                RootForm.RemoveForm(Form);
+            Form.HandleFormClose(EventArgs.Empty);
+            LOGGER.Info($"窗体“{Form.Text} #{ID}”已关闭");
+            _close.Set();
+            return true;
+        }
+
+        public void Handle()
+        {
+            StateMachine.HandleAllState();
         }
 
         public FormContext LoadForm()
         {
-            if (!Runing)
-            {
-                Runing = true;
-                FormState = FormState.Loading;
-            }
+            StateMachine.AddNextState(FormState.Active);
             return this;
         }
 
         public void CloseForm()
         {
-            if (Runing)
-            {
-                Runing = false;
-                FormState = FormState.Closed;
-            }
+            StateMachine.AddNextState(FormState.Closed);
         }
 
         public void MinimizeForm()
         {
-            if (!IsMinimize)
-            {
-                if (Form is not IRootForm && RootForm.ContainsForm(Form) && Form.AllowDeselected)
-                {
-                    IsMinimize = true;
-                    FormState = FormState.Minimize;
-                }
-            }
+            StateMachine.AddNextState(FormState.Minimize);
         }
 
         public void UnminimizeForm()
         {
-            if (IsMinimize)
-            {
-                if (Form is not IRootForm && !RootForm.ContainsForm(Form))
-                {
-                    IsMinimize = false;
-                    FormState = FormState.Active;
-                }
-            }
+            StateMachine.AddNextState(FormState.Active);
         }
 
         public void WaitForFormClose()

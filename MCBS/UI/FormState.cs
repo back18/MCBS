@@ -10,8 +10,6 @@ namespace MCBS.UI
     {
         NotLoaded,
 
-        Loading,
-
         Active,
 
         Minimize,
