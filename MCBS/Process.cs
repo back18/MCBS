@@ -59,9 +59,9 @@ namespace MCBS
 
         protected override void Run()
         {
-            LOGGER.Info($"进程“{MainThreadName}”已开始运行");
+            LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”已开始运行");
             object? result = Application.Main(_args);
-            LOGGER.Info($"进程“{MainThreadName}”停止开始运行，返回值为 {result ?? "null"}");
+            LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”停止开始运行，返回值为 {result ?? "null"}");
         }
 
         public void Handle()
