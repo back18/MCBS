@@ -38,9 +38,9 @@ namespace MCBS.BlockForms
         {
             ChildControls.Add(control);
             if (PreviousChildControl is not null)
-                control.ClientLocation = this.RightLayout(PreviousChildControl, Spacing);
+                control.LayoutRight(this, PreviousChildControl, Spacing);
             else
-                control.ClientLocation = new(Spacing, Spacing);
+                control.LayoutRight(this, Spacing, Spacing);
 
             _items.Add(control);
             _widths.Add((control, control.Width));
@@ -95,9 +95,9 @@ namespace MCBS.BlockForms
             foreach (var item in _items)
             {
                 if (previous is not null)
-                    item.ClientLocation = this.RightLayout(previous, Spacing);
+                    item.LayoutRight(this, previous, Spacing);
                 else
-                    item.ClientLocation = new(Spacing, Spacing);
+                    item.LayoutRight(this, Spacing, Spacing);
                 previous = item;
             }
         }

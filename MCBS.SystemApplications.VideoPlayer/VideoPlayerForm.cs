@@ -59,7 +59,7 @@ namespace MCBS.SystemApplications.VideoPlayer
             Setting_Switch.ClientLocation = new(2, 2);
 
             ClientPanel.ChildControls.Add(Path_TextBox);
-            Path_TextBox.ClientLocation = ClientPanel.RightLayout(Setting_Switch, 2);
+            Path_TextBox.LayoutRight(ClientPanel, Setting_Switch, 2);
             Path_TextBox.Width = ClientPanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Pink);

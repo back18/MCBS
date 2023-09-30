@@ -45,13 +45,13 @@ namespace MCBS.BlockForms.DialogBox
             ClientPanel.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
-            Cancel_Button.ClientLocation = ClientPanel.LeftLayout(null, Cancel_Button, 2, Text_RichTextBox.BottomLocation + 3);
+            Cancel_Button.LayoutLeft(this, Text_RichTextBox.BottomLocation + 3, 2);
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
             ClientPanel.ChildControls.Add(OK_Button);
             OK_Button.Text = "确认";
             OK_Button.ClientSize = new(32, 16);
-            OK_Button.ClientLocation = ClientPanel.LeftLayout(Cancel_Button, OK_Button, 2);
+            OK_Button.LayoutLeft(this, Cancel_Button, 2);
             OK_Button.RightClick += OK_Button_RightClick;
         }
 

@@ -59,7 +59,7 @@ namespace MCBS.SystemApplications.Drawing
 
             ClientPanel.ChildControls.Add(Height_Label);
             Height_Label.Text = "高度";
-            Height_Label.ClientLocation = ClientPanel.BottomLayout(Width_Label, 4);
+            Height_Label.LayoutDown(ClientPanel, Width_Label, 4);
 
             ClientPanel.ChildControls.Add(Width_TextBox);
             Width_TextBox.Text = _initial.Width.ToString();
@@ -68,19 +68,19 @@ namespace MCBS.SystemApplications.Drawing
 
             ClientPanel.ChildControls.Add(Height_TextBox);
             Height_TextBox.Text = _initial.Height.ToString();
-            Height_TextBox.ClientLocation = ClientPanel.BottomLayout(Width_TextBox, 2);
+            Height_TextBox.LayoutDown(ClientPanel, Width_TextBox, 2);
             Height_TextBox.ClientSize = new(64, 16);
 
             ClientPanel.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
-            Cancel_Button.ClientLocation = ClientPanel.LeftLayout(null, Cancel_Button, 2, Height_TextBox.BottomLocation + 3);
+            Cancel_Button.LayoutLeft(this, Height_TextBox.BottomLocation + 3, 2);
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
             ClientPanel.ChildControls.Add(OK_Button);
             OK_Button.Text = "确认";
             OK_Button.ClientSize = new(32, 16);
-            OK_Button.ClientLocation = ClientPanel.LeftLayout(Cancel_Button, OK_Button, 2);
+            OK_Button.LayoutLeft(ClientPanel, Cancel_Button, 2);
             OK_Button.RightClick += OK_Button_RightClick;
         }
 

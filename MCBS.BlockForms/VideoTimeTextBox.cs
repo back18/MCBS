@@ -109,7 +109,7 @@ namespace MCBS.BlockForms
         public override void ActiveLayoutAll()
         {
             CurrentTime_TextBox.Text = VideoPlayerBox.FromTimeSpan(_owner.VideoBox.CurrentPosition);
-            TotalTime_Label.ClientLocation = this.RightLayout(CurrentTime_TextBox, 0);
+            TotalTime_Label.LayoutRight(this, CurrentTime_TextBox, 0);
             Width = CurrentTime_TextBox.Width + TotalTime_Label.Width;
         }
     }

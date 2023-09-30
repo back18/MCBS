@@ -97,7 +97,7 @@ namespace MCBS.BlockForms
             ShowTitleBar_Button.InvokeExternalCursorMove = true;
             ShowTitleBar_Button.ClientSize = new(16, 16);
             ShowTitleBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
-            ShowTitleBar_Button.ClientLocation = this.LeftLayout(null, ShowTitleBar_Button, 0, 0));
+            ShowTitleBar_Button.LayoutLeft(this, 0, 0));
             ShowTitleBar_Button.Anchor = Direction.Top | Direction.Right;
             ShowTitleBar_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Shrink"]);
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;
@@ -122,7 +122,7 @@ namespace MCBS.BlockForms
         {
             base.OnInitCompleted1();
 
-            ShowTitleBar_Button.ClientLocation = this.LeftLayout(null, ShowTitleBar_Button, 0, 0);
+            ShowTitleBar_Button.LayoutLeft(this, 0, 0);
         }
 
         protected override void OnMove(Control sender, PositionChangedEventArgs e)
@@ -368,22 +368,38 @@ namespace MCBS.BlockForms
                 ChildControls.Clear();
                 if (ButtonsToShow.HasFlag(FormButtons.Close))
                 {
-                    Close_Button.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, Close_Button, 0, 0);
+                    Control? control = ChildControls.RecentlyAddedControl;
+                    if (control is null)
+                        Close_Button.LayoutLeft(this, 0, 0);
+                    else
+                        Close_Button.LayoutLeft(this, control, 0);
                     ChildControls.Add(Close_Button);
                 }
                 if (ButtonsToShow.HasFlag(FormButtons.MaximizeOrRestore))
                 {
-                    MaximizeOrRestore_Switch.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, MaximizeOrRestore_Switch, 0, 0);
+                    Control? control = ChildControls.RecentlyAddedControl;
+                    if (control is null)
+                        MaximizeOrRestore_Switch.LayoutLeft(this, 0, 0);
+                    else
+                        MaximizeOrRestore_Switch.LayoutLeft(this, control, 0);
                     ChildControls.Add(MaximizeOrRestore_Switch);
                 }
                 if (ButtonsToShow.HasFlag(FormButtons.Minimize))
                 {
-                    Minimize_Button.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, Minimize_Button, 0, 0);
+                    Control? control = ChildControls.RecentlyAddedControl;
+                    if (control is null)
+                        Minimize_Button.LayoutLeft(this, 0, 0);
+                    else
+                        Minimize_Button.LayoutLeft(this, control, 0);
                     ChildControls.Add(Minimize_Button);
                 }
                 if (ButtonsToShow.HasFlag(FormButtons.FullScreen))
                 {
-                    FullScreen_Button.ClientLocation = this.LeftLayout(ChildControls.RecentlyAddedControl, FullScreen_Button, 0, 0);
+                    Control? control = ChildControls.RecentlyAddedControl;
+                    if (control is null)
+                        FullScreen_Button.LayoutLeft(this, 0, 0);
+                    else
+                        FullScreen_Button.LayoutLeft(this, control, 0);
                     ChildControls.Add(FullScreen_Button);
                 }
             }

@@ -75,8 +75,8 @@ namespace MCBS.BlockForms
 
         public override void ActiveLayoutAll()
         {
-            Icon_PictureBox.ClientLocation = this.VerticalCenterLayout(Icon_PictureBox, Spacing);
-            Text_Label.ClientLocation = this.VerticalCenterLayout(Text_Label, Icon_PictureBox.RightLocation + 1);
+            Icon_PictureBox.LayoutVerticalCentered(this, Spacing);
+            Text_Label.LayoutVerticalCentered(this, Icon_PictureBox.RightLocation + 1);
         }
 
         public override void AutoSetSize()

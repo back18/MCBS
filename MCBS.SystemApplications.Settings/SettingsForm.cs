@@ -34,7 +34,7 @@ namespace MCBS.SystemApplications.Settings
             ClientPanel.ChildControls.Add(ClearInteraction_Button);
             ClearInteraction_Button.Text = "清除交互";
             ClearInteraction_Button.ClientSize = new(64, 16);
-            ClearInteraction_Button.ClientLocation = ClientPanel.BottomLayout(GetInteraction_Button, 2);
+            ClearInteraction_Button.LayoutDown(ClientPanel, GetInteraction_Button, 2);
             ClearInteraction_Button.RightClick += ClearInteraction_Button_RightClick;
         }
 

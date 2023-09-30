@@ -79,7 +79,7 @@ namespace MCBS.SystemApplications.Drawing
 
             ClientPanel.ChildControls.Add(Draw_Switch);
             Draw_Switch.Text = "绘制";
-            Draw_Switch.ClientLocation = ClientPanel.LeftLayout(null, Draw_Switch, 1, 1);
+            Draw_Switch.LayoutLeft(ClientPanel, 1, 1);
             Draw_Switch.Anchor = Direction.Top | Direction.Right;
             Draw_Switch.ControlSelected += Draw_Switch_ControlSelected;
             Draw_Switch.ControlDeselected += Draw_Switch_ControlDeselected;
@@ -87,14 +87,14 @@ namespace MCBS.SystemApplications.Drawing
 
             ClientPanel.ChildControls.Add(Zoom_Switch);
             Zoom_Switch.Text = "缩放";
-            Zoom_Switch.ClientLocation = ClientPanel.BottomLayout(Draw_Switch, 1);
+            Zoom_Switch.LayoutDown(ClientPanel, Draw_Switch, 1);
             Zoom_Switch.Anchor = Direction.Top | Direction.Right;
             Zoom_Switch.ControlSelected += Zoom_Switch_ControlSelected;
             Zoom_Switch.ControlDeselected += Zoom_Switch_ControlDeselected;
 
             ClientPanel.ChildControls.Add(Drag_Switch);
             Drag_Switch.Text = "拖拽";
-            Drag_Switch.ClientLocation = ClientPanel.BottomLayout(Zoom_Switch, 1);
+            Drag_Switch.LayoutDown(ClientPanel, Zoom_Switch, 1);
             Drag_Switch.Anchor = Direction.Top | Direction.Right;
             Drag_Switch.ControlSelected += Drag_Switch_ControlSelected;
             Drag_Switch.ControlDeselected += Drag_Switch_ControlDeselected;
@@ -102,7 +102,7 @@ namespace MCBS.SystemApplications.Drawing
             ClientPanel.ChildControls.Add(PenWidth_NumberBox);
             PenWidth_NumberBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Pink);
             PenWidth_NumberBox.MinNumberValue = 1;
-            PenWidth_NumberBox.ClientLocation = ClientPanel.BottomLayout(Drag_Switch, 1);
+            PenWidth_NumberBox.LayoutDown(ClientPanel, Drag_Switch, 1);
             PenWidth_NumberBox.Anchor = Direction.Top | Direction.Right;
             PenWidth_NumberBox.NumberValueChanged += PenWidth_NumberBox_NumberValueChanged;
             PenWidth_NumberBox.NumberValue = 5;
@@ -112,7 +112,7 @@ namespace MCBS.SystemApplications.Drawing
             MoreMenu_Switch.Skin.BackgroundBlockID_Selected = MoreMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
             MoreMenu_Switch.OffText = "更多";
             MoreMenu_Switch.OnText = "隐藏";
-            MoreMenu_Switch.ClientLocation = ClientPanel.BottomLayout(PenWidth_NumberBox, 1);
+            MoreMenu_Switch.LayoutDown(ClientPanel, PenWidth_NumberBox, 1);
             MoreMenu_Switch.Anchor = Direction.Top | Direction.Right;
             MoreMenu_Switch.ControlSelected += MoreMenu_Switch_ControlSelected;
             MoreMenu_Switch.ControlDeselected += MoreMenu_Switch_ControlDeselected; ;

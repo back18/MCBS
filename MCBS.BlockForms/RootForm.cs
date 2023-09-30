@@ -124,7 +124,7 @@ namespace MCBS.BlockForms
             ShowTaskBar_Button.InvokeExternalCursorMove = true;
             ShowTaskBar_Button.ClientSize = new(16, 16);
             ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
-            ShowTaskBar_Button.ClientLocation = this.LeftLayout(null, ShowTaskBar_Button, 0, e.NewSize.Height - ShowTaskBar_Button.Height));
+            ShowTaskBar_Button.LayoutLeft(this, e.NewSize.Height - ShowTaskBar_Button.Height, 0));
             ShowTaskBar_Button.Anchor = Direction.Bottom | Direction.Right;
             ShowTaskBar_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Shrink"]);
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
@@ -428,7 +428,7 @@ namespace MCBS.BlockForms
                 ChildControls.Add(FullScreen_Button);
                 FullScreen_Button.BorderWidth = 0;
                 FullScreen_Button.ClientSize = new(16, 16);
-                FullScreen_Button.ClientLocation = this.LeftLayout(null, FullScreen_Button, 0, 1);
+                FullScreen_Button.LayoutLeft(this, 1, 0);
                 FullScreen_Button.Anchor = Direction.Bottom | Direction.Right;
                 FullScreen_Button.Skin.IsRenderedImageBackground = true;
                 FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;

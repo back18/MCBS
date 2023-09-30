@@ -53,20 +53,20 @@ namespace MCBS.BlockForms
             ProgressBar_VideoProgressBar.Visible = false;
             ProgressBar_VideoProgressBar.Height = 6;
             ProgressBar_VideoProgressBar.Width = ClientSize.Width - 4;
-            ProgressBar_VideoProgressBar.ClientLocation = this.TopLayout(null, ProgressBar_VideoProgressBar, 2, 2);
+            ProgressBar_VideoProgressBar.LayoutUp(this, 2, 2);
             ProgressBar_VideoProgressBar.Anchor = Direction.Bottom | Direction.Left;
             ProgressBar_VideoProgressBar.Stretch = Direction.Left;
 
             ChildControls.Add(TimeText_VideoTimeTextBox);
             TimeText_VideoTimeTextBox.Visible = false;
-            TimeText_VideoTimeTextBox.ClientLocation = this.TopLayout(ProgressBar_VideoProgressBar, TimeText_VideoTimeTextBox, 2);
+            TimeText_VideoTimeTextBox.LayoutUp(this, ProgressBar_VideoProgressBar, 2);
             TimeText_VideoTimeTextBox.Anchor = Direction.Bottom | Direction.Left;
 
             ChildControls.Add(PauseOrResume_Switch);
             PauseOrResume_Switch.Visible = false;
             PauseOrResume_Switch.BorderWidth = 0;
             PauseOrResume_Switch.ClientSize = new(16, 16);
-            PauseOrResume_Switch.ClientLocation = this.LeftLayout(null, PauseOrResume_Switch, 2, TimeText_VideoTimeTextBox.TopLocation);
+            PauseOrResume_Switch.LayoutLeft(this, TimeText_VideoTimeTextBox.TopLocation, 2);
             PauseOrResume_Switch.Anchor = Direction.Bottom | Direction.Right;
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.Instance["Play"]);
             PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.Instance["Play"]);

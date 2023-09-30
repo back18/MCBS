@@ -13,9 +13,9 @@ namespace MCBS.BlockForms
         {
             ChildControls.Add(control);
             if (PreviousChildControl is not null)
-                control.ClientLocation = this.BottomLayout(PreviousChildControl, Spacing);
+                control.LayoutDown(this, PreviousChildControl, Spacing);
             else
-                control.ClientLocation = new(Spacing, Spacing);
+                control.LayoutDown(this, Spacing, Spacing);
             _items.Add(control);
 
             PageSize = new(ClientSize.Width, control.BottomLocation + 1 + Spacing);

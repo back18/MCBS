@@ -43,30 +43,30 @@ namespace MCBS.SystemApplications.TaskManager
             ClientPanel.ChildControls.Add(PreviousPage_Button);
             PreviousPage_Button.Text = "上一页";
             PreviousPage_Button.ClientSize = new(48, 16);
-            PreviousPage_Button.ClientLocation = ClientPanel.RightLayout(null, spacing, start);
+            PreviousPage_Button.LayoutRight(ClientPanel, start, spacing);
             PreviousPage_Button.Anchor = Direction.Bottom | Direction.Left;
 
             ClientPanel.ChildControls.Add(NextPage_Button);
             NextPage_Button.Text = "下一页";
             NextPage_Button.ClientSize = new(48, 16);
-            NextPage_Button.ClientLocation = ClientPanel.RightLayout(PreviousPage_Button, spacing);
+            NextPage_Button.LayoutRight(ClientPanel, PreviousPage_Button, spacing);
             NextPage_Button.Anchor = Direction.Bottom | Direction.Left;
 
             ClientPanel.ChildControls.Add(PageNumber_Label);
             PageNumber_Label.Text = "1/1";
-            PageNumber_Label.ClientLocation = ClientPanel.RightLayout(NextPage_Button, spacing);
+            PageNumber_Label.LayoutRight(ClientPanel, NextPage_Button, spacing);
             PageNumber_Label.Anchor = Direction.Bottom | Direction.Left;
 
             ClientPanel.ChildControls.Add(Close_Button);
             Close_Button.Text = "关闭";
             Close_Button.ClientSize = new(32, 16);
-            Close_Button.ClientLocation = ClientPanel.LeftLayout(null, Close_Button, spacing, start);
+            Close_Button.LayoutLeft(this, start, spacing);
             Close_Button.Anchor = Direction.Bottom | Direction.Right;
 
             ClientPanel.ChildControls.Add(Open_Button);
             Open_Button.Text = "打开";
             Open_Button.ClientSize = new(32, 16);
-            Open_Button.ClientLocation = ClientPanel.LeftLayout(Close_Button, Open_Button, spacing);
+            Open_Button.LayoutLeft(this, Close_Button, spacing);
             Open_Button.Anchor = Direction.Bottom | Direction.Right;
 
             ClientPanel.ChildControls.Add(TaskList_Panel);

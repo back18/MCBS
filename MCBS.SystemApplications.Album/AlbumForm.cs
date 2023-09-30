@@ -99,7 +99,7 @@ namespace MCBS.SystemApplications.Album
             Setting_Switch.ControlDeselected += Setting_Switch_ControlDeselected;
 
             ClientPanel.ChildControls.Add(Path_TextBox);
-            Path_TextBox.ClientLocation = ClientPanel.RightLayout(Setting_Switch, 2);
+            Path_TextBox.LayoutRight(ClientPanel, Setting_Switch, 2);
             Path_TextBox.Width = ClientPanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.Skin.BackgroundBlockID = string.Empty;
@@ -109,7 +109,7 @@ namespace MCBS.SystemApplications.Album
             PreviousImage_Button.Text = "<";
             PreviousImage_Button.ClientSize = new(16, 16);
             PreviousImage_Button.LayoutSyncer = new(ClientPanel, (sender, e) => { }, (sender, e) =>
-            PreviousImage_Button.ClientLocation = ClientPanel.VerticalCenterLayout(PreviousImage_Button, 2));
+            PreviousImage_Button.LayoutVerticalCentered(ClientPanel, 2));
             PreviousImage_Button.Skin.BackgroundBlockID = string.Empty;
             PreviousImage_Button.RightClick += PreviousImage_Button_RightClick;
 
@@ -117,13 +117,13 @@ namespace MCBS.SystemApplications.Album
             NextImage_Button.Text = ">";
             NextImage_Button.ClientSize = new(16, 16);
             NextImage_Button.LayoutSyncer = new(ClientPanel, (sender, e) => { }, (sender, e) =>
-            NextImage_Button.ClientLocation = ClientPanel.VerticalCenterLayout(NextImage_Button, ClientPanel.ClientSize.Width - NextImage_Button.Width - 3));
+            NextImage_Button.LayoutVerticalCentered(ClientPanel, ClientPanel.ClientSize.Width - NextImage_Button.Width - 3));
             NextImage_Button.Skin.BackgroundBlockID = string.Empty;
             NextImage_Button.RightClick += NextImage_Button_RightClick;
 
             Setting_ListMenuBox.ClientSize = new(128, 20 * 3 + 2);
             Setting_ListMenuBox.Spacing = 2;
-            Setting_ListMenuBox.ClientLocation = ClientPanel.BottomLayout(Setting_Switch, 2);
+            Setting_ListMenuBox.LayoutDown(ClientPanel, Setting_Switch, 2);
             Setting_ListMenuBox.Skin.SetAllBackgroundBlockID(string.Empty);
 
             int width = Setting_ListMenuBox.ClientSize.Width - 4;
@@ -263,7 +263,7 @@ namespace MCBS.SystemApplications.Album
 
         private void ScalablePictureBox_Resize(Control sender, SizeChangedEventArgs e)
         {
-            ScalablePictureBox.ClientLocation = ClientPanel.CenterLayout(ScalablePictureBox);
+            ScalablePictureBox.LayoutCentered(ClientPanel);
         }
 
         private void Setting_Switch_ControlSelected(Control sender, EventArgs e)

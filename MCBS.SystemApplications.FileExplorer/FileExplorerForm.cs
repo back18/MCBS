@@ -71,17 +71,17 @@ namespace MCBS.SystemApplications.FileExplorer
             ClientPanel.ChildControls.Add(Backward_Button);
             Backward_Button.Text = "←";
             Backward_Button.ClientSize = new(16, 16);
-            Backward_Button.ClientLocation = ClientPanel.RightLayout(null, spacing, start1);
+            Backward_Button.LayoutRight(ClientPanel, start1, spacing);
             Backward_Button.RightClick += Backward_Button_RightClick;
 
             ClientPanel.ChildControls.Add(Forward_Button);
             Forward_Button.Text = "→";
             Forward_Button.ClientSize = new(16, 16);
-            Forward_Button.ClientLocation = ClientPanel.RightLayout(Backward_Button, spacing);
+            Forward_Button.LayoutRight(ClientPanel, Backward_Button, spacing);
             Forward_Button.RightClick += Forward_Button_RightClick;
 
             ClientPanel.ChildControls.Add(Path_TextBox);
-            Path_TextBox.ClientLocation = ClientPanel.RightLayout(Forward_Button, spacing);
+            Path_TextBox.LayoutRight(ClientPanel, Forward_Button, spacing);
             Path_TextBox.Width = ClientPanel.ClientSize.Width - Backward_Button.Width - Forward_Button.Width - 8;
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.TextChanged += Path_TextBox_TextChanged;
@@ -89,20 +89,20 @@ namespace MCBS.SystemApplications.FileExplorer
             ClientPanel.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
-            Cancel_Button.ClientLocation = ClientPanel.LeftLayout(null, Cancel_Button, spacing, start2);
+            Cancel_Button.LayoutLeft(this, start2, spacing);
             Cancel_Button.Anchor = Direction.Bottom | Direction.Right;
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
             ClientPanel.ChildControls.Add(OK_Button);
             OK_Button.Text = "确定";
             OK_Button.ClientSize = new(32, 16);
-            OK_Button.ClientLocation = ClientPanel.LeftLayout(Cancel_Button, OK_Button, spacing);
+            OK_Button.LayoutLeft(this, Cancel_Button, spacing);
             OK_Button.Anchor = Direction.Bottom | Direction.Right;
             OK_Button.RightClick += OK_Button_RightClick;
 
             ClientPanel.ChildControls.Add(Clear_Button);
             Clear_Button.Text = "X";
-            Clear_Button.ClientLocation = ClientPanel.RightLayout(null, spacing, start2);
+            Clear_Button.LayoutRight(ClientPanel, start2, spacing);
             Clear_Button.ClientSize = new(16, 16);
             Clear_Button.Skin.BackgroundBlockID = BlockManager.Concrete.Pink;
             Clear_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
@@ -111,7 +111,7 @@ namespace MCBS.SystemApplications.FileExplorer
             Clear_Button.RightClick += Clear_Button_RightClick;
 
             ClientPanel.ChildControls.Add(Search_TextBox);
-            Search_TextBox.ClientLocation = ClientPanel.RightLayout(Clear_Button, spacing);
+            Search_TextBox.LayoutRight(ClientPanel, Clear_Button, spacing);
             Search_TextBox.Width = ClientPanel.ClientSize.Width - Clear_Button.Width - Cancel_Button.Width - OK_Button.Width - 10;
             Search_TextBox.Anchor = Direction.Bottom | Direction.Left;
             Search_TextBox.Stretch = Direction.Right;
@@ -120,7 +120,7 @@ namespace MCBS.SystemApplications.FileExplorer
             ClientPanel.ChildControls.Add(SimpleFilesBox);
             SimpleFilesBox.Width = ClientPanel.ClientSize.Width - 4;
             SimpleFilesBox.Height = ClientPanel.ClientSize.Height - Backward_Button.Height - Cancel_Button.Height - 8;
-            SimpleFilesBox.ClientLocation = ClientPanel.BottomLayout(Backward_Button, spacing);
+            SimpleFilesBox.LayoutDown(ClientPanel, Backward_Button, spacing);
             SimpleFilesBox.Stretch = Direction.Bottom | Direction.Right;
             SimpleFilesBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
             SimpleFilesBox.TextChanged += SimpleFilesBox_TextChanged;
