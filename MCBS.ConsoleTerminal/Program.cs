@@ -40,11 +40,11 @@ namespace MCBS.ConsoleTerminal
             try
             {
 #endif
-                ConfigManager.LoadAll();
-                MR.LoadAll();
-                SR.LoadAll();
-                TextureManager.LoadInstance();
-                FFmpegResourcesLoader.LoadAll();
+            ConfigManager.LoadAll();
+            MR.LoadAll();
+            SR.LoadAll();
+            TextureManager.LoadInstance();
+            FFmpegResourcesLoader.LoadAll();
 #if TryCatch
             }
             catch (Exception ex)
@@ -109,9 +109,22 @@ namespace MCBS.ConsoleTerminal
             Task task = Terminal.WaitForStopAsync();
             Terminal.Stop();
             task.Wait();
-            LOGGER.Info("按下回车键退出...");
-            Console.ReadLine();
-            LOGGER.Info("MCBS已终止，感谢使用！");
+
+            for (int i = 10; i >= 1; i--)
+            {
+                LOGGER.Info($"MCBS将在{i}秒后退出，按下回车键立即退出");
+                if (Console.KeyAvailable)
+                {
+                    if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                        break;
+                }
+                else
+                {
+                    Thread.Sleep(1000);
+                }
+            }
+
+            LOGGER.Info("MCBS已退出，感谢使用！");
         }
     }
 }
