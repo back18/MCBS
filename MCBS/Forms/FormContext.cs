@@ -95,11 +95,11 @@ namespace MCBS.Forms
                     else if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormLoad(EventArgs.Empty);
-                    ProcessContext? context = MCOS.Instance.ProcessOf(Application);
-                    if (context is null)
+                    ProcessContext? process = MCOS.Instance.ProcessOf(Application);
+                    if (process is null)
                         LOGGER.Info($"窗体“{Form.Text} #{ID}”已打开");
                     else
-                        LOGGER.Info($"窗体“{Form.Text} #{ID}”已被进程“{context.ApplicationInfo.ID} #{context.ID}”打开");
+                        LOGGER.Info($"窗体“{Form.Text} #{ID}”已被进程“{process.ApplicationInfo.ID} #{process.ID}”打开");
                     return true;
                 case FormState.Minimize:
                     if (Form is IRootForm)
