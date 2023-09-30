@@ -1,4 +1,7 @@
-﻿using MCBS.Directorys;
+﻿using log4net.Core;
+using MCBS.Directorys;
+using MCBS.Logging;
+using MCBS.State;
 using Newtonsoft.Json;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
@@ -16,28 +19,37 @@ namespace MCBS.Interaction
 {
     public class InteractionContext : IDisposable
     {
+        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
         private const string INTERACTION_ID = "minecraft:interaction";
-
         private const string INTERACTION_NBT = "{width:3,height:3,response:true}";
 
-        private InteractionContext(string playerName, Guid playerUUID, Guid entityUUID, EntityPos position)
+        private InteractionContext(Guid playerUUID, Guid entityUUID, EntityPos position)
         {
-            if (string.IsNullOrEmpty(playerName))
-                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
-
-            PlayerName = playerName;
             PlayerUUID = playerUUID;
             EntityUUID = entityUUID;
             Position = position;
-            InteractionState = InteractionState.Active;
 
+            StateManager = new(InteractionState.Active, new StateContext<InteractionState>[]
+            {
+                new(InteractionState.Active, Array.Empty<InteractionState>(), HandleActiveState),
+                new(InteractionState.Offline, new InteractionState[] { InteractionState.Active }, HandleOfflineState),
+                new(InteractionState.Closed, new InteractionState[] { InteractionState.Active, InteractionState.Offline }, HandleClosedState)
+            });
+
+            _lock = new();
+            isDisposed = false;
             _player = PlayerUUID.ToString();
             _entity = EntityUUID.ToString();
             _directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory()?.InteractionsDir ?? throw new InvalidOperationException("找不到交互实体数据文件夹");
             _file = _directory.Combine(_player + ".json");
-
             _task = SaveJsonAsync();
+
+            LOGGER.Info($"交互实体({_entity})已和玩家({_player})绑定");
         }
+
+        private readonly object _lock;
+
+        private bool isDisposed;
 
         private readonly string _player;
 
@@ -49,9 +61,9 @@ namespace MCBS.Interaction
 
         private Task _task;
 
-        public InteractionState InteractionState { get; private set; }
+        public StateManager<InteractionState> StateManager { get; }
 
-        public string PlayerName { get; }
+        public InteractionState InteractionState => StateManager.CurrentState;
 
         public Guid PlayerUUID { get; }
 
@@ -69,31 +81,45 @@ namespace MCBS.Interaction
 
         public void Handle()
         {
-            ConditionalEntity();
-            switch (InteractionState)
+            if (!ConditionalEntity())
             {
-                case InteractionState.Active:
-                    ReadLeftRightKeys();
-                    SyncPosition();
-                    _task = SaveJsonAsync();
-                    break;
-                case InteractionState.Offline:
-                    Dispose();
-                    break;
-                case InteractionState.Closed:
-                    break;
-                default:
-                    break;
+                CloseInteraction();
+                LOGGER.Info($"交互实体({_entity})或玩家({_player})已离线");
             }
+            StateManager.HandleAllState();
+            if (InteractionState == InteractionState.Active)
+            {
+                ReadLeftRightKeys();
+                SyncPosition();
+                _task = SaveJsonAsync();
+            }
+        }
+
+        protected virtual bool HandleActiveState(InteractionState current, InteractionState next)
+        {
+            return false;
+        }
+
+        protected virtual bool HandleOfflineState(InteractionState current, InteractionState next)
+        {
+            return !ConditionalEntity();
+        }
+
+        protected virtual bool HandleClosedState(InteractionState current, InteractionState next)
+        {
+            Dispose();
+            return true;
+        }
+
+        public void CloseInteraction()
+        {
+            StateManager.AddNextState(InteractionState.Closed);
         }
 
         public bool ConditionalEntity()
         {
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            bool result = sender.ConditionalEntity(_player) && sender.ConditionalEntity(_entity);
-            if (!result && InteractionState == InteractionState.Active)
-                InteractionState = InteractionState.Offline;
-            return result;
+            return sender.ConditionalEntity(_player) && sender.ConditionalEntity(_entity);
         }
 
         public bool SyncPosition()
@@ -145,29 +171,11 @@ namespace MCBS.Interaction
             return new(_player, _entity, new double[] { Position.X, Position.Y, Position.Z });
         }
 
-        public void Dispose()
+        public static bool TryCreate(Guid playerUUID, [MaybeNullWhen(false)] out InteractionContext result)
         {
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            BlockPos blockPos = Position.ToBlockPos();
-            sender.AddForceloadChunk(blockPos);
-            sender.KillEntity(_entity);
-            sender.RemoveForceloadChunk(blockPos);
-            DaleteJson();
-            InteractionState = InteractionState.Closed;
-            GC.SuppressFinalize(this);
-        }
 
-        public static bool TryCreate(string player, [MaybeNullWhen(false)] out InteractionContext result)
-        {
-            if (string.IsNullOrEmpty(player))
-                goto fail;
-
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-
-            if (!sender.TryGetEntityUuid(player, out var playerUUID))
-                goto fail;
-
-            if (!sender.TryGetEntityPosition(player, out var position))
+            if (!sender.TryGetEntityPosition(playerUUID.ToString(), out var position))
                 goto fail;
 
             if (sender.ConditionalEntity($"@e[limit=1,type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..1,sort=nearest]"))
@@ -179,12 +187,41 @@ namespace MCBS.Interaction
             if (!sender.TryGetEntityUuid($"@e[limit=1,type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..1,sort=nearest]", out var entityUUID))
                 goto fail;
 
-            result = new(player, playerUUID, entityUUID, position);
+            result = new(playerUUID, entityUUID, position);
             return true;
 
             fail:
             result = null;
             return false;
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            lock (_lock)
+            {
+                if (isDisposed || !disposing)
+                    return;
+
+                CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+                BlockPos blockPos = Position.ToBlockPos();
+                sender.AddForceloadChunk(blockPos);
+                sender.KillEntity(_entity);
+                sender.RemoveForceloadChunk(blockPos);
+                DaleteJson();
+                isDisposed = true;
+                LOGGER.Info($"交互实体({_entity})已和玩家({_player})解绑");
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~InteractionContext()
+        {
+            Dispose(disposing: false);
         }
 
         public class Json

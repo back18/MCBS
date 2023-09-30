@@ -127,11 +127,11 @@ namespace MCBS
 
         private void Initialize()
         {
-            LOGGER.Info("正在等待Minecraft服务器启动...");
+            LOGGER.Info("正在等待Minecraft实例启动...");
             MinecraftInstance.WaitForConnection();
             MinecraftInstance.Start("MinecraftInstance Thread");
             Thread.Sleep(1000);
-            LOGGER.Info("成功连接到Minecraft服务器");
+            LOGGER.Info("成功连接到Minecraft实例");
 
             LOGGER.Info("开始初始化");
 
@@ -194,7 +194,7 @@ namespace MCBS
 
                 if (!connection)
                 {
-                    LOGGER.Fatal("系统运行时引发了异常，并且无法连接到Minecraft服务器，系统即将终止", ex);
+                    LOGGER.Fatal("系统运行时引发了异常，并且无法连接到Minecraft实例，系统即将终止", ex);
                 }
                 else if (ConfigManager.SystemConfig.CrashAutoRestart)
                 {
@@ -247,18 +247,21 @@ namespace MCBS
                     goto end;
                 }
 
-                LOGGER.Info("正在回收交互实体");
-                foreach (var interaction in InteractionManager.Items.Values)
-                    interaction.Dispose();
-                LOGGER.Info("完成");
-
                 LOGGER.Info("正在卸载所有屏幕");
                 foreach (var context in ScreenManager.Items.Values)
                     context.CloseScreen();
+                LOGGER.Info("完成");
+
+                LOGGER.Info("正在回收交互实体");
+                foreach (var interaction in InteractionManager.Items.Values)
+                    interaction.CloseInteraction();
+                LOGGER.Info("完成");
+
                 HandleScreenScheduling();
                 HandleProcessScheduling();
                 HandleFormScheduling();
-                LOGGER.Info("完成");
+                HandleInteractionScheduling();
+                Thread.Sleep(1000);
 
                 LOGGER.Info("全部系统资源均已释放完成");
             }
@@ -269,6 +272,7 @@ namespace MCBS
 
             end:
             MinecraftInstance.Stop();
+            LOGGER.Info("已和Minecraft实例断开连接");
         }
 
         private TimeSpan HandleScreenScheduling()

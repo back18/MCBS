@@ -60,7 +60,7 @@ namespace MCBS.Interaction
                     sender.KillEntity(json.EntityUUID);
                     sender.RemoveForceloadChunk(blockPos);
                     File.Delete(file);
-                    LOGGER.Info($"玩家[{json.PlayerUUID}]的交互实体已回收");
+                    LOGGER.Info($"玩家({json.PlayerUUID})的交互实体({json.EntityUUID})已回收");
                 }
                 catch (Exception ex)
                 {
@@ -79,7 +79,7 @@ namespace MCBS.Interaction
             }
         }
 
-        public class InteractionCollection : IDictionary<string, InteractionContext>
+        public class InteractionCollection : IDictionary<Guid, InteractionContext>
         {
             public InteractionCollection(InteractionManager owner)
             {
@@ -89,13 +89,13 @@ namespace MCBS.Interaction
 
             private readonly InteractionManager _owner;
 
-            private readonly ConcurrentDictionary<string, InteractionContext> _items;
+            private readonly ConcurrentDictionary<Guid, InteractionContext> _items;
 
-            public InteractionContext this[string player] => _items[player];
+            public InteractionContext this[Guid player] => _items[player];
 
-            InteractionContext IDictionary<string, InteractionContext>.this[string key] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+            InteractionContext IDictionary<Guid, InteractionContext>.this[Guid key] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-            public ICollection<string> Keys => _items.Keys;
+            public ICollection<Guid> Keys => _items.Keys;
 
             public ICollection<InteractionContext> Values => _items.Values;
 
@@ -103,11 +103,8 @@ namespace MCBS.Interaction
 
             public bool IsReadOnly => false;
 
-            public bool TryAdd(string player, [MaybeNullWhen(false)] out InteractionContext interaction)
+            public bool TryAdd(Guid player, [MaybeNullWhen(false)] out InteractionContext interaction)
             {
-                if (player is null)
-                    throw new ArgumentNullException(nameof(player));
-
                 lock (this)
                 {
                     if (_items.ContainsKey(player))
@@ -116,7 +113,7 @@ namespace MCBS.Interaction
                     if (!InteractionContext.TryCreate(player, out interaction))
                         goto err;
 
-                    _items.TryAdd(interaction.PlayerName, interaction);
+                    _items.TryAdd(interaction.PlayerUUID, interaction);
                     _owner.AddedInteraction.Invoke(_owner, new(interaction));
                     return true;
 
@@ -126,7 +123,7 @@ namespace MCBS.Interaction
                 }
             }
 
-            public bool Remove(string player)
+            public bool Remove(Guid player)
             {
                 lock (this)
                 {
@@ -144,17 +141,17 @@ namespace MCBS.Interaction
                     Remove(player);
             }
 
-            public bool ContainsKey(string player)
+            public bool ContainsKey(Guid player)
             {
                 return _items.ContainsKey(player);
             }
 
-            public bool TryGetValue(string player, [MaybeNullWhen(false)] out InteractionContext interaction)
+            public bool TryGetValue(Guid player, [MaybeNullWhen(false)] out InteractionContext interaction)
             {
                 return _items.TryGetValue(player, out interaction);
             }
 
-            public IEnumerator<KeyValuePair<string, InteractionContext>> GetEnumerator()
+            public IEnumerator<KeyValuePair<Guid, InteractionContext>> GetEnumerator()
             {
                 return _items.GetEnumerator();
             }
@@ -164,27 +161,27 @@ namespace MCBS.Interaction
                 return ((IEnumerable)_items).GetEnumerator();
             }
 
-            void ICollection<KeyValuePair<string, InteractionContext>>.Add(KeyValuePair<string, InteractionContext> item)
+            void ICollection<KeyValuePair<Guid, InteractionContext>>.Add(KeyValuePair<Guid, InteractionContext> item)
             {
-                ((ICollection<KeyValuePair<string, InteractionContext>>)_items).Add(item);
+                ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).Add(item);
             }
 
-            bool ICollection<KeyValuePair<string, InteractionContext>>.Remove(KeyValuePair<string, InteractionContext> item)
+            bool ICollection<KeyValuePair<Guid, InteractionContext>>.Remove(KeyValuePair<Guid, InteractionContext> item)
             {
-                return ((ICollection<KeyValuePair<string, InteractionContext>>)_items).Remove(item);
+                return ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).Remove(item);
             }
 
-            bool ICollection<KeyValuePair<string, InteractionContext>>.Contains(KeyValuePair<string, InteractionContext> item)
+            bool ICollection<KeyValuePair<Guid, InteractionContext>>.Contains(KeyValuePair<Guid, InteractionContext> item)
             {
-                return ((ICollection<KeyValuePair<string, InteractionContext>>)_items).Contains(item);
+                return ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).Contains(item);
             }
 
-            void ICollection<KeyValuePair<string, InteractionContext>>.CopyTo(KeyValuePair<string, InteractionContext>[] array, int arrayIndex)
+            void ICollection<KeyValuePair<Guid, InteractionContext>>.CopyTo(KeyValuePair<Guid, InteractionContext>[] array, int arrayIndex)
             {
-                ((ICollection<KeyValuePair<string, InteractionContext>>)_items).CopyTo(array, arrayIndex);
+                ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).CopyTo(array, arrayIndex);
             }
 
-            void IDictionary<string, InteractionContext>.Add(string key, InteractionContext value)
+            void IDictionary<Guid, InteractionContext>.Add(Guid key, InteractionContext value)
             {
                 throw new NotSupportedException();
             }

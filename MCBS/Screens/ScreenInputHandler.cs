@@ -228,7 +228,7 @@ namespace MCBS.Screens
             switch (mainItem.ID)
             {
                 case MOUSE_ITEM:
-                    if (MCOS.Instance.InteractionManager.Items.TryGetValue(CurrentPlayer, out var interaction))
+                    if (sender.TryGetEntityUuid(CurrentPlayer, out var uuid) && MCOS.Instance.InteractionManager.Items.TryGetValue(uuid, out var interaction))
                     {
                         if (interaction.IsLeftClick)
                             actions.Add(() => LeftClick.Invoke(this, new(CurrentPosition)));

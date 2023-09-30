@@ -2,6 +2,7 @@
 using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using QuanLib.Minecraft.Command;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,20 +43,20 @@ namespace MCBS.SystemApplications.Settings
         private void GetInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
             string? player = GetScreenContext()?.Screen.InputHandler.CurrentPlayer;
-            if (player is null)
+            if (player is null || !MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(player, out var uuid))
                 return;
 
-            MCOS.Instance.InteractionManager.Items.TryAdd(player, out _);
+            MCOS.Instance.InteractionManager.Items.TryAdd(uuid, out _);
         }
 
         private void ClearInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
             string? player = GetScreenContext()?.Screen.InputHandler.CurrentPlayer;
-            if (player is null)
+            if (player is null || !MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(player, out var uuid))
                 return;
 
-            if (MCOS.Instance.InteractionManager.Items.TryGetValue(player, out var interaction))
-                interaction.Dispose();
+            if (MCOS.Instance.InteractionManager.Items.TryGetValue(uuid, out var interaction))
+                interaction.CloseInteraction();
         }
     }
 }
