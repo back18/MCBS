@@ -12,15 +12,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Interactions
+namespace MCBS.Interaction
 {
-    public class Interaction : IDisposable
+    public class InteractionContext : IDisposable
     {
         private const string INTERACTION_ID = "minecraft:interaction";
 
         private const string INTERACTION_NBT = "{width:3,height:3,response:true}";
 
-        private Interaction(string playerName, Guid playerUUID, Guid entityUUID, EntityPos position)
+        private InteractionContext(string playerName, Guid playerUUID, Guid entityUUID, EntityPos position)
         {
             if (string.IsNullOrEmpty(playerName))
                 throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
@@ -157,7 +157,7 @@ namespace MCBS.Interactions
             GC.SuppressFinalize(this);
         }
 
-        public static bool TryCreate(string player, [MaybeNullWhen(false)] out Interaction result)
+        public static bool TryCreate(string player, [MaybeNullWhen(false)] out InteractionContext result)
         {
             if (string.IsNullOrEmpty(player))
                 goto fail;
@@ -182,7 +182,7 @@ namespace MCBS.Interactions
             result = new(player, playerUUID, entityUUID, position);
             return true;
 
-        fail:
+            fail:
             result = null;
             return false;
         }

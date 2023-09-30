@@ -1,5 +1,5 @@
 ﻿using MCBS.Events;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;

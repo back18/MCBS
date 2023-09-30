@@ -1,5 +1,5 @@
 ﻿using MCBS.Frame;
-using QuanLib.Core.ExceptionHelper;
+using QuanLib.Core;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;

@@ -2,7 +2,7 @@
 using MCBS.Frame;
 using MCBS.UI;
 using QuanLib.Core;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;

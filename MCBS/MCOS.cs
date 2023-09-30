@@ -22,9 +22,9 @@ using MCBS.Logging;
 using MCBS.UI;
 using MCBS.Config;
 using MCBS.Processes;
-using MCBS.Interactions;
 using MCBS.Application;
 using MCBS.Forms;
+using MCBS.Interaction;
 
 namespace MCBS
 {

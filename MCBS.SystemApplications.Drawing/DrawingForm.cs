@@ -4,7 +4,7 @@ using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Core.Events;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

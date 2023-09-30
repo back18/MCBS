@@ -2,7 +2,7 @@
 using MCBS.Frame;
 using MCBS.UI;
 using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;

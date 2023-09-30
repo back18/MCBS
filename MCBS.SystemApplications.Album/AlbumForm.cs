@@ -5,7 +5,7 @@ using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
 using QuanLib.Core.Events;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;

@@ -1,7 +1,7 @@
 ﻿using MCBS;
 using MCBS.BlockForms;
 using QuanLib.Minecraft;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using System;

@@ -1,4 +1,4 @@
-﻿using MCBS.Interactions;
+﻿using MCBS.Interaction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,11 @@ namespace MCBS.Events
 {
     public class InteractionEventArgs : EventArgs
     {
-        public InteractionEventArgs(Interaction interaction)
+        public InteractionEventArgs(InteractionContext interaction)
         {
             Interaction = interaction;
         }
 
-        public Interaction Interaction { get; }
+        public InteractionContext Interaction { get; }
     }
 }

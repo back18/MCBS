@@ -2,7 +2,7 @@
 using MCBS.Events;
 using MCBS.Frame;
 using QuanLib.BDF;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using System;

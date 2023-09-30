@@ -1,5 +1,5 @@
 ﻿using MCBS.BlockForms;
-using QuanLib.Core.ExceptionHelper;
+using QuanLib.Core;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

@@ -17,8 +17,8 @@ using log4net.Core;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft;
 using MCBS.Logging;
-using QuanLib.Minecraft.Snbt.Model;
 using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.Snbt.Models;
 
 namespace MCBS.Screens
 {

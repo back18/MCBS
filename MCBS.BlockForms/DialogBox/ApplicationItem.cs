@@ -1,7 +1,7 @@
 ﻿using MCBS.Application;
 using MCBS.BlockForms;
 using MCBS.Events;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using System;
 using System.Collections.Generic;
 using System.Linq;

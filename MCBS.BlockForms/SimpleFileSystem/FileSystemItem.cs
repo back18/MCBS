@@ -1,7 +1,7 @@
 ﻿using MCBS.BlockForms;
 using MCBS.Events;
 using QuanLib.Core.IO;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

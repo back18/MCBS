@@ -2,7 +2,7 @@
 using MCBS.BlockForms;
 using MCBS.Events;
 using MCBS.UI;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;

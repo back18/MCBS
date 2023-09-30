@@ -5,7 +5,7 @@ using MCBS.Forms;
 using MCBS.Screens;
 using MCBS.UI;
 using QuanLib.Core;
-using QuanLib.Minecraft.Block;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
