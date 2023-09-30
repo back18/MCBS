@@ -173,7 +173,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
                     };
                     ChildControls.Add(path);
                 }
-                LayoutHelper.FillLayoutRightDown(this, items);
+                LayoutHelper.FillLayoutRightDown(this, items, 1);
                 PageSize = new(ClientSize.Width, items[^1].BottomLocation + 2);
                 OffsetPosition = new(0, 0);
             }

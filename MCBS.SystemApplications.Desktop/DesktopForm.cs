@@ -63,7 +63,7 @@ namespace MCBS.SystemApplications.Desktop
             if (ClientPanel.ChildControls.Count == 0)
                 return;
 
-            LayoutHelper.FillLayoutDownRight(this, ClientPanel.ChildControls);
+            LayoutHelper.FillLayoutDownRight(this, ClientPanel.ChildControls, 0);
             ClientPanel.PageSize = new((ClientPanel.ChildControls.RecentlyAddedControl ?? ClientPanel.ChildControls[^1]).RightLocation + 1, ClientPanel.ClientSize.Height);
             ClientPanel.OffsetPosition = new(0, 0);
             ClientPanel.RefreshHorizontalScrollBar();
