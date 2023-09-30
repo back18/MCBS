@@ -74,7 +74,7 @@ namespace MCBS.Screens
                     RootForm.ClientSize = Screen.Size;
                     MCOS.Instance.RunStartupChecklist(RootForm);
                     BindEvents();
-                    LOGGER.Info($"屏幕“{Screen.StartPosition} #{ID}”已加载");
+                    LOGGER.Info($"屏幕({Screen.StartPosition} #{ID})已加载");
                     return true;
                 case ScreenState.Sleep:
                     //TODO
@@ -100,7 +100,7 @@ namespace MCBS.Screens
             }
             RootForm.CloseForm();
             Screen.Stop();
-            LOGGER.Info($"屏幕“{Screen.StartPosition} #{ID}”已卸载");
+            LOGGER.Info($"屏幕({Screen.StartPosition} #{ID})已卸载");
             return true;
         }
 

@@ -97,9 +97,9 @@ namespace MCBS.Forms
                     Form.HandleFormLoad(EventArgs.Empty);
                     ProcessContext? processContext = MCOS.Instance.ProcessOf(Application);
                     if (processContext is null)
-                        LOGGER.Info($"窗体“{Form.Text} #{ID}”已打开");
+                        LOGGER.Info($"窗体({Form.Text} #{ID})已打开");
                     else
-                        LOGGER.Info($"窗体“{Form.Text} #{ID}”已被进程“{processContext.ApplicationInfo.ID} #{processContext.ID}”打开");
+                        LOGGER.Info($"窗体({Form.Text} #{ID})已被进程({processContext.ApplicationInfo.ID} #{processContext.ID})打开");
                     return true;
                 case FormState.Minimize:
                     if (Form is IRootForm)
@@ -107,7 +107,7 @@ namespace MCBS.Forms
                     if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormUnminimize(EventArgs.Empty);
-                    LOGGER.Info($"窗体“{Form.Text} #{ID}”已取消最小化");
+                    LOGGER.Info($"窗体({Form.Text} #{ID})已取消最小化");
                     return true;
                 default:
                     return false;
@@ -121,7 +121,7 @@ namespace MCBS.Forms
             if (RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
             Form.HandleFormMinimize(EventArgs.Empty);
-            LOGGER.Info($"窗体“{Form.Text} #{ID}”已最小化");
+            LOGGER.Info($"窗体({Form.Text} #{ID})已最小化");
             return true;
         }
 
@@ -130,7 +130,7 @@ namespace MCBS.Forms
             if (Form is not IRootForm && RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
             Form.HandleFormClose(EventArgs.Empty);
-            LOGGER.Info($"窗体“{Form.Text} #{ID}”已关闭，返回值为 {Form.ReturnValue ?? "null"}");
+            LOGGER.Info($"窗体({Form.Text} #{ID})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
             _close.Set();
             return true;
         }

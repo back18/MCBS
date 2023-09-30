@@ -50,8 +50,6 @@ namespace MCBS.Processes
 
         public IForm? Initiator { get; }
 
-        public string MainThreadName => $"{ApplicationInfo.ID} AppThread #{ID}";
-
         protected override void OnStarted(IRunnable sender, EventArgs e)
         {
             base.OnStarted(sender, e);
@@ -103,13 +101,14 @@ namespace MCBS.Processes
 
         protected override void Run()
         {
-            FormContext? formContext = Initiator is null ? null : MCOS.Instance.FormContextOf(Initiator);
+            string args = _args.Length == 0 ? "empty" : string.Join(", ", _args.Select(arg => $"\"{arg}\""));
+            FormContext ? formContext = Initiator is null ? null : MCOS.Instance.FormContextOf(Initiator);
             if (formContext is null)
-                LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”已开始运行");
+                LOGGER.Info($"进程({ApplicationInfo.ID} #{ID})已启动，启动参数为 {args}");
             else
-                LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”已开始运行，启动者窗体为“{formContext.Form.Text} #{formContext.ID}”");
+                LOGGER.Info($"进程({ApplicationInfo.ID} #{ID})已被窗体({formContext.Form.Text} #{formContext.ID})启动，启动参数为 {args}");
             object? result = Application.Main(_args);
-            LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”停止开始运行，返回值为 {result ?? "null"}");
+            LOGGER.Info($"进程({ApplicationInfo.ID} #{ID})已停止，返回值为 {result ?? "null"}");
         }
 
         public ProcessContext StartProcess()
