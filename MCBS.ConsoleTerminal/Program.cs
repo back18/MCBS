@@ -19,10 +19,13 @@ namespace MCBS.ConsoleTerminal
 {
     public static class Program
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER;
 
         static Program()
         {
+            Thread.CurrentThread.Name = "Main Thread";
+            ConfigManager.CreateIfNotExists();
+            LOGGER = LogUtil.GetLogger();
             Terminal = new();
         }
 
@@ -30,11 +33,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
-            Thread.CurrentThread.Name = "Main Thread";
-            ConfigManager.CreateIfNotExists();
-
             LOGGER.Info("MCBS已启动，欢迎使用！");
-
             Terminal.Start("Terminal Thread");
 
 #if TryCatch
