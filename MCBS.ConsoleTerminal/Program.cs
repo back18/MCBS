@@ -21,14 +21,21 @@ namespace MCBS.ConsoleTerminal
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
+        static Program()
+        {
+            Terminal = new();
+        }
+
+        public static Terminal Terminal { get; }
+
         private static void Main(string[] args)
         {
             Thread.CurrentThread.Name = "Main Thread";
             ConfigManager.CreateIfNotExists();
-            LOGGER.Info("Starting!");
 
-            Terminal terminal = new();
-            terminal.Start("Terminal Thread");
+            LOGGER.Info("MCBS已启动，欢迎使用！");
+
+            Terminal.Start("Terminal Thread");
 
 #if TryCatch
             try
@@ -96,13 +103,16 @@ namespace MCBS.ConsoleTerminal
 
             Exit();
             return;
+        }
 
-            void Exit()
-            {
-                terminal.Stop();
-                LOGGER.Info("按下回车键退出...");
-                terminal.WaitForStop();
-            }
+        public static void Exit()
+        {
+            Task task = Terminal.WaitForStopAsync();
+            Terminal.Stop();
+            task.Wait();
+            LOGGER.Info("按下回车键退出...");
+            Console.ReadLine();
+            LOGGER.Info("MCBS已终止，感谢使用！");
         }
     }
 }

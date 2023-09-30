@@ -129,7 +129,7 @@ namespace MCBS
         {
             LOGGER.Info("正在等待Minecraft服务器启动...");
             MinecraftInstance.WaitForConnection();
-            MinecraftInstance.Start();
+            MinecraftInstance.Start("MinecraftInstance Thread");
             Thread.Sleep(1000);
             LOGGER.Info("成功连接到Minecraft服务器");
 
@@ -145,7 +145,7 @@ namespace MCBS
 
         protected override void Run()
         {
-            LOGGER.Info("系统已开始运行");
+            LOGGER.Info("系统已启动");
             Initialize();
             _stopwatch.Start();
 
@@ -194,7 +194,7 @@ namespace MCBS
 
                 if (!connection)
                 {
-                    LOGGER.Fatal("系统运行时遇到意外错误，并且无法继续连接到Minecraft服务器，系统即将终止运行", ex);
+                    LOGGER.Fatal("系统运行时引发了异常，并且无法连接到Minecraft服务器，系统即将终止", ex);
                 }
                 else if (ConfigManager.SystemConfig.CrashAutoRestart)
                 {
@@ -202,7 +202,7 @@ namespace MCBS
                     {
                         context.RestartScreen();
                     }
-                    LOGGER.Error("系统运行时遇到意外错误，已启用自动重启，系统即将在3秒后重启", ex);
+                    LOGGER.Error("系统运行时引发了异常，已启用自动重启，系统即将在3秒后重启", ex);
                     for (int i = 3; i >= 1; i--)
                     {
                         LOGGER.Info($"将在{i}秒后自动重启...");
@@ -214,38 +214,61 @@ namespace MCBS
                 }
                 else
                 {
-                    LOGGER.Fatal("系统运行时遇到意外错误，未启用自动重启，系统即将终止运行", ex);
+                    LOGGER.Fatal("系统运行时引发了异常，并且未启用自动重启，系统即将终止", ex);
                 }
             }
 #endif
 
             _stopwatch.Stop();
-            LOGGER.Info("系统已终止运行");
+            LOGGER.Info("系统已终止");
         }
 
         protected override void DisposeUnmanaged()
         {
-            LOGGER.Info("开始释放非托管资源");
-
-            bool connection = MinecraftInstance.TestConnection();
-            if (!connection)
+            try
             {
-                LOGGER.Warn("无法继续连接到Minecraft服务器，因此无法释放托管在Minecraft中的资源");
-                return;
+                LOGGER.Info("开始回收系统资源");
+
+                LOGGER.Info("正在等待主任务完成...");
+                TaskManager.WaitForCurrentMainTask();
+
+                if (IsRuning)
+                {
+                    Task task = WaitForStopAsync();
+                    LOGGER.Info("正在等待系统终止...");
+                    IsRuning = false;
+                    task.Wait();
+                }
+
+                bool connection = MinecraftInstance.TestConnection();
+                if (!connection)
+                {
+                    LOGGER.Warn("由于无法连接到Minecraft实例，部分系统资源可能无法回收");
+                    goto end;
+                }
+
+                LOGGER.Info("正在回收交互实体");
+                foreach (var interaction in InteractionManager.Items.Values)
+                    interaction.Dispose();
+                LOGGER.Info("完成");
+
+                LOGGER.Info("正在卸载所有屏幕");
+                foreach (var context in ScreenManager.Items.Values)
+                    context.CloseScreen();
+                HandleScreenScheduling();
+                HandleProcessScheduling();
+                HandleFormScheduling();
+                LOGGER.Info("完成");
+
+                LOGGER.Info("全部系统资源均已释放完成");
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error("无法回收系统资源", ex);
             }
 
-            foreach (var context in ScreenManager.Items.Values)
-            {
-                context.Screen.Fill();
-                context.Screen.UnloadScreenChunks();
-            }
-
-            foreach (var interaction in InteractionManager.Items.Values)
-            {
-                interaction.Dispose();
-            }
-
-            LOGGER.Info("非托管资源释放完成");
+            end:
+            MinecraftInstance.Stop();
         }
 
         private TimeSpan HandleScreenScheduling()
@@ -393,9 +416,9 @@ namespace MCBS
             if (application is null)
                 throw new ArgumentNullException(nameof(application));
 
-            foreach (var process in ProcessManager.Items.Values)
-                if (application == process.Application)
-                    return process;
+            foreach (var context in ProcessManager.Items.Values)
+                if (application == context.Application)
+                    return context;
 
             return null;
         }

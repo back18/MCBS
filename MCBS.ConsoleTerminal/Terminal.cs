@@ -27,7 +27,7 @@ namespace MCBS.ConsoleTerminal
 
         protected override void Run()
         {
-            LOGGER.Info("命令行终端已开始运行");
+            LOGGER.Info("命令行终端已启动");
 
             while (IsRuning)
             {
@@ -138,7 +138,7 @@ namespace MCBS.ConsoleTerminal
                 }
             }
 
-            LOGGER.Info("命令行终端已终止运行");
+            LOGGER.Info("命令行终端已终止");
         }
 
         private void RegisterCommands()
