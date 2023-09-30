@@ -147,7 +147,7 @@ namespace MCBS
             {
                 lock (VideoDecoder)
                 {
-                    VideoDecoder.Start();
+                    VideoDecoder.Start("VideoDecoder Thread");
                 }
 
                 if (EnableAudio)
