@@ -41,12 +41,12 @@ namespace MCBS.Forms
                 }
                 else
                 {
-                    ScreenContext? context = null;
+                    ScreenContext? screenContext = null;
                     if (initiator is not null)
-                        context = os.ScreenContextOf(initiator);
+                        screenContext = os.ScreenContextOf(initiator);
 
-                    if (context is not null)
-                        RootForm = context.RootForm;
+                    if (screenContext is not null)
+                        RootForm = screenContext.RootForm;
                     else if (os.ScreenManager.Items.Any())
                         RootForm = os.ScreenManager.Items.FirstOrDefault().Value.RootForm;
                     else
