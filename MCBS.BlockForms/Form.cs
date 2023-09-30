@@ -59,7 +59,7 @@ namespace MCBS.BlockForms
 
         public virtual Direction ResizeBorder { get; protected set; }
 
-        public object? ReturnValue { get; }
+        public virtual object? ReturnValue { get; protected set; }
 
         public Image<Rgba32> Icon { get; set; }
 

@@ -124,7 +124,7 @@ namespace MCBS.Forms
             if (Form is not IRootForm && RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
             Form.HandleFormClose(EventArgs.Empty);
-            LOGGER.Info($"窗体“{Form.Text} #{ID}”已关闭");
+            LOGGER.Info($"窗体“{Form.Text} #{ID}”已关闭，返回值为 {Form.ReturnValue ?? "null"}");
             _close.Set();
             return true;
         }

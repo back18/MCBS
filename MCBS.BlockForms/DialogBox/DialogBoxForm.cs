@@ -28,6 +28,8 @@ namespace MCBS.BlockForms.DialogBox
 
         public abstract R DialogResult { get; protected set; }
 
+        public override object? ReturnValue => DialogResult;
+
         public override void OnInitCompleted3()
         {
             base.OnInitCompleted3();
