@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.Applications;
+using MCBS.Application;
 
 namespace MCBS.SystemApplications.Drawing
 {
-    public class DrawingApp : Application
+    public class DrawingApp : ApplicationBase
     {
         public const string ID = "Drawing";
 

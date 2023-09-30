@@ -1,6 +1,5 @@
 ﻿using static MCBS.Config.ConfigManager;
 using CoreRCON;
-using QuanLib.Core.Event;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using System;
@@ -12,12 +11,12 @@ using System.Threading.Tasks;
 using CoreRCON.Parsers.Standard;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Core;
-using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Command;
-using MCBS.Event;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Snbt.Model;
-using MCBS.Cursors;
+using MCBS.Events;
+using MCBS.Cursor;
+using QuanLib.Minecraft.Command.Senders;
 
 namespace MCBS.Screens
 {

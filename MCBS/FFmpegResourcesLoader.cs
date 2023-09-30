@@ -2,7 +2,7 @@
 using log4net.Core;
 using MCBS.Logging;
 using Newtonsoft.Json;
-using QuanLib.Core.Extension;
+using QuanLib.Core.Extensions;
 using QuanLib.Core.IO;
 using System;
 using System.Collections.Generic;

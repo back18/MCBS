@@ -1,7 +1,7 @@
-﻿using MCBS.Event;
+﻿using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
-using QuanLib.Core.Event;
+using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;

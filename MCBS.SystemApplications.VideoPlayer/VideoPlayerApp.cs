@@ -1,5 +1,5 @@
 ﻿using FFMediaToolkit;
-using MCBS.Applications;
+using MCBS.Application;
 using MCBS.BlockForms.DialogBox;
 using MCBS.UI;
 using System;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.VideoPlayer
 {
-    public class VideoPlayerApp : Application
+    public class VideoPlayerApp : ApplicationBase
     {
         public const string ID = "VideoPlayer";
 

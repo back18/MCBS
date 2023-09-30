@@ -1,6 +1,6 @@
-﻿using MCBS.Applications;
+﻿using MCBS.Application;
 using MCBS.BlockForms.Utility;
-using MCBS.Event;
+using MCBS.Events;
 using MCBS.UI;
 using System;
 using System.Collections.Generic;

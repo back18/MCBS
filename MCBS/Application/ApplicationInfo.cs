@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Applications
+namespace MCBS.Application
 {
     public abstract class ApplicationInfo
     {
@@ -21,8 +21,8 @@ namespace MCBS.Applications
         {
             if (typeObject is null)
                 throw new ArgumentNullException(nameof(typeObject));
-            if (!typeObject.IsSubclassOf(typeof(Application)))
-                throw new ArgumentException($"“{nameof(typeObject)}”必须继承自 {nameof(Application)}");
+            if (!typeObject.IsSubclassOf(typeof(ApplicationBase)))
+                throw new ArgumentException($"“{nameof(typeObject)}”必须继承自 {nameof(ApplicationBase)}");
             if (typeObject.IsAbstract)
                 throw new ArgumentException($"“{nameof(typeObject)}”不能为抽象类型");
 
@@ -74,10 +74,10 @@ namespace MCBS.Applications
 
         public static Image<Rgba32> GetDefaultIcon() => _defaultIcon.Clone();
 
-        public virtual Application CreateApplicationInstance()
+        public virtual ApplicationBase CreateApplicationInstance()
         {
             var instance = Activator.CreateInstance(TypeObject);
-            if (instance is not Application application)
+            if (instance is not ApplicationBase application)
                 throw new InvalidOperationException("无法创建应用程序实例");
 
             return application;
@@ -89,7 +89,7 @@ namespace MCBS.Applications
         }
     }
 
-    public abstract class ApplicationInfo<T> : ApplicationInfo where T : Application
+    public abstract class ApplicationInfo<T> : ApplicationInfo where T : ApplicationBase
     {
         protected ApplicationInfo() : base(typeof(T)) { }
     }

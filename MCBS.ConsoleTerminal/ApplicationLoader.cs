@@ -1,4 +1,4 @@
-﻿using MCBS.Applications;
+﻿using MCBS.Application;
 using MCBS.SystemApplications;
 using System;
 using System.Collections.Generic;

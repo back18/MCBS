@@ -1,4 +1,4 @@
-﻿using MCBS.Applications;
+﻿using MCBS.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Album
 {
-    public class AlbumApp : Application
+    public class AlbumApp : ApplicationBase
     {
         public const string ID = "Album";
 

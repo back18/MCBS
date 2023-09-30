@@ -1,5 +1,5 @@
-﻿using MCBS.Cursors;
-using MCBS.Event;
+﻿using MCBS.Cursor;
+using MCBS.Events;
 using MCBS.Frame;
 using QuanLib.BDF;
 using QuanLib.Minecraft.Block;

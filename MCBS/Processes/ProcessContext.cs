@@ -1,5 +1,5 @@
 ﻿using log4net.Core;
-using MCBS.Applications;
+using MCBS.Application;
 using MCBS.Logging;
 using MCBS.State;
 using MCBS.UI;
@@ -45,7 +45,7 @@ namespace MCBS.Processes
 
         public ApplicationInfo ApplicationInfo { get; }
 
-        public Application Application { get; }
+        public ApplicationBase Application { get; }
 
         public IForm? Initiator { get; }
 

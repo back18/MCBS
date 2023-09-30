@@ -1,6 +1,6 @@
-﻿using MCBS.Applications;
+﻿using MCBS.Application;
 using MCBS.BlockForms;
-using MCBS.Event;
+using MCBS.Events;
 using QuanLib.Minecraft.Block;
 using System;
 using System.Collections.Generic;

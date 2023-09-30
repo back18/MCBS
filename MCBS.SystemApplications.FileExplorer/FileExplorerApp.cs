@@ -1,4 +1,4 @@
-﻿using MCBS.Applications;
+﻿using MCBS.Application;
 using MCBS.SystemApplications.FileExplorer.Config;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.FileExplorer
 {
-    public class FileExplorerApp : Application
+    public class FileExplorerApp : ApplicationBase
     {
         public const string ID = "FileExplorer";
 

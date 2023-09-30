@@ -1,5 +1,5 @@
-﻿using MCBS.Cursors;
-using MCBS.Event;
+﻿using MCBS.Cursor;
+using MCBS.Events;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp;
 using System;

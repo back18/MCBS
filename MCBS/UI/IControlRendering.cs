@@ -1,4 +1,4 @@
-﻿using MCBS.Event;
+﻿using MCBS.Events;
 using MCBS.Frame;
 using SixLabors.ImageSharp;
 using System;

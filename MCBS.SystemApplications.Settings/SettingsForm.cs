@@ -1,6 +1,7 @@
 ﻿using MCBS;
 using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
+using MCBS.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace MCBS.SystemApplications.Settings
             ClearInteraction_Button.RightClick += ClearInteraction_Button_RightClick;
         }
 
-        private void GetInteraction_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void GetInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
             string? player = GetScreenContext()?.Screen.InputHandler.CurrentPlayer;
             if (player is null)
@@ -47,7 +48,7 @@ namespace MCBS.SystemApplications.Settings
             MCOS.Instance.InteractionManager.Items.TryAdd(player, out _);
         }
 
-        private void ClearInteraction_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void ClearInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
             string? player = GetScreenContext()?.Screen.InputHandler.CurrentPlayer;
             if (player is null)

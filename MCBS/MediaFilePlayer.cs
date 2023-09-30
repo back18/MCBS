@@ -1,6 +1,6 @@
 ﻿using FFMediaToolkit.Decoding;
 using log4net.Core;
-using MCBS.Event;
+using MCBS.Events;
 using MCBS.Frame;
 using MCBS.Logging;
 using NAudio.Wave;

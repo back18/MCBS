@@ -1,6 +1,6 @@
 ﻿using log4net.Core;
 using log4net.Repository.Hierarchy;
-using MCBS.Applications;
+using MCBS.Application;
 using MCBS.Logging;
 using MCBS.Screens;
 using MCBS.State;
@@ -20,7 +20,7 @@ namespace MCBS.Forms
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        internal FormContext(Application application, IForm form)
+        internal FormContext(ApplicationBase application, IForm form)
         {
             Application = application ?? throw new ArgumentNullException(nameof(application));
             Form = form ?? throw new ArgumentNullException(nameof(form));
@@ -74,7 +74,7 @@ namespace MCBS.Forms
 
         public IRootForm RootForm { get; private set; }
 
-        public Application Application { get; }
+        public ApplicationBase Application { get; }
 
         public IForm Form { get; }
 

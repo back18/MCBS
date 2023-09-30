@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using QuanLib.Core.Extension;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using System;
@@ -12,10 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MCBS.Frame;
 using QuanLib.Minecraft;
+using QuanLib.Core.Extensions;
 
-namespace MCBS.Cursors
+namespace MCBS.Cursor
 {
-    public class CursorManager : IReadOnlyDictionary<string, Cursor>
+    public class CursorManager : IReadOnlyDictionary<string, CursorInfo>
     {
         static CursorManager()
         {
@@ -23,7 +23,7 @@ namespace MCBS.Cursors
             IsLoaded = false;
         }
 
-        private CursorManager(Dictionary<string, Cursor> items)
+        private CursorManager(Dictionary<string, CursorInfo> items)
         {
             _items = items ?? throw new ArgumentNullException(nameof(items));
         }
@@ -43,13 +43,13 @@ namespace MCBS.Cursors
         }
         private static CursorManager? _Instance;
 
-        private readonly Dictionary<string, Cursor> _items;
+        private readonly Dictionary<string, CursorInfo> _items;
 
-        public Cursor this[string key] => _items[key];
+        public CursorInfo this[string key] => _items[key];
 
         public IEnumerable<string> Keys => _items.Keys;
 
-        public IEnumerable<Cursor> Values => _items.Values;
+        public IEnumerable<CursorInfo> Values => _items.Values;
 
         public int Count => _items.Count;
 
@@ -60,14 +60,14 @@ namespace MCBS.Cursors
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                Dictionary<string, Cursor> items = Load();
+                Dictionary<string, CursorInfo> items = Load();
                 _Instance ??= new(items);
                 IsLoaded = true;
                 return _Instance;
             }
         }
 
-        private static Dictionary<string, Cursor> Load()
+        private static Dictionary<string, CursorInfo> Load()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
@@ -75,13 +75,13 @@ namespace MCBS.Cursors
             string indexsJson = indexsStream.ToUtf8Text();
             CursorModel[] indexs = JsonConvert.DeserializeObject<CursorModel[]>(indexsJson) ?? throw new InvalidOperationException();
 
-            Dictionary<string, Cursor> result = new();
+            Dictionary<string, CursorInfo> result = new();
             foreach (var index in indexs)
             {
                 using Stream stream = assembly.GetManifestResourceStream(SR.SYSTEM_RESOURCE_NAMESPACE + ".Cursors." + index.Image) ?? throw new InvalidOperationException();
                 var image = Image.Load<Rgba32>(stream);
                 ArrayFrame frame = ArrayFrame.FromImage(Facing.Zm, image, string.Empty);
-                Cursor cursor = new(index.Type, new(index.XOffset, index.YOffset), frame);
+                CursorInfo cursor = new(index.Type, new(index.XOffset, index.YOffset), frame);
                 result.Add(cursor.CursorType, cursor);
             }
 
@@ -93,12 +93,12 @@ namespace MCBS.Cursors
             return _items.ContainsKey(key);
         }
 
-        public bool TryGetValue(string key, [MaybeNullWhen(false)] out Cursor value)
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out CursorInfo value)
         {
             return _items.TryGetValue(key, out value);
         }
 
-        public IEnumerator<KeyValuePair<string, Cursor>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, CursorInfo>> GetEnumerator()
         {
             return _items.GetEnumerator();
         }

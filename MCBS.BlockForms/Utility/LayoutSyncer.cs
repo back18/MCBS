@@ -1,5 +1,5 @@
 ﻿using MCBS.BlockForms;
-using MCBS.Event;
+using MCBS.Events;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
 using System;

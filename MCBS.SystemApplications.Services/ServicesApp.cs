@@ -1,4 +1,4 @@
-﻿using MCBS.Applications;
+﻿using MCBS.Application;
 using MCBS.UI;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Services
 {
-    public class ServicesApp : ServicesApplication
+    public class ServicesApp : ServicesApplicationBase
     {
         public ServicesApp()
         {

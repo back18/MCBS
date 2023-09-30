@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Block;
-using QuanLib.Core.Event;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
 using MCBS.UI;
-using MCBS.Event;
+using QuanLib.Core.Events;
+using MCBS.Events;
 
 namespace MCBS.SystemApplications.VideoPlayer
 {

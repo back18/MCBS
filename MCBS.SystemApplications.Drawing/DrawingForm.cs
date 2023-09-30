@@ -2,7 +2,8 @@
 using MCBS.BlockForms;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
-using MCBS.Event;
+using MCBS.Events;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp;
 using System;
@@ -197,7 +198,7 @@ namespace MCBS.SystemApplications.Drawing
             DrawingBox.EnableDrag = false;
         }
 
-        private void PenWidth_NumberBox_NumberValueChanged(NumberBox sender, QuanLib.Core.Event.ValueChangedEventArgs<int> e)
+        private void PenWidth_NumberBox_NumberValueChanged(NumberBox sender, ValueChangedEventArgs<int> e)
         {
             DrawingBox.PenWidth = e.NewValue;
         }

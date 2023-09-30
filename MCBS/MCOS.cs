@@ -21,10 +21,10 @@ using MCBS.Frame;
 using MCBS.Logging;
 using MCBS.UI;
 using MCBS.Config;
-using MCBS.Applications;
 using MCBS.Processes;
-using MCBS.Forms;
 using MCBS.Interactions;
+using MCBS.Application;
+using MCBS.Forms;
 
 namespace MCBS
 {
@@ -388,7 +388,7 @@ namespace MCBS
             return null;
         }
 
-        public ProcessContext? ProcessOf(Application application)
+        public ProcessContext? ProcessOf(ApplicationBase application)
         {
             if (application is null)
                 throw new ArgumentNullException(nameof(application));
@@ -468,7 +468,7 @@ namespace MCBS
 
         internal ProcessContext RunServicesApp()
         {
-            if (!ApplicationManager.Items[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplication)))
+            if (!ApplicationManager.Items[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplicationBase)))
                 throw new InvalidOperationException("无效的ServicesAppID");
 
             return RunApplication(ServicesAppID);

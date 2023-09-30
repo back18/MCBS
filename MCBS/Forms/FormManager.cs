@@ -1,5 +1,5 @@
-﻿using MCBS.Applications;
-using MCBS.Event;
+﻿using MCBS.Application;
+using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
 using System;
@@ -70,7 +70,7 @@ namespace MCBS.Forms
 
             FormContext IDictionary<int, FormContext>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-            public FormContext Add(Application application, IForm form)
+            public FormContext Add(ApplicationBase application, IForm form)
             {
                 if (application is null)
                     throw new ArgumentNullException(nameof(application));

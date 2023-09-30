@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Cursors
+namespace MCBS.Cursor
 {
-    public class Cursor
+    public class CursorInfo
     {
-        public Cursor(string cursorType, Point offset, ArrayFrame frame)
+        public CursorInfo(string cursorType, Point offset, ArrayFrame frame)
         {
             if (string.IsNullOrEmpty(cursorType))
                 throw new ArgumentException($"“{nameof(cursorType)}”不能为 null 或空。", nameof(cursorType));

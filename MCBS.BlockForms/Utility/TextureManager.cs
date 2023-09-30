@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using QuanLib.Core.Extension;
+using QuanLib.Core.Extensions;
 using QuanLib.Minecraft.Instance;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;

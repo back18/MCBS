@@ -1,6 +1,6 @@
 ﻿using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Graphics;
-using MCBS.Event;
+using MCBS.Events;
 using MCBS.Frame;
 using MCBS.UI;
 using Microsoft.VisualBasic;

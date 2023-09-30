@@ -1,11 +1,11 @@
 ﻿using log4net.Core;
 using MCBS.Directorys;
-using MCBS.Event;
+using MCBS.Events;
 using MCBS.Logging;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Minecraft.Command;
-using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Vector;
 using System;

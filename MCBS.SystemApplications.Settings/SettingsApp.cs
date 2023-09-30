@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.Applications;
+using MCBS.Application;
 
 namespace MCBS.SystemApplications.Settings
 {
-    public class SettingsApp : Application
+    public class SettingsApp : ApplicationBase
     {
         public const string ID = "Settings";
 

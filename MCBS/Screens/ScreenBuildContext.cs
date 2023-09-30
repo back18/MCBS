@@ -9,9 +9,9 @@ using CoreRCON.Parsers.Standard;
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.Selectors;
 using System.Numerics;
-using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft;
+using QuanLib.Minecraft.Command.Senders;
 
 namespace MCBS.Screens
 {

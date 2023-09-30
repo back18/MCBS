@@ -14,11 +14,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using log4net.Core;
-using QuanLib.Minecraft.Command.Sender;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft;
 using MCBS.Logging;
 using QuanLib.Minecraft.Snbt.Model;
+using QuanLib.Minecraft.Command.Senders;
 
 namespace MCBS.Screens
 {

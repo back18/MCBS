@@ -1,4 +1,4 @@
-﻿using MCBS.Event;
+﻿using MCBS.Events;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

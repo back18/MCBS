@@ -1,6 +1,6 @@
-﻿using MCBS.Applications;
-using MCBS.Cursors;
-using MCBS.Event;
+﻿using MCBS.Application;
+using MCBS.Cursor;
+using MCBS.Events;
 using MCBS.Forms;
 using MCBS.Screens;
 using MCBS.UI;

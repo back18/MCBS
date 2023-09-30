@@ -2,7 +2,7 @@
 using QuanLib.Core.ExceptionHelper;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
-using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;

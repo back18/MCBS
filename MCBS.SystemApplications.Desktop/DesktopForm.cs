@@ -7,10 +7,9 @@ using SixLabors.ImageSharp;
 using System.Diagnostics;
 using SixLabors.ImageSharp.PixelFormats;
 using MCBS.BlockForms;
-using MCBS.Event;
 using MCBS.BlockForms.Utility;
-using MCBS;
 using System.Reflection;
+using MCBS.Events;
 
 namespace MCBS.SystemApplications.Desktop
 {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using MCBS.BlockForms.Utility;
 using MCBS.UI;
 using MCBS;
-using MCBS.Event;
+using MCBS.Events;
 
 namespace MCBS.BlockForms
 {

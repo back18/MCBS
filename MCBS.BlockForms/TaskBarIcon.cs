@@ -1,4 +1,4 @@
-﻿using MCBS.Event;
+﻿using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Minecraft.Block;
 using System;

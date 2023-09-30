@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Event
+namespace MCBS.Events
 {
     public class CursorItemEventArgs : CursorEventArgs
     {

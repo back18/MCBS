@@ -1,4 +1,5 @@
-﻿using MCBS.UI;
+﻿using MCBS.Events;
+using MCBS.UI;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp;
 using System;
@@ -144,30 +145,30 @@ namespace MCBS.BlockForms.DialogBox
             }
         }
 
-        private void Yes_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void Yes_Button_RightClick(Control sender, CursorEventArgs e)
         {
             DialogResult = MessageBoxButtons.Yes;
             CloseForm();
         }
 
-        private void NO_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void NO_Button_RightClick(Control sender, CursorEventArgs e)
         {
             DialogResult = MessageBoxButtons.No;
             CloseForm();
         }
 
-        private void OK_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void OK_Button_RightClick(Control sender, CursorEventArgs e)
         {
             DialogResult = MessageBoxButtons.OK;
             CloseForm();
         }
 
-        private void Cancel_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
         {
             CloseForm();
         }
 
-        private void Retry_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void Retry_Button_RightClick(Control sender, CursorEventArgs e)
         {
             DialogResult = MessageBoxButtons.Retry;
             CloseForm();

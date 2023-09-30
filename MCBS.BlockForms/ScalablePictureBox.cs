@@ -1,4 +1,4 @@
-﻿using MCBS.Event;
+﻿using MCBS.Events;
 using MCBS.Frame;
 using MCBS.UI;
 using Newtonsoft.Json.Linq;

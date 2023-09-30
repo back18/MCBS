@@ -1,4 +1,5 @@
 ﻿using MCBS.BlockForms.Utility;
+using MCBS.Events;
 using MCBS.UI;
 using System;
 using System.Collections.Generic;
@@ -55,13 +56,13 @@ namespace MCBS.BlockForms.DialogBox
             OK_Button.RightClick += OK_Button_RightClick;
         }
 
-        private void OK_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void OK_Button_RightClick(Control sender, CursorEventArgs e)
         {
             DialogResult = Text_RichTextBox.Text;
             CloseForm();
         }
 
-        private void Cancel_Button_RightClick(Control sender, Event.CursorEventArgs e)
+        private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
         {
             CloseForm();
         }

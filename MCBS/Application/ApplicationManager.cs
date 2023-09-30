@@ -1,5 +1,5 @@
 ﻿using log4net.Core;
-using MCBS.Event;
+using MCBS.Events;
 using MCBS.Logging;
 using QuanLib.Core;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Applications
+namespace MCBS.Application
 {
     public class ApplicationManager
     {

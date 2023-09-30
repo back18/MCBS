@@ -1,9 +1,10 @@
 ﻿using MCBS.BlockForms;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
-using MCBS.Event;
+using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -280,7 +281,7 @@ namespace MCBS.SystemApplications.Album
             ClientPanel.ChildControls.Remove(Setting_ListMenuBox);
         }
 
-        private void Path_TextBox_TextChanged(Control sender, QuanLib.Core.Event.TextChangedEventArgs e)
+        private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
         {
             if (SR.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;

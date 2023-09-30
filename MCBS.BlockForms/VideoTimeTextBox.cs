@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Block;
 using MCBS.BlockForms.DialogBox;
-using MCBS.Event;
 using MCBS.BlockForms.Utility;
 using MCBS.Frame;
+using MCBS.Events;
 
 namespace MCBS.BlockForms
 {

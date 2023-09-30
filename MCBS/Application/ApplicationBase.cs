@@ -9,9 +9,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Applications
+namespace MCBS.Application
 {
-    public abstract class Application
+    public abstract class ApplicationBase
     {
         public abstract object? Main(string[] args);
 

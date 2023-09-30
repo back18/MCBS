@@ -1,8 +1,8 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Event;
+using MCBS.Events;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
-using QuanLib.Core.Event;
+using QuanLib.Core.Events;
 using QuanLib.Core.IO;
 using System;
 using System.Collections.Generic;

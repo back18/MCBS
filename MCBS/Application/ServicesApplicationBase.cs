@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Applications
+namespace MCBS.Application
 {
-    public abstract class ServicesApplication : Application
+    public abstract class ServicesApplicationBase : ApplicationBase
     {
         public abstract IRootForm RootForm { get; }
     }

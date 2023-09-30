@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
-using QuanLib.Minecraft.Command.Sender;
+using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Vector;
 using System;

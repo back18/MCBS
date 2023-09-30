@@ -1,6 +1,6 @@
-﻿using MCBS.Applications;
+﻿using MCBS.Application;
 using MCBS.BlockForms;
-using MCBS.Event;
+using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Minecraft.Block;
 using SixLabors.ImageSharp;

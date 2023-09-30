@@ -1,7 +1,7 @@
 ﻿using MCBS;
 using MCBS.BlockForms.Utility;
-using MCBS.Event;
-using QuanLib.Core.Event;
+using MCBS.Events;
+using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Cursors
+namespace MCBS.Cursor
 {
     public enum CursorMode
     {

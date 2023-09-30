@@ -3,7 +3,6 @@
 using static MCBS.Config.ConfigManager;
 using log4net.Core;
 using MCBS.Directorys;
-using MCBS.Event;
 using MCBS.Frame;
 using MCBS.Logging;
 using MCBS.UI;
@@ -21,8 +20,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MCBS.Processes;
-using MCBS.Cursors;
-using MCBS.Applications;
+using MCBS.Cursor;
+using MCBS.Events;
+using MCBS.Application;
 
 namespace MCBS.Screens
 {
@@ -274,7 +274,7 @@ namespace MCBS.Screens
 
                     int id = _id;
                     ProcessContext process = MCOS.Instance.RunServicesApp();
-                    IRootForm rootForm = ((ServicesApplication)process.Application).RootForm;
+                    IRootForm rootForm = ((ServicesApplicationBase)process.Application).RootForm;
                     ScreenContext context = new(screen, rootForm);
                     context.ID = id;
                     _items.TryAdd(id, context);
