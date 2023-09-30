@@ -1,5 +1,6 @@
 ﻿using log4net.Core;
 using MCBS.Application;
+using MCBS.Forms;
 using MCBS.Logging;
 using MCBS.State;
 using MCBS.UI;
@@ -102,7 +103,11 @@ namespace MCBS.Processes
 
         protected override void Run()
         {
-            LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”已开始运行");
+            FormContext? formContext = Initiator is null ? null : MCOS.Instance.FormContextOf(Initiator);
+            if (formContext is null)
+                LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”已开始运行");
+            else
+                LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”已开始运行，启动者窗体为“{formContext.Form.Text} #{formContext.ID}”");
             object? result = Application.Main(_args);
             LOGGER.Info($"进程“{ApplicationInfo.ID} #{ID}”停止开始运行，返回值为 {result ?? "null"}");
         }
