@@ -2,11 +2,13 @@
 using log4net.Repository.Hierarchy;
 using MCBS.Application;
 using MCBS.Logging;
+using MCBS.Processes;
 using MCBS.Screens;
 using MCBS.State;
 using MCBS.UI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,7 +95,11 @@ namespace MCBS.Forms
                     else if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormLoad(EventArgs.Empty);
-                    LOGGER.Info($"窗体“{Form.Text} #{ID}”已打开");
+                    ProcessContext? context = MCOS.Instance.ProcessOf(Application);
+                    if (context is null)
+                        LOGGER.Info($"窗体“{Form.Text} #{ID}”已打开");
+                    else
+                        LOGGER.Info($"窗体“{Form.Text} #{ID}”已被进程“{context.ApplicationInfo.ID} #{context.ID}”打开");
                     return true;
                 case FormState.Minimize:
                     if (Form is IRootForm)
