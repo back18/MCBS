@@ -63,10 +63,13 @@ namespace MCBS.Forms
                 new(FormState.Closed, new FormState[] { FormState.Active, FormState.Minimize }, HandleClosedState)
             });
 
-            _close = new(false);
+            _closeSemaphore = new(0);
+            _closTask = GetCloseTask();
         }
 
-        private readonly AutoResetEvent _close;
+        private readonly SemaphoreSlim _closeSemaphore;
+
+        private readonly Task _closTask;
 
         public int ID { get; internal set; }
 
@@ -131,7 +134,7 @@ namespace MCBS.Forms
                 RootForm.RemoveForm(Form);
             Form.HandleFormClose(EventArgs.Empty);
             LOGGER.Info($"窗体({Form.Text} #{ID})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
-            _close.Set();
+            _closeSemaphore.Release();
             return true;
         }
 
@@ -161,9 +164,19 @@ namespace MCBS.Forms
             StateManager.AddNextState(FormState.Active);
         }
 
-        public void WaitForFormClose()
+        public void WaitForClose()
         {
-            _close.WaitOne();
+            _closTask.Wait();
+        }
+
+        public async Task WaitForCloseAsync()
+        {
+            await _closTask;
+        }
+
+        private async Task GetCloseTask()
+        {
+            await _closeSemaphore.WaitAsync();
         }
 
         public override string ToString()

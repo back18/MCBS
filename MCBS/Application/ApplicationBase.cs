@@ -17,9 +17,20 @@ namespace MCBS.Application
 
         public object? RunForm(IForm form)
         {
+            if (form is null)
+                throw new ArgumentNullException(nameof(form));
+
             FormContext context = MCOS.Instance.FormManager.Items.Add(this, form);
             context.LoadForm();
-            context.WaitForFormClose();
+            context.WaitForClose();
+            return form.ReturnValue;
+        }
+
+        public async Task<object?> RunFormAsync(IForm form)
+        {
+            FormContext context = MCOS.Instance.FormManager.Items.Add(this, form);
+            context.LoadForm();
+            await context.WaitForCloseAsync();
             return form.ReturnValue;
         }
 

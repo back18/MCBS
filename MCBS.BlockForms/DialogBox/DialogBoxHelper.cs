@@ -37,7 +37,25 @@ namespace MCBS.BlockForms.DialogBox
 
         public static async Task<R> OpenDialogBoxAsync<R>(IForm initiator, DialogBoxForm<R> dialogBox, Action<R>? callback = null)
         {
-            return await Task.Run(() => OpenDialogBox(initiator, dialogBox, callback));
+            if (dialogBox is null)
+                throw new ArgumentNullException(nameof(dialogBox));
+            if (initiator is null)
+                throw new ArgumentNullException(nameof(initiator));
+
+            MCOS os = MCOS.Instance;
+            ProcessContext? process = os.ProcessOf(initiator);
+            FormContext? context = os.FormContextOf(initiator);
+            if (process is null || process.ProcessState == ProcessState.Stopped ||
+                context is null || context.FormState == FormState.Closed)
+                return dialogBox.DefaultResult;
+
+            await process.Application.RunFormAsync(dialogBox);
+
+            if (process.ProcessState == ProcessState.Stopped || context.FormState == FormState.Closed)
+                return dialogBox.DefaultResult;
+
+            callback?.Invoke(dialogBox.DialogResult);
+            return dialogBox.DialogResult;
         }
 
         public static MessageBoxButtons OpenMessageBox(IForm initiator, string title, string message, MessageBoxButtons buttons, Action<MessageBoxButtons>? callback = null)
