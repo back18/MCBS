@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.ConsoleTerminal
 {
+    [Obsolete("改用 MCBS.ConsoleTerminal.AppComponentLoader MCBS.Application.ApplicationLoader", true)]
     internal class ApplicationLoader
     {
         public static void LoadApplication(ref MCOS mcos, string path)

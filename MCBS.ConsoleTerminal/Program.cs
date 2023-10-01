@@ -95,7 +95,7 @@ namespace MCBS.ConsoleTerminal
 #endif
 
             mcos = MCOS.LoadInstance(minecraftInstance);
-            ApplicationLoader.LoadApplication(ref mcos, ConfigManager.SystemConfig.ExternalAppsFolder);
+            AppComponentLoader.LoadAll(mcos);
 
             mcos.Start("System Thread");
             mcos.WaitForStop();

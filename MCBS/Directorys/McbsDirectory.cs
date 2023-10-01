@@ -13,6 +13,7 @@ namespace MCBS.Directorys
         {
             ApplicationsDir = AddDirectory<ApplicationsDirectory>("Applications");
             ConfigsDir = AddDirectory<ConfigsDirectory>("Configs");
+            DllAppComponentsDir = AddDirectory<DllAppComponentsDirectory>("DllAppComponents");
             LogsDir = AddDirectory<LogsDirectory>("Logs");
             FFmpegDir = AddDirectory<FFmpegDirectory>("FFmpeg");
             MinecraftResourcesDir = AddDirectory<MinecraftResourcesDirectory>("MinecraftResources");
@@ -21,6 +22,8 @@ namespace MCBS.Directorys
         public ApplicationsDirectory ApplicationsDir { get; }
 
         public ConfigsDirectory ConfigsDir { get; }
+
+        public DllAppComponentsDirectory DllAppComponentsDir { get; }
 
         public LogsDirectory LogsDir { get; }
 

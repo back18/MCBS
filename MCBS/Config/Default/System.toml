@@ -1,14 +1,12 @@
 #崩溃时是否自动重启
 CrashAutoRestart = true
 
+#是否加载 MCBS\DllAppComponents\ 文件夹中的DLL应用程序
+#支持的文件类型: 程序集.dll
+LoadDllAppComponents = false
+
 #系统服务AppID
 ServicesAppID = "Services"
-
-#自定义程序设置
-EnableExternalApps = true
-
-#自定义程序加载位置
-ExternalAppsFolder = "./mods/"
 
 #启动项AppID列表
 StartupChecklist = [
