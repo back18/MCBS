@@ -74,7 +74,7 @@ namespace MCBS
 
         protected override void Run()
         {
-            while (IsRuning)
+            while (IsRunning)
             {
                 if (_frames.Count >= MaxFrames)
                     Thread.Sleep(10);
@@ -82,7 +82,7 @@ namespace MCBS
                 {
                     while (_pause)
                         Thread.Yield();
-                    if (!IsRuning)
+                    if (!IsRunning)
                         break;
 
                     lock (_frames)
@@ -133,7 +133,7 @@ namespace MCBS
         {
             while (true)
             {
-                if (!IsRuning)
+                if (!IsRunning)
                 {
                     result = null;
                     return false;

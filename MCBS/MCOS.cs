@@ -155,7 +155,7 @@ namespace MCBS
             try
             {
 #endif
-                while (IsRuning)
+                while (IsRunning)
                 {
                     PreviousFrameTime = SystemRunningTime;
                     NextFrameTime = PreviousFrameTime + FrameMinTime;
@@ -232,11 +232,11 @@ namespace MCBS
                 LOGGER.Info("正在等待主任务完成...");
                 TaskManager.WaitForCurrentMainTask();
 
-                if (IsRuning)
+                if (IsRunning)
                 {
                     Task task = WaitForStopAsync();
                     LOGGER.Info("正在等待系统终止...");
-                    IsRuning = false;
+                    IsRunning = false;
                     task.Wait();
                 }
 

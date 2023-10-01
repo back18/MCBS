@@ -29,10 +29,10 @@ namespace MCBS.ConsoleTerminal
         {
             LOGGER.Info("命令行终端已启动");
 
-            while (IsRuning)
+            while (IsRunning)
             {
                 string? input = Console.ReadLine();
-                if (!IsRuning)
+                if (!IsRunning)
                 {
                     break;
                 }
@@ -123,7 +123,7 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
                         break;
                     case "stop":
-                        if (MCOS.Instance.IsRuning)
+                        if (MCOS.Instance.IsRunning)
                         {
                             MCOS.Instance.Stop();
                         }
