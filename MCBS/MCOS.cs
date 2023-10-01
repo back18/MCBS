@@ -247,12 +247,12 @@ namespace MCBS
                     goto end;
                 }
 
-                LOGGER.Info("正在卸载所有屏幕");
+                LOGGER.Info($"正在卸载所有屏幕，共计{ScreenManager.Items.Count}个");
                 foreach (var context in ScreenManager.Items.Values)
                     context.CloseScreen();
                 LOGGER.Info("完成");
 
-                LOGGER.Info("正在回收交互实体");
+                LOGGER.Info($"正在回收交互实体，{InteractionManager.Items.Count}个");
                 foreach (var interaction in InteractionManager.Items.Values)
                     interaction.CloseInteraction();
                 LOGGER.Info("完成");
