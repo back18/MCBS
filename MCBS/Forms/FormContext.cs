@@ -83,12 +83,12 @@ namespace MCBS.Forms
 
         public IForm Form { get; }
 
-        protected bool HandleNotLoadedState(FormState current, FormState next)
+        protected virtual bool HandleNotLoadedState(FormState current, FormState next)
         {
             return false;
         }
 
-        protected bool HandleActiveState(FormState current, FormState next)
+        protected virtual bool HandleActiveState(FormState current, FormState next)
         {
             switch (current)
             {
@@ -117,7 +117,7 @@ namespace MCBS.Forms
             }
         }
 
-        protected bool HandleMinimizeState(FormState current, FormState next)
+        protected virtual bool HandleMinimizeState(FormState current, FormState next)
         {
             if (Form is IRootForm)
                 return false;
@@ -128,7 +128,7 @@ namespace MCBS.Forms
             return true;
         }
 
-        protected bool HandleClosedState(FormState current, FormState next)
+        protected virtual bool HandleClosedState(FormState current, FormState next)
         {
             if (Form is not IRootForm && RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
