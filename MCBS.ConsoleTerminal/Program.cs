@@ -1,4 +1,4 @@
-﻿//#define TryCatch
+﻿#define TryCatch
 
 using FFMediaToolkit;
 using log4net.Core;
@@ -56,7 +56,6 @@ namespace MCBS.ConsoleTerminal
 #endif
 
             MinecraftInstance minecraftInstance;
-            MCOS mcos;
 
 #if TryCatch
             try
@@ -94,7 +93,7 @@ namespace MCBS.ConsoleTerminal
             }
 #endif
 
-            mcos = MCOS.LoadInstance(minecraftInstance);
+            MCOS mcos = MCOS.LoadInstance(minecraftInstance);
             AppComponentLoader.LoadAll(mcos);
 
             mcos.Start("System Thread");
