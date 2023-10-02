@@ -26,7 +26,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void LoadSystemAppComponents(MCOS mcos)
         {
-            LOGGER.Info("开始加载系统应用程序");
+            LOGGER.Info("开始加载系统应用程序组件");
 
             if (mcos is null)
                 throw new ArgumentNullException(nameof(mcos));
@@ -48,7 +48,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void LoadDllAppComponents(MCOS mcos)
         {
-            LOGGER.Info("开始加载DLL应用程序");
+            LOGGER.Info("开始加载DLL应用程序组件");
 
             if (mcos is null)
                 throw new ArgumentNullException(nameof(mcos));
@@ -63,7 +63,7 @@ namespace MCBS.ConsoleTerminal
                 }
                 catch (Exception ex)
                 {
-                    LOGGER.Error($"无法加载位于“{dll}”的应用程序", ex);
+                    LOGGER.Error($"无法加载位于“{dll}”的DLL应用程序组件", ex);
                 }
             }
 

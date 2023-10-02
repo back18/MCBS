@@ -38,15 +38,15 @@ namespace MCBS.Application
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
             if (!type.IsSubclassOf(typeof(ApplicationInfo)))
-                throw new ArgumentException($"“{nameof(type)}”必须继承自 {nameof(ApplicationInfo)}");
+                throw new ArgumentException($"主类必须继承自 {nameof(ApplicationInfo)}");
             if (type.IsAbstract)
-                throw new ArgumentException($"“{nameof(type)}”不能为抽象类型");
+                throw new ArgumentException($"主类不能为抽象类型");
 
             var constructor = type.GetConstructor(Type.EmptyTypes);
             if (constructor is null)
-                throw new ArgumentException($"“{nameof(type)}”必须有一个无参构造函数");
-            else if (!constructor.IsPublic)
-                throw new ArgumentException($"“{nameof(type)}”的构造函数不是公共的");
+                throw new ArgumentException($"主类必须有一个无参构造函数");
+            if (!constructor.IsPublic)
+                throw new ArgumentException($"主类的构造函数不是公共的");
 
             try
             {
@@ -55,7 +55,7 @@ namespace MCBS.Application
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("无法创建应用程序信息实例", ex);
+                throw new InvalidOperationException("无法初始化主类", ex);
             }
         }
     }

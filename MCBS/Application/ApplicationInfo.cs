@@ -29,7 +29,7 @@ namespace MCBS.Application
             var constructor = typeObject.GetConstructor(Type.EmptyTypes);
             if (constructor is null)
                 throw new ArgumentException($"“{nameof(typeObject)}”必须有一个无参构造函数");
-            else if (!constructor.IsPublic)
+            if (!constructor.IsPublic)
                 throw new ArgumentException($"“{nameof(typeObject)}”的构造函数不是公共的");
 
             TypeObject = typeObject;
