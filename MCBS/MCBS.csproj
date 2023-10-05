@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Config\Default\log4net.xml" />
-    <None Remove="Config\Default\Minecraft.toml" />
-    <None Remove="Config\Default\Registry.json" />
-    <None Remove="Config\Default\Screen.toml" />
-    <None Remove="Config\Default\System.toml" />
     <None Remove="SystemResource\CursorIndex.json" />
     <None Remove="SystemResource\Cursors\Default.png" />
     <None Remove="SystemResource\Cursors\HorizontalResize.png" />
@@ -25,11 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Config\Default\log4net.xml" />
-    <EmbeddedResource Include="Config\Default\Minecraft.toml" />
-    <EmbeddedResource Include="Config\Default\Registry.json" />
-    <EmbeddedResource Include="Config\Default\Screen.toml" />
-    <EmbeddedResource Include="Config\Default\System.toml" />
+    <EmbeddedResource Include="SystemResource\Configs\log4net.xml" />
+    <EmbeddedResource Include="SystemResource\Configs\Minecraft.toml" />
+    <EmbeddedResource Include="SystemResource\Configs\Registry.json" />
+    <EmbeddedResource Include="SystemResource\Configs\Screen.toml" />
+    <EmbeddedResource Include="SystemResource\Configs\System.toml" />
     <EmbeddedResource Include="SystemResource\CursorIndex.json" />
     <EmbeddedResource Include="SystemResource\Cursors\Default.png" />
     <EmbeddedResource Include="SystemResource\Cursors\HorizontalResize.png" />

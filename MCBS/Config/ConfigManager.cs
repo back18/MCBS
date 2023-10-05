@@ -62,11 +62,11 @@ namespace MCBS.Config
 
         public static void CreateIfNotExists()
         {
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.Log4NetFile, "MCBS.Config.Default.log4net.xml");
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.MinecraftFile, "MCBS.Config.Default.Minecraft.toml");
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.SystemFile, "MCBS.Config.Default.System.toml");
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.ScreenFile, "MCBS.Config.Default.Screen.toml");
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.RegistryFile, "MCBS.Config.Default.Registry.json");
+            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.Log4NetFile, SR.SystemResourceNamespace.ConfigsNamespace.Log4NetConfigFile);
+            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.MinecraftFile, SR.SystemResourceNamespace.ConfigsNamespace.MinecraftConfigFile);
+            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.SystemFile, SR.SystemResourceNamespace.ConfigsNamespace.SystemConfigFile);
+            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.ScreenFile, SR.SystemResourceNamespace.ConfigsNamespace.ScreenConfigFile);
+            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.RegistryFile, SR.SystemResourceNamespace.ConfigsNamespace.RegistryConfigFile);
         }
 
         private static void CreateIfNotExists(string path, string resource)
