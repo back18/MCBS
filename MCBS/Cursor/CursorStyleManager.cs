@@ -15,15 +15,15 @@ using QuanLib.Core.Extensions;
 
 namespace MCBS.Cursor
 {
-    public class CursorManager : IReadOnlyDictionary<string, CursorInfo>
+    public class CursorStyleManager : IReadOnlyDictionary<string, CursorStyle>
     {
-        static CursorManager()
+        static CursorStyleManager()
         {
             _slock = new();
             IsLoaded = false;
         }
 
-        private CursorManager(Dictionary<string, CursorInfo> items)
+        private CursorStyleManager(Dictionary<string, CursorStyle> items)
         {
             _items = items ?? throw new ArgumentNullException(nameof(items));
         }
@@ -32,7 +32,7 @@ namespace MCBS.Cursor
 
         public static bool IsLoaded { get; private set; }
 
-        public static CursorManager Instance
+        public static CursorStyleManager Instance
         {
             get
             {
@@ -41,33 +41,33 @@ namespace MCBS.Cursor
                 return _Instance;
             }
         }
-        private static CursorManager? _Instance;
+        private static CursorStyleManager? _Instance;
 
-        private readonly Dictionary<string, CursorInfo> _items;
+        private readonly Dictionary<string, CursorStyle> _items;
 
-        public CursorInfo this[string key] => _items[key];
+        public CursorStyle this[string key] => _items[key];
 
         public IEnumerable<string> Keys => _items.Keys;
 
-        public IEnumerable<CursorInfo> Values => _items.Values;
+        public IEnumerable<CursorStyle> Values => _items.Values;
 
         public int Count => _items.Count;
 
-        public static CursorManager LoadInstance()
+        public static CursorStyleManager LoadInstance()
         {
             lock (_slock)
             {
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                Dictionary<string, CursorInfo> items = Load();
+                Dictionary<string, CursorStyle> items = Load();
                 _Instance ??= new(items);
                 IsLoaded = true;
                 return _Instance;
             }
         }
 
-        private static Dictionary<string, CursorInfo> Load()
+        private static Dictionary<string, CursorStyle> Load()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
@@ -75,13 +75,13 @@ namespace MCBS.Cursor
             string indexsJson = indexsStream.ToUtf8Text();
             CursorModel[] indexs = JsonConvert.DeserializeObject<CursorModel[]>(indexsJson) ?? throw new InvalidOperationException();
 
-            Dictionary<string, CursorInfo> result = new();
+            Dictionary<string, CursorStyle> result = new();
             foreach (var index in indexs)
             {
                 using Stream stream = assembly.GetManifestResourceStream(SR.SystemResourceNamespace.CursorsNamespace.Combine(index.Image)) ?? throw new InvalidOperationException();
                 var image = Image.Load<Rgba32>(stream);
                 ArrayFrame frame = ArrayFrame.FromImage(Facing.Zm, image, string.Empty);
-                CursorInfo cursor = new(index.Type, new(index.XOffset, index.YOffset), frame);
+                CursorStyle cursor = new(index.Type, new(index.XOffset, index.YOffset), frame);
                 result.Add(cursor.CursorType, cursor);
             }
 
@@ -93,12 +93,12 @@ namespace MCBS.Cursor
             return _items.ContainsKey(key);
         }
 
-        public bool TryGetValue(string key, [MaybeNullWhen(false)] out CursorInfo value)
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out CursorStyle value)
         {
             return _items.TryGetValue(key, out value);
         }
 
-        public IEnumerator<KeyValuePair<string, CursorInfo>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, CursorStyle>> GetEnumerator()
         {
             return _items.GetEnumerator();
         }

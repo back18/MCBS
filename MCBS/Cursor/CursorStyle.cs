@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.Cursor
 {
-    public class CursorInfo
+    public class CursorStyle
     {
-        public CursorInfo(string cursorType, Point offset, ArrayFrame frame)
+        public CursorStyle(string cursorType, Point offset, ArrayFrame frame)
         {
             if (string.IsNullOrEmpty(cursorType))
                 throw new ArgumentException($"“{nameof(cursorType)}”不能为 null 或空。", nameof(cursorType));

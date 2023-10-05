@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Cursor
 {
-    public static class CursorType
+    public static class CursorStyleType
     {
         /// <summary>
         /// 默认

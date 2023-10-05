@@ -39,16 +39,16 @@ namespace MCBS
         }
         private static BdfFont? _DefaultFont;
 
-        public static CursorManager CursorManager
+        public static CursorStyleManager CursorStyleManager
         {
             get
             {
-                if (_CursorManager is null)
+                if (_CursorStyleManager is null)
                     throw new InvalidOperationException();
-                return _CursorManager;
+                return _CursorStyleManager;
             }
         }
-        private static CursorManager? _CursorManager;
+        private static CursorStyleManager? _CursorStyleManager;
 
         public static void LoadAll()
         {
@@ -59,9 +59,9 @@ namespace MCBS
             _DefaultFont = BdfFont.Load(defaultFontStream);
             LOGGER.Info($"完成，字体高度:{_DefaultFont.Height} 半角宽度:{_DefaultFont.HalfWidth} 全角宽度:{_DefaultFont.FullWidth} 字符数量:{_DefaultFont.Count}");
 
-            LOGGER.Info("开始加载光标文件");
-            _CursorManager = CursorManager.LoadInstance();
-            LOGGER.Info("完成，光标数量: " + _CursorManager.Count);
+            LOGGER.Info("开始加载光标样式文件");
+            _CursorStyleManager = CursorStyleManager.LoadInstance();
+            LOGGER.Info("完成，光标样式数量: " + _CursorStyleManager.Count);
         }
     }
 }

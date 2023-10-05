@@ -196,11 +196,11 @@ namespace MCBS.BlockForms
                     {
                         context.CursorType = ResizeBorder switch
                         {
-                            Direction.Top or Direction.Bottom => CursorType.VerticalResize,
-                            Direction.Left or Direction.Right => CursorType.HorizontalResize,
-                            Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorType.LeftObliqueResize,
-                            Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorType.RightObliqueResize,
-                            _ => CursorType.Default,
+                            Direction.Top or Direction.Bottom => CursorStyleType.VerticalResize,
+                            Direction.Left or Direction.Right => CursorStyleType.HorizontalResize,
+                            Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorStyleType.LeftObliqueResize,
+                            Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorStyleType.RightObliqueResize,
+                            _ => CursorStyleType.Default,
                         };
                     }
                 }

@@ -27,7 +27,7 @@ namespace MCBS.Screens
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
             IsRestart = false;
             IsShowCursor = true;
-            CursorType = Cursor.CursorType.Default;
+            CursorType = Cursor.CursorStyleType.Default;
 
             ID = -1;
             StateManager = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
