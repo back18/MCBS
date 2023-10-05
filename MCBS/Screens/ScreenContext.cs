@@ -11,6 +11,7 @@ using MCBS.Logging;
 using MCBS.UI;
 using MCBS.State;
 using MCBS.Events;
+using MCBS.Cursor.Style;
 
 namespace MCBS.Screens
 {
@@ -27,7 +28,7 @@ namespace MCBS.Screens
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
             IsRestart = false;
             IsShowCursor = true;
-            CursorType = Cursor.CursorStyleType.Default;
+            CursorType = CursorStyleType.Default;
 
             ID = -1;
             StateManager = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]

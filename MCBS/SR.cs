@@ -1,5 +1,5 @@
 ﻿using log4net.Core;
-using MCBS.Cursor;
+using MCBS.Cursor.Style;
 using MCBS.Directorys;
 using MCBS.Logging;
 using MCBS.Namespaces;

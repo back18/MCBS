@@ -1,5 +1,5 @@
 ﻿using MCBS.Application;
-using MCBS.Cursor;
+using MCBS.Cursor.Style;
 using MCBS.Events;
 using MCBS.Forms;
 using MCBS.Screens;

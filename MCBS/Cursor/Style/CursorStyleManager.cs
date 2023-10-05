@@ -13,7 +13,7 @@ using MCBS.Frame;
 using QuanLib.Minecraft;
 using QuanLib.Core.Extensions;
 
-namespace MCBS.Cursor
+namespace MCBS.Cursor.Style
 {
     public class CursorStyleManager : IReadOnlyDictionary<string, CursorStyle>
     {

@@ -20,9 +20,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MCBS.Processes;
-using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Application;
+using MCBS.Cursor.Style;
 
 namespace MCBS.Screens
 {
