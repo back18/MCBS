@@ -1,4 +1,5 @@
 ﻿using MCBS.Cursor.Style;
+using MCBS.Screens;
 using QuanLib.Minecraft.Snbt.Models;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
@@ -18,16 +19,35 @@ namespace MCBS.Cursor
                 throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
 
             PlayerName = playerName;
+            LastActiveFrame = -1;
             Visible = true;
             StyleType = CursorStyleType.Default;
-            TextEditor = new();
+            TextEditor = new(playerName);
+            ClickReader = new(playerName);
             InputData = new();
+            ScreenContextOf = null;
             HoverControl = null;
         }
 
         public string PlayerName { get; }
 
+        public int LastActiveFrame { get; private set; }
+
         public bool Active { get; private set; }
+
+        public CursorState CursorState
+        {
+            get
+            {
+                int frame = MCOS.Instance.FrameCount;
+                if (LastActiveFrame == frame)
+                    return CursorState.Active;
+                else if (LastActiveFrame == frame - 1)
+                    return CursorState.Ready;
+                else
+                    return CursorState.Offline;
+            }
+        }
 
         public bool Visible { get; set; }
 
@@ -35,19 +55,19 @@ namespace MCBS.Cursor
 
         public TextEditor TextEditor { get; }
 
+        public ClickReader ClickReader { get; }
+
         public CursorInputData InputData { get; private set; }
+
+        public ScreenContext? ScreenContextOf { get; private set; }
 
         public CursorHoverControl? HoverControl { get; set; }
 
-        public void SetNewInputData(CursorInputData inputData)
+        public void SetNewInputData(ScreenContext screenContext, CursorInputData inputData)
         {
+            ScreenContextOf = screenContext ?? throw new ArgumentNullException(nameof(screenContext));
             InputData = inputData ?? throw new ArgumentNullException(nameof(inputData));
-            Active = true;
-        }
-
-        public void Reset()
-        {
-            Active = false;
+            LastActiveFrame = MCOS.Instance.FrameCount;
         }
     }
 }

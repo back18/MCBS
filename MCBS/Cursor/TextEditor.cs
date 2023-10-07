@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft.Command;
+﻿using MCBS.Config;
+using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Snbt.Models;
 using System;
@@ -11,12 +12,18 @@ namespace MCBS.Cursor
 {
     public class TextEditor
     {
-        public TextEditor()
+        public TextEditor(string playerName)
         {
+            if (string.IsNullOrEmpty(playerName))
+                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
+
+            PlayerName = playerName;
             InitialText = string.Empty;
             CurrentText = string.Empty;
             IsSynchronized = false;
         }
+
+        public string PlayerName { get; }
 
         public string InitialText { get; private set; }
 
@@ -24,21 +31,19 @@ namespace MCBS.Cursor
 
         public bool IsSynchronized { get; private set; }
 
-        public bool ReadText(CommandSender sender, string player, Item item)
+        public bool ReadText(Item item)
         {
-            if (sender is null)
-                throw new ArgumentNullException(nameof(sender));
-            if (string.IsNullOrEmpty(player))
-                throw new ArgumentException($"“{nameof(player)}”不能为 null 或空。", nameof(player));
             if (item is null)
                 throw new ArgumentNullException(nameof(item));
+
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
 
             if (!IsSynchronized)
             {
                 if (string.IsNullOrEmpty(InitialText))
-                    sender.SetPlayerHotbarItem(player, item.Slot, $"minecraft:writable_book{{pages:[]}}");
+                    sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemID}{{pages:[]}}");
                 else
-                    sender.SetPlayerHotbarItem(player, item.Slot, $"minecraft:writable_book{{pages:[\"{InitialText}\"]}}");
+                    sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemID}{{pages:[\"{InitialText}\"]}}");
                 CurrentText = InitialText;
                 IsSynchronized = true;
                 return false;

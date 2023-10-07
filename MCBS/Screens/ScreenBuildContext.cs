@@ -17,18 +17,18 @@ namespace MCBS.Screens
 {
     public class ScreenBuildContext
     {
-        public ScreenBuildContext(string player)
+        public ScreenBuildContext(string playerName)
         {
-            if (string.IsNullOrEmpty(player))
-                throw new ArgumentException($"“{nameof(player)}”不能为 null 或空。", nameof(player));
+            if (string.IsNullOrEmpty(playerName))
+                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
 
-            Player = player;
+            PlayerName = playerName;
             BuildState = ScreenBuildState.ReadStartPosition;
             Timeout = ScreenConfig.ScreenBuildTimeout;
             Error = false;
         }
 
-        public string Player { get; }
+        public string PlayerName { get; }
 
         public Screen? Screen { get; private set; }
 
@@ -61,14 +61,15 @@ namespace MCBS.Screens
                 return;
             }
 
-            if (!sender.TryGetEntityPosition(Player, out var position) ||
-                !sender.TryGetEntityRotation(Player, out var rotation))
+            if (!sender.TryGetEntityPosition(PlayerName, out var position) ||
+                !sender.TryGetEntityRotation(PlayerName, out var rotation))
             {
                 BuildState = ScreenBuildState.Canceled;
                 return;
             }
 
-            if (sender.TryGetPlayerSelectedItem(Player, out var item) &&
+            if (sender.TryGetPlayerSelectedItem(PlayerName, out var item) &&
+                item.ID == ScreenConfig.RightClickItemID &&
                 item.Tag is not null &&
                 item.Tag.TryGetValue("display", out var display) &&
                 display is Dictionary<string, object> displayTag &&
@@ -87,7 +88,7 @@ namespace MCBS.Screens
                 }
 
                 string? text = nameJson["text"]?.Value<string>();
-                if (text is null || text != ScreenConfig.ScreenBuildItemName)
+                if (text is null || text != ScreenConfig.ScreenBuilderItemName)
                 {
                     TryCancel();
                     return;
@@ -98,7 +99,7 @@ namespace MCBS.Screens
                 if (BuildState == ScreenBuildState.ReadStartPosition)
                 {
                     int distance = 1;
-                    if (sender.TryGetPlayerDualWieldItem(Player, out var dualWieldItem))
+                    if (sender.TryGetPlayerDualWieldItem(PlayerName, out var dualWieldItem))
                         distance += dualWieldItem.Count * 4;
 
                     Facing playerFacing;
@@ -124,13 +125,13 @@ namespace MCBS.Screens
 
                     if (targetPosition.Y < ScreenConfig.MinY || targetPosition.Y > ScreenConfig.MaxY)
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间", TextColor.Red);
                         Error = true;
                         goto click;
                     }
 
-                    sender.ShowTitle(Player, 0, 10, 10, "正在创建屏幕");
-                    sender.ShowSubTitle(Player, 0, 10, 10, $"方向:{playerFacing.ToReverse()} 距离:{distance} 目标位置:{targetPosition}");
+                    sender.ShowTitle(PlayerName, 0, 10, 10, "正在创建屏幕");
+                    sender.ShowSubTitle(PlayerName, 0, 10, 10, $"方向:{playerFacing.ToReverse()} 距离:{distance} 目标位置:{targetPosition}");
                 }
                 else if (BuildState == ScreenBuildState.ReadEndPosition)
                 {
@@ -138,7 +139,7 @@ namespace MCBS.Screens
 
                     if (targetPosition.Y < ScreenConfig.MinY || targetPosition.Y > ScreenConfig.MaxY)
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：目标位置的Y轴需要在{ScreenConfig.MinY}至{ScreenConfig.MaxY}之间", TextColor.Red);
                         Error = true;
                         goto click;
                     }
@@ -162,36 +163,36 @@ namespace MCBS.Screens
                     }
                     else
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 错误：所选范围内含有非空气方块", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：所选范围内含有非空气方块", TextColor.Red);
                         Error = true;
                         goto click;
                     }
 
                     if (newScreen.Width > ScreenConfig.MaxLength || newScreen.Height > ScreenConfig.MaxLength)
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 错误：屏幕最大长度为{ScreenConfig.MaxLength}", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：屏幕最大长度为{ScreenConfig.MaxLength}", TextColor.Red);
                         Error = true;
                         goto click;
                     }
                     else if (newScreen.TotalPixels > ScreenConfig.MaxPixels)
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 错误：屏幕最大像素数量为{ScreenConfig.MaxLength}", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：屏幕最大像素数量为{ScreenConfig.MaxLength}", TextColor.Red);
                         Error = true;
                         goto click;
                     }
                     else if (newScreen.Width < ScreenConfig.MinLength || newScreen.Height < ScreenConfig.MinLength)
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 错误：屏幕最小长度为{ScreenConfig.MinLength}", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：屏幕最小长度为{ScreenConfig.MinLength}", TextColor.Red);
                         Error = true;
                     }
                     else if (newScreen.TotalPixels < ScreenConfig.MinPixels)
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 错误：屏幕最小像素数量为{ScreenConfig.MinPixels}", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：屏幕最小像素数量为{ScreenConfig.MinPixels}", TextColor.Red);
                         Error = true;
                     }
 
-                    sender.ShowTitle(Player, 0, 10, 10, "正在确定屏幕尺寸");
-                    sender.ShowSubTitle(Player, 0, 10, 10, $"宽度:{Screen?.Width ?? 0} 高度:{Screen?.Height ?? 0} 像素数量: {Screen?.TotalPixels ?? 0}");
+                    sender.ShowTitle(PlayerName, 0, 10, 10, "正在确定屏幕尺寸");
+                    sender.ShowSubTitle(PlayerName, 0, 10, 10, $"宽度:{Screen?.Width ?? 0} 高度:{Screen?.Height ?? 0} 像素数量: {Screen?.TotalPixels ?? 0}");
                 }
                 else
                 {
@@ -199,14 +200,11 @@ namespace MCBS.Screens
                 }
 
                 click:
-                int score = sender.GetPlayerScoreboard(Player, ScreenConfig.RightClickObjective);
-                if (score > 0)
+                if (MCOS.Instance.CursorManager.GetOrCreate(PlayerName).ClickReader.ReadClick().IsRightClick)
                 {
-                    sender.SetPlayerScoreboard(Player, ScreenConfig.RightClickObjective, 0);
-
                     if (Error)
                     {
-                        sender.SendChatMessage(Player, "[屏幕构建器] 出现一个或多个错误，无法创建屏幕", TextColor.Red);
+                        sender.SendChatMessage(PlayerName, "[屏幕构建器] 出现一个或多个错误，无法创建屏幕", TextColor.Red);
                         return;
                     }
 
@@ -214,11 +212,11 @@ namespace MCBS.Screens
                     {
                         StartPosition = targetPosition;
                         BuildState = ScreenBuildState.ReadEndPosition;
-                        sender.SendChatMessage(Player, $"[屏幕构建器] 屏幕左上角已确定，位于{StartPosition}");
+                        sender.SendChatMessage(PlayerName, $"[屏幕构建器] 屏幕左上角已确定，位于{StartPosition}");
                     }
                     else if (BuildState == ScreenBuildState.ReadEndPosition && Screen is not null)
                     {
-                        sender.SendChatMessage(Player, $"[屏幕构建器] 屏幕右下角已确定，位于{EndPosition}");
+                        sender.SendChatMessage(PlayerName, $"[屏幕构建器] 屏幕右下角已确定，位于{EndPosition}");
                         BuildState = ScreenBuildState.Completed;
                     }
                     else
@@ -242,12 +240,12 @@ namespace MCBS.Screens
                 {
                     if (ScreenConfig.ScreenBuildTimeout == -1)
                     {
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] 你有一个屏幕未完成创建， 位于{StartPosition}", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 你有一个屏幕未完成创建， 位于{StartPosition}", TextColor.Red);
                     }
                     else
                     {
                         Timeout--;
-                        sender.ShowActionbarTitle(Player, $"[屏幕构建器] {Timeout / 20}秒后无操作将取消本次屏幕创建", TextColor.Red);
+                        sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] {Timeout / 20}秒后无操作将取消本次屏幕创建", TextColor.Red);
                     }
                 }
                 else

@@ -25,8 +25,6 @@ namespace MCBS.Cursor
 
         public int Count => _items.Count;
 
-        public int ActiveCount => _items.Values.Count(cursor => cursor.Active);
-
         public CursorContext GetOrCreate(string key)
         {
             if (string.IsNullOrEmpty(key))
@@ -40,12 +38,6 @@ namespace MCBS.Cursor
                 _items.Add(key, context);
                 return context;
             }
-        }
-
-        public void ResetAll()
-        {
-            foreach (var cursor in _items.Values)
-                cursor.Reset();
         }
 
         public bool ContainsKey(string key)

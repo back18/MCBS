@@ -100,6 +100,7 @@ namespace MCBS.Screens
                     continue;
 
                 if (item.Value.Tag is not null &&
+                item.Value.ID == ScreenConfig.RightClickItemID &&
                 item.Value.Tag.TryGetValue("display", out var display) &&
                 display is Dictionary<string, object> displayTag &&
                 displayTag.TryGetValue("Name", out var name) &&
@@ -116,7 +117,7 @@ namespace MCBS.Screens
                     }
 
                     string? text = nameJson["text"]?.Value<string>();
-                    if (text is null || text != ScreenConfig.ScreenBuildItemName)
+                    if (text is null || text != ScreenConfig.ScreenBuilderItemName)
                         continue;
 
                     if (ScreenConfig.ScreenBuildOperatorList.Count != 0 && !ScreenConfig.ScreenBuildOperatorList.Contains(item.Key))

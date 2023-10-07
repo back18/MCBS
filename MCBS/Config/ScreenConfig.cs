@@ -27,7 +27,10 @@ namespace MCBS.Config
             ScreenBuildTimeout = model.ScreenBuildTimeout;
             ScreenIdleTimeout = model.ScreenIdleTimeout;
             RightClickObjective = model.RightClickObjective;
-            ScreenBuildItemName = model.ScreenBuildItemName;
+            RightClickCriterion = model.RightClickCriterion;
+            RightClickItemID = model.RightClickItemID;
+            TextEditorItemID = model.TextEditorItemID;
+            ScreenBuilderItemName = model.ScreenBuilderItemName;
             ScreenOperatorList = model.ScreenOperatorList;
             ScreenBuildOperatorList = model.ScreenBuildOperatorList;
 
@@ -59,7 +62,13 @@ namespace MCBS.Config
 
         public string RightClickObjective { get; }
 
-        public string ScreenBuildItemName { get; }
+        public string RightClickCriterion { get; }
+
+        public string RightClickItemID { get; }
+
+        public string TextEditorItemID { get; }
+
+        public string ScreenBuilderItemName { get; }
 
         public IReadOnlyList<string> ScreenOperatorList { get; }
 
@@ -157,8 +166,17 @@ namespace MCBS.Config
             [Required(ErrorMessage = "右键计分板名称不能为空")]
             public string RightClickObjective { get; set; }
 
+            [Required(ErrorMessage = "右键计分板准则不能为空")]
+            public string RightClickCriterion { get; set; }
+
+            [Required(ErrorMessage = "右键计分板物品ID不能为空")]
+            public string RightClickItemID { get; set; }
+
+            [Required(ErrorMessage = "文本编辑器物品ID不能为空")]
+            public string TextEditorItemID { get; set; }
+
             [Required(ErrorMessage = "屏幕构建器物品名称不能为空")]
-            public string ScreenBuildItemName { get; set; }
+            public string ScreenBuilderItemName { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]
             public string[] ScreenOperatorList { get; set; }

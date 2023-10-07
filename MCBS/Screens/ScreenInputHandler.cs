@@ -39,10 +39,6 @@ namespace MCBS.Screens
             CursorItemChanged += OnCursorItemChanged;
         }
 
-        private const string CLICK_ITEM = "minecraft:snowball";
-
-        private const string TEXTEDITOR_ITEM = "minecraft:writable_book";
-
         private readonly ScreenContext _owner;
 
         private readonly Queue<Event> _events;
@@ -105,20 +101,22 @@ namespace MCBS.Screens
             }
 
             var order = playerDistances.OrderBy(item => item.distance);
-            List<string> players = new();
+            bool successful = false;
             foreach (var (player, distance) in order)
             {
-                if (HandleInput(player))
-                    players.Add(player);
+                CursorContext cursorContext = MCOS.Instance.CursorManager.GetOrCreate(player);
+
+                lock (cursorContext)
+                {
+                    if (cursorContext.CursorState == CursorState.Active)
+                        continue;
+
+                    if (HandleInput(cursorContext))
+                        successful = true;
+                }
             }
 
-            foreach (var cursorContext in _owner.CursorManager.Values)
-            {
-                if (!players.Contains(cursorContext.PlayerName))
-                    cursorContext.Reset();
-            }
-
-            if (players.Count == 0)
+            if (!successful)
             {
                 IdleTime++;
                 return;
@@ -131,11 +129,10 @@ namespace MCBS.Screens
             return;
         }
 
-        private bool HandleInput(string player)
+        private bool HandleInput(CursorContext cursorContext)
         {
             Screen screen = _owner.Screen;
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            CursorContext cursorContext = _owner.CursorManager.GetOrCreate(player);
             CursorInputData oldData = cursorContext.InputData.Clone();
             CursorMode cursorMode = oldData.CursorMode;
             Point cursorPosition = oldData.CursorPosition;
@@ -146,17 +143,17 @@ namespace MCBS.Screens
             Item? mainItem = oldData.MainItem;
             Item? deputyItem = oldData.DeputyItem;
 
-            if (!sender.TryGetPlayerSelectedItemSlot(player, out inventorySlot))
+            if (!sender.TryGetPlayerSelectedItemSlot(cursorContext.PlayerName, out inventorySlot))
                 return false;
 
-            sender.TryGetPlayerItem(player, inventorySlot, out mainItem);
-            sender.TryGetPlayerDualWieldItem(player, out deputyItem);
+            sender.TryGetPlayerItem(cursorContext.PlayerName, inventorySlot, out mainItem);
+            sender.TryGetPlayerDualWieldItem(cursorContext.PlayerName, out deputyItem);
 
-            if (mainItem is not null && (mainItem.ID == CLICK_ITEM || mainItem.ID == TEXTEDITOR_ITEM))
+            if (mainItem is not null && (mainItem.ID == ScreenConfig.RightClickItemID || mainItem.ID == ScreenConfig.TextEditorItemID))
             {
 
             }
-            else if (deputyItem is not null && (deputyItem.ID == CLICK_ITEM || deputyItem.ID == TEXTEDITOR_ITEM))
+            else if (deputyItem is not null && (deputyItem.ID == ScreenConfig.RightClickItemID || deputyItem.ID == ScreenConfig.TextEditorItemID))
             {
                 Item? temp = mainItem;
                 mainItem = deputyItem;
@@ -167,7 +164,7 @@ namespace MCBS.Screens
                 return false;
             }
 
-            if (!sender.TryGetEntityPosition(player, out var playerPosition) || !sender.TryGetEntityRotation(player, out var playerRotation))
+            if (!sender.TryGetEntityPosition(cursorContext.PlayerName, out var playerPosition) || !sender.TryGetEntityRotation(cursorContext.PlayerName, out var playerRotation))
                 return false;
             if (!EntityPos.CheckPlaneReachability(playerPosition, playerRotation, screen.NormalFacing, screen.PlaneCoordinate))
                 return false;
@@ -179,42 +176,31 @@ namespace MCBS.Screens
             if (!screen.IncludedOnScreen(cursorPosition))
                 return false;
 
-            if (ScreenConfig.ScreenOperatorList.Count != 0 && !ScreenConfig.ScreenOperatorList.Contains(player))
+            if (ScreenConfig.ScreenOperatorList.Count != 0 && !ScreenConfig.ScreenOperatorList.Contains(cursorContext.PlayerName))
             {
-                sender.ShowActionbarTitle(player, "[屏幕输入模块] 错误：你没有权限控制屏幕", TextColor.Red);
+                sender.ShowActionbarTitle(cursorContext.PlayerName, "[屏幕输入模块] 错误：你没有权限控制屏幕", TextColor.Red);
                 return false;
             }
 
             DateTime now = DateTime.Now;
-            switch (mainItem.ID)
+            if (mainItem.ID == ScreenConfig.RightClickItemID)
             {
-                case CLICK_ITEM:
-                    cursorMode = CursorMode.Click;
-                    if (sender.TryGetEntityUuid(player, out var uuid) && MCOS.Instance.InteractionManager.Items.TryGetValue(uuid, out var interaction))
-                    {
-                        if (interaction.IsLeftClick)
-                            leftClickTime = now;
-                        if (interaction.IsRightClick)
-                            rightClickTime = now;
-                    }
-                    else
-                    {
-                        int score = sender.GetPlayerScoreboard(player, ScreenConfig.RightClickObjective);
-                        if (score > 0)
-                        {
-                            if (cursorContext.Active)
-                                rightClickTime = now;
-                            sender.SetPlayerScoreboard(player, ScreenConfig.RightClickObjective, 0);
-                        }
-                    }
-                    break;
-                case TEXTEDITOR_ITEM:
-                    cursorMode = CursorMode.TextEditor;
-                    if (cursorContext.TextEditor.ReadText(sender, player, mainItem))
-                        textEditor = cursorContext.TextEditor.CurrentText;
-                    break;
-                default:
-                    return false;
+                cursorMode = CursorMode.Click;
+                ClickResult clickResult = cursorContext.ClickReader.ReadClick();
+                if (clickResult.IsLeftClick)
+                    leftClickTime = cursorContext.ClickReader.LeftClickTime;
+                if (clickResult.IsRightClick)
+                    rightClickTime = cursorContext.ClickReader.RightClickTime;
+            }
+            else if (mainItem.ID == ScreenConfig.TextEditorItemID)
+            {
+                cursorMode = CursorMode.TextEditor;
+                if (cursorContext.TextEditor.ReadText(mainItem))
+                    textEditor = cursorContext.TextEditor.CurrentText;
+            }
+            else
+            {
+                return false;
             }
 
             CursorInputData newData = new(
@@ -243,7 +229,7 @@ namespace MCBS.Screens
             if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
                 _events.Enqueue(new(CursorItemChanged, this, args));
 
-            cursorContext.SetNewInputData(newData);
+            cursorContext.SetNewInputData(_owner, newData);
             return true;
         }
 

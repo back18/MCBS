@@ -14,6 +14,7 @@ namespace MCBS
             ProcessScheduling = new();
             FormScheduling = new();
             InteractionScheduling = new();
+            RightClickObjectiveScheduling = new();
             ScreenInput = new();
             HandleBeforeFrame = new();
             UIRendering = new();
@@ -31,6 +32,8 @@ namespace MCBS
         public Timer FormScheduling { get; }
 
         public Timer InteractionScheduling { get; }
+
+        public Timer RightClickObjectiveScheduling { get; }
 
         public Timer ScreenInput { get; }
 
@@ -54,6 +57,7 @@ namespace MCBS
 进程调度: {Timer.FromTime(ProcessScheduling.GetTime(duration))}
 窗体调度: {Timer.FromTime(FormScheduling.GetTime(duration))}
 交互调度: {Timer.FromTime(InteractionScheduling.GetTime(duration))}
+右键调度: {Timer.FromTime(RightClickObjectiveScheduling.GetTime(duration))}
 屏幕输入: {Timer.FromTime(ScreenInput.GetTime(duration))}
 帧前处理: {Timer.FromTime(HandleBeforeFrame.GetTime(duration))}
 界面渲染: {Timer.FromTime(UIRendering.GetTime(duration))}

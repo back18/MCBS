@@ -25,6 +25,8 @@ using MCBS.Processes;
 using MCBS.Application;
 using MCBS.Forms;
 using MCBS.Interaction;
+using MCBS.Cursor;
+using MCBS.RightClickObjective;
 
 namespace MCBS
 {
@@ -47,6 +49,8 @@ namespace MCBS
             ProcessManager = new();
             FormManager = new();
             InteractionManager = new();
+            RightClickObjectiveManager = new();
+            CursorManager = new();
 
             FrameCount = 0;
             LagFrameCount = 0;
@@ -104,6 +108,10 @@ namespace MCBS
         public FormManager FormManager { get; }
 
         public InteractionManager InteractionManager { get; }
+
+        public RightClickObjectiveManager RightClickObjectiveManager { get; }
+
+        public CursorManager CursorManager { get; }
 
         public string ServicesAppID { get; }
 
@@ -165,6 +173,7 @@ namespace MCBS
                     HandleProcessScheduling();
                     HandleFormScheduling();
                     HandleInteractionScheduling();
+                    HandleRightClickObjectiveScheduling();
 
                     if (TaskManager.IsCompletedCurrentMainTask)
                     {
@@ -305,6 +314,17 @@ namespace MCBS
 
             stopwatch.Stop();
             SystemTimer.InteractionScheduling.Add(stopwatch.Elapsed);
+            return stopwatch.Elapsed;
+        }
+
+        private TimeSpan HandleRightClickObjectiveScheduling()
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            RightClickObjectiveManager.RightClickObjectiveScheduling();
+
+            stopwatch.Stop();
+            SystemTimer.RightClickObjectiveScheduling.Add(stopwatch.Elapsed);
             return stopwatch.Elapsed;
         }
 

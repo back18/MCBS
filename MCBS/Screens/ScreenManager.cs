@@ -203,9 +203,9 @@ namespace MCBS.Screens
                     ArrayFrame? formFrame = UIRenderer.Rendering(screenContext.RootForm);
                     if (formFrame is not null)
                         frame.Overwrite(formFrame, screenContext.RootForm.ClientLocation);
-                    foreach (var cursorContext in screenContext.CursorManager.Values)
+                    foreach (var cursorContext in MCOS.Instance.CursorManager.Values)
                     {
-                        if (cursorContext.Active && cursorContext.Visible)
+                        if (cursorContext.ScreenContextOf == screenContext && cursorContext.CursorState == Cursor.CursorState.Active && cursorContext.Visible)
                         {
                             if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursor))
                                 cursor = SR.CursorStyleManager[CursorStyleType.Default];
