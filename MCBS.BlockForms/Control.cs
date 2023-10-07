@@ -37,8 +37,6 @@ namespace MCBS.BlockForms
             InvokeExternalCursorMove = false;
             IsInitializeCompleted = false;
             KeepWhenClear = false;
-            LastRightClickTime = DateTime.MinValue;
-            LastLeftClickTime = DateTime.MinValue;
             _DisplayPriority = 0;
             _MaxDisplayPriority = 512;
             _Text = string.Empty;
@@ -106,10 +104,6 @@ namespace MCBS.BlockForms
         public bool IsInitializeCompleted { get; private set; }
 
         public bool KeepWhenClear { get; set; }
-
-        public DateTime LastRightClickTime { get; private set; }
-
-        public DateTime LastLeftClickTime { get; private set; }
 
         public virtual string Text
         {
@@ -700,41 +694,25 @@ namespace MCBS.BlockForms
             Layout.Invoke(this, e);
         }
 
-        protected bool TryHandleRightClick(CursorEventArgs e)
-        {
-            if (Visible && IsHover)
-            {
-                RightClick.Invoke(this, e);
-                DateTime now = DateTime.Now;
-                if (LastRightClickTime == DateTime.MinValue || (DateTime.Now - LastRightClickTime).TotalMilliseconds > 500)
-                {
-                    LastRightClickTime = now;
-                }
-                else
-                {
-                    DoubleRightClick.Invoke(this, e);
-                    LastRightClickTime = DateTime.MinValue;
-                }
-                return true;
-            }
-            return false;
-        }
-
         protected bool TryHandleLeftClick(CursorEventArgs e)
         {
             if (Visible && IsHover)
             {
                 LeftClick.Invoke(this, e);
-                DateTime now = DateTime.Now;
-                if (LastLeftClickTime == DateTime.MinValue || (DateTime.Now - LastLeftClickTime).TotalMilliseconds > 500)
-                {
-                    LastLeftClickTime = now;
-                }
-                else
-                {
+                if ((e.NewData.LeftClickTime - e.OldData.LeftClickTime).TotalMilliseconds <= 500)
                     DoubleLeftClick.Invoke(this, e);
-                    LastLeftClickTime = DateTime.MinValue;
-                }
+                return true;
+            }
+            return false;
+        }
+
+        protected bool TryHandleRightClick(CursorEventArgs e)
+        {
+            if (Visible && IsHover)
+            {
+                RightClick.Invoke(this, e);
+                if ((e.NewData.RightClickTime - e.OldData.RightClickTime).TotalMilliseconds <= 500)
+                    DoubleRightClick.Invoke(this, e);
                 return true;
             }
             return false;
