@@ -86,7 +86,7 @@ namespace MCBS.BlockForms
                 return;
             }
 
-            Rgba32 color = GetCurrentColorOrDefault(BlockManager.Concrete.Black);
+            Rgba32 color = GetCurrentColorOrDefault(e, BlockManager.Concrete.Black);
             Point position1 = ClientPos2ImagePos(LastCursorPosition);
             Point position2 = ClientPos2ImagePos(e.Position);
 
@@ -118,19 +118,14 @@ namespace MCBS.BlockForms
             base.OnCursorEnter(sender, e);
 
             Drawing = false;
-
-            var context = GetScreenContext();
-            if (context is not null)
-                context.IsShowCursor = false;
+            e.CursorContext.Visible = false;
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
         {
             base.OnCursorLeave(sender, e);
 
-            var context = GetScreenContext();
-            if (context is not null)
-                context.IsShowCursor = true;
+            e.CursorContext.Visible = true;
         }
 
         protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
@@ -146,9 +141,9 @@ namespace MCBS.BlockForms
             Fill(BlockManager.Concrete.White);
         }
 
-        public void Fill()
+        public void Fill(CursorEventArgs e)
         {
-            Fill(GetCurrentColorOrDefault(BlockManager.Concrete.White));
+            Fill(GetCurrentColorOrDefault(e, BlockManager.Concrete.White));
         }
 
         public void Fill(string blockID)
@@ -204,14 +199,14 @@ namespace MCBS.BlockForms
             }
         }
 
-        private Rgba32 GetCurrentColorOrDefault(string def)
+        private Rgba32 GetCurrentColorOrDefault(CursorEventArgs e, string def)
         {
-            return GetCurrentColorOrDefault(GetBlockColor(def));
+            return GetCurrentColorOrDefault(e, GetBlockColor(def));
         }
 
-        private Rgba32 GetCurrentColorOrDefault(Rgba32 def)
+        private Rgba32 GetCurrentColorOrDefault(CursorEventArgs e, Rgba32 def)
         {
-            var id = GetScreenContext()?.Screen.InputHandler.CurrentItem?.ID;
+            var id = e.CursorContext.InputData.DeputyItem?.ID;
             return GetBlockColorOrDefault(id, def);
         }
     }

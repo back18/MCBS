@@ -14,7 +14,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MCBS.Screens
 {
@@ -193,16 +192,6 @@ namespace MCBS.Screens
         public int TotalPixels => Width * Height;
 
         public string DefaultBackgroundBlcokID { get; set; }
-
-        public ScreenInputHandler InputHandler
-        {
-            get
-            {
-                _InputHandler ??= new(this);
-                return _InputHandler;
-            }
-        }
-        private ScreenInputHandler? _InputHandler;
 
         public ScreenOutputHandler OutputHandler
         {

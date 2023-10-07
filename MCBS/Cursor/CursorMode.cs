@@ -8,7 +8,9 @@ namespace MCBS.Cursor
 {
     public enum CursorMode
     {
-        Cursor,
+        Click,
+
+        LongPress,
 
         TextEditor
     }

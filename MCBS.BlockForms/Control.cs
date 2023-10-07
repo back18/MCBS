@@ -525,19 +525,19 @@ namespace MCBS.BlockForms
 
         public event EventHandler<Control, CursorEventArgs> CursorLeave;
 
-        public event EventHandler<Control, CursorEventArgs> RightClick;
-
         public event EventHandler<Control, CursorEventArgs> LeftClick;
 
-        public event EventHandler<Control, CursorEventArgs> DoubleRightClick;
+        public event EventHandler<Control, CursorEventArgs> RightClick;
 
         public event EventHandler<Control, CursorEventArgs> DoubleLeftClick;
 
-        public event EventHandler<Control, CursorSlotEventArgs> CursorSlotChanged;
+        public event EventHandler<Control, CursorEventArgs> DoubleRightClick;
 
-        public event EventHandler<Control, CursorItemEventArgs> CursorItemChanged;
+        public event EventHandler<Control, CursorEventArgs> TextEditorUpdate;
 
-        public event EventHandler<Control, CursorTextEventArgs> TextEditorUpdate;
+        public event EventHandler<Control, CursorEventArgs> CursorSlotChanged;
+
+        public event EventHandler<Control, CursorEventArgs> CursorItemChanged;
 
         public event EventHandler<Control, EventArgs> BeforeFrame;
 
@@ -571,19 +571,19 @@ namespace MCBS.BlockForms
 
         protected virtual void OnCursorLeave(Control sender, CursorEventArgs e) { }
 
-        protected virtual void OnRightClick(Control sender, CursorEventArgs e) { }
-
         protected virtual void OnLeftClick(Control sender, CursorEventArgs e) { }
 
-        protected virtual void OnDoubleRightClick(Control sender, CursorEventArgs e) { }
+        protected virtual void OnRightClick(Control sender, CursorEventArgs e) { }
 
         protected virtual void OnDoubleLeftClick(Control sender, CursorEventArgs e) { }
 
-        protected virtual void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e) { }
+        protected virtual void OnDoubleRightClick(Control sender, CursorEventArgs e) { }
 
-        protected virtual void OnCursorItemChanged(Control sender, CursorItemEventArgs e) { }
+        protected virtual void OnTextEditorUpdate(Control sender, CursorEventArgs e) { }
 
-        protected virtual void OnTextEditorUpdate(Control sender, CursorTextEventArgs e) { }
+        protected virtual void OnCursorSlotChanged(Control sender, CursorEventArgs e) { }
+
+        protected virtual void OnCursorItemChanged(Control sender, CursorEventArgs e) { }
 
         protected virtual void OnBeforeFrame(Control sender, EventArgs e) { }
 
@@ -655,29 +655,29 @@ namespace MCBS.BlockForms
             }
         }
 
-        public virtual bool HandleRightClick(CursorEventArgs e)
-        {
-            return TryHandleRightClick(e);
-        }
-
         public virtual bool HandleLeftClick(CursorEventArgs e)
         {
             return TryHandleLeftClick(e);
         }
 
-        public virtual bool HandleCursorSlotChanged(CursorSlotEventArgs e)
+        public virtual bool HandleRightClick(CursorEventArgs e)
+        {
+            return TryHandleRightClick(e);
+        }
+
+        public virtual bool HandleTextEditorUpdate(CursorEventArgs e)
+        {
+            return TryHandleTextEditorUpdate(e);
+        }
+
+        public virtual bool HandleCursorSlotChanged(CursorEventArgs e)
         {
             return TryHandleCursorSlotChanged(e);
         }
 
-        public virtual bool HandleCursorItemChanged(CursorItemEventArgs e)
+        public virtual bool HandleCursorItemChanged(CursorEventArgs e)
         {
             return TryHandleCursorItemChanged(e);
-        }
-
-        public virtual bool HandleTextEditorUpdate(CursorTextEventArgs e)
-        {
-            return TryHandleTextEditorUpdate(e);
         }
 
         public virtual void HandleBeforeFrame(EventArgs e)
@@ -740,7 +740,7 @@ namespace MCBS.BlockForms
             return false;
         }
 
-        protected bool TryHandleCursorSlotChanged(CursorSlotEventArgs e)
+        protected bool TryHandleCursorSlotChanged(CursorEventArgs e)
         {
             if (Visible && IsHover)
             {
@@ -750,7 +750,7 @@ namespace MCBS.BlockForms
             return false;
         }
 
-        protected bool TryHandleCursorItemChanged(CursorItemEventArgs e)
+        protected bool TryHandleCursorItemChanged(CursorEventArgs e)
         {
             if (Visible && IsHover)
             {
@@ -760,7 +760,7 @@ namespace MCBS.BlockForms
             return false;
         }
 
-        protected bool TryHandleTextEditorUpdate(CursorTextEventArgs e)
+        protected bool TryHandleTextEditorUpdate(CursorEventArgs e)
         {
             if (Visible && IsHover)
             {
@@ -1092,18 +1092,6 @@ namespace MCBS.BlockForms
         }
 
         #endregion
-
-        protected void SetTextEditorInitialText()
-        {
-            Screen? screen = GetScreenContext()?.Screen;
-            if (screen is not null)
-                screen.InputHandler.InitialText = Text;
-        }
-
-        protected void ResetTextEditor()
-        {
-            GetScreenContext()?.Screen.InputHandler.ResetText();
-        }
 
         public virtual void ClearAllLayoutSyncer()
         {

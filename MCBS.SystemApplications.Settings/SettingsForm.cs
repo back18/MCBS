@@ -42,8 +42,7 @@ namespace MCBS.SystemApplications.Settings
 
         private void GetInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? player = GetScreenContext()?.Screen.InputHandler.CurrentPlayer;
-            if (player is null || !MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(player, out var uuid))
+            if (!MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(e.CursorContext.PlayerName, out var uuid))
                 return;
 
             MCOS.Instance.InteractionManager.Items.TryAdd(uuid, out _);
@@ -51,8 +50,7 @@ namespace MCBS.SystemApplications.Settings
 
         private void ClearInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? player = GetScreenContext()?.Screen.InputHandler.CurrentPlayer;
-            if (player is null || !MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(player, out var uuid))
+            if (!MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(e.CursorContext.PlayerName, out var uuid))
                 return;
 
             if (MCOS.Instance.InteractionManager.Items.TryGetValue(uuid, out var interaction))

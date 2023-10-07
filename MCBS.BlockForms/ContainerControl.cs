@@ -83,7 +83,7 @@ namespace MCBS.BlockForms
         public override bool HandleRightClick(CursorEventArgs e)
         {
             Control? control = GetChildControls().FirstHover;
-            if (control is not null && control.HandleRightClick(new(control.ParentPos2ChildPos(e.Position))) && control.FirstHandleRightClick)
+            if (control is not null && control.HandleRightClick(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleRightClick)
                 return true;
 
             return TryHandleRightClick(e);
@@ -92,44 +92,44 @@ namespace MCBS.BlockForms
         public override bool HandleLeftClick(CursorEventArgs e)
         {
             Control? control = GetChildControls().FirstHover;
-            if (control is not null && control.HandleLeftClick(new(control.ParentPos2ChildPos(e.Position))) && control.FirstHandleLeftClick)
+            if (control is not null && control.HandleLeftClick(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleLeftClick)
                 return true;
 
             return TryHandleLeftClick(e);
         }
 
-        public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
+        public override bool HandleTextEditorUpdate(CursorEventArgs e)
         {
             Control? control = GetChildControls().FirstHover;
-            if (control is not null && control.HandleCursorSlotChanged(new(control.ParentPos2ChildPos(e.Position), e.OldSlot, e.NewSlot)) && control.FirstHandleCursorSlotChanged)
+            if (control is not null && control.HandleTextEditorUpdate(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleTextEditorUpdate)
+                return true;
+
+            return TryHandleTextEditorUpdate(e);
+        }
+
+        public override bool HandleCursorSlotChanged(CursorEventArgs e)
+        {
+            Control? control = GetChildControls().FirstHover;
+            if (control is not null && control.HandleCursorSlotChanged(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleCursorSlotChanged)
                 return true;
 
             return TryHandleCursorSlotChanged(e);
         }
 
-        public override bool HandleCursorItemChanged(CursorItemEventArgs e)
+        public override bool HandleCursorItemChanged(CursorEventArgs e)
         {
             Control? control = GetChildControls().FirstHover;
-            if (control is not null && control.HandleCursorItemChanged(new(control.ParentPos2ChildPos(e.Position), e.Item)) && control.FirstHandleCursorItemChanged)
+            if (control is not null && control.HandleCursorItemChanged(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleCursorItemChanged)
                 return true;
 
             return TryHandleCursorItemChanged(e);
-        }
-
-        public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
-        {
-            Control? control = GetChildControls().FirstHover;
-            if (control is not null && control.HandleTextEditorUpdate(new(control.ParentPos2ChildPos(e.Position), e.Text)) && control.FirstHandleTextEditorUpdate)
-                return true;
-
-            return TryHandleTextEditorUpdate(e);
         }
 
         public override void UpdateHoverState(CursorEventArgs e)
         {
             foreach (var control in GetChildControls().ToArray())
             {
-                control.UpdateHoverState(new(control.ParentPos2ChildPos(e.Position)));
+                control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
             }
 
             base.UpdateHoverState(e);

@@ -226,7 +226,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private void Fill_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            DrawingBox.Fill();
+            DrawingBox.Fill(e);
         }
 
         private void Create_Button_RightClick(Control sender, CursorEventArgs e)

@@ -12,6 +12,7 @@ using MCBS.UI;
 using MCBS.State;
 using MCBS.Events;
 using MCBS.Cursor.Style;
+using MCBS.Cursor;
 
 namespace MCBS.Screens
 {
@@ -26,9 +27,9 @@ namespace MCBS.Screens
         {
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
+            CursorManager = new();
+            ScreenInputHandler = new(this);
             IsRestart = false;
-            IsShowCursor = true;
-            CursorType = CursorStyleType.Default;
 
             ID = -1;
             StateManager = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
@@ -52,13 +53,13 @@ namespace MCBS.Screens
 
         public Screen Screen { get; }
 
-        public IRootForm RootForm { get; set; }
+        public IRootForm RootForm { get; }
+
+        public CursorManager CursorManager { get; }
+
+        public ScreenInputHandler ScreenInputHandler { get; }
 
         public bool IsRestart { get; private set; }
-
-        public bool IsShowCursor { get; set; }
-
-        public string CursorType { get; set; }
 
         protected virtual bool HandleNotLoadedState(ScreenState current, ScreenState next)
         {
@@ -147,12 +148,12 @@ namespace MCBS.Screens
             if (_bind)
                 return;
 
-            Screen.InputHandler.CursorMove += InputHandler_CursorMove;
-            Screen.InputHandler.RightClick += InputHandler_RightClick;
-            Screen.InputHandler.LeftClick += InputHandler_LeftClick;
-            Screen.InputHandler.CursorSlotChanged += InputHandler_CursorSlotChanged;
-            Screen.InputHandler.CursorItemChanged += InputHandler_CursorItemChanged;
-            Screen.InputHandler.TextEditorUpdate += InputHandler_TextEditorUpdate;
+            ScreenInputHandler.CursorMove += ScreenInputHandler_CursorMove;
+            ScreenInputHandler.LeftClick += ScreenInputHandler_LeftClick;
+            ScreenInputHandler.RightClick += ScreenInputHandler_RightClick;
+            ScreenInputHandler.TextEditorUpdate += ScreenInputHandler_TextEditorUpdate;
+            ScreenInputHandler.CursorSlotChanged += ScreenInputHandler_CursorSlotChanged;
+            ScreenInputHandler.CursorItemChanged += ScreenInputHandler_CursorItemChanged;
 
             _bind = true;
         }
@@ -162,44 +163,44 @@ namespace MCBS.Screens
             if (!_bind)
                 return;
 
-            Screen.InputHandler.CursorMove -= InputHandler_CursorMove;
-            Screen.InputHandler.RightClick -= InputHandler_RightClick;
-            Screen.InputHandler.LeftClick -= InputHandler_LeftClick;
-            Screen.InputHandler.CursorSlotChanged -= InputHandler_CursorSlotChanged;
-            Screen.InputHandler.CursorItemChanged -= InputHandler_CursorItemChanged;
-            Screen.InputHandler.TextEditorUpdate -= InputHandler_TextEditorUpdate;
+            ScreenInputHandler.CursorMove -= ScreenInputHandler_CursorMove;
+            ScreenInputHandler.LeftClick -= ScreenInputHandler_LeftClick;
+            ScreenInputHandler.RightClick -= ScreenInputHandler_RightClick;
+            ScreenInputHandler.TextEditorUpdate -= ScreenInputHandler_TextEditorUpdate;
+            ScreenInputHandler.CursorSlotChanged -= ScreenInputHandler_CursorSlotChanged;
+            ScreenInputHandler.CursorItemChanged -= ScreenInputHandler_CursorItemChanged;
 
             _bind = false;
         }
 
-        private void InputHandler_CursorMove(ICursorReader sender, CursorEventArgs e)
+        private void ScreenInputHandler_CursorMove(ScreenInputHandler sender, CursorEventArgs e)
         {
             RootForm.HandleCursorMove(e);
         }
 
-        private void InputHandler_RightClick(ICursorReader sender, CursorEventArgs e)
-        {
-            RootForm.HandleRightClick(e);
-        }
-
-        private void InputHandler_CursorSlotChanged(ICursorReader sender, CursorSlotEventArgs e)
-        {
-            RootForm.HandleCursorSlotChanged(e);
-        }
-
-        private void InputHandler_LeftClick(ICursorReader sender, CursorEventArgs e)
+        private void ScreenInputHandler_LeftClick(ScreenInputHandler sender, CursorEventArgs e)
         {
             RootForm.HandleLeftClick(e);
         }
 
-        private void InputHandler_CursorItemChanged(ICursorReader sender, CursorItemEventArgs e)
+        private void ScreenInputHandler_RightClick(ScreenInputHandler sender, CursorEventArgs e)
         {
-            RootForm.HandleCursorItemChanged(e);
+            RootForm.HandleRightClick(e);
         }
 
-        private void InputHandler_TextEditorUpdate(ITextEditor sender, CursorTextEventArgs e)
+        private void ScreenInputHandler_TextEditorUpdate(ScreenInputHandler sender, CursorEventArgs e)
         {
             RootForm.HandleTextEditorUpdate(e);
+        }
+
+        private void ScreenInputHandler_CursorSlotChanged(ScreenInputHandler sender, CursorEventArgs e)
+        {
+            RootForm.HandleCursorSlotChanged(e);
+        }
+
+        private void ScreenInputHandler_CursorItemChanged(ScreenInputHandler sender, CursorEventArgs e)
+        {
+            RootForm.HandleCursorItemChanged(e);
         }
     }
 }

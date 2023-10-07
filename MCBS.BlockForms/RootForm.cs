@@ -278,7 +278,7 @@ namespace MCBS.BlockForms
                 {
                     if (control.IsSelected)
                     {
-                        control.HandleCursorMove(new(control.ParentPos2ChildPos(e.Position)));
+                        control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos));
                     }
                 }
 
@@ -302,7 +302,7 @@ namespace MCBS.BlockForms
                         else if (form.IncludedOnControl(child))
                         {
                             if (form.IsSelected)
-                                form.HandleRightClick(new(child));
+                                form.HandleRightClick(e.Clone(control.ParentPos2ChildPos));
                             else
                                 _owner.TrySwitchSelectedForm(form);
                             result = true;
@@ -316,7 +316,7 @@ namespace MCBS.BlockForms
                 else if (ChildControls.FirstHover is null)
                     return false;
                 else
-                    return ChildControls.FirstHover.HandleRightClick(new(ChildControls.FirstHover.ParentPos2ChildPos(e.Position)));
+                    return ChildControls.FirstHover.HandleRightClick(e.Clone(ChildControls.FirstHover.ParentPos2ChildPos));
             }
 
             public override bool HandleLeftClick(CursorEventArgs e)
@@ -326,49 +326,49 @@ namespace MCBS.BlockForms
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleLeftClick(new(control.ParentPos2ChildPos(e.Position)));
+                        result = control.HandleLeftClick(e.Clone(control.ParentPos2ChildPos));
                     }
                 }
 
                 return result;
             }
 
-            public override bool HandleCursorSlotChanged(CursorSlotEventArgs e)
+            public override bool HandleTextEditorUpdate(CursorEventArgs e)
             {
                 bool result = false;
                 foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleCursorSlotChanged(new(control.ParentPos2ChildPos(e.Position), e.OldSlot, e.NewSlot));
+                        result = control.HandleTextEditorUpdate(e.Clone(control.ParentPos2ChildPos));
                     }
                 }
 
                 return result;
             }
 
-            public override bool HandleCursorItemChanged(CursorItemEventArgs e)
+            public override bool HandleCursorSlotChanged(CursorEventArgs e)
             {
                 bool result = false;
                 foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleCursorItemChanged(new(control.ParentPos2ChildPos(e.Position), e.Item));
+                        result = control.HandleCursorSlotChanged(e.Clone(control.ParentPos2ChildPos));
                     }
                 }
 
                 return result;
             }
 
-            public override bool HandleTextEditorUpdate(CursorTextEventArgs e)
+            public override bool HandleCursorItemChanged(CursorEventArgs e)
             {
                 bool result = false;
                 foreach (var control in ChildControls.Reverse())
                 {
                     if (control.IsSelected)
                     {
-                        result = control.HandleTextEditorUpdate(new(control.ParentPos2ChildPos(e.Position), e.Text));
+                        result = control.HandleCursorItemChanged(e.Clone(control.ParentPos2ChildPos));
                     }
                 }
 

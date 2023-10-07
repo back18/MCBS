@@ -133,12 +133,12 @@ namespace MCBS.BlockForms
             base.OnResize(sender, new(oldSize, newSize));
         }
 
-        protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)
+        protected override void OnCursorSlotChanged(Control sender, CursorEventArgs e)
         {
             base.OnCursorSlotChanged(sender, e);
 
             Point offset;
-            int delte = e.Delta * ScrollDelta;
+            int delte = e.InventorySlotDelta * ScrollDelta;
             if (ShowVerticalScrollBar)
             {
                 offset = new(OffsetPosition.X, OffsetPosition.Y + delte);

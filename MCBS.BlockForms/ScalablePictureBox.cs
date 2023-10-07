@@ -159,7 +159,7 @@ namespace MCBS.BlockForms
             base.OnImageFrameChanged(sender, e);
         }
 
-        protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)
+        protected override void OnCursorSlotChanged(Control sender, CursorEventArgs e)
         {
             base.OnCursorSlotChanged(sender, e);
 
@@ -172,8 +172,8 @@ namespace MCBS.BlockForms
             Point center1 = GetImageCenter(rectangle);
             Point offset1 = new(position1.X - center1.X, position1.Y - center1.Y);
 
-            rectangle.Width += (int)Math.Round(e.Delta * rectangle.Width * ScalingRatio);
-            rectangle.Height += (int)Math.Round(e.Delta * rectangle.Height * ScalingRatio);
+            rectangle.Width += (int)Math.Round(e.InventorySlotDelta * rectangle.Width * ScalingRatio);
+            rectangle.Height += (int)Math.Round(e.InventorySlotDelta * rectangle.Height * ScalingRatio);
             rectangle.X = center1.X - (int)Math.Round(rectangle.Width / 2.0);
             rectangle.Y = center1.Y - (int)Math.Round(rectangle.Height / 2.0);
 

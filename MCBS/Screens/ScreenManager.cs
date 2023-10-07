@@ -113,7 +113,7 @@ namespace MCBS.Screens
                 }
                 else if (state.CurrentState == ScreenState.Active)
                 {
-                    if (ScreenConfig.ScreenIdleTimeout != -1 && context.Value.Screen.InputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
+                    if (ScreenConfig.ScreenIdleTimeout != -1 && context.Value.ScreenInputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
                     {
                         context.Value.CloseScreen();
                         LOGGER.Warn($"ID为{context.Value.ID}的屏幕已达到最大闲置时间，即将卸载");
@@ -169,7 +169,7 @@ namespace MCBS.Screens
         {
             List<Task> tasks = new();
             foreach (var screen in Items.Values)
-                tasks.Add(Task.Run(() => screen.Screen.InputHandler.HandleInput()));
+                tasks.Add(Task.Run(() => screen.ScreenInputHandler.HandleInput()));
             Task.WaitAll(tasks.ToArray());
         }
 
@@ -193,25 +193,29 @@ namespace MCBS.Screens
         {
             frames = new();
             List<(int id, Task<ArrayFrame> task)> tasks = new();
-            foreach (var context in Items)
+            foreach (var screenContext in Items.Values)
             {
-                if (context.Value.ScreenState == ScreenState.Closed)
+                if (screenContext.ScreenState == ScreenState.Closed)
                     continue;
-                tasks.Add((context.Key, Task.Run(() =>
+                tasks.Add((screenContext.ID, Task.Run(() =>
                 {
-                    ArrayFrame frame = ArrayFrame.BuildFrame(context.Value.Screen.Width, context.Value.Screen.Height, context.Value.Screen.DefaultBackgroundBlcokID);
-                    ArrayFrame? formFrame = UIRenderer.Rendering(context.Value.RootForm);
+                    ArrayFrame frame = ArrayFrame.BuildFrame(screenContext.Screen.Width, screenContext.Screen.Height, screenContext.Screen.DefaultBackgroundBlcokID);
+                    ArrayFrame? formFrame = UIRenderer.Rendering(screenContext.RootForm);
                     if (formFrame is not null)
-                        frame.Overwrite(formFrame, context.Value.RootForm.ClientLocation);
-                    if (context.Value.IsShowCursor)
+                        frame.Overwrite(formFrame, screenContext.RootForm.ClientLocation);
+                    foreach (var cursorContext in screenContext.CursorManager.Values)
                     {
-                        if (!SR.CursorStyleManager.TryGetValue(context.Value.CursorType, out var cursor))
-                            cursor = SR.CursorStyleManager[CursorStyleType.Default];
-                        frame.Overwrite(cursor.Frame, context.Value.Screen.InputHandler.CurrentPosition, cursor.Offset);
+                        if (cursorContext.Active && cursorContext.Visible)
+                        {
+                            if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursor))
+                                cursor = SR.CursorStyleManager[CursorStyleType.Default];
+                            frame.Overwrite(cursor.Frame, cursorContext.InputData.CursorPosition, cursor.Offset);
+                        }
                     }
                     return frame;
                 })));
             }
+
             Task.WaitAll(tasks.Select(i => i.task).ToArray());
             foreach (var (id, task) in tasks)
                 frames.Add(id, task.Result);

@@ -65,11 +65,11 @@ namespace MCBS.BlockForms
             Text = NumberValue.ToString();
         }
 
-        protected override void OnCursorSlotChanged(Control sender, CursorSlotEventArgs e)
+        protected override void OnCursorSlotChanged(Control sender, CursorEventArgs e)
         {
             base.OnCursorSlotChanged(sender, e);
 
-            NumberValue += e.Delta * ScrollDelta;
+            NumberValue += e.InventorySlotDelta * ScrollDelta;
         }
     }
 }

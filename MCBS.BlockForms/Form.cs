@@ -191,18 +191,14 @@ namespace MCBS.BlockForms
                             ResizeBorder |= Direction.Right;
                     }
 
-                    ScreenContext? context = GetScreenContext();
-                    if (context is not null)
+                    e.CursorContext.StyleType = ResizeBorder switch
                     {
-                        context.CursorType = ResizeBorder switch
-                        {
-                            Direction.Top or Direction.Bottom => CursorStyleType.VerticalResize,
-                            Direction.Left or Direction.Right => CursorStyleType.HorizontalResize,
-                            Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorStyleType.LeftObliqueResize,
-                            Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorStyleType.RightObliqueResize,
-                            _ => CursorStyleType.Default,
-                        };
-                    }
+                        Direction.Top or Direction.Bottom => CursorStyleType.VerticalResize,
+                        Direction.Left or Direction.Right => CursorStyleType.HorizontalResize,
+                        Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorStyleType.LeftObliqueResize,
+                        Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorStyleType.RightObliqueResize,
+                        _ => CursorStyleType.Default,
+                    };
                 }
             }
         }

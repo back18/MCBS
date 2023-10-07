@@ -79,14 +79,14 @@ namespace MCBS.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            HandleInput();
+            HandleInput(e);
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {
             base.OnCursorEnter(sender, e);
 
-            HandleInput();
+            HandleInput(e);
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
@@ -96,12 +96,12 @@ namespace MCBS.BlockForms
             IsSelected = false;
         }
 
-        protected override void OnTextEditorUpdate(Control sender, CursorTextEventArgs e)
+        protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)
         {
             base.OnTextEditorUpdate(sender, e);
 
             if (!IsReadOnly)
-                Text = e.Text;
+                Text = e.CursorContext.TextEditor.CurrentText;
         }
 
         public override void ActiveLayoutAll()
@@ -167,13 +167,12 @@ namespace MCBS.BlockForms
             }
         }
 
-        private void HandleInput()
+        private void HandleInput(CursorEventArgs e)
         {
-            if (!IsReadOnly && GetScreenContext()?.Screen.InputHandler.CurrenMode == CursorMode.TextEditor)
+            if (!IsReadOnly && e.CursorContext.InputData.CursorMode == CursorMode.TextEditor)
             {
                 IsSelected = true;
-                SetTextEditorInitialText();
-                ResetTextEditor();
+                e.CursorContext.TextEditor.SetInitialText(Text);
             }
             else
             {

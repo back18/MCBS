@@ -16,11 +16,11 @@ namespace MCBS.UI
 
         public bool HandleLeftClick(CursorEventArgs e);
 
-        public bool HandleCursorSlotChanged(CursorSlotEventArgs e);
+        public bool HandleTextEditorUpdate(CursorEventArgs e);
 
-        public bool HandleCursorItemChanged(CursorItemEventArgs e);
+        public bool HandleCursorSlotChanged(CursorEventArgs e);
 
-        public bool HandleTextEditorUpdate(CursorTextEventArgs e);
+        public bool HandleCursorItemChanged(CursorEventArgs e);
 
         public void HandleBeforeFrame(EventArgs e);
 
