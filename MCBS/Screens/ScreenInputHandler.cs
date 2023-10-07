@@ -75,8 +75,6 @@ namespace MCBS.Screens
 
         public void HandleInput()
         {
-            _owner.CursorManager.ResetAll();
-
             Screen screen = _owner.Screen;
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             Dictionary<string, EntityPos> playerPositions = sender.GetAllPlayerPosition();
@@ -106,15 +104,21 @@ namespace MCBS.Screens
                 return;
             }
 
-            int count = 0;
             var order = playerDistances.OrderBy(item => item.distance);
+            List<string> players = new();
             foreach (var (player, distance) in order)
             {
-                if (HandlePlayer(player))
-                    count++;
+                if (HandleInput(player))
+                    players.Add(player);
             }
 
-            if (count == 0)
+            foreach (var cursorContext in _owner.CursorManager.Values)
+            {
+                if (!players.Contains(cursorContext.PlayerName))
+                    cursorContext.Reset();
+            }
+
+            if (players.Count == 0)
             {
                 IdleTime++;
                 return;
@@ -127,12 +131,12 @@ namespace MCBS.Screens
             return;
         }
 
-        private bool HandlePlayer(string player)
+        private bool HandleInput(string player)
         {
             Screen screen = _owner.Screen;
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            CursorContext context = _owner.CursorManager.GetOrCreate(player);
-            CursorInputData oldData = context.InputData.Clone();
+            CursorContext cursorContext = _owner.CursorManager.GetOrCreate(player);
+            CursorInputData oldData = cursorContext.InputData.Clone();
             CursorMode cursorMode = oldData.CursorMode;
             Point cursorPosition = oldData.CursorPosition;
             DateTime leftClickTime = oldData.LeftClickTime;
@@ -198,15 +202,16 @@ namespace MCBS.Screens
                         int score = sender.GetPlayerScoreboard(player, ScreenConfig.RightClickObjective);
                         if (score > 0)
                         {
-                            rightClickTime = now;
+                            if (cursorContext.Active)
+                                rightClickTime = now;
                             sender.SetPlayerScoreboard(player, ScreenConfig.RightClickObjective, 0);
                         }
                     }
                     break;
                 case TEXTEDITOR_ITEM:
                     cursorMode = CursorMode.TextEditor;
-                    if (context.TextEditor.ReadText(sender, player, mainItem))
-                        textEditor = context.TextEditor.CurrentText;
+                    if (cursorContext.TextEditor.ReadText(sender, player, mainItem))
+                        textEditor = cursorContext.TextEditor.CurrentText;
                     break;
                 default:
                     return false;
@@ -222,7 +227,7 @@ namespace MCBS.Screens
                 mainItem,
                 deputyItem
                 );
-            CursorEventArgs args = new(newData.CursorPosition, context, oldData, newData);
+            CursorEventArgs args = new(newData.CursorPosition, cursorContext, oldData, newData);
 
             int count = _events.Count;
             if (oldData.CursorPosition != newData.CursorPosition)
@@ -238,7 +243,7 @@ namespace MCBS.Screens
             if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
                 _events.Enqueue(new(CursorItemChanged, this, args));
 
-            context.SetNewInputData(newData);
+            cursorContext.SetNewInputData(newData);
             return true;
         }
 
