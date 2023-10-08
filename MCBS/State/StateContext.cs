@@ -9,7 +9,7 @@ namespace MCBS.State
 {
     public class StateContext<T> where T : Enum
     {
-        public StateContext(T targetState, IList<T> whitelist, StateHandler<T> stateHandler)
+        public StateContext(T targetState, IList<T> whitelist, StateHandler<T> stateHandler, Action onState)
         {
             if (whitelist is null)
                 throw new ArgumentNullException(nameof(whitelist));
@@ -19,13 +19,18 @@ namespace MCBS.State
             TargetState = targetState;
             Whitelist = new(whitelist);
             StateHandler = stateHandler;
+            OnState = onState;
         }
+
+        public StateContext(T targetState, IList<T> whitelist, StateHandler<T> stateHandler) : this(targetState, whitelist, stateHandler, () => { }) { }
 
         public T TargetState { get; }
 
         public ReadOnlyCollection<T> Whitelist { get; }
 
         public StateHandler<T> StateHandler { get; }
+
+        public Action OnState { get; }
 
         public bool IsAllowSwitchToTargetState(T currentState)
         {

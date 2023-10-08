@@ -8,6 +8,8 @@ namespace MCBS.Interaction
 {
     public enum InteractionState
     {
+        NotCreated,
+
         Active,
 
         Offline,

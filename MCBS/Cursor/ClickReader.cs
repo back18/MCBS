@@ -32,7 +32,7 @@ namespace MCBS.Cursor
             bool isRightClick = false;
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             DateTime now = DateTime.Now;
-            if (sender.TryGetEntityUuid(PlayerName, out var uuid) && MCOS.Instance.InteractionManager.Items.TryGetValue(uuid, out var interaction))
+            if ( MCOS.Instance.InteractionManager.Items.TryGetValue(PlayerName, out var interaction))
             {
                 if (interaction.IsLeftClick)
                 {

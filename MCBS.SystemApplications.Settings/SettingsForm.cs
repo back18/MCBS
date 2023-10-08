@@ -42,19 +42,16 @@ namespace MCBS.SystemApplications.Settings
 
         private void GetInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            if (!MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(e.CursorContext.PlayerName, out var uuid))
+            if (MCOS.Instance.InteractionManager.Items.ContainsKey(e.CursorContext.PlayerName))
                 return;
 
-            MCOS.Instance.InteractionManager.Items.TryAdd(uuid, out _);
+            MCOS.Instance.InteractionManager.Items.Add(e.CursorContext.PlayerName).CreateInteraction();
         }
 
         private void ClearInteraction_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            if (!MCOS.Instance.MinecraftInstance.CommandSender.TryGetEntityUuid(e.CursorContext.PlayerName, out var uuid))
-                return;
-
-            if (MCOS.Instance.InteractionManager.Items.TryGetValue(uuid, out var interaction))
-                interaction.CloseInteraction();
+            if (MCOS.Instance.InteractionManager.Items.TryGetValue(e.CursorContext.PlayerName, out var interactionContext))
+                interactionContext.CloseInteraction();
         }
     }
 }

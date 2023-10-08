@@ -46,12 +46,15 @@ namespace MCBS.State
         {
             lock (_queue)
             {
-                while (_queue.TryPeek(out var state))
+                while (_queue.TryPeek(out var nextState))
                 {
-                    if (_contexts.TryGetValue(state, out var context) && context.TrySwitchToTargetState(CurrentState))
-                        CurrentState = state;
+                    if (_contexts.TryGetValue(nextState, out var nextContext) && nextContext.TrySwitchToTargetState(CurrentState))
+                        CurrentState = nextState;
                     _queue.Dequeue();
                 }
+
+                if (_contexts.TryGetValue(CurrentState, out var currentContext))
+                    currentContext.OnState.Invoke();
             }
         }
     }

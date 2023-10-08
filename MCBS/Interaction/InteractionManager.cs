@@ -2,6 +2,7 @@
 using MCBS.Directorys;
 using MCBS.Events;
 using MCBS.Logging;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Minecraft.Command;
@@ -79,7 +80,7 @@ namespace MCBS.Interaction
             }
         }
 
-        public class InteractionCollection : IDictionary<Guid, InteractionContext>
+        public class InteractionCollection : IDictionary<string, InteractionContext>
         {
             public InteractionCollection(InteractionManager owner)
             {
@@ -89,13 +90,13 @@ namespace MCBS.Interaction
 
             private readonly InteractionManager _owner;
 
-            private readonly ConcurrentDictionary<Guid, InteractionContext> _items;
+            private readonly ConcurrentDictionary<string, InteractionContext> _items;
 
-            public InteractionContext this[Guid player] => _items[player];
+            public InteractionContext this[string playerName] => _items[playerName];
 
-            InteractionContext IDictionary<Guid, InteractionContext>.this[Guid key] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+            InteractionContext IDictionary<string, InteractionContext>.this[string key] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-            public ICollection<Guid> Keys => _items.Keys;
+            public ICollection<string> Keys => _items.Keys;
 
             public ICollection<InteractionContext> Values => _items.Values;
 
@@ -103,55 +104,46 @@ namespace MCBS.Interaction
 
             public bool IsReadOnly => false;
 
-            public bool TryAdd(Guid player, [MaybeNullWhen(false)] out InteractionContext interaction)
+            public InteractionContext Add(string playerName)
             {
                 lock (this)
                 {
-                    if (_items.ContainsKey(player))
-                        goto err;
-
-                    if (!InteractionContext.TryCreate(player, out interaction))
-                        goto err;
-
-                    _items.TryAdd(interaction.PlayerUUID, interaction);
-                    _owner.AddedInteraction.Invoke(_owner, new(interaction));
-                    return true;
-
-                    err:
-                    interaction = null;
-                    return false;
+                    InteractionContext interactionContext = new(playerName);
+                    _items.TryAdd(playerName, interactionContext);
+                    _owner.AddedInteraction.Invoke(_owner, new(interactionContext));
+                    return interactionContext;
                 }
             }
 
-            public bool Remove(Guid player)
+            public bool Remove(string playerName)
             {
                 lock (this)
                 {
-                    if (!_items.TryGetValue(player, out var interaction) || !_items.TryRemove(player, out _))
+                    if (!_items.TryRemove(playerName, out var interactionContext))
                         return false;
 
-                    _owner.RemovedInteraction.Invoke(_owner, new(interaction));
+                    _owner.RemovedInteraction.Invoke(_owner, new(interactionContext));
                     return true;
                 }
             }
 
             public void Clear()
             {
-                foreach (var player in _items.Keys)
-                    Remove(player);
+                foreach (var playerName in _items.Keys)
+                    Remove(playerName);
             }
 
-            public bool ContainsKey(Guid player)
+            public bool ContainsKey(string playerName)
             {
-                return _items.ContainsKey(player);
+                return _items.ContainsKey(playerName);
             }
 
-            public bool TryGetValue(Guid player, [MaybeNullWhen(false)] out InteractionContext interaction)
+            public bool TryGetValue(string playerName, [MaybeNullWhen(false)] out InteractionContext interaction)
             {
-                return _items.TryGetValue(player, out interaction);
+                return _items.TryGetValue(playerName, out interaction);
             }
 
-            public IEnumerator<KeyValuePair<Guid, InteractionContext>> GetEnumerator()
+            public IEnumerator<KeyValuePair<string, InteractionContext>> GetEnumerator()
             {
                 return _items.GetEnumerator();
             }
@@ -161,27 +153,27 @@ namespace MCBS.Interaction
                 return ((IEnumerable)_items).GetEnumerator();
             }
 
-            void ICollection<KeyValuePair<Guid, InteractionContext>>.Add(KeyValuePair<Guid, InteractionContext> item)
+            void ICollection<KeyValuePair<string, InteractionContext>>.Add(KeyValuePair<string, InteractionContext> item)
             {
-                ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).Add(item);
+                ((ICollection<KeyValuePair<string, InteractionContext>>)_items).Add(item);
             }
 
-            bool ICollection<KeyValuePair<Guid, InteractionContext>>.Remove(KeyValuePair<Guid, InteractionContext> item)
+            bool ICollection<KeyValuePair<string, InteractionContext>>.Remove(KeyValuePair<string, InteractionContext> item)
             {
-                return ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).Remove(item);
+                return ((ICollection<KeyValuePair<string, InteractionContext>>)_items).Remove(item);
             }
 
-            bool ICollection<KeyValuePair<Guid, InteractionContext>>.Contains(KeyValuePair<Guid, InteractionContext> item)
+            bool ICollection<KeyValuePair<string, InteractionContext>>.Contains(KeyValuePair<string, InteractionContext> item)
             {
-                return ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).Contains(item);
+                return ((ICollection<KeyValuePair<string, InteractionContext>>)_items).Contains(item);
             }
 
-            void ICollection<KeyValuePair<Guid, InteractionContext>>.CopyTo(KeyValuePair<Guid, InteractionContext>[] array, int arrayIndex)
+            void ICollection<KeyValuePair<string, InteractionContext>>.CopyTo(KeyValuePair<string, InteractionContext>[] array, int arrayIndex)
             {
-                ((ICollection<KeyValuePair<Guid, InteractionContext>>)_items).CopyTo(array, arrayIndex);
+                ((ICollection<KeyValuePair<string, InteractionContext>>)_items).CopyTo(array, arrayIndex);
             }
 
-            void IDictionary<Guid, InteractionContext>.Add(Guid key, InteractionContext value)
+            void IDictionary<string, InteractionContext>.Add(string key, InteractionContext value)
             {
                 throw new NotSupportedException();
             }
