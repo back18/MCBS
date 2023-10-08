@@ -77,7 +77,7 @@ namespace MCBS.Forms
                 if (form is null)
                     throw new ArgumentNullException(nameof(form));
 
-                lock (this)
+                lock (_items)
                 {
                     int id = _id;
                     FormContext context = new(application, form);
@@ -91,7 +91,7 @@ namespace MCBS.Forms
 
             public bool Remove(int id)
             {
-                lock (this)
+                lock (_items)
                 {
                     if (!_items.TryGetValue(id, out var context) || !_items.TryRemove(id, out _))
                         return false;

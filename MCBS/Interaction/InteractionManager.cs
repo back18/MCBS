@@ -106,7 +106,7 @@ namespace MCBS.Interaction
 
             public InteractionContext Add(string playerName)
             {
-                lock (this)
+                lock (_items)
                 {
                     InteractionContext interactionContext = new(playerName);
                     _items.TryAdd(playerName, interactionContext);
@@ -117,7 +117,7 @@ namespace MCBS.Interaction
 
             public bool Remove(string playerName)
             {
-                lock (this)
+                lock (_items)
                 {
                     if (!_items.TryRemove(playerName, out var interactionContext))
                         return false;

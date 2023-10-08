@@ -83,7 +83,7 @@ namespace MCBS.Processes
                 if (args is null)
                     throw new ArgumentNullException(nameof(args));
 
-                lock (this)
+                lock (_items)
                 {
                     int id = _id;
                     ProcessContext process = new(APPInfo, args, initiator);
@@ -97,7 +97,7 @@ namespace MCBS.Processes
 
             public bool Remove(int id)
             {
-                lock (this)
+                lock (_items)
                 {
                     if (!_items.TryGetValue(id, out var process) || !_items.TryRemove(id, out _))
                         return false;

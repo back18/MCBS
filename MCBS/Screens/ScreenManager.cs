@@ -268,7 +268,7 @@ namespace MCBS.Screens
                 if (screen is null)
                     throw new ArgumentNullException(nameof(screen));
 
-                lock (this)
+                lock (_items)
                 {
                     foreach (var value in Values)
                     {
@@ -290,7 +290,7 @@ namespace MCBS.Screens
 
             public bool Remove(int id)
             {
-                lock (this)
+                lock (_items)
                 {
                     if (!_items.TryGetValue(id, out var context) || !_items.TryRemove(id, out _))
                         return false;
