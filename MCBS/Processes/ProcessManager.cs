@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Processes
 {
-    public class ProcessManager
+    public class ProcessManager : ITickable
     {
         public ProcessManager()
         {
@@ -34,11 +34,11 @@ namespace MCBS.Processes
 
         protected virtual void OnRemovedProcess(ProcessManager sender, ProcessEventArgs e) { }
 
-        public void ProcessScheduling()
+        public void OnTick()
         {
             foreach (var process in Items)
             {
-                process.Value.Handle();
+                process.Value.OnTick();
                 if (process.Value.ProcessState == ProcessState.Stopped)
                     Items.Remove(process.Key);
             }

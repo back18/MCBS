@@ -13,9 +13,9 @@ using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Senders;
 
-namespace MCBS.Screens
+namespace MCBS.Screens.Building
 {
-    public class ScreenBuildContext
+    public class ScreenBuildContext : ITickable
     {
         public ScreenBuildContext(string playerName)
         {
@@ -46,7 +46,7 @@ namespace MCBS.Screens
 
         public bool Error { get; private set; }
 
-        public void Handle()
+        public void OnTick()
         {
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
 
@@ -199,7 +199,7 @@ namespace MCBS.Screens
                     throw new InvalidOperationException();
                 }
 
-                click:
+            click:
                 if (MCOS.Instance.CursorManager.GetOrCreate(PlayerName).ClickReader.ReadClick().IsRightClick)
                 {
                     if (Error)

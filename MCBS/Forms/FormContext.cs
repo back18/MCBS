@@ -18,7 +18,7 @@ namespace MCBS.Forms
     /// <summary>
     /// 窗体运行时上下文
     /// </summary>
-    public class FormContext
+    public class FormContext : ITickable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -138,7 +138,7 @@ namespace MCBS.Forms
             return true;
         }
 
-        public void Handle()
+        public void OnTick()
         {
             StateManager.HandleAllState();
         }

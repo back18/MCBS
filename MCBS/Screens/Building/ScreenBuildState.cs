@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Screens
+namespace MCBS.Screens.Building
 {
     public enum ScreenBuildState
     {

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Processes
 {
-    public class ProcessContext : RunnableBase
+    public class ProcessContext : RunnableBase, ITickable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -94,7 +94,7 @@ namespace MCBS.Processes
             return true;
         }
 
-        public void Handle()
+        public void OnTick()
         {
             StateManager.HandleAllState();
         }

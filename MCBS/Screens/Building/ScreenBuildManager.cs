@@ -20,13 +20,13 @@ using MCBS.Logging;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Snbt.Models;
 
-namespace MCBS.Screens
+namespace MCBS.Screens.Building
 {
-    public class ScreenBuilder
+    public class ScreenBuildManager : ITickable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        public ScreenBuilder()
+        public ScreenBuildManager()
         {
             _contexts = new();
 
@@ -37,7 +37,7 @@ namespace MCBS.Screens
 
         public bool Enable { get; set; }
 
-        public void Handle()
+        public void OnTick()
         {
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             foreach (var context in _contexts.ToArray())
@@ -133,7 +133,7 @@ namespace MCBS.Screens
 
             foreach (var context in _contexts.Values)
             {
-                context.Handle();
+                context.OnTick();
             }
         }
     }

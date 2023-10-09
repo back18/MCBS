@@ -39,7 +39,7 @@ namespace MCBS.Cursor
         {
             get
             {
-                int frame = MCOS.Instance.FrameCount;
+                int frame = MCOS.Instance.TickCount;
                 if (LastActiveFrame == frame)
                     return CursorState.Active;
                 else if (LastActiveFrame == frame - 1)
@@ -67,7 +67,7 @@ namespace MCBS.Cursor
         {
             ScreenContextOf = screenContext ?? throw new ArgumentNullException(nameof(screenContext));
             InputData = inputData ?? throw new ArgumentNullException(nameof(inputData));
-            LastActiveFrame = MCOS.Instance.FrameCount;
+            LastActiveFrame = MCOS.Instance.TickCount;
         }
     }
 }

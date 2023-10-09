@@ -51,7 +51,7 @@ namespace MCBS.ConsoleTerminal
                     case "help":
                         Console.WriteLine("【MCBS控制台】mcconsole--------Minecraft控制台");
                         Console.WriteLine("【MCBS控制台】commandsystem----可视化命令系统");
-                        Console.WriteLine("【MCBS控制台】timer------------MSPT实时计时器");
+                        Console.WriteLine("【MCBS控制台】mspt------------MSPT实时计时器");
                         Console.WriteLine("【MCBS控制台】stop-------------终止系统并退出程序");
                         break;
                     case "mcconsole":
@@ -80,7 +80,7 @@ namespace MCBS.ConsoleTerminal
                         LogUtil.EnableConsoleOutput();
                         Console.WriteLine("【MCBS控制台】已退出可视化命令系统");
                         break;
-                    case "timer":
+                    case "mspt":
                         Console.WriteLine("【MCBS控制台】已进入MSPT实时计时器");
                         LogUtil.DisableConsoleOutput();
                         Console.CursorVisible = false;
@@ -88,7 +88,7 @@ namespace MCBS.ConsoleTerminal
                         Task.Run(() =>
                         {
                             string empty = new(' ', 32);
-                            int lines = 14;
+                            int lines = MCOS.Instance.TimeAnalysisManager.Count + 1;
                             for (int i = 0; i < lines; i++)
                                 Console.WriteLine(empty);
                             while (run)
@@ -97,9 +97,7 @@ namespace MCBS.ConsoleTerminal
                                 for (int i = 0; i < lines; i++)
                                     Console.WriteLine(empty);
                                 Console.CursorTop -= lines;
-                                Console.WriteLine(MCOS.Instance.SystemTimer.ToString(Timer.Duration.Tick20));
-                                Console.WriteLine($"帧: {MCOS.Instance.FrameCount}");
-                                Console.WriteLine($"滞后: {MCOS.Instance.LagFrameCount}");
+                                Console.WriteLine(MCOS.Instance.TimeAnalysisManager.ToString());
                                 Thread.Sleep(50);
                             }
                         });
@@ -180,7 +178,7 @@ namespace MCBS.ConsoleTerminal
         {
             if (MCOS.Instance.ScreenManager.Items.TryGetValue(id, out var context))
             {
-                context.CloseScreen();
+                context.UnloadScreen();
                 return $"屏幕“{context}”已关闭";
             }
             else
@@ -191,7 +189,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string SetScreenBuilderEnable(bool enable)
         {
-            MCOS.Instance.ScreenManager.ScreenBuilder.Enable = enable;
+            MCOS.Instance.ScreenBuildManager.Enable = enable;
 
             if (enable)
                 return "屏幕构造器已启用";
@@ -223,7 +221,7 @@ namespace MCBS.ConsoleTerminal
 
         private static int GetFrameCount()
         {
-            return MCOS.Instance.FrameCount;
+            return MCOS.Instance.TickCount;
         }
 
         #endregion

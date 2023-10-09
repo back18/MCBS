@@ -13,13 +13,14 @@ using MCBS.State;
 using MCBS.Events;
 using MCBS.Cursor.Style;
 using MCBS.Cursor;
+using MCBS.Frame;
 
 namespace MCBS.Screens
 {
     /// <summary>
     /// 屏幕运行时上下文
     /// </summary>
-    public class ScreenContext
+    public class ScreenContext : ITickable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -27,7 +28,6 @@ namespace MCBS.Screens
         {
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
-            CursorManager = new();
             ScreenInputHandler = new(this);
             IsRestart = false;
 
@@ -37,13 +37,16 @@ namespace MCBS.Screens
                 new(ScreenState.NotLoaded, Array.Empty<ScreenState>(), HandleNotLoadedState),
                 new(ScreenState.Active, new ScreenState[] { ScreenState.NotLoaded }, HandleActiveState),
                 new(ScreenState.Sleep, new ScreenState[] { ScreenState.Active }, HandleSleepState),
-                new(ScreenState.Closed, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, HandleClosedState)
+                new(ScreenState.Unload, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, HandleUnloadState)
             });
 
             _bind = false;
+            _frame = null;
         }
 
         private bool _bind;
+
+        private ArrayFrame? _frame; 
 
         public int ID { get; internal set; }
 
@@ -54,8 +57,6 @@ namespace MCBS.Screens
         public Screen Screen { get; }
 
         public IRootForm RootForm { get; }
-
-        public CursorManager CursorManager { get; }
 
         public ScreenInputHandler ScreenInputHandler { get; }
 
@@ -92,7 +93,7 @@ namespace MCBS.Screens
             return false;
         }
 
-        protected virtual bool HandleClosedState(ScreenState current, ScreenState next)
+        protected virtual bool HandleUnloadState(ScreenState current, ScreenState next)
         {
             UnbindEvents();
             foreach (var forem in MCOS.Instance.FormManager.Items.Values)
@@ -106,9 +107,49 @@ namespace MCBS.Screens
             return true;
         }
 
-        public void Handle()
+        public void OnTick()
         {
             StateManager.HandleAllState();
+        }
+
+        public async Task HandleScreenInputAsync()
+        {
+            await Task.Run(() => ScreenInputHandler.HandleInput());
+        }
+
+        public async Task HandleBeforeFrameAsync()
+        {
+            await Task.Run(() => RootForm.HandleBeforeFrame(EventArgs.Empty));
+        }
+
+        public async Task HandleUIRenderingAsync()
+        {
+            ArrayFrame frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
+            ArrayFrame? formFrame = await UIRenderer.RenderingAsync(RootForm);
+            if (formFrame is not null)
+                frame.Overwrite(formFrame, RootForm.ClientLocation);
+            foreach (var cursorContext in MCOS.Instance.CursorManager.Values)
+            {
+                if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active && cursorContext.Visible)
+                {
+                    if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursor))
+                        cursor = SR.CursorStyleManager[CursorStyleType.Default];
+                    frame.Overwrite(cursor.Frame, cursorContext.InputData.CursorPosition, cursor.Offset);
+                }
+            }
+            _frame = frame;
+        }
+
+        public async Task HandleScreenOutputAsync()
+        {
+            if (_frame is null)
+                return;
+            await Screen.OutputHandler.HandleOutputAsync(_frame);
+        }
+
+        public async Task HandleAfterFrameAsync()
+        {
+            await Task.Run(() => RootForm.HandleAfterFrame(EventArgs.Empty));
         }
 
         public ScreenContext LoadScreen()
@@ -117,14 +158,14 @@ namespace MCBS.Screens
             return this;
         }
 
-        public void CloseScreen()
+        public void UnloadScreen()
         {
-            StateManager.AddNextState(ScreenState.Closed);
+            StateManager.AddNextState(ScreenState.Unload);
         }
 
         public void RestartScreen()
         {
-            StateManager.AddNextState(ScreenState.Closed);
+            StateManager.AddNextState(ScreenState.Unload);
             IsRestart = true;
         }
 

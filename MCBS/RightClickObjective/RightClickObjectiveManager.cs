@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.RightClickObjective
 {
-    public class RightClickObjectiveManager
+    public class RightClickObjectiveManager : ITickable
     {
         public RightClickObjectiveManager()
         {
@@ -17,14 +17,14 @@ namespace MCBS.RightClickObjective
 
         private readonly Dictionary<string, RightClickObjectiveContext> _items;
 
-        public void RightClickObjectiveScheduling()
+        public void OnTick()
         {
             PlayerList playerList = MCOS.Instance.MinecraftInstance.CommandSender.GetPlayerList();
             _items.Clear();
             foreach (var player in playerList.List)
             {
                 RightClickObjectiveContext context = new(player);
-                context.Handle();
+                context.OnTick();
                 _items.Add(player, context);
             }
         }

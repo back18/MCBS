@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Interaction
 {
-    public class InteractionManager
+    public class InteractionManager : ITickable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -70,11 +70,11 @@ namespace MCBS.Interaction
             }
         }
 
-        public void InteractionScheduling()
+        public void OnTick()
         {
             foreach (var item in Items)
             {
-                item.Value.Handle();
+                item.Value.OnTick();
                 if (item.Value.InteractionState == InteractionState.Closed)
                     Items.Remove(item.Key);
             }

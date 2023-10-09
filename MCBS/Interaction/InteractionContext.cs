@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Interaction
 {
-    public class InteractionContext : IDisposable
+    public class InteractionContext : ITickable, IDisposable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
         private const string INTERACTION_ID = "minecraft:interaction";
@@ -82,7 +82,7 @@ namespace MCBS.Interaction
 
         public bool IsRightClick { get; private set; }
 
-        public void Handle()
+        public void OnTick()
         {
             StateManager.HandleAllState();
         }

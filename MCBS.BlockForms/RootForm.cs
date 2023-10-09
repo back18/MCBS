@@ -142,7 +142,7 @@ namespace MCBS.BlockForms
 
         private void CloseScreen_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            MCOS.Instance.ScreenContextOf(this)?.CloseScreen();
+            MCOS.Instance.ScreenContextOf(this)?.UnloadScreen();
         }
 
         private void RestartScreen_Button_RightClick(Control sender, CursorEventArgs e)

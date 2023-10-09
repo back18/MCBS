@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public interface IHandleable
+    public interface ITickable
     {
-        public void Handle();
+        public void OnTick();
     }
 }

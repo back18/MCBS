@@ -14,6 +14,6 @@ namespace MCBS.Screens
 
         Sleep,
 
-        Closed
+        Unload
     }
 }

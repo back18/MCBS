@@ -23,16 +23,16 @@ using MCBS.Processes;
 using MCBS.Events;
 using MCBS.Application;
 using MCBS.Cursor.Style;
+using MCBS.Screens.Building;
 
 namespace MCBS.Screens
 {
-    public class ScreenManager
+    public class ScreenManager : ITickable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
         public ScreenManager()
         {
-            ScreenBuilder = new();
             Items = new(this);
 
             _saves = new();
@@ -42,8 +42,6 @@ namespace MCBS.Screens
         }
 
         private readonly List<ScreenOptions> _saves;
-
-        public ScreenBuilder ScreenBuilder { get; }
 
         public ScreenCollection Items { get; }
 
@@ -95,7 +93,7 @@ namespace MCBS.Screens
             }
         }
 
-        public void ScreenScheduling()
+        public void OnTick()
         {
             foreach (var context in Items)
             {
@@ -115,14 +113,14 @@ namespace MCBS.Screens
                 {
                     if (ScreenConfig.ScreenIdleTimeout != -1 && context.Value.ScreenInputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
                     {
-                        context.Value.CloseScreen();
+                        context.Value.UnloadScreen();
                         LOGGER.Warn($"ID为{context.Value.ID}的屏幕已达到最大闲置时间，即将卸载");
                     }
                 }
 
-                context.Value.Handle();
+                context.Value.OnTick();
 
-                if (state.CurrentState == ScreenState.Closed)
+                if (state.CurrentState == ScreenState.Unload)
                 {
                     Items.Remove(context.Key);
                     _saves.Remove(new(context.Value.Screen));
@@ -168,72 +166,41 @@ namespace MCBS.Screens
         public void HandleAllScreenInput()
         {
             List<Task> tasks = new();
-            foreach (var screen in Items.Values)
-                tasks.Add(Task.Run(() => screen.ScreenInputHandler.HandleInput()));
+            foreach (var screenContext in Items.Values)
+                tasks.Add(screenContext.HandleScreenInputAsync());
             Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllBeforeFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in Items.Values)
-                tasks.Add(Task.Run(() => screen.RootForm.HandleBeforeFrame(EventArgs.Empty)));
+            foreach (var screenContext in Items.Values)
+                tasks.Add(screenContext.HandleBeforeFrameAsync());
             Task.WaitAll(tasks.ToArray());
+        }
+
+        public void HandleAllUIRendering()
+        {
+            List<Task> tasks = new();
+            foreach (var screenContext in Items.Values)
+                tasks.Add(screenContext.HandleUIRenderingAsync());
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        public async Task HandleAllScreenOutputAsync()
+        {
+            List<Task> tasks = new();
+            foreach (var screenContext in Items.Values)
+                tasks.Add(screenContext.HandleScreenOutputAsync());
+            await Task.WhenAll(tasks);
         }
 
         public void HandleAllAfterFrame()
         {
             List<Task> tasks = new();
-            foreach (var screen in Items.Values)
-                tasks.Add(Task.Run(() => screen.RootForm.HandleAfterFrame(EventArgs.Empty)));
-            Task.WaitAll(tasks.ToArray());
-        }
-
-        public void HandleAllUIRendering(out Dictionary<int, ArrayFrame> frames)
-        {
-            frames = new();
-            List<(int id, Task<ArrayFrame> task)> tasks = new();
             foreach (var screenContext in Items.Values)
-            {
-                if (screenContext.ScreenState == ScreenState.Closed)
-                    continue;
-                tasks.Add((screenContext.ID, Task.Run(() =>
-                {
-                    ArrayFrame frame = ArrayFrame.BuildFrame(screenContext.Screen.Width, screenContext.Screen.Height, screenContext.Screen.DefaultBackgroundBlcokID);
-                    ArrayFrame? formFrame = UIRenderer.Rendering(screenContext.RootForm);
-                    if (formFrame is not null)
-                        frame.Overwrite(formFrame, screenContext.RootForm.ClientLocation);
-                    foreach (var cursorContext in MCOS.Instance.CursorManager.Values)
-                    {
-                        if (cursorContext.ScreenContextOf == screenContext && cursorContext.CursorState == Cursor.CursorState.Active && cursorContext.Visible)
-                        {
-                            if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursor))
-                                cursor = SR.CursorStyleManager[CursorStyleType.Default];
-                            frame.Overwrite(cursor.Frame, cursorContext.InputData.CursorPosition, cursor.Offset);
-                        }
-                    }
-                    return frame;
-                })));
-            }
-
-            Task.WaitAll(tasks.Select(i => i.task).ToArray());
-            foreach (var (id, task) in tasks)
-                frames.Add(id, task.Result);
-        }
-
-        public async Task HandleAllScreenOutputAsync(Dictionary<int, ArrayFrame> frames)
-        {
-            if (frames is null)
-                throw new ArgumentNullException(nameof(frames));
-
-            List<Task> tasks = new();
-            foreach (var frame in frames)
-            {
-                if (Items.TryGetValue(frame.Key, out var context))
-                    tasks.Add(context.Screen.OutputHandler.HandleOutputAsync(frame.Value));
-            }
-
-            await Task.WhenAll(tasks);
+                tasks.Add(screenContext.HandleAfterFrameAsync());
+            Task.WaitAll(tasks.ToArray());
         }
 
         public class ScreenCollection : IDictionary<int, ScreenContext>

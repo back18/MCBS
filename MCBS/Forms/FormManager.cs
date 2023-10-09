@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Forms
 {
-    public class FormManager
+    public class FormManager : ITickable
     {
         public FormManager()
         {
@@ -34,11 +34,11 @@ namespace MCBS.Forms
 
         protected virtual void OnRemovedForm(FormManager sender, FormContextEventArgs e) { }
 
-        public void FormScheduling()
+        public void OnTick()
         {
             foreach (var context in Items)
             {
-                context.Value.Handle();
+                context.Value.OnTick();
                 if (context.Value.FormState == FormState.Closed)
                     Items.Remove(context.Key);
             }

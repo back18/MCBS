@@ -10,10 +10,10 @@ namespace MCBS.UI
 {
     public static class UIRenderer
     {
-        public static ArrayFrame? Rendering(IControl control)
+        public static async Task<ArrayFrame?> RenderingAsync(IControl control)
         {
             IControlRendering rendering = control;
-            Task<ArrayFrame> _task;
+            Task<ArrayFrame> mainTask;
             if (rendering.NeedRendering())
             {
                 if (!rendering.Visible)
@@ -22,7 +22,7 @@ namespace MCBS.UI
                 if (rendering.ClientSize.Width < 0 || rendering.ClientSize.Height < 0)
                     return null;
 
-                _task = Task.Run(() =>
+                mainTask = Task.Run(() =>
                 {
                     IFrame frame = rendering.RenderingFrame();
                     if (rendering.OffsetPosition != new Point(0, 0))
@@ -31,30 +31,37 @@ namespace MCBS.UI
                     frame.CorrectSize(rendering.ClientSize, rendering.OffsetPosition, rendering.ContentAnchor, rendering.Skin.GetBackgroundBlockID());
                     return frame.ToArrayFrame();
                 });
-                _task.ContinueWith((t) => rendering.HandleRenderingCompleted(new(t.Result.ToArrayFrame())));
+                _ = mainTask.ContinueWith((t) => rendering.HandleRenderingCompleted(new(t.Result.ToArrayFrame())));
             }
             else
             {
-                _task = Task.Run(() => rendering.GetFrameCache() ?? throw new InvalidOperationException("无法获取帧缓存"));
+                mainTask = Task.Run(() => rendering.GetFrameCache() ?? throw new InvalidOperationException("无法获取帧缓存"));
             }
 
             var childs = (control as IContainerControl)?.GetChildControls();
-            if (childs is null || !childs.Any())
-                return _task.Result.ToArrayFrame();
+            List<(IControlRendering rendering, Task<ArrayFrame?> task)> childTasks = new();
+            if (childs is not null)
+            {
+                foreach (var child in childs)
+                    childTasks.Add((child, RenderingAsync(child)));
+            }
 
-            List<(IControlRendering rendering, Task<ArrayFrame?> task)> tasks = new();
-            foreach (var Child in childs)
-                tasks.Add((Child, Task.Run(() => Rendering(Child))));
-            Task.WaitAll(tasks.Select(i => i.task).ToArray());
-            ArrayFrame frame = _task.Result;
+            ArrayFrame frame = await mainTask;
+            if (childTasks.Count == 0)
+            {
+                if (rendering.NeedRendering())
+                    rendering.HandleRenderingCompleted(new(frame));
+                return frame;
+            }
 
-            foreach (var (Child, task) in tasks)
+            await Task.WhenAll(childTasks.Select(i => i.task).ToArray());
+            foreach (var (child, task) in childTasks)
             {
                 if (task.Result is null)
                     continue;
 
-                frame.Overwrite(task.Result, Child.GetRenderingLocation(), rendering.OffsetPosition);
-                DrawBorder(frame, Child, rendering.OffsetPosition);
+                frame.Overwrite(task.Result, child.GetRenderingLocation(), rendering.OffsetPosition);
+                DrawBorder(frame, child, rendering.OffsetPosition);
             }
 
             return frame;

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.RightClickObjective
 {
-    public class RightClickObjectiveContext
+    public class RightClickObjectiveContext : ITickable
     {
         public RightClickObjectiveContext(string playerName)
         {
@@ -25,7 +25,7 @@ namespace MCBS.RightClickObjective
 
         public bool IsRightClick { get; private set; }
 
-        public void Handle()
+        public void OnTick()
         {
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             int score = sender.GetPlayerScoreboard(PlayerName, ConfigManager.ScreenConfig.RightClickObjective);
