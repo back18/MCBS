@@ -65,6 +65,7 @@ namespace MCBS
             _syatemStopwatch = new();
             _tickStopwatch = new();
             _times = new();
+            _query = MinecraftInstance.WaitForConnectionAsync();
         }
 
         private static readonly object _slock;
@@ -87,6 +88,8 @@ namespace MCBS
         private readonly Stopwatch _tickStopwatch;
 
         private readonly Dictionary<Stage, TimeSpan> _times;
+
+        private Task _query;
 
         public TimeSpan SystemRunningTime => _syatemStopwatch.Elapsed;
 
@@ -143,7 +146,7 @@ namespace MCBS
         private void Initialize()
         {
             LOGGER.Info("正在等待Minecraft实例启动...");
-            MinecraftInstance.WaitForConnection();
+            _query.Wait();
             MinecraftInstance.Start("MinecraftInstance Thread");
             Thread.Sleep(1000);
             LOGGER.Info("成功连接到Minecraft实例");
@@ -178,11 +181,13 @@ namespace MCBS
                     NextTickTime = PreviousTickTime + TickTime;
                     TickCount++;
 
+                    _query = MinecraftInstance.CommandSender.SendCommandAsync("time query gametime");
+
                     ScreenScheduling();
                     ProcessScheduling();
                     FormScheduling();
 
-                    if (TaskManager.IsCompletedCurrentMainTask)
+                    if (_query.IsCompleted)
                     {
                         InteractionScheduling();
                         RightClickObjectiveScheduling();
@@ -214,7 +219,7 @@ namespace MCBS
             }
             catch (Exception ex)
             {
-                bool connection = MinecraftInstance.TestConnection();
+                bool connection = MinecraftInstance.TestConnectivity();
 
                 if (!connection)
                 {
@@ -264,7 +269,7 @@ namespace MCBS
                     task.Wait();
                 }
 
-                bool connection = MinecraftInstance.TestConnection();
+                bool connection = MinecraftInstance.TestConnectivity();
                 if (!connection)
                 {
                     LOGGER.Warn("由于无法连接到Minecraft实例，部分系统资源可能无法回收");
