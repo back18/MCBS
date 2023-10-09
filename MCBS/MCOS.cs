@@ -55,14 +55,16 @@ namespace MCBS
             RightClickObjectiveManager = new();
             CursorManager = new();
 
-            TickCount = 0;
-            TickTime = TimeSpan.FromMilliseconds(50);
             PreviousTickTime = TimeSpan.Zero;
             NextTickTime = PreviousTickTime + TickTime;
+            TickTime = TimeSpan.FromMilliseconds(50);
+            TickCount = 0;
+            Stage = Stage.Other;
             ServicesAppID = ConfigManager.SystemConfig.ServicesAppID;
             StartupChecklist = ConfigManager.SystemConfig.StartupChecklist;
 
-            _stopwatch = new();
+            _syatemStopwatch = new();
+            _tickStopwatch = new();
             _times = new();
         }
 
@@ -81,19 +83,25 @@ namespace MCBS
         }
         private static MCOS? _Instance;
 
-        private readonly Stopwatch _stopwatch;
+        private readonly Stopwatch _syatemStopwatch;
 
-        private readonly Dictionary<string, TimeSpan> _times;
+        private readonly Stopwatch _tickStopwatch;
 
-        public TimeSpan SystemRunningTime => _stopwatch.Elapsed;
+        private readonly Dictionary<Stage, TimeSpan> _times;
 
-        public TimeSpan TickTime { get; set; }
+        public TimeSpan SystemRunningTime => _syatemStopwatch.Elapsed;
+
+        public TimeSpan TickRunningTime => _tickStopwatch.Elapsed;
 
         public TimeSpan PreviousTickTime { get; private set; }
 
         public TimeSpan NextTickTime { get; private set; }
 
+        public TimeSpan TickTime { get; set; }
+
         public int TickCount { get; private set; }
+
+        public Stage Stage { get; private set; }
 
         public MinecraftInstance MinecraftInstance { get; }
 
@@ -159,7 +167,7 @@ namespace MCBS
         {
             LOGGER.Info("系统已启动");
             Initialize();
-            _stopwatch.Start();
+            _syatemStopwatch.Start();
 
             run:
 
@@ -169,10 +177,11 @@ namespace MCBS
 #endif
                 while (IsRunning)
                 {
+                    _tickStopwatch.Restart();
+                    _times.Clear();
                     PreviousTickTime = SystemRunningTime;
                     NextTickTime = PreviousTickTime + TickTime;
                     TickCount++;
-                    _times.Clear();
 
                     ScreenScheduling();
                     ProcessScheduling();
@@ -203,7 +212,8 @@ namespace MCBS
 
                     HandleSystemInterrupt();
 
-                    TimeAnalysisManager.Submit(_times);
+                    _tickStopwatch.Stop();
+                    TimeAnalysisManager.Submit(_times, _tickStopwatch.Elapsed);
                 }
 #if TryCatch
             }
@@ -238,7 +248,7 @@ namespace MCBS
             }
 #endif
 
-            _stopwatch.Stop();
+            _syatemStopwatch.Stop();
             LOGGER.Info("系统已终止");
         }
 
@@ -294,66 +304,66 @@ namespace MCBS
             LOGGER.Info("已和Minecraft实例断开连接");
         }
 
-        private void HandleAndTimeing(Action action, string key)
+        private void HandleAndTimeing(Action action, Stage stage)
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (string.IsNullOrEmpty(key))
-                throw new ArgumentException($"“{nameof(key)}”不能为 null 或空。", nameof(key));
 
+            Stage = stage;
             Stopwatch stopwatch = Stopwatch.StartNew();
             action.Invoke();
             stopwatch.Stop();
+            Stage = Stage.Other;
 
-            if (_times.TryGetValue(key, out var time))
-                _times[key] = time + stopwatch.Elapsed;
+            if (_times.TryGetValue(stage, out var time))
+                _times[stage] = time + stopwatch.Elapsed;
             else
-                _times.Add(key, stopwatch.Elapsed);
+                _times.Add(stage, stopwatch.Elapsed);
         }
 
         private void ScreenScheduling()
         {
-            HandleAndTimeing(ScreenManager.OnTick, TimeAnalysisManager.Key.ScreenScheduling);
+            HandleAndTimeing(ScreenManager.OnTick, Stage.ScreenScheduling);
         }
 
         private void ProcessScheduling()
         {
-            HandleAndTimeing(ProcessManager.OnTick, TimeAnalysisManager.Key.ProcessScheduling);
+            HandleAndTimeing(ProcessManager.OnTick, Stage.ProcessScheduling);
         }
 
         private void FormScheduling()
         {
-            HandleAndTimeing(FormManager.OnTick, TimeAnalysisManager.Key.FormScheduling);
+            HandleAndTimeing(FormManager.OnTick, Stage.FormScheduling);
         }
 
         private void InteractionScheduling()
         {
-            HandleAndTimeing(InteractionManager.OnTick, TimeAnalysisManager.Key.InteractionScheduling);
+            HandleAndTimeing(InteractionManager.OnTick, Stage.InteractionScheduling);
         }
 
         private void RightClickObjectiveScheduling()
         {
-            HandleAndTimeing(RightClickObjectiveManager.OnTick, TimeAnalysisManager.Key.RightClickObjectiveScheduling);
+            HandleAndTimeing(RightClickObjectiveManager.OnTick, Stage.RightClickObjectiveScheduling);
         }
 
         private void ScreenBuildScheduling()
         {
-            HandleAndTimeing(ScreenBuildManager.OnTick, TimeAnalysisManager.Key.ScreenBuildScheduling);
+            HandleAndTimeing(ScreenBuildManager.OnTick, Stage.ScreenBuildScheduling);
         }
 
         private void HandleScreenInput()
         {
-            HandleAndTimeing(ScreenManager.HandleAllScreenInput, TimeAnalysisManager.Key.HandleScreenInput);
+            HandleAndTimeing(ScreenManager.HandleAllScreenInput, Stage.HandleScreenInput);
         }
 
         private void HandleBeforeFrame()
         {
-            HandleAndTimeing(ScreenManager.HandleAllBeforeFrame, TimeAnalysisManager.Key.HandleBeforeFrame);
+            HandleAndTimeing(ScreenManager.HandleAllBeforeFrame, Stage.HandleBeforeFrame);
         }
 
         private void HandleUIRendering()
         {
-            HandleAndTimeing(ScreenManager.HandleAllUIRendering, TimeAnalysisManager.Key.HandleUIRendering);
+            HandleAndTimeing(ScreenManager.HandleAllUIRendering, Stage.HandleUIRendering);
         }
 
         private void HandleScreenOutput()
@@ -365,12 +375,12 @@ namespace MCBS
                 TaskManager.SetCurrentMainTask(task);
                 TaskManager.WaitForPreviousMainTask();
             },
-            TimeAnalysisManager.Key.HandleScreenOutput);
+            Stage.HandleScreenOutput);
         }
 
         public void HandleAfterFrame()
         {
-            HandleAndTimeing(ScreenManager.HandleAllAfterFrame, TimeAnalysisManager.Key.HandleAfterFrame);
+            HandleAndTimeing(ScreenManager.HandleAllAfterFrame, Stage.HandleAfterFrame);
         }
 
         private void HandleSystemInterrupt()
@@ -383,7 +393,7 @@ namespace MCBS
                 while (SystemRunningTime < NextTickTime)
                     Thread.Yield();
             },
-            TimeAnalysisManager.Key.HandleSystemInterrupt);
+            Stage.HandleSystemInterrupt);
         }
 
         public ScreenContext? ScreenContextOf(IForm form)
