@@ -1,5 +1,8 @@
-﻿using QuanLib.Minecraft;
+﻿using MCBS.Config;
+using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
+using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.Instance;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +19,14 @@ namespace MCBS.RightClickObjective
         }
 
         private readonly Dictionary<string, RightClickObjectiveContext> _items;
+
+
+        public void Initialize()
+        {
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            sender.SendCommand($"scoreboard objectives remove {ConfigManager.ScreenConfig.RightClickCriterion}");
+            sender.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} {ConfigManager.ScreenConfig.RightClickCriterion}");
+        }
 
         public void OnTick()
         {

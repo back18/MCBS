@@ -153,7 +153,7 @@ namespace MCBS
             TaskManager.Initialize();
             ScreenManager.Initialize();
             InteractionManager.Initialize();
-            MinecraftInstance.CommandSender.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} minecraft.used:minecraft.snowball");
+            RightClickObjectiveManager.Initialize();
 
             LOGGER.Info("初始化完成");
         }
