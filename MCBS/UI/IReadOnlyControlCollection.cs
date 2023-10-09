@@ -20,9 +20,9 @@ namespace MCBS.UI
 
         public bool HaveSelected { get; }
 
-        public IReadOnlyList<T> GetHovers();
+        public T[] GetHovers();
 
-        public IReadOnlyList<T> GetSelecteds();
+        public T[] GetSelecteds();
 
         public void Sort();
 

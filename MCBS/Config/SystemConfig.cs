@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace MCBS.Config
             CrashAutoRestart = model.CrashAutoRestart;
             LoadDllAppComponents = model.LoadDllAppComponents;
             ServicesAppID = model.ServicesAppID;
-            StartupChecklist = model.StartupChecklist;
+            StartupChecklist = new(model.StartupChecklist);
         }
 
         public bool CrashAutoRestart { get; }
@@ -28,7 +29,7 @@ namespace MCBS.Config
 
         public string ServicesAppID { get; }
 
-        public IReadOnlyList<string> StartupChecklist { get; }
+        public ReadOnlyCollection<string> StartupChecklist { get; }
 
         public static SystemConfig Load(string path)
         {

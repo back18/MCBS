@@ -4,6 +4,7 @@ using QuanLib.Minecraft;
 using QuanLib.Minecraft.ResourcePack;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,7 @@ namespace MCBS.Config
             McapiPort = (ushort)model.McapiPort;
             McapiPassword = model.McapiPassword;
             Language = model.Language;
-            ResourcePackList = model.ResourcePackList;
+            ResourcePackList = new(model.ResourcePackList);
 
             List<BlockState> list = new();
             foreach (var item in model.BlockTextureBlacklist)
@@ -37,7 +38,7 @@ namespace MCBS.Config
                 if (BlockState.TryParse(item, out var blockState))
                     list.Add(blockState);
             }
-            BlockTextureBlacklist = list;
+            BlockTextureBlacklist = list.AsReadOnly();
         }
 
         public string DownloadApi { get; }
@@ -62,9 +63,9 @@ namespace MCBS.Config
 
         public string Language { get; }
 
-        public IReadOnlyList<string> ResourcePackList { get; }
+        public ReadOnlyCollection<string> ResourcePackList { get; }
 
-        public IReadOnlyList<BlockState> BlockTextureBlacklist { get; }
+        public ReadOnlyCollection<BlockState> BlockTextureBlacklist { get; }
 
         public static MinecraftConfig Load(string path)
         {

@@ -3,6 +3,7 @@ using Nett;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -31,15 +32,15 @@ namespace MCBS.Config
             RightClickItemID = model.RightClickItemID;
             TextEditorItemID = model.TextEditorItemID;
             ScreenBuilderItemName = model.ScreenBuilderItemName;
-            ScreenOperatorList = model.ScreenOperatorList;
-            ScreenBuildOperatorList = model.ScreenBuildOperatorList;
+            ScreenOperatorList = new(model.ScreenOperatorList);
+            ScreenBuildOperatorList = new(model.ScreenBuildOperatorList);
 
             List<ScreenOptions> list = new();
             foreach (var item in model.ResidentScreenList)
             {
                 list.Add(new(item));
             }
-            ResidentScreenList = list;
+            ResidentScreenList = list.AsReadOnly();
         }
 
         public int MaxCount { get; }
@@ -70,11 +71,11 @@ namespace MCBS.Config
 
         public string ScreenBuilderItemName { get; }
 
-        public IReadOnlyList<string> ScreenOperatorList { get; }
+        public ReadOnlyCollection<string> ScreenOperatorList { get; }
 
-        public IReadOnlyList<string> ScreenBuildOperatorList { get; }
+        public ReadOnlyCollection<string> ScreenBuildOperatorList { get; }
 
-        public IReadOnlyList<ScreenOptions> ResidentScreenList { get; }
+        public ReadOnlyCollection<ScreenOptions> ResidentScreenList { get; }
 
         public static ScreenConfig Load(string path)
         {

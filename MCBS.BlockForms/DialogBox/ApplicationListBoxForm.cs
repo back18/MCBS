@@ -71,7 +71,7 @@ namespace MCBS.BlockForms.DialogBox
         {
             var selecteds = ApplicationList_ListMenuBox.ChildControls.GetSelecteds();
             Control? selected = ApplicationList_ListMenuBox.ChildControls.FirstSelected;
-            if (selecteds.Count > 1 && selected is not null)
+            if (selecteds.Length > 1 && selected is not null)
             {
                 selected.IsSelected = false;
             }

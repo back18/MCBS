@@ -28,6 +28,7 @@ using MCBS.Interaction;
 using MCBS.Cursor;
 using MCBS.RightClickObjective;
 using MCBS.Screens.Building;
+using System.Collections.ObjectModel;
 
 namespace MCBS
 {
@@ -60,8 +61,6 @@ namespace MCBS
             TickTime = TimeSpan.FromMilliseconds(50);
             TickCount = 0;
             Stage = Stage.Other;
-            ServicesAppID = ConfigManager.SystemConfig.ServicesAppID;
-            StartupChecklist = ConfigManager.SystemConfig.StartupChecklist;
 
             _syatemStopwatch = new();
             _tickStopwatch = new();
@@ -124,10 +123,6 @@ namespace MCBS
         public ScreenBuildManager ScreenBuildManager { get; }
 
         public CursorManager CursorManager { get; }
-
-        public string ServicesAppID { get; }
-
-        public IReadOnlyList<string> StartupChecklist { get; }
 
         public static MCOS LoadInstance(MinecraftInstance minecraftInstance)
         {
@@ -488,15 +483,15 @@ namespace MCBS
 
         internal ProcessContext RunServicesApp()
         {
-            if (!ApplicationManager.Items[ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplicationBase)))
+            if (!ApplicationManager.Items[ConfigManager.SystemConfig.ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplicationBase)))
                 throw new InvalidOperationException("无效的ServicesAppID");
 
-            return RunApplication(ServicesAppID);
+            return RunApplication(ConfigManager.SystemConfig.ServicesAppID);
         }
 
         internal void RunStartupChecklist(IRootForm rootForm)
         {
-            foreach (var id in StartupChecklist)
+            foreach (var id in ConfigManager.SystemConfig.StartupChecklist)
                 RunApplication(ApplicationManager.Items[id], rootForm);
         }
     }

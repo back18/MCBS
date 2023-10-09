@@ -110,22 +110,22 @@ namespace MCBS.UI
             return _items.IndexOf(item);
         }
 
-        public IReadOnlyList<T> GetHovers()
+        public T[] GetHovers()
         {
             List<T> result = new();
             foreach (var item in _items)
                 if (item.IsHover)
                     result.Add(item);
-            return result;
+            return result.ToArray();
         }
 
-        public IReadOnlyList<T> GetSelecteds()
+        public T[] GetSelecteds()
         {
             List<T> result = new();
             foreach (var item in _items)
                 if (item.IsSelected)
                     result.Add(item);
-            return result;
+            return result.ToArray();
         }
 
         public virtual void Sort()
