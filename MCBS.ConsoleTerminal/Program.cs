@@ -30,14 +30,19 @@ namespace MCBS.ConsoleTerminal
             ConfigManager.CreateIfNotExists();
             LOGGER = LogUtil.GetLogger();
             Terminal = new();
+            CommandLogger = new();
+            CommandLogger.IsWriteToFile = true;
         }
 
         public static Terminal Terminal { get; }
+
+        public static CommandLogger CommandLogger { get; }
 
         private static void Main(string[] args)
         {
             LOGGER.Info("MCBS已启动，欢迎使用！");
             Terminal.Start("Terminal Thread");
+            CommandLogger.Start("CommandLogger Thread");
 
 #if TryCatch
             try
@@ -112,14 +117,16 @@ namespace MCBS.ConsoleTerminal
 
         private static void CommandSender_CommandSent(CommandSender sender, CommandInfoEventArgs e)
         {
-            //LOGGER.Debug($"input:[{e.CommandInfo.Input}] output:[{e.CommandInfo.Output}]");
+            CommandLogger.Submit(new(e.CommandInfo, MCOS.Instance.TickCount, MCOS.Instance.Stage, Thread.CurrentThread.Name ?? "null"));
         }
 
         public static void Exit()
         {
-            Task task = Terminal.WaitForStopAsync();
+            Task terminal = Terminal.WaitForStopAsync();
+            Task commandLogger = CommandLogger.WaitForStopAsync();
             Terminal.Stop();
-            task.Wait();
+            CommandLogger.Stop();
+            Task.WaitAll(terminal, commandLogger);
 
             for (int i = 10; i >= 1; i--)
             {
