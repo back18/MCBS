@@ -24,7 +24,7 @@ namespace MCBS.RightClickObjective
         public void Initialize()
         {
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            sender.SendCommand($"scoreboard objectives remove {ConfigManager.ScreenConfig.RightClickCriterion}");
+            sender.SendCommand($"scoreboard objectives remove {ConfigManager.ScreenConfig.RightClickObjective}");
             sender.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} {ConfigManager.ScreenConfig.RightClickCriterion}");
         }
 
