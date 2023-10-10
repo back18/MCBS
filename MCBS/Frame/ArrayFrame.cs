@@ -370,7 +370,7 @@ namespace MCBS.Frame
             string[,] ids = new string[image.Width, image.Height];
             for (int x = 0; x < image.Width; x++)
                 for (int y = 0; y < image.Height; y++)
-                    ids[x, y] = MR.BlockTextureManager.MatchBlockTexture(facing, image[x, y])?.BlockID ?? "minecraft:air";
+                    ids[x, y] = SR.BlockTextureManager.MatchBlockTexture(facing, image[x, y])?.BlockID ?? "minecraft:air";
             return new(ids);
         }
 
@@ -387,7 +387,7 @@ namespace MCBS.Frame
                     if (color.A == 0)
                         ids[x, y] = transparentBlockID;
                     else
-                        ids[x, y] = MR.BlockTextureManager.MatchBlockTexture(facing, color)?.BlockID ?? "minecraft:air";
+                        ids[x, y] = SR.BlockTextureManager.MatchBlockTexture(facing, color)?.BlockID ?? "minecraft:air";
                 }
             return new(ids);
         }

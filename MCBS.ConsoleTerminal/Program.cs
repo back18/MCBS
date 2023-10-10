@@ -11,6 +11,7 @@ using QuanLib.Minecraft.API;
 using QuanLib.Minecraft.API.Instance;
 using QuanLib.Minecraft.API.Packet;
 using QuanLib.Minecraft.Instance;
+using QuanLib.Minecraft.ResourcePack;
 using QuanLib.Minecraft.ResourcePack.Language;
 using System.Net;
 using System.Text;
@@ -40,11 +41,14 @@ namespace MCBS.ConsoleTerminal
             try
             {
 #endif
-            ConfigManager.LoadAll();
-            MR.LoadAll();
-            SR.LoadAll();
-            TextureManager.LoadInstance();
-            FFmpegResourcesLoader.LoadAll();
+                ConfigManager.LoadAll();
+                FFmpegResourcesLoader.LoadAll();
+                ResourceEntryManager resources = MinecraftResourcesLoader.LoadAll();
+                SR.LoadAll(resources);
+                TextureManager.LoadInstance();
+
+                resources.Dispose();
+                LOGGER.Info("资源包内所有资源均已加载完成，资源包缓存已释放");
 #if TryCatch
             }
             catch (Exception ex)
@@ -61,28 +65,28 @@ namespace MCBS.ConsoleTerminal
             try
             {
 #endif
-            MinecraftConfig config = ConfigManager.MinecraftConfig;
-            switch (config.InstanceType)
-            {
-                case InstanceTypes.CLIENT:
-                    if (config.CommunicationMode == CommunicationModes.MCAPI)
-                        minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger);
-                    else
+                MinecraftConfig config = ConfigManager.MinecraftConfig;
+                switch (config.InstanceType)
+                {
+                    case InstanceTypes.CLIENT:
+                        if (config.CommunicationMode == CommunicationModes.MCAPI)
+                            minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger);
+                        else
+                            throw new InvalidOperationException();
+                        break;
+                    case InstanceTypes.SERVER:
+                        minecraftInstance = config.CommunicationMode switch
+                        {
+                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, LogUtil.GetLogger),
+                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
+                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
+                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger),
+                            _ => throw new InvalidOperationException(),
+                        };
+                        break;
+                    default:
                         throw new InvalidOperationException();
-                    break;
-                case InstanceTypes.SERVER:
-                    minecraftInstance = config.CommunicationMode switch
-                    {
-                        CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, LogUtil.GetLogger),
-                        CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
-                        CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
-                        CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger),
-                        _ => throw new InvalidOperationException(),
-                    };
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
+                }
 #if TryCatch
             }
             catch (Exception ex)
