@@ -20,7 +20,7 @@ namespace MCBS.ConsoleTerminal
         public Terminal() : base(LogUtil.GetLogger)
         {
             CommandSystem = new(new(Level.Root));
-            RegisterCommands();
+            RegistrationCommands();
         }
 
         public CommandSystem CommandSystem { get; }
@@ -50,30 +50,26 @@ namespace MCBS.ConsoleTerminal
                 {
                     case "help":
                         Console.WriteLine("【MCBS控制台】mcconsole--------Minecraft控制台");
+                        Console.WriteLine("【MCBS控制台】mccommand--------Minecraft命令日志记录器");
                         Console.WriteLine("【MCBS控制台】commandsystem----可视化命令系统");
                         Console.WriteLine("【MCBS控制台】mspt------------MSPT实时计时器");
                         Console.WriteLine("【MCBS控制台】stop-------------终止系统并退出程序");
                         break;
                     case "mcconsole":
-                    case "mcc":
                         Console.WriteLine("【MCBS控制台】已进入Minecraft控制台");
-                        //LogUtil.DisableConsoleOutput();
-                        //MCOS.Instance.MinecraftServer.EnableConsoleOutput();
-                        //while (true)
-                        //{
-                        //    string? input2 = Console.ReadLine();
-                        //    if (string.IsNullOrEmpty(input2))
-                        //        break;
-
-                        //    string output2 = MCOS.Instance.MinecraftServer.CommandHelper.SendCommand(input2);
-                        //    Console.WriteLine(output2);
-                        //}
-                        //MCOS.Instance.MinecraftServer.DisableConsoleOutput();
-                        //LogUtil.EnableConsoleOutput();
+                        Console.WriteLine("【MCBS控制台】该功能不可用");
                         Console.WriteLine("【MCBS控制台】已退出Minecraft控制台");
                         break;
+                    case "mccommand":
+                        Console.WriteLine("【MCBS控制台】已进入Minecraft命令日志记录器");
+                        LogUtil.DisableConsoleOutput();
+                        Program.CommandLogger.IsWriteToConsole = true;
+                        WaitForInputEnter();
+                        Program.CommandLogger.IsWriteToConsole = false;
+                        LogUtil.EnableConsoleOutput();
+                        Console.WriteLine("【MCBS控制台】已退出Minecraft命令日志记录器");
+                        break;
                     case "commandsystem":
-                    case "cs":
                         Console.WriteLine("【MCBS控制台】已进入可视化命令系统");
                         LogUtil.DisableConsoleOutput();
                         CommandSystem.Start();
@@ -101,34 +97,16 @@ namespace MCBS.ConsoleTerminal
                                 Thread.Sleep(50);
                             }
                         });
-                        while (true)
-                        {
-                            if (Console.KeyAvailable)
-                            {
-                                if (Console.ReadKey(true).Key == ConsoleKey.Enter)
-                                {
-                                    run = false;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                Thread.Sleep(10);
-                            }
-                        }
+                        WaitForInputEnter();
+                        run = false;
                         Console.CursorVisible = true;
                         LogUtil.EnableConsoleOutput();
                         Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
                         break;
                     case "stop":
-                        if (MCOS.Instance.IsRunning)
-                        {
-                            MCOS.Instance.Stop();
-                        }
-                        else
-                        {
+                        if (!MCOS.IsLoaded || !MCOS.Instance.IsRunning)
                             Console.WriteLine("【MCBS控制台】系统未开始运行，因此无法关闭");
-                        }
+                        MCOS.Instance.Stop();
                         break;
                     default:
                         Console.WriteLine("【MCBS控制台】未知或不完整命令，输入“help”可查看可用命令列表");
@@ -139,7 +117,30 @@ namespace MCBS.ConsoleTerminal
             LOGGER.Info("命令行终端已终止");
         }
 
-        private void RegisterCommands()
+        private static void WaitForInputEnter()
+        {
+            WaitForInputKey(ConsoleKey.Enter);
+        }
+
+        private static void WaitForInputKey(ConsoleKey key)
+        {
+            while (true)
+            {
+                if (Console.KeyAvailable)
+                {
+                    if (Console.ReadKey(true).Key == key)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    Thread.Sleep(10);
+                }
+            }
+        }
+
+        private void RegistrationCommands()
         {
             CommandSystem.Pool.AddCommand(new(new("application list"), CommandFunc.GetFunc(GetApplicationList)));
             CommandSystem.Pool.AddCommand(new(new("screen list"), CommandFunc.GetFunc(GetScreenList)));

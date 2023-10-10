@@ -9,6 +9,7 @@ using QuanLib.Minecraft.Command;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,20 +21,32 @@ namespace MCBS.ConsoleTerminal
     {
         public CommandLogger() : base(LogUtil.GetLogger)
         {
-            IsWriteToConsole = false;
-            IsWriteToFile = false;
-
             string file = SR.McbsDirectory.LogsDir.Combine("Command.log");
             if (File.Exists(file))
                 File.Delete(file);
-            _stream = new(file, FileMode.Create, FileAccess.Write, FileShare.Read);
-            _writer = new(_stream);
+
+            IsWriteToConsole = false;
+            IsWriteToFile = false;
+
+            _memoryStream = new();
+            _fileStream = new(file, FileMode.Create, FileAccess.Write, FileShare.Read);
+
+            _memoryWriter = new StreamWriter(_memoryStream, Encoding.UTF8);
+            _fileWriter = new StreamWriter(_fileStream, Encoding.UTF8);
+            _consoleWriter = Console.Out;
+
             _queue = new();
         }
 
-        private readonly FileStream _stream;
+        private readonly MemoryStream _memoryStream;
 
-        private readonly StreamWriter _writer;
+        private readonly FileStream _fileStream;
+
+        private readonly TextWriter _consoleWriter;
+
+        private readonly TextWriter _fileWriter;
+
+        private readonly TextWriter _memoryWriter;
 
         private readonly ConcurrentQueue<CommandLog> _queue;
 
@@ -57,8 +70,10 @@ namespace MCBS.ConsoleTerminal
 
         protected override void DisposeUnmanaged()
         {
-            _writer.Dispose();
-            _stream.Dispose();
+            _memoryWriter.Dispose();
+            _memoryStream.Dispose();
+            _fileWriter.Dispose();
+            _fileStream.Dispose();
         }
 
         public void Submit(CommandLog commandLog)
@@ -83,26 +98,34 @@ namespace MCBS.ConsoleTerminal
 
         private void Write(string text)
         {
+            _memoryWriter.Write(text);
             if (IsWriteToConsole)
-                Console.Write(text);
+                _consoleWriter.Write(text);
             if (IsWriteToFile)
-                _writer.Write(text);
+                _fileWriter.Write(text);
         }
 
         private void WriteLine()
         {
+            _memoryWriter.WriteLine();
             if (IsWriteToConsole)
-                Console.WriteLine();
+                _consoleWriter.WriteLine();
             if (IsWriteToFile)
-                _writer.WriteLine();
+                _fileWriter.WriteLine();
         }
 
         private void WriteLine(string text)
         {
+            _memoryWriter.WriteLine(text);
             if (IsWriteToConsole)
-                Console.WriteLine(text);
+                _consoleWriter.WriteLine(text);
             if (IsWriteToFile)
-                _writer.WriteLine(text);
+                _fileWriter.WriteLine(text);
+        }
+
+        public byte[] GetBuffer()
+        {
+            return _memoryStream.ToArray();
         }
     }
 }
