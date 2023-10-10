@@ -10,6 +10,8 @@ using QuanLib.Minecraft;
 using QuanLib.Minecraft.API;
 using QuanLib.Minecraft.API.Instance;
 using QuanLib.Minecraft.API.Packet;
+using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.Events;
 using QuanLib.Minecraft.Instance;
 using QuanLib.Minecraft.ResourcePack;
 using QuanLib.Minecraft.ResourcePack.Language;
@@ -99,12 +101,18 @@ namespace MCBS.ConsoleTerminal
 
             MCOS mcos = MCOS.LoadInstance(minecraftInstance);
             AppComponentLoader.LoadAll(mcos);
+            mcos.MinecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
 
             mcos.Start("System Thread");
             mcos.WaitForStop();
 
             Exit();
             return;
+        }
+
+        private static void CommandSender_CommandSent(CommandSender sender, CommandInfoEventArgs e)
+        {
+            //LOGGER.Debug($"input:[{e.CommandInfo.Input}] output:[{e.CommandInfo.Output}]");
         }
 
         public static void Exit()
