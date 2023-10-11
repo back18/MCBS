@@ -222,7 +222,7 @@ namespace MCBS.ConsoleTerminal
 
         private static int GetFrameCount()
         {
-            return MCOS.Instance.TickCount;
+            return MCOS.Instance.SystemTick;
         }
 
         #endregion

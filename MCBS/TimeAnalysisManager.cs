@@ -8,34 +8,34 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public class TimeAnalysisManager : IReadOnlyDictionary<Stage, TimeAnalysis>
+    public class TimeAnalysisManager : IReadOnlyDictionary<SystemStage, TimeAnalysis>
     {
         public TimeAnalysisManager()
         {
             TickTimer = new();
             _items = new()
             {
-                { Stage.ScreenScheduling, new() },
-                { Stage.ProcessScheduling, new() },
-                { Stage.FormScheduling, new() },
-                { Stage.InteractionScheduling, new() },
-                { Stage.RightClickObjectiveScheduling, new() },
-                { Stage.ScreenBuildScheduling, new() },
-                { Stage.HandleScreenInput, new() },
-                { Stage.HandleBeforeFrame, new() },
-                { Stage.HandleUIRendering, new() },
-                { Stage.HandleScreenOutput, new() },
-                { Stage.HandleAfterFrame, new() },
-                { Stage.HandleSystemInterrupt, new() },
-                { Stage.Other, new() }
+                { SystemStage.ScreenScheduling, new() },
+                { SystemStage.ProcessScheduling, new() },
+                { SystemStage.FormScheduling, new() },
+                { SystemStage.InteractionScheduling, new() },
+                { SystemStage.RightClickObjectiveScheduling, new() },
+                { SystemStage.ScreenBuildScheduling, new() },
+                { SystemStage.HandleScreenInput, new() },
+                { SystemStage.HandleBeforeFrame, new() },
+                { SystemStage.HandleUIRendering, new() },
+                { SystemStage.HandleScreenOutput, new() },
+                { SystemStage.HandleAfterFrame, new() },
+                { SystemStage.HandleSystemInterrupt, new() },
+                { SystemStage.Other, new() }
             };
         }
 
-        private readonly Dictionary<Stage, TimeAnalysis> _items;
+        private readonly Dictionary<SystemStage, TimeAnalysis> _items;
 
-        public TimeAnalysis this[Stage key] => _items[key];
+        public TimeAnalysis this[SystemStage key] => _items[key];
 
-        public IEnumerable<Stage> Keys => _items.Keys;
+        public IEnumerable<SystemStage> Keys => _items.Keys;
 
         public IEnumerable<TimeAnalysis> Values => _items.Values;
 
@@ -43,7 +43,7 @@ namespace MCBS
 
         public TimeAnalysis TickTimer { get; }
 
-        public void Submit(IDictionary<Stage, TimeSpan> times, TimeSpan tickTime)
+        public void Submit(IDictionary<SystemStage, TimeSpan> times, TimeSpan tickTime)
         {
             TimeSpan total = TimeSpan.Zero;
             foreach (var item in _items)
@@ -55,20 +55,20 @@ namespace MCBS
                 total += time;
             }
             TickTimer.Append(tickTime);
-            _items[Stage.Other].Append(tickTime - total);
+            _items[SystemStage.Other].Append(tickTime - total);
         }
 
-        public bool ContainsKey(Stage key)
+        public bool ContainsKey(SystemStage key)
         {
             return _items.ContainsKey(key);
         }
 
-        public bool TryGetValue(Stage key, [MaybeNullWhen(false)] out TimeAnalysis value)
+        public bool TryGetValue(SystemStage key, [MaybeNullWhen(false)] out TimeAnalysis value)
         {
             return _items.TryGetValue(key, out value);
         }
 
-        public IEnumerator<KeyValuePair<Stage, TimeAnalysis>> GetEnumerator()
+        public IEnumerator<KeyValuePair<SystemStage, TimeAnalysis>> GetEnumerator()
         {
             return _items.GetEnumerator();
         }
@@ -86,7 +86,7 @@ namespace MCBS
         public string ToString(TimeAnalysis.Ticks ticks)
         {
             int maxLength = 0;
-            foreach (Stage key in _items.Keys)
+            foreach (SystemStage key in _items.Keys)
             {
                 int length = key.ToString().Length;
                 if (length > maxLength)
@@ -100,7 +100,7 @@ namespace MCBS
             sb.AppendLine($"{_items.Count} timers in total, with a total time of {FromTime(TickTimer.GetAverageTime(ticks))}");
             return sb.ToString().TrimEnd();
 
-            string FromKey(Stage key)
+            string FromKey(SystemStage key)
             {
                 return key.ToString().PadRight(maxLength, '-');
             }

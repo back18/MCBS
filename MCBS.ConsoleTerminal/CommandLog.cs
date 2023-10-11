@@ -10,7 +10,7 @@ namespace MCBS.ConsoleTerminal
 {
     public class CommandLog
     {
-        public CommandLog(CommandInfo info, int tick, Stage stage, string threadName)
+        public CommandLog(CommandInfo info, int gameTick, int systemTick, SystemStage systemStage, string threadName)
         {
             if (info is null)
                 throw new ArgumentNullException(nameof(info));
@@ -18,16 +18,19 @@ namespace MCBS.ConsoleTerminal
                 throw new ArgumentException($"“{nameof(threadName)}”不能为 null 或空。", nameof(threadName));
 
             Info = info;
-            Tick = tick;
-            Stage = stage;
+            GameTick = gameTick;
+            SystemTick = systemTick;
+            SystemStage = systemStage;
             ThreadName = threadName;
         }
 
         public CommandInfo Info { get; }
 
-        public int Tick { get; }
+        public int GameTick { get; private set; }
 
-        public Stage Stage { get; }
+        public int SystemTick { get; private set; }
+
+        public SystemStage SystemStage { get; private set; }
 
         public string ThreadName { get; }
     }

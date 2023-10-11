@@ -117,7 +117,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void CommandSender_CommandSent(CommandSender sender, CommandInfoEventArgs e)
         {
-            CommandLogger.Submit(new(e.CommandInfo, MCOS.Instance.TickCount, MCOS.Instance.Stage, Thread.CurrentThread.Name ?? "null"));
+            CommandLogger.Submit(new(e.CommandInfo, MCOS.Instance.GameTick, MCOS.Instance.SystemTick, MCOS.Instance.SystemStage, Thread.CurrentThread.Name ?? "null"));
         }
 
         public static void Exit()

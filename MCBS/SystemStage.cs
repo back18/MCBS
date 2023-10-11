@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public enum Stage
+    public enum SystemStage
     {
         ScreenScheduling,
 

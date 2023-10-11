@@ -34,17 +34,17 @@ namespace MCBS
 
         public void Initialize()
         {
-            var twowayCommandSender = MCOS.Instance.MinecraftInstance.CommandSender.TwowaySender;
-            var onewayCommandSender = MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender;
-            if (twowayCommandSender == onewayCommandSender)
-            {
-                onewayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
-            }
-            else
-            {
-                twowayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
-                onewayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
-            }
+            //var twowayCommandSender = MCOS.Instance.MinecraftInstance.CommandSender.TwowaySender;
+            //var onewayCommandSender = MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender;
+            //if (twowayCommandSender == onewayCommandSender)
+            //{
+            //    onewayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
+            //}
+            //else
+            //{
+            //    twowayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
+            //    onewayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
+            //}
         }
 
         private void CommandSender_WaitForResponseCallback(ICommandSender sender, EventArgs e)
@@ -100,7 +100,9 @@ namespace MCBS
             if (mainTask is null)
                 throw new ArgumentNullException(nameof(mainTask));
 
-            if (_current == mainTask)
+            if (_current != mainTask)
+                _current = mainTask;
+            else
                 _current = null;
         }
 

@@ -90,7 +90,7 @@ namespace MCBS.ConsoleTerminal
                 throw new ArgumentNullException(nameof(commandLog));
 
             double timeSpan = (commandLog.Info.ReceivingTime.Ticks - commandLog.Info.SendingTime.Ticks) / 10.0;
-            WriteLine($"[Tick={commandLog.Tick}] [Stage={commandLog.Stage}] [Thread={commandLog.ThreadName}] [TimeSpan={timeSpan} us]");
+            WriteLine($"[GameTick={commandLog.GameTick}] [SystemTick={commandLog.SystemTick}] [Stage={commandLog.SystemStage}] [Thread={commandLog.ThreadName}] [TimeSpan={timeSpan} us]");
             WriteLine($"[{commandLog.Info.SendingTime:HH:mm:ss:ffffff}] [Send]: {commandLog.Info.Input}");
             WriteLine($"[{commandLog.Info.ReceivingTime:HH:mm:ss:ffffff}] [Receiv]: {commandLog.Info.Output}");
             WriteLine();
