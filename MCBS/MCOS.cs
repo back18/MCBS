@@ -149,7 +149,7 @@ namespace MCBS
         private void Initialize()
         {
             LOGGER.Info("正在等待Minecraft实例启动...");
-            _query.Wait();
+            MinecraftInstance.WaitForConnection();
             MinecraftInstance.Start("MinecraftInstance Thread");
             Thread.Sleep(1000);
             LOGGER.Info("成功连接到Minecraft实例");
