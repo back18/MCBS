@@ -25,9 +25,9 @@ namespace MCBS.UI
 
         public ISkin Skin { get; }
 
-        public IFrame RenderingFrame();
+        public bool NeedRendering { get; }
 
-        public bool NeedRendering();
+        public IFrame RenderingFrame();
 
         public ArrayFrame? GetFrameCache();
 

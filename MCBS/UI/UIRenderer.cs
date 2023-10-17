@@ -14,7 +14,7 @@ namespace MCBS.UI
         {
             IControlRendering rendering = control;
             Task<ArrayFrame> mainTask;
-            if (rendering.NeedRendering())
+            if (rendering.NeedRendering)
             {
                 if (!rendering.Visible)
                     return null;
@@ -49,7 +49,7 @@ namespace MCBS.UI
             ArrayFrame frame = await mainTask;
             if (childTasks.Count == 0)
             {
-                if (rendering.NeedRendering())
+                if (rendering.NeedRendering)
                     rendering.HandleRenderingCompleted(new(frame));
                 return frame;
             }

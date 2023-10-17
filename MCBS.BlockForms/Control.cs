@@ -29,6 +29,8 @@ namespace MCBS.BlockForms
     {
         protected Control()
         {
+            FrameCache = null;
+            NeedRendering = true;
             FirstHandleRightClick = false;
             FirstHandleLeftClick = false;
             FirstHandleCursorSlotChanged = false;
@@ -53,9 +55,6 @@ namespace MCBS.BlockForms
             _ControlState = ControlState.None;
             _LayoutSyncer = null;
 
-            Frame_Update = true;
-            Frame_Old = null;
-
             CursorMove += OnCursorMove;
             CursorEnter += OnCursorEnter;
             CursorLeave += OnCursorLeave;
@@ -79,9 +78,9 @@ namespace MCBS.BlockForms
             Layout += OnLayout;
         }
 
-        private bool Frame_Update;
+        private ArrayFrame? FrameCache;
 
-        private ArrayFrame? Frame_Old;
+        public bool NeedRendering { get; private set; }
 
         public IContainerControl? GenericParentContainer { get; private set; }
 
@@ -750,8 +749,8 @@ namespace MCBS.BlockForms
 
         public virtual void HandleRenderingCompleted(ArrayFrameEventArgs e)
         {
-            Frame_Update = false;
-            Frame_Old = e.ArrayFrame;
+            NeedRendering = false;
+            FrameCache = e.ArrayFrame;
             RenderingCompleted.Invoke(this, e);
         }
 
@@ -887,7 +886,7 @@ namespace MCBS.BlockForms
 
         protected void RequestUpdateFrame()
         {
-            Frame_Update = true;
+            NeedRendering = true;
             ParentContainer?.RequestUpdateFrame();
         }
 
@@ -896,14 +895,9 @@ namespace MCBS.BlockForms
             return ArrayFrame.BuildFrame(ClientSize.Width, ClientSize.Height, Skin.GetBackgroundBlockID());
         }
 
-        bool IControlRendering.NeedRendering()
-        {
-            return Frame_Update;
-        }
-
         ArrayFrame? IControlRendering.GetFrameCache()
         {
-            return Frame_Old;
+            return FrameCache;
         }
 
         #endregion
