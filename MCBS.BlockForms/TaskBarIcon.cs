@@ -22,9 +22,6 @@ namespace MCBS.BlockForms
             Skin.BorderBlockID_Selected = BlockManager.Concrete.Orange;
             Skin.BorderBlockID__Hover = BlockManager.Concrete.Pink;
             Skin.BorderBlockID_Hover_Selected = BlockManager.Concrete.Pink;
-
-            Form.FormMinimize += Form_FormMinimize;
-            Form.FormUnminimize += Form_FormUnminimize;
         }
 
         public IForm Form { get; }
@@ -47,16 +44,6 @@ namespace MCBS.BlockForms
                 else
                     Form.UnminimizeForm();
             }
-        }
-
-        private void Form_FormMinimize(IForm sender, EventArgs e)
-        {
-            IsSelected = Form.IsSelected;
-        }
-
-        private void Form_FormUnminimize(IForm sender, EventArgs e)
-        {
-            IsSelected = Form.IsSelected;
         }
     }
 }

@@ -9,14 +9,6 @@ namespace MCBS.UI
 {
     public interface IFormEventHandling
     {
-        public event EventHandler<IForm, EventArgs> FormLoad;
-
-        public event EventHandler<IForm, EventArgs> FormClose;
-
-        public event EventHandler<IForm, EventArgs> FormMinimize;
-
-        public event EventHandler<IForm, EventArgs> FormUnminimize;
-
         public void HandleFormLoad(EventArgs e);
 
         public void HandleFormClose(EventArgs e);

@@ -475,25 +475,48 @@ namespace MCBS.BlockForms
 
             private void FormContainer_AddedChildControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
             {
-                if (e.Control is IForm form && !FormsMenu.ContainsForm(form) && (MCOS.Instance.ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false))
+                if (e.Control is not IForm form)
+                    return;
+
+                bool append = MCOS.Instance.ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false;
+                if (!append)
+                    return;
+
+                var context = MCOS.Instance.FormContextOf(form);
+                if (context is null)
+                    return;
+
+                switch (context.StateManager.CurrentState)
                 {
-                    FormsMenu.AddedChildControlAndLayout(new TaskBarIcon(form));
+                    case FormState.NotLoaded:
+                        FormsMenu.AddedChildControlAndLayout(new TaskBarIcon(form));
+                        break;
+                    case FormState.Minimize:
+                        var icon = FormsMenu.TaskBarIconOf(form);
+                        if (icon is not null)
+                            icon.IsSelected = true;
+                        break;
                 }
             }
 
             private void FormContainer_RemovedChildControl(AbstractContainer<IControl> sender, ControlEventArgs<IControl> e)
             {
-                if (e.Control is IForm form)
+                if (e.Control is not IForm form)
+                    return;
+
+                var context = MCOS.Instance.FormContextOf(form);
+                var icon = FormsMenu.TaskBarIconOf(form);
+                if (context is null || icon is null)
+                    return;
+
+                switch (context.StateManager.NextState)
                 {
-                    var context = MCOS.Instance.FormContextOf(form);
-                    if (context is null || context.StateManager.NextState != FormState.Closed)
-                        return;
-
-                    var icon = FormsMenu.TaskBarIconOf(form);
-                    if (icon is null)
-                        return;
-
-                    FormsMenu.RemoveChildControlAndLayout(icon);
+                    case FormState.Minimize:
+                        icon.IsSelected = false;
+                        break;
+                    case FormState.Closed:
+                        FormsMenu.RemoveChildControlAndLayout(icon);
+                        break;
                 }
             }
 

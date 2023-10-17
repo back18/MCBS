@@ -82,24 +82,24 @@ namespace MCBS.BlockForms
 
         public virtual Size RestoreSize { get; protected set; }
 
-        public event EventHandler<IForm, EventArgs> FormLoad;
+        public event EventHandler<Form, EventArgs> FormLoad;
 
-        public event EventHandler<IForm, EventArgs> FormClose;
+        public event EventHandler<Form, EventArgs> FormClose;
 
-        public event EventHandler<IForm, EventArgs> FormMinimize;
+        public event EventHandler<Form, EventArgs> FormMinimize;
 
-        public event EventHandler<IForm, EventArgs> FormUnminimize;
+        public event EventHandler<Form, EventArgs> FormUnminimize;
 
-        protected virtual void OnFormLoad(IForm sender, EventArgs e) { }
+        protected virtual void OnFormLoad(Form sender, EventArgs e) { }
 
-        protected virtual void OnFormClose(IForm sender, EventArgs e)
+        protected virtual void OnFormClose(Form sender, EventArgs e)
         {
             ClearAllLayoutSyncer();
         }
 
-        protected virtual void OnFormMinimize(IForm sender, EventArgs e) { }
+        protected virtual void OnFormMinimize(Form sender, EventArgs e) { }
 
-        protected virtual void OnFormUnminimize(IForm sender, EventArgs e) { }
+        protected virtual void OnFormUnminimize(Form sender, EventArgs e) { }
 
         public void HandleFormLoad(EventArgs e)
         {

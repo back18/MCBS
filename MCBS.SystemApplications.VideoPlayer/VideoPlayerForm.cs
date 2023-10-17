@@ -112,7 +112,7 @@ namespace MCBS.SystemApplications.VideoPlayer
             }
         }
 
-        protected override void OnFormClose(IForm sender, EventArgs e)
+        protected override void OnFormClose(Form sender, EventArgs e)
         {
             base.OnFormClose(sender, e);
 
