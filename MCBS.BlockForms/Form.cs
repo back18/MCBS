@@ -32,7 +32,6 @@ namespace MCBS.BlockForms
             Stretch = Direction.Bottom | Direction.Right;
 
             ReturnValue = null;
-            Icon = new(16, 16, GetBlockColor(BlockManager.Concrete.White));
             Text = string.Empty;
 
             _onresize = false;
@@ -60,8 +59,6 @@ namespace MCBS.BlockForms
         public virtual Direction ResizeBorder { get; protected set; }
 
         public virtual object? ReturnValue { get; protected set; }
-
-        public Image<Rgba32> Icon { get; set; }
 
         public virtual bool IsMinimize { get; protected set; }
 
@@ -132,11 +129,7 @@ namespace MCBS.BlockForms
 
             ApplicationInfo? appInfo = MCOS.Instance.ProcessOf(this)?.ApplicationInfo;
             if (appInfo is not null)
-            {
-                Icon.Dispose();
-                Icon = appInfo.GetIcon();
                 Text = appInfo.Name;
-            }
         }
 
         protected override void OnInitializeCompleted(Control sender, EventArgs e)
@@ -223,6 +216,15 @@ namespace MCBS.BlockForms
                 RestoreLocation = ClientLocation;
                 RestoreSize = ClientSize;
             }
+        }
+
+        public virtual Image<Rgba32> GetIcon()
+        {
+            ApplicationInfo? appInfo = MCOS.Instance.ProcessOf(this)?.ApplicationInfo;
+            if (appInfo is not null)
+                return appInfo.GetIcon();
+            else
+                return new(16, 16, GetBlockColor(BlockManager.Concrete.White));
         }
 
         public virtual void MaximizeForm()

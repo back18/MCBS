@@ -241,7 +241,7 @@ namespace MCBS.BlockForms
                 ChildControls.Add(Title_IconTextBox);
                 Title_IconTextBox.KeepWhenClear = true;
                 Title_IconTextBox.AutoSize = true;
-                Title_IconTextBox.Icon_PictureBox.SetImage(_owner.Icon);
+                Title_IconTextBox.Icon_PictureBox.SetImage(_owner.GetIcon());
                 Title_IconTextBox.Text_Label.Text = _owner.Text;
                 Title_IconTextBox.BorderWidth = 0;
 

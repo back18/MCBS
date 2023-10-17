@@ -15,7 +15,7 @@ namespace MCBS.BlockForms
         {
             Form = form ?? throw new ArgumentNullException(nameof(form));
 
-            Icon_PictureBox.SetImage(form.Icon);
+            Icon_PictureBox.SetImage(form.GetIcon());
             Text_Label.Text = form.Text;
             AutoSetSize();
             Skin.BorderBlockID = BlockManager.Concrete.Gray;

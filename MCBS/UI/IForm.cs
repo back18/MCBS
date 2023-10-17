@@ -11,9 +11,9 @@ namespace MCBS.UI
 {
     public interface IForm : IContainerControl, IFormEventHandling
     {
-        public bool AllowSelected { get; }
+        public bool AllowSelected { get; set; }
 
-        public bool AllowDeselected { get; }
+        public bool AllowDeselected { get; set; }
 
         public bool AllowMove { get; set; }
 
@@ -27,7 +27,7 @@ namespace MCBS.UI
 
         public object? ReturnValue { get; }
 
-        public Image<Rgba32> Icon { get; set; }
+        public Image<Rgba32> GetIcon();
 
         public void MinimizeForm();
 
