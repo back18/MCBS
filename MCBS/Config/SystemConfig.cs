@@ -1,5 +1,6 @@
 ﻿using Nett;
 using Newtonsoft.Json;
+using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,8 +15,7 @@ namespace MCBS.Config
     {
         public SystemConfig(Model model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            NullValidator.ValidateObject(model, nameof(model));
 
             CrashAutoRestart = model.CrashAutoRestart;
             LoadDllAppComponents = model.LoadDllAppComponents;
@@ -33,16 +33,21 @@ namespace MCBS.Config
 
         public static SystemConfig Load(string path)
         {
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+
             TomlTable table = Toml.ReadFile(path);
             Model model = table.Get<Model>();
-            Validate(Path.GetFileName(path), model);
+            Validate(model, Path.GetFileName(path));
             return new(model);
         }
 
-        public static void Validate(string name, Model model)
+        public static void Validate(Model model, string name)
         {
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
 
             List<ValidationResult> results = new();
             if (!Validator.TryValidateObject(model, new(model), results, true))
