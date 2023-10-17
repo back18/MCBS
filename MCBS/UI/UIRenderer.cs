@@ -61,7 +61,7 @@ namespace MCBS.UI
                     continue;
 
                 frame.Overwrite(task.Result, child.GetRenderingLocation(), rendering.OffsetPosition);
-                DrawBorder(frame, child, rendering.OffsetPosition);
+                frame.DrawBorder(child, child.GetRenderingLocation(), rendering.OffsetPosition);
             }
 
             return frame;

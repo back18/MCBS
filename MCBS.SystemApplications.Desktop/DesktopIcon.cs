@@ -1,6 +1,7 @@
 ﻿using MCBS.Application;
 using MCBS.BlockForms;
 using MCBS.Events;
+using MCBS.Screens;
 using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -54,39 +55,37 @@ namespace MCBS.SystemApplications.Desktop
         {
             base.OnCursorMove(sender, e);
 
-            if (ParentContainer?.AsControlCollection<Control>()?.Contains(Name_Label) ?? false)
+            Screen? screen = e.CursorContext.ScreenContextOf?.Screen;
+            if (screen is null)
+                return;
+
+            Point position = e.CursorContext.NewInputData.CursorPosition;
+            Point offset = new(-Name_Label.BorderWidth, -Name_Label.BorderWidth);
+            offset.Y -= 4;
+            if (position.Y - offset.Y + Name_Label.Height - 1 > screen.Height)
             {
-                Point parent = this.ChildPos2ParentPos(e.Position);
-                parent.Y += 5;
-                Name_Label.ClientLocation = parent;
-                if (Name_Label.BottomToBorder < 0)
-                {
-                    parent = Name_Label.ClientLocation;
-                    parent.Y -= Name_Label.Height;
-                    parent.Y -= 9;
-                    Name_Label.ClientLocation = parent;
-                }
-                if (Name_Label.RightToBorder < 0)
-                {
-                    parent = Name_Label.ClientLocation;
-                    parent.X += Name_Label.RightToBorder;
-                    Name_Label.ClientLocation = parent;
-                }
+                offset.Y += Name_Label.Height - 1;
+                offset.Y += 8;
             }
+            if (position.X - offset.X + Name_Label.Width - Name_Label.BorderWidth * 2 > screen.Width)
+            {
+                offset.X = position.X - offset.X + Name_Label.Width - Name_Label.BorderWidth * 2 - screen.Width;
+            }
+            Name_Label.OffsetPosition = offset;
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {
             base.OnCursorEnter(sender, e);
 
-            ParentContainer?.AsControlCollection<Control>()?.TryAdd(Name_Label);
+            e.CursorContext.HoverControl = Name_Label;
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
         {
             base.OnCursorLeave(sender, e);
 
-            ParentContainer?.AsControlCollection<Control>()?.Remove(Name_Label);
+            e.CursorContext.HoverControl = null;
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)

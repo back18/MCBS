@@ -165,6 +165,36 @@ namespace MCBS.Frame
             return true;
         }
 
+        public void DrawBorder(IControlRendering rendering, Point position, Point offset)
+        {
+            if (rendering.BorderWidth > 0)
+            {
+                int width = rendering.ClientSize.Width + rendering.BorderWidth * 2;
+                int heigth = rendering.ClientSize.Height + rendering.BorderWidth * 2;
+
+                position = new(position.X - offset.X, position.Y - offset.Y);
+                int startTop = position.Y - 1;
+                int startBottom = position.Y + rendering.ClientSize.Height;
+                int startLeft = position.X - 1;
+                int startRigth = position.X + rendering.ClientSize.Width;
+                int endTop = position.Y - rendering.BorderWidth;
+                int endBottom = position.Y + rendering.ClientSize.Height + rendering.BorderWidth - 1;
+                int endLeft = position.X - rendering.BorderWidth;
+                int endRight = position.X + rendering.ClientSize.Width + rendering.BorderWidth - 1;
+
+                string blockID = rendering.Skin.GetBorderBlockID();
+
+                for (int y = startTop; y >= endTop; y--)
+                    DrawRow(y, endLeft, width, blockID);
+                for (int y = startBottom; y <= endBottom; y++)
+                    DrawRow(y, endLeft, width, blockID);
+                for (int x = startLeft; x >= endLeft; x--)
+                    DrawColumn(x, endTop, heigth, blockID);
+                for (int x = startRigth; x <= endRight; x++)
+                    DrawColumn(x, endTop, heigth, blockID);
+            }
+        }
+
         public bool FillRow(int row, string id)
         {
             if (row < 0 || row > Height - 1)

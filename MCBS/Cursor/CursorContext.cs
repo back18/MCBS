@@ -1,5 +1,6 @@
 ﻿using MCBS.Cursor.Style;
 using MCBS.Screens;
+using MCBS.UI;
 using QuanLib.Minecraft.Snbt.Models;
 using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
@@ -64,7 +65,7 @@ namespace MCBS.Cursor
 
         public ScreenContext? ScreenContextOf { get; private set; }
 
-        public CursorHoverControl? HoverControl { get; set; }
+        public IControl? HoverControl { get; set; }
 
         internal void SetNewInputData(ScreenContext screenContext, CursorInputData inputData)
         {

@@ -140,20 +140,30 @@ namespace MCBS.Screens
 
         public async Task HandleUIRenderingAsync()
         {
-            ArrayFrame frame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
+            ArrayFrame baseFrame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
             ArrayFrame? formFrame = await UIRenderer.RenderingAsync(RootForm);
             if (formFrame is not null)
-                frame.Overwrite(formFrame, RootForm.ClientLocation);
+                baseFrame.Overwrite(formFrame, RootForm.ClientLocation);
             foreach (var cursorContext in _cursors)
             {
                 if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active)
                 {
+                    if (cursorContext.HoverControl is not null)
+                    {
+                        ArrayFrame? hoverFrame = await UIRenderer.RenderingAsync(cursorContext.HoverControl);
+                        if (hoverFrame is not null)
+                        {
+                            baseFrame.Overwrite(hoverFrame, cursorContext.NewInputData.CursorPosition, cursorContext.HoverControl.OffsetPosition);
+                            baseFrame.DrawBorder(cursorContext.HoverControl, cursorContext.NewInputData.CursorPosition, cursorContext.HoverControl.OffsetPosition);
+                        }
+                    }
+
                     if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursorStyle))
                         cursorStyle = SR.CursorStyleManager[CursorStyleType.Default];
-                    frame.Overwrite(cursorStyle.Frame, cursorContext.NewInputData.CursorPosition, cursorStyle.Offset);
+                    baseFrame.Overwrite(cursorStyle.Frame, cursorContext.NewInputData.CursorPosition, cursorStyle.Offset);
                 }
             }
-            _frame = frame;
+            _frame = baseFrame;
         }
 
         public async Task HandleScreenOutputAsync()
