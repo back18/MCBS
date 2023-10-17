@@ -39,10 +39,10 @@ namespace MCBS.Cursor
         {
             get
             {
-                int frame = MCOS.Instance.SystemTick;
-                if (LastActiveFrame == frame)
+                int tick = MCOS.Instance.SystemTick;
+                if (LastActiveFrame == tick)
                     return CursorState.Active;
-                else if (LastActiveFrame == frame - 1)
+                else if (LastActiveFrame == tick - 1)
                     return CursorState.Ready;
                 else
                     return CursorState.Offline;

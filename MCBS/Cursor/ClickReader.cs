@@ -30,7 +30,6 @@ namespace MCBS.Cursor
         {
             bool isLeftClick = false;
             bool isRightClick = false;
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             DateTime now = DateTime.Now;
             if ( MCOS.Instance.InteractionManager.Items.TryGetValue(PlayerName, out var interaction))
             {
