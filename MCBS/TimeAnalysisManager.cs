@@ -22,6 +22,7 @@ namespace MCBS
                 { SystemStage.RightClickObjectiveScheduling, new() },
                 { SystemStage.ScreenBuildScheduling, new() },
                 { SystemStage.HandleScreenInput, new() },
+                { SystemStage.HandleScreenEvent, new() },
                 { SystemStage.HandleBeforeFrame, new() },
                 { SystemStage.HandleUIRendering, new() },
                 { SystemStage.HandleScreenOutput, new() },

@@ -196,6 +196,7 @@ namespace MCBS
                         RightClickObjectiveScheduling();
                         ScreenBuildScheduling();
                         HandleScreenInput();
+                        HandleScreenEvent();
                     }
                     else
                     {
@@ -357,6 +358,11 @@ namespace MCBS
         private void HandleScreenInput()
         {
             HandleAndTimeing(ScreenManager.HandleAllScreenInput, SystemStage.HandleScreenInput);
+        }
+
+        private void HandleScreenEvent()
+        {
+            HandleAndTimeing(ScreenManager.HandleAllScreenEvent, SystemStage.HandleScreenEvent);
         }
 
         private void HandleBeforeFrame()

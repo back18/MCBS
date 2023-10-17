@@ -206,7 +206,7 @@ namespace MCBS.BlockForms
 
         private Rgba32 GetCurrentColorOrDefault(CursorEventArgs e, Rgba32 def)
         {
-            var id = e.CursorContext.InputData.DeputyItem?.ID;
+            var id = e.CursorContext.NewInputData.DeputyItem?.ID;
             return GetBlockColorOrDefault(id, def);
         }
     }

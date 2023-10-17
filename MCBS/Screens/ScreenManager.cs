@@ -24,6 +24,7 @@ using MCBS.Events;
 using MCBS.Application;
 using MCBS.Cursor.Style;
 using MCBS.Screens.Building;
+using MCBS.Cursor;
 
 namespace MCBS.Screens
 {
@@ -168,6 +169,14 @@ namespace MCBS.Screens
             List<Task> tasks = new();
             foreach (var screenContext in Items.Values)
                 tasks.Add(screenContext.HandleScreenInputAsync());
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        public void HandleAllScreenEvent()
+        {
+            List<Task> tasks = new();
+            foreach (var screenContext in Items.Values)
+                tasks.Add(screenContext.HandleScreenEventAsync());
             Task.WaitAll(tasks.ToArray());
         }
 

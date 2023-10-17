@@ -54,7 +54,7 @@ namespace MCBS.BlockForms
 
         private void HandleInput(CursorEventArgs e)
         {
-            if (!IsReadOnly && e.CursorContext.InputData.CursorMode == CursorMode.TextEditor)
+            if (!IsReadOnly && e.CursorContext.NewInputData.CursorMode == CursorMode.TextEditor)
             {
                 IsSelected = true;
                 e.CursorContext.TextEditor.SetInitialText(Text);

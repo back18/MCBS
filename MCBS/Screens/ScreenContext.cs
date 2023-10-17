@@ -14,6 +14,7 @@ using MCBS.Events;
 using MCBS.Cursor.Style;
 using MCBS.Cursor;
 using MCBS.Frame;
+using QuanLib.Minecraft.Snbt.Models;
 
 namespace MCBS.Screens
 {
@@ -40,13 +41,13 @@ namespace MCBS.Screens
                 new(ScreenState.Unload, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, HandleUnloadState)
             });
 
-            _bind = false;
             _frame = null;
+            _cursors = new();
         }
 
-        private bool _bind;
+        private ArrayFrame? _frame;
 
-        private ArrayFrame? _frame; 
+        private readonly List<CursorContext> _cursors;
 
         public int ID { get; internal set; }
 
@@ -76,7 +77,6 @@ namespace MCBS.Screens
                     Screen.Start();
                     RootForm.ClientSize = Screen.Size;
                     MCOS.Instance.RunStartupChecklist(RootForm);
-                    BindEvents();
                     LOGGER.Info($"屏幕({Screen.StartPosition} #{ID})已加载");
                     return true;
                 case ScreenState.Sleep:
@@ -95,7 +95,6 @@ namespace MCBS.Screens
 
         protected virtual bool HandleUnloadState(ScreenState current, ScreenState next)
         {
-            UnbindEvents();
             foreach (var forem in MCOS.Instance.FormManager.Items.Values)
             {
                 if (forem.RootForm == RootForm)
@@ -114,7 +113,24 @@ namespace MCBS.Screens
 
         public async Task HandleScreenInputAsync()
         {
-            await Task.Run(() => ScreenInputHandler.HandleInput());
+            await Task.Run(() =>
+            {
+                CursorContext[] cursors = ScreenInputHandler.HandleInput();
+                _cursors.Clear();
+                _cursors.AddRange(cursors);
+            });
+        }
+
+        public async Task HandleScreenEventAsync()
+        {
+            await Task.Run(() =>
+            {
+                foreach (var cursorContext in _cursors)
+                {
+                    if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active)
+                        InvokeScreenEvent(cursorContext);
+                }
+            });
         }
 
         public async Task HandleBeforeFrameAsync()
@@ -128,13 +144,13 @@ namespace MCBS.Screens
             ArrayFrame? formFrame = await UIRenderer.RenderingAsync(RootForm);
             if (formFrame is not null)
                 frame.Overwrite(formFrame, RootForm.ClientLocation);
-            foreach (var cursorContext in MCOS.Instance.CursorManager.Values)
+            foreach (var cursorContext in _cursors)
             {
-                if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active && cursorContext.Visible)
+                if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active)
                 {
-                    if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursor))
-                        cursor = SR.CursorStyleManager[CursorStyleType.Default];
-                    frame.Overwrite(cursor.Frame, cursorContext.InputData.CursorPosition, cursor.Offset);
+                    if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursorStyle))
+                        cursorStyle = SR.CursorStyleManager[CursorStyleType.Default];
+                    frame.Overwrite(cursorStyle.Frame, cursorContext.NewInputData.CursorPosition, cursorStyle.Offset);
                 }
             }
             _frame = frame;
@@ -184,34 +200,25 @@ namespace MCBS.Screens
             return $"State={ScreenState}, SID={ID}, Screen=[{Screen}]";
         }
 
-        internal void BindEvents()
+        private void InvokeScreenEvent(CursorContext cursorContext)
         {
-            if (_bind)
-                return;
+            if (cursorContext is null)
+                throw new ArgumentNullException(nameof(cursorContext));
 
-            ScreenInputHandler.CursorMove += ScreenInputHandler_CursorMove;
-            ScreenInputHandler.LeftClick += ScreenInputHandler_LeftClick;
-            ScreenInputHandler.RightClick += ScreenInputHandler_RightClick;
-            ScreenInputHandler.TextEditorUpdate += ScreenInputHandler_TextEditorUpdate;
-            ScreenInputHandler.CursorSlotChanged += ScreenInputHandler_CursorSlotChanged;
-            ScreenInputHandler.CursorItemChanged += ScreenInputHandler_CursorItemChanged;
-
-            _bind = true;
-        }
-
-        internal void UnbindEvents()
-        {
-            if (!_bind)
-                return;
-
-            ScreenInputHandler.CursorMove -= ScreenInputHandler_CursorMove;
-            ScreenInputHandler.LeftClick -= ScreenInputHandler_LeftClick;
-            ScreenInputHandler.RightClick -= ScreenInputHandler_RightClick;
-            ScreenInputHandler.TextEditorUpdate -= ScreenInputHandler_TextEditorUpdate;
-            ScreenInputHandler.CursorSlotChanged -= ScreenInputHandler_CursorSlotChanged;
-            ScreenInputHandler.CursorItemChanged -= ScreenInputHandler_CursorItemChanged;
-
-            _bind = false;
+            CursorInputData oldData = cursorContext.OldInputData;
+            CursorInputData newData = cursorContext.NewInputData;
+            if (oldData.CursorPosition != newData.CursorPosition)
+                RootForm.HandleCursorMove(new(newData.CursorPosition, cursorContext));
+            if (oldData.LeftClickTime != newData.LeftClickTime)
+                RootForm.HandleLeftClick(new(newData.CursorPosition, cursorContext));
+            if (oldData.RightClickTime != newData.RightClickTime)
+                RootForm.HandleRightClick(new(newData.CursorPosition, cursorContext));
+            if (oldData.TextEditor != newData.TextEditor)
+                RootForm.HandleTextEditorUpdate(new(newData.CursorPosition, cursorContext));
+            if (oldData.InventorySlot != newData.InventorySlot)
+                RootForm.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));
+            if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
+                RootForm.HandleCursorItemChanged(new(newData.CursorPosition, cursorContext));
         }
 
         private void ScreenInputHandler_CursorMove(ScreenInputHandler sender, CursorEventArgs e)

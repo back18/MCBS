@@ -10,21 +10,19 @@ namespace MCBS.Events
 {
     public class CursorEventArgs : EventArgs
     {
-        public CursorEventArgs(Point position, CursorContext context, CursorInputData oldData, CursorInputData newData)
+        public CursorEventArgs(Point position, CursorContext context)
         {
             Position = position;
             CursorContext = context;
-            OldData = oldData;
-            NewData = newData;
         }
 
         public Point Position { get; }
 
         public CursorContext CursorContext { get; }
 
-        public CursorInputData OldData { get; }
+        public CursorInputData OldData => CursorContext.OldInputData;
 
-        public CursorInputData NewData { get; }
+        public CursorInputData NewData => CursorContext.NewInputData;
 
         public int InventorySlotDelta
         {
@@ -41,7 +39,7 @@ namespace MCBS.Events
 
         public CursorEventArgs Clone(Func<Point, Point> convert)
         {
-            return new(convert.Invoke(Position), CursorContext, OldData, NewData);
+            return new(convert.Invoke(Position), CursorContext);
         }
     }
 }

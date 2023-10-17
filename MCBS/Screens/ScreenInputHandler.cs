@@ -17,6 +17,7 @@ using MCBS.Events;
 using MCBS.Cursor;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Snbt.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MCBS.Screens
 {
@@ -28,49 +29,16 @@ namespace MCBS.Screens
         public ScreenInputHandler(ScreenContext owner)
         {
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
-            _events = new();
             IdleTime = 0;
-
-            CursorMove += OnCursorMove;
-            LeftClick += OnLeftClick;
-            RightClick += OnRightClick;
-            TextEditorUpdate += OnTextEditorUpdate;
-            CursorSlotChanged += OnCursorSlotChanged;
-            CursorItemChanged += OnCursorItemChanged;
         }
 
         private readonly ScreenContext _owner;
 
-        private readonly Queue<Event> _events;
-
         public int IdleTime { get; private set; }
 
-        public event EventHandler<ScreenInputHandler, CursorEventArgs> CursorMove;
-
-        public event EventHandler<ScreenInputHandler, CursorEventArgs> LeftClick;
-
-        public event EventHandler<ScreenInputHandler, CursorEventArgs> RightClick;
-
-        public event EventHandler<ScreenInputHandler, CursorEventArgs> TextEditorUpdate;
-
-        public event EventHandler<ScreenInputHandler, CursorEventArgs> CursorSlotChanged;
-
-        public event EventHandler<ScreenInputHandler, CursorEventArgs> CursorItemChanged;
-
-        protected virtual void OnCursorMove(ScreenInputHandler sender, CursorEventArgs e) { }
-
-        protected virtual void OnLeftClick(ScreenInputHandler sender, CursorEventArgs e) { }
-
-        protected virtual void OnRightClick(ScreenInputHandler sender, CursorEventArgs e) { }
-
-        protected virtual void OnTextEditorUpdate(ScreenInputHandler sender, CursorEventArgs e) { }
-
-        protected virtual void OnCursorSlotChanged(ScreenInputHandler sender, CursorEventArgs e) { }
-
-        protected virtual void OnCursorItemChanged(ScreenInputHandler sender, CursorEventArgs e) { }
-
-        public void HandleInput()
+        public CursorContext[] HandleInput()
         {
+            List<CursorContext> cursors = new();
             Screen screen = _owner.Screen;
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             Dictionary<string, EntityPos> playerPositions = sender.GetAllPlayerPosition();
@@ -79,61 +47,60 @@ namespace MCBS.Screens
             Vector3<double> start = new(center.X - length, center.Y - length, center.Z - length);
             Vector3<double> range = new(length * 2, length * 2, length * 2);
             Bounds bounds = new(start, range);
-            Func<IVector3<double>, double> func = screen.NormalFacing switch
-            {
-                Facing.Xp or Facing.Xm => (positions) => Math.Abs(positions.X - screen.PlaneCoordinate),
-                Facing.Yp or Facing.Ym => (positions) => Math.Abs(positions.Y - screen.PlaneCoordinate),
-                Facing.Zp or Facing.Zm => (positions) => Math.Abs(positions.Z - screen.PlaneCoordinate),
-                _ => throw new InvalidOperationException(),
-            };
-
             List<(string player, double distance)> playerDistances = new();
-            foreach (var playerPosition in playerPositions)
+
+            foreach (var item in playerPositions)
             {
-                if (bounds.Contains(playerPosition.Value))
-                    playerDistances.Add((playerPosition.Key, func.Invoke(playerPosition.Value)));
+                double distance = screen.GetPlaneDistance(item.Value);
+                if (distance < 0)
+                    continue;
+
+                if (bounds.Contains(item.Value))
+                    playerDistances.Add((item.Key, distance));
             }
 
             if (playerDistances.Count == 0)
             {
                 IdleTime++;
-                return;
+                return cursors.ToArray();
             }
 
             var order = playerDistances.OrderBy(item => item.distance);
-            bool successful = false;
             foreach (var (player, distance) in order)
             {
                 CursorContext cursorContext = MCOS.Instance.CursorManager.GetOrCreate(player);
 
                 lock (cursorContext)
                 {
-                    if (cursorContext.CursorState == CursorState.Active)
+                    if (cursorContext.CursorState == CursorState.Active &&
+                        cursorContext.ScreenContextOf is not null &&
+                        cursorContext.ScreenContextOf != _owner &&
+                        cursorContext.ScreenContextOf.Screen.GetPlaneDistance(playerPositions[player]) < screen.GetPlaneDistance(playerPositions[player]))
                         continue;
 
-                    if (HandleInput(cursorContext))
-                        successful = true;
+                    if (HandleInput(cursorContext, out var result))
+                    {
+                        cursorContext.SetNewInputData(_owner, result);
+                        cursors.Add(cursorContext);
+                    }
                 }
             }
 
-            if (!successful)
+            if (cursors.Count == 0)
             {
                 IdleTime++;
-                return;
+                return cursors.ToArray();
             }
 
-            while (_events.TryDequeue(out var e))
-                e.Invoke();
-
             IdleTime = 0;
-            return;
+            return cursors.ToArray();
         }
 
-        private bool HandleInput(CursorContext cursorContext)
+        private bool HandleInput(CursorContext cursorContext, [MaybeNullWhen(false)] out CursorInputData result)
         {
             Screen screen = _owner.Screen;
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            CursorInputData oldData = cursorContext.InputData.Clone();
+            CursorInputData oldData = cursorContext.NewInputData.Clone();
             CursorMode cursorMode = oldData.CursorMode;
             Point cursorPosition = oldData.CursorPosition;
             DateTime leftClickTime = oldData.LeftClickTime;
@@ -144,7 +111,7 @@ namespace MCBS.Screens
             Item? deputyItem = oldData.DeputyItem;
 
             if (!sender.TryGetPlayerSelectedItemSlot(cursorContext.PlayerName, out inventorySlot))
-                return false;
+                goto fail;
 
             sender.TryGetPlayerItem(cursorContext.PlayerName, inventorySlot, out mainItem);
             sender.TryGetPlayerDualWieldItem(cursorContext.PlayerName, out deputyItem);
@@ -161,25 +128,25 @@ namespace MCBS.Screens
             }
             else
             {
-                return false;
+                goto fail;
             }
 
             if (!sender.TryGetEntityPosition(cursorContext.PlayerName, out var playerPosition) || !sender.TryGetEntityRotation(cursorContext.PlayerName, out var playerRotation))
-                return false;
+                goto fail;
             if (!EntityPos.CheckPlaneReachability(playerPosition, playerRotation, screen.NormalFacing, screen.PlaneCoordinate))
-                return false;
+                goto fail;
 
             playerPosition.Y += 1.625;
             BlockPos targetBlock = EntityPos.GetToPlaneIntersection(playerPosition, playerRotation.ToDirection(), screen.NormalFacing, screen.PlaneCoordinate).ToBlockPos();
             cursorPosition = screen.ToScreenPosition(targetBlock);
 
             if (!screen.IncludedOnScreen(cursorPosition))
-                return false;
+                goto fail;
 
             if (ScreenConfig.ScreenOperatorList.Count != 0 && !ScreenConfig.ScreenOperatorList.Contains(cursorContext.PlayerName))
             {
                 sender.ShowActionbarTitle(cursorContext.PlayerName, "[屏幕输入模块] 错误：你没有权限控制屏幕", TextColor.Red);
-                return false;
+                goto fail;
             }
 
             DateTime now = DateTime.Now;
@@ -200,10 +167,10 @@ namespace MCBS.Screens
             }
             else
             {
-                return false;
+                goto fail;
             }
 
-            CursorInputData newData = new(
+            result = new(
                 cursorMode,
                 cursorPosition,
                 leftClickTime,
@@ -213,45 +180,11 @@ namespace MCBS.Screens
                 mainItem,
                 deputyItem
                 );
-            CursorEventArgs args = new(newData.CursorPosition, cursorContext, oldData, newData);
-
-            int count = _events.Count;
-            if (oldData.CursorPosition != newData.CursorPosition)
-                _events.Enqueue(new(CursorMove, this, args));
-            if (oldData.LeftClickTime != newData.LeftClickTime)
-                _events.Enqueue(new(LeftClick, this, args));
-            if (oldData.RightClickTime != newData.RightClickTime)
-                _events.Enqueue(new(RightClick, this, args));
-            if (oldData.TextEditor != newData.TextEditor)
-                _events.Enqueue(new(TextEditorUpdate, this, args));
-            if (oldData.InventorySlot != newData.InventorySlot)
-                _events.Enqueue(new(CursorSlotChanged, this, args));
-            if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
-                _events.Enqueue(new(CursorItemChanged, this, args));
-
-            cursorContext.SetNewInputData(_owner, newData);
             return true;
-        }
 
-        private class Event
-        {
-            public Event(EventHandler<ScreenInputHandler, CursorEventArgs> handler, ScreenInputHandler sender, CursorEventArgs args)
-            {
-                Handler = handler ?? throw new ArgumentNullException(nameof(handler));
-                Sender = sender ?? throw new ArgumentNullException(nameof(sender));
-                Args = args ?? throw new ArgumentNullException(nameof(args));
-            }
-
-            public EventHandler<ScreenInputHandler, CursorEventArgs> Handler { get; }
-
-            public ScreenInputHandler Sender { get; }
-
-            public CursorEventArgs Args { get; }
-
-            public void Invoke()
-            {
-                Handler.Invoke(Sender, Args);
-            }
+            fail:
+            result = null;
+            return false;
         }
     }
 }

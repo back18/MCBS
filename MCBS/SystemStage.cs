@@ -22,6 +22,8 @@ namespace MCBS
 
         HandleScreenInput,
 
+        HandleScreenEvent,
+
         HandleBeforeFrame,
 
         HandleUIRendering,

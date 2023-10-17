@@ -39,7 +39,7 @@ namespace MCBS.Screens
                 case "YmXm":
                 case "XmYp":
                 case "YpXp":
-                    Plane = QuanLib.Minecraft.Plane.XY;
+                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XY;
                     NormalFacing = Facing.Zp;
                     PlaneCoordinate = startPosition.Z;
                     break;
@@ -47,7 +47,7 @@ namespace MCBS.Screens
                 case "YmXp":
                 case "XpYp":
                 case "YpXm":
-                    Plane = QuanLib.Minecraft.Plane.XY;
+                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XY;
                     NormalFacing = Facing.Zm;
                     PlaneCoordinate = startPosition.Z;
                     break;
@@ -55,7 +55,7 @@ namespace MCBS.Screens
                 case "YmZp":
                 case "ZpYp":
                 case "YpZm":
-                    Plane = QuanLib.Minecraft.Plane.ZY;
+                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.ZY;
                     NormalFacing = Facing.Xp;
                     PlaneCoordinate = startPosition.X;
                     break;
@@ -63,7 +63,7 @@ namespace MCBS.Screens
                 case "YmZm":
                 case "ZmYp":
                 case "YpZp":
-                    Plane = QuanLib.Minecraft.Plane.ZY;
+                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.ZY;
                     NormalFacing = Facing.Xm;
                     PlaneCoordinate = startPosition.X;
                     break;
@@ -71,7 +71,7 @@ namespace MCBS.Screens
                 case "ZpXm":
                 case "XmZm":
                 case "ZmXp":
-                    Plane = QuanLib.Minecraft.Plane.XZ;
+                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XZ;
                     NormalFacing = Facing.Yp;
                     PlaneCoordinate = startPosition.Y;
                     break;
@@ -79,7 +79,7 @@ namespace MCBS.Screens
                 case "ZmXm":
                 case "XmZp":
                 case "ZpXp":
-                    Plane = QuanLib.Minecraft.Plane.XZ;
+                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XZ;
                     NormalFacing = Facing.Ym;
                     PlaneCoordinate = startPosition.Y;
                     break;
@@ -173,7 +173,7 @@ namespace MCBS.Screens
 
         public Point ScreenCenterPosition => new(Width / 2, Height / 2);
 
-        public QuanLib.Minecraft.Plane Plane { get; }
+        public PlaneAxis PlaneAxis { get; }
 
         public Facing NormalFacing { get; }
 
@@ -461,6 +461,23 @@ namespace MCBS.Screens
             return new(x, y);
         }
 
+        public double GetPlaneDistance<T>(T position) where T : IVector3<double>
+        {
+            if (position is null)
+                throw new ArgumentNullException(nameof(position));
+
+            return NormalFacing switch
+            {
+                Facing.Xp => position.X - PlaneCoordinate,
+                Facing.Xm => PlaneCoordinate - position.X,
+                Facing.Yp => position.Y - PlaneCoordinate,
+                Facing.Ym => PlaneCoordinate - position.Y,
+                Facing.Zp => position.Z - PlaneCoordinate,
+                Facing.Zm => PlaneCoordinate - position.Z,
+                _ => throw new InvalidOperationException(),
+            };
+        }
+
         public bool IncludedOnScreen(Point pixel)
         {
             return pixel.X >= 0 && pixel.Y >= 0 && pixel.X < Width && pixel.Y < Height;
@@ -736,7 +753,7 @@ namespace MCBS.Screens
                 return newScreen.Fill(check);
             }
 
-            if (oldScreen.Plane != newScreen.Plane || oldScreen.PlaneCoordinate != newScreen.PlaneCoordinate)
+            if (oldScreen.PlaneAxis != newScreen.PlaneAxis || oldScreen.PlaneCoordinate != newScreen.PlaneCoordinate)
             {
                 if (!newScreen.Fill(check))
                     return false;
