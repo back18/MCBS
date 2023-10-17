@@ -30,7 +30,7 @@ namespace MCBS.BlockForms
         protected virtual void OnAddedChildControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
         {
             IControlInitializeHandling handling = e.Control;
-            if (IsInitializeCompleted && !handling.IsInitializeCompleted)
+            if (IsInitCompleted && !handling.IsInitCompleted)
                 handling.HandleAllInitialize();
         }
 

@@ -35,7 +35,7 @@ namespace MCBS.BlockForms
             FirstHandleCursorItemChanged = false;
             FirstHandleTextEditorUpdate = false;
             InvokeExternalCursorMove = false;
-            IsInitializeCompleted = false;
+            IsInitCompleted = false;
             KeepWhenClear = false;
             _DisplayPriority = 0;
             _MaxDisplayPriority = 512;
@@ -101,7 +101,7 @@ namespace MCBS.BlockForms
 
         public bool InvokeExternalCursorMove { get; set; }
 
-        public bool IsInitializeCompleted { get; private set; }
+        public bool IsInitCompleted { get; private set; }
 
         public bool KeepWhenClear { get; set; }
 
@@ -809,7 +809,7 @@ namespace MCBS.BlockForms
 
         public virtual void OnInitCompleted3()
         {
-            IsInitializeCompleted = true;
+            IsInitCompleted = true;
         }
 
         public virtual void HandleInitialize()

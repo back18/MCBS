@@ -8,7 +8,7 @@ namespace MCBS.UI
 {
     public interface IControlInitializeHandling
     {
-        public bool IsInitializeCompleted { get; }
+        public bool IsInitCompleted { get; }
 
         public void HandleInitialize();
 
