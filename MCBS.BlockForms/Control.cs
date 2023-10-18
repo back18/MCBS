@@ -19,6 +19,8 @@ using MCBS.Processes;
 using MCBS.Events;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
+using MCBS.Cursor;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MCBS.BlockForms
 {
@@ -29,7 +31,6 @@ namespace MCBS.BlockForms
     {
         protected Control()
         {
-            FrameCache = null;
             NeedRendering = true;
             FirstHandleRightClick = false;
             FirstHandleLeftClick = false;
@@ -55,6 +56,9 @@ namespace MCBS.BlockForms
             _ControlState = ControlState.None;
             _LayoutSyncer = null;
 
+            _frameCache = null;
+            _hoverCursors = new();
+
             CursorMove += OnCursorMove;
             CursorEnter += OnCursorEnter;
             CursorLeave += OnCursorLeave;
@@ -78,15 +82,9 @@ namespace MCBS.BlockForms
             Layout += OnLayout;
         }
 
-        private ArrayFrame? FrameCache;
+        private ArrayFrame? _frameCache;
 
-        public bool NeedRendering { get; private set; }
-
-        public IContainerControl? GenericParentContainer { get; private set; }
-
-        public ContainerControl? ParentContainer { get; private set; }
-
-        public int Index => ParentContainer?.GetChildControls().IndexOf(this) ?? -1;
+        private readonly List<CursorContext> _hoverCursors;
 
         public bool FirstHandleRightClick { get; set; }
 
@@ -100,9 +98,17 @@ namespace MCBS.BlockForms
 
         public bool InvokeExternalCursorMove { get; set; }
 
+        public bool KeepWhenClear { get; set; }
+
         public bool IsInitCompleted { get; private set; }
 
-        public bool KeepWhenClear { get; set; }
+        public bool NeedRendering { get; private set; }
+
+        public IContainerControl? GenericParentContainer { get; private set; }
+
+        public ContainerControl? ParentContainer { get; private set; }
+
+        public int Index => ParentContainer?.GetChildControls().IndexOf(this) ?? -1;
 
         public virtual string Text
         {
@@ -750,18 +756,20 @@ namespace MCBS.BlockForms
         public virtual void HandleRenderingCompleted(ArrayFrameEventArgs e)
         {
             NeedRendering = false;
-            FrameCache = e.ArrayFrame;
+            _frameCache = e.ArrayFrame;
             RenderingCompleted.Invoke(this, e);
         }
 
         public virtual void UpdateHoverState(CursorEventArgs e)
         {
             bool included = IncludedOnControl(e.Position);
-            if (IsHover)
+            if (_hoverCursors.Contains(e.CursorContext))
             {
                 if (!included)
                 {
-                    IsHover = false;
+                    _hoverCursors.Remove(e.CursorContext);
+                    if (_hoverCursors.Count == 0)
+                        IsHover = false;
                     CursorLeave.Invoke(this, e);
                 }
             }
@@ -769,17 +777,18 @@ namespace MCBS.BlockForms
             {
                 if (included)
                 {
-                    Control? control = ParentContainer?.GetChildControls().FirstHover;
-                    if (control is not null)
-                    {
-                        if (control.Index < Index)
-                        {
-                            control.IsHover = false;
-                            control.CursorLeave.Invoke(this, e);
-                        }
-                        else
-                            return;
-                    }
+                    //Control? control = ParentContainer?.GetChildControls().FirstHover;
+                    //if (control is not null)
+                    //{
+                    //    if (control.Index < Index)
+                    //    {
+                    //        control.IsHover = false;
+                    //        control.CursorLeave.Invoke(this, e);
+                    //    }
+                    //    else
+                    //        return;
+                    //}
+                    _hoverCursors.Add(e.CursorContext);
                     IsHover = true;
                     CursorEnter.Invoke(this, e);
                 }
@@ -897,7 +906,7 @@ namespace MCBS.BlockForms
 
         ArrayFrame? IControlRendering.GetFrameCache()
         {
-            return FrameCache;
+            return _frameCache;
         }
 
         #endregion
@@ -1065,6 +1074,11 @@ namespace MCBS.BlockForms
 
         #endregion
 
+        public CursorContext[] GetHoverCursors()
+        {
+            return _hoverCursors.ToArray();
+        }
+
         public virtual void ClearAllLayoutSyncer()
         {
             LayoutSyncer = null;
@@ -1101,6 +1115,41 @@ namespace MCBS.BlockForms
                 ParentContainer = containerControl;
         }
 
+        //public class CursorCollection : IReadOnlyDictionary<string, CursorContext>
+        //{
+        //    private readonly Dictionary<string, CursorContext> _items;
+
+        //    public CursorContext this[string key] => _items[key];
+
+        //    public IEnumerable<string> Keys => _items.Keys;
+
+        //    public IEnumerable<CursorContext> Values => _items.Values;
+
+        //    public int Count => _items.Count;
+
+        //    public void Add()
+
+        //    public bool ContainsKey(string key)
+        //    {
+        //        return _items.ContainsKey(key);
+        //    }
+
+        //    public bool TryGetValue(string key, [MaybeNullWhen(false)] out CursorContext value)
+        //    {
+        //        return _items.TryGetValue(key, out value);
+        //    }
+
+        //    public IEnumerator<KeyValuePair<string, CursorContext>> GetEnumerator()
+        //    {
+        //        return _items.GetEnumerator();
+        //    }
+
+        //    IEnumerator IEnumerable.GetEnumerator()
+        //    {
+        //        return ((IEnumerable)_items).GetEnumerator();
+        //    }
+        //}
+
         public class ControlSkin : ISkin
         {
             public ControlSkin(Control owner)
@@ -1110,7 +1159,6 @@ namespace MCBS.BlockForms
                 string black = BlockManager.Concrete.Black;
                 string white = BlockManager.Concrete.White;
                 string gray = BlockManager.Concrete.Gray;
-
 
                 _ForegroundBlockID = black;
                 _BackgroundBlockID = white;

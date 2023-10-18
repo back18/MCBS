@@ -9,6 +9,7 @@ using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using MCBS.Forms;
 using QuanLib.Minecraft.Blocks;
+using MCBS.Cursor;
 
 namespace MCBS.BlockForms
 {
@@ -211,9 +212,9 @@ namespace MCBS.BlockForms
             }
 
             form.IsSelected = true;
-            foreach (var electeds in selecteds)
+            foreach (var selected in selecteds)
             {
-                electeds.IsSelected = false;
+                selected.IsSelected = false;
             }
 
             TaskBar.SwitchSelectedForm(form);
@@ -288,6 +289,19 @@ namespace MCBS.BlockForms
             public override bool HandleRightClick(CursorEventArgs e)
             {
                 bool result = false;
+
+                foreach (HoverControl hoverControl in e.CursorContext.HoverControls.Values)
+                {
+                    if (hoverControl.Control is IForm form)
+                    {
+                        MCOS.Instance.FormContextOf(form)?.DragDownForm(_owner);
+                        result = true;
+                    }
+                }
+
+                if (result)
+                    return true;
+
                 foreach (var control in ChildControls.Reverse())
                 {
                     Point child = control.ParentPos2ChildPos(e.Position);
@@ -489,6 +503,7 @@ namespace MCBS.BlockForms
                 switch (context.StateManager.CurrentState)
                 {
                     case FormState.NotLoaded:
+                    case FormState.Dragging:
                         FormsMenu.AddedChildControlAndLayout(new TaskBarIcon(form));
                         break;
                     case FormState.Minimize:
@@ -514,6 +529,7 @@ namespace MCBS.BlockForms
                     case FormState.Minimize:
                         icon.IsSelected = false;
                         break;
+                    case FormState.Dragging:
                     case FormState.Closed:
                         FormsMenu.RemoveChildControlAndLayout(icon);
                         break;

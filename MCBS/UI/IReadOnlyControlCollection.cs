@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCBS.Cursor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +25,10 @@ namespace MCBS.UI
 
         public T[] GetSelecteds();
 
-        public void Sort();
-
         public T[] ToArray();
+
+        public T? HoverControlOf(CursorContext cursorContext);
+
+        public void Sort();
     }
 }

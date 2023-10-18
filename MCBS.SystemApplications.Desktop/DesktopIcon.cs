@@ -55,6 +55,9 @@ namespace MCBS.SystemApplications.Desktop
         {
             base.OnCursorMove(sender, e);
 
+            if (!e.CursorContext.HoverControls.TryGetValue(Name_Label, out var hoverControl))
+                return;
+
             Screen? screen = e.CursorContext.ScreenContextOf?.Screen;
             if (screen is null)
                 return;
@@ -71,21 +74,21 @@ namespace MCBS.SystemApplications.Desktop
             {
                 offset.X = position.X - offset.X + Name_Label.Width - Name_Label.BorderWidth * 2 - screen.Width;
             }
-            Name_Label.OffsetPosition = offset;
+            hoverControl.OffsetPosition = offset;
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {
             base.OnCursorEnter(sender, e);
 
-            e.CursorContext.HoverControl = Name_Label;
+            e.CursorContext.HoverControls.TryAdd(Name_Label, out _);
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
         {
             base.OnCursorLeave(sender, e);
 
-            e.CursorContext.HoverControl = null;
+            e.CursorContext.HoverControls.TryRemove(Name_Label, out _);
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)

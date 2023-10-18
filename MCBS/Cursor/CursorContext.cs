@@ -28,7 +28,7 @@ namespace MCBS.Cursor
             OldInputData = new();
             NewInputData = new();
             ScreenContextOf = null;
-            HoverControl = null;
+            HoverControls = new();
         }
 
         public string PlayerName { get; }
@@ -65,7 +65,7 @@ namespace MCBS.Cursor
 
         public ScreenContext? ScreenContextOf { get; private set; }
 
-        public IControl? HoverControl { get; set; }
+        public HoverControlCollection HoverControls { get; }
 
         internal void SetNewInputData(ScreenContext screenContext, CursorInputData inputData)
         {

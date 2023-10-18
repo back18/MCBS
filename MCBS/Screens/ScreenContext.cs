@@ -42,12 +42,15 @@ namespace MCBS.Screens
             });
 
             _frame = null;
-            _cursors = new();
+            _activeCursors = new();
+            _offlineCursors = new();
         }
 
         private ArrayFrame? _frame;
 
-        private readonly List<CursorContext> _cursors;
+        private readonly List<CursorContext> _activeCursors;
+
+        private readonly List<CursorContext> _offlineCursors;
 
         public int ID { get; internal set; }
 
@@ -116,8 +119,14 @@ namespace MCBS.Screens
             await Task.Run(() =>
             {
                 CursorContext[] cursors = ScreenInputHandler.HandleInput();
-                _cursors.Clear();
-                _cursors.AddRange(cursors);
+                _offlineCursors.Clear();
+                foreach (var cursor in _activeCursors)
+                {
+                    if (Array.IndexOf(cursors, cursor) == -1)
+                        _offlineCursors.Add(cursor);
+                }
+                _activeCursors.Clear();
+                _activeCursors.AddRange(cursors);
             });
         }
 
@@ -125,7 +134,12 @@ namespace MCBS.Screens
         {
             await Task.Run(() =>
             {
-                foreach (var cursorContext in _cursors)
+                foreach (var cursorContext in _offlineCursors)
+                {
+                    RootForm.HandleCursorMove(new(new(int.MinValue, int.MinValue), cursorContext));
+                }
+
+                foreach (var cursorContext in _activeCursors)
                 {
                     if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active)
                         InvokeScreenEvent(cursorContext);
@@ -144,17 +158,17 @@ namespace MCBS.Screens
             ArrayFrame? formFrame = await UIRenderer.RenderingAsync(RootForm);
             if (formFrame is not null)
                 baseFrame.Overwrite(formFrame, RootForm.ClientLocation);
-            foreach (var cursorContext in _cursors)
+            foreach (var cursorContext in _activeCursors)
             {
                 if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active)
                 {
-                    if (cursorContext.HoverControl is not null)
+                    foreach (HoverControl hoverControl in cursorContext.HoverControls.Values)
                     {
-                        ArrayFrame? hoverFrame = await UIRenderer.RenderingAsync(cursorContext.HoverControl);
+                        ArrayFrame? hoverFrame = await UIRenderer.RenderingAsync(hoverControl.Control);
                         if (hoverFrame is not null)
                         {
-                            baseFrame.Overwrite(hoverFrame, cursorContext.NewInputData.CursorPosition, cursorContext.HoverControl.OffsetPosition);
-                            baseFrame.DrawBorder(cursorContext.HoverControl, cursorContext.NewInputData.CursorPosition, cursorContext.HoverControl.OffsetPosition);
+                            baseFrame.Overwrite(hoverFrame, cursorContext.NewInputData.CursorPosition, hoverControl.OffsetPosition);
+                            baseFrame.DrawBorder(hoverControl.Control, cursorContext.NewInputData.CursorPosition, hoverControl.OffsetPosition);
                         }
                     }
 
@@ -229,36 +243,6 @@ namespace MCBS.Screens
                 RootForm.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));
             if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
                 RootForm.HandleCursorItemChanged(new(newData.CursorPosition, cursorContext));
-        }
-
-        private void ScreenInputHandler_CursorMove(ScreenInputHandler sender, CursorEventArgs e)
-        {
-            RootForm.HandleCursorMove(e);
-        }
-
-        private void ScreenInputHandler_LeftClick(ScreenInputHandler sender, CursorEventArgs e)
-        {
-            RootForm.HandleLeftClick(e);
-        }
-
-        private void ScreenInputHandler_RightClick(ScreenInputHandler sender, CursorEventArgs e)
-        {
-            RootForm.HandleRightClick(e);
-        }
-
-        private void ScreenInputHandler_TextEditorUpdate(ScreenInputHandler sender, CursorEventArgs e)
-        {
-            RootForm.HandleTextEditorUpdate(e);
-        }
-
-        private void ScreenInputHandler_CursorSlotChanged(ScreenInputHandler sender, CursorEventArgs e)
-        {
-            RootForm.HandleCursorSlotChanged(e);
-        }
-
-        private void ScreenInputHandler_CursorItemChanged(ScreenInputHandler sender, CursorEventArgs e)
-        {
-            RootForm.HandleCursorItemChanged(e);
         }
     }
 }

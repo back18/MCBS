@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using MCBS.Cursor;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace MCBS.UI
         public bool IsSelected { get; set; }
 
         public int DisplayPriority { get; set; }
+
+        public CursorContext[] GetHoverCursors();
 
         public void SetGenericContainerControl(IContainerControl? container);
     }

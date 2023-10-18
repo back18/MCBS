@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCBS.Cursor;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,8 +115,10 @@ namespace MCBS.UI
         {
             List<T> result = new();
             foreach (var item in _items)
+            {
                 if (item.IsHover)
                     result.Add(item);
+            }
             return result.ToArray();
         }
 
@@ -123,19 +126,31 @@ namespace MCBS.UI
         {
             List<T> result = new();
             foreach (var item in _items)
+            {
                 if (item.IsSelected)
                     result.Add(item);
+            }
             return result.ToArray();
-        }
-
-        public virtual void Sort()
-        {
-            _items.Sort();
         }
 
         public virtual T[] ToArray()
         {
             return _items.ToArray();
+        }
+
+        public T? HoverControlOf(CursorContext cursorContext)
+        {
+            for (int i = _items.Count - 1; i >= 0; i--)
+            {
+                if (_items[i].IsHover && Array.IndexOf(_items[i].GetHoverCursors(), cursorContext) != -1)
+                    return _items[i];
+            }
+            return null;
+        }
+
+        public virtual void Sort()
+        {
+            _items.Sort();
         }
 
         public void CopyTo(T[] array, int arrayIndex)

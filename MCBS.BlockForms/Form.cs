@@ -1,4 +1,5 @@
 ﻿using MCBS.Application;
+using MCBS.Cursor;
 using MCBS.Cursor.Style;
 using MCBS.Events;
 using MCBS.Forms;
@@ -216,6 +217,15 @@ namespace MCBS.BlockForms
                 RestoreLocation = ClientLocation;
                 RestoreSize = ClientSize;
             }
+        }
+
+        protected override void OnControlDeselected(Control sender, EventArgs e)
+        {
+            base.OnControlDeselected(sender, e);
+
+            CursorContext[] hoverContexts = GetHoverCursors();
+            foreach (var hoverContext in hoverContexts)
+                HandleCursorMove(new(new(int.MinValue, int.MinValue), hoverContext));
         }
 
         public virtual Image<Rgba32> GetIcon()

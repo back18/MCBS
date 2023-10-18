@@ -1,4 +1,5 @@
-﻿using MCBS.Events;
+﻿using MCBS.Cursor;
+using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
@@ -36,7 +37,9 @@ namespace MCBS.BlockForms
 
         protected virtual void OnRemovedChildControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
         {
-
+            CursorContext[] hoverContexts = e.Control.GetHoverCursors();
+            foreach (var hoverContext in hoverContexts)
+                e.Control.HandleCursorMove(new(new(int.MinValue, int.MinValue), hoverContext));
         }
 
         public abstract IReadOnlyControlCollection<TControl> GetChildControls();
@@ -98,7 +101,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleRightClick(CursorEventArgs e)
         {
-            TControl? control = GetChildControls().FirstHover;
+            TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleRightClick(e.Clone(control.ParentPos2ChildPos));
 
             return TryHandleRightClick(e);
@@ -106,7 +109,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleLeftClick(CursorEventArgs e)
         {
-            TControl? control = GetChildControls().FirstHover;
+            TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleLeftClick(e.Clone(control.ParentPos2ChildPos));
 
             return TryHandleLeftClick(e);
@@ -114,7 +117,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleTextEditorUpdate(CursorEventArgs e)
         {
-            TControl? control = GetChildControls().FirstHover;
+            TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleTextEditorUpdate(e.Clone(control.ParentPos2ChildPos));
 
             return TryHandleTextEditorUpdate(e);
@@ -122,7 +125,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleCursorSlotChanged(CursorEventArgs e)
         {
-            TControl? control = GetChildControls().FirstHover;
+            TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleCursorSlotChanged(e.Clone(control.ParentPos2ChildPos));
 
             return TryHandleCursorSlotChanged(e);
@@ -130,7 +133,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleCursorItemChanged(CursorEventArgs e)
         {
-            TControl? control = GetChildControls().FirstHover;
+            TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleCursorItemChanged(e.Clone(control.ParentPos2ChildPos));
 
             return TryHandleCursorItemChanged(e);

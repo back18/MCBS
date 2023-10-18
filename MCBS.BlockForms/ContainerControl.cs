@@ -82,7 +82,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleRightClick(CursorEventArgs e)
         {
-            Control? control = GetChildControls().FirstHover;
+            Control? control = GetChildControls().HoverControlOf(e.CursorContext);
             if (control is not null && control.HandleRightClick(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleRightClick)
                 return true;
 
@@ -91,7 +91,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleLeftClick(CursorEventArgs e)
         {
-            Control? control = GetChildControls().FirstHover;
+            Control? control = GetChildControls().HoverControlOf(e.CursorContext);
             if (control is not null && control.HandleLeftClick(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleLeftClick)
                 return true;
 
@@ -100,7 +100,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleTextEditorUpdate(CursorEventArgs e)
         {
-            Control? control = GetChildControls().FirstHover;
+            Control? control = GetChildControls().HoverControlOf(e.CursorContext);
             if (control is not null && control.HandleTextEditorUpdate(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleTextEditorUpdate)
                 return true;
 
@@ -109,7 +109,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleCursorSlotChanged(CursorEventArgs e)
         {
-            Control? control = GetChildControls().FirstHover;
+            Control? control = GetChildControls().HoverControlOf(e.CursorContext);
             if (control is not null && control.HandleCursorSlotChanged(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleCursorSlotChanged)
                 return true;
 
@@ -118,7 +118,7 @@ namespace MCBS.BlockForms
 
         public override bool HandleCursorItemChanged(CursorEventArgs e)
         {
-            Control? control = GetChildControls().FirstHover;
+            Control? control = GetChildControls().HoverControlOf(e.CursorContext);
             if (control is not null && control.HandleCursorItemChanged(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleCursorItemChanged)
                 return true;
 

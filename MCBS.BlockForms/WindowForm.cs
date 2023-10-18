@@ -8,6 +8,7 @@ using MCBS.UI;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
+using QuanLib.Core.Events;
 
 namespace MCBS.BlockForms
 {
@@ -176,8 +177,8 @@ namespace MCBS.BlockForms
 
                 base.Text = _owner.Text;
                 LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);
-                _owner.TextChanged += (sender, e) => base.Text = _owner.Text;
-                _owner.InitializeCompleted += Owner_InitializeCallback;
+                _owner.TextChanged += Owner_TextChanged;
+                _owner.InitializeCompleted += Owner_InitializeCompleted;
 
                 MoveAnchorPoint = new(0, 0);
                 _ButtonsToShow = FormButtons.Close | FormButtons.MaximizeOrRestore | FormButtons.Minimize | FormButtons.FullScreen;
@@ -296,7 +297,12 @@ namespace MCBS.BlockForms
                 ActiveLayoutAll();
             }
 
-            private void Owner_InitializeCallback(Control sender, EventArgs e)
+            private void Owner_TextChanged(Control sender, TextChangedEventArgs e)
+            {
+                base.Text = _owner.Text;
+            }
+
+            private void Owner_InitializeCompleted(Control sender, EventArgs e)
             {
                 UpdateMaximizeOrRestore();
                 MaximizeOrRestore_Switch.ControlSelected += MaximizeOrRestore_Switch_ControlSelected;
@@ -307,24 +313,27 @@ namespace MCBS.BlockForms
             {
                 base.OnCursorMove(sender, e);
 
-                if (_owner.Moveing)
-                {
-                    Point offset = new(e.Position.X - MoveAnchorPoint.X, e.Position.Y - MoveAnchorPoint.Y);
-                    _owner.ClientLocation = new(_owner.ClientLocation.X + offset.X, _owner.ClientLocation.Y + offset.Y);
-                }
+                //if (_owner.Moveing)
+                //{
+                //    Point offset = new(e.Position.X - MoveAnchorPoint.X, e.Position.Y - MoveAnchorPoint.Y);
+                //    _owner.ClientLocation = new(_owner.ClientLocation.X + offset.X, _owner.ClientLocation.Y + offset.Y);
+                //}
             }
 
             protected override void OnRightClick(Control sender, CursorEventArgs e)
             {
                 base.OnRightClick(sender, e);
 
-                if (_owner.Moveing)
-                    _owner.Moveing = false;
-                else if (_owner.IsSelected && _owner.AllowMove && GetChildControls().FirstHover is null or IconTextBox)
-                {
-                    _owner.Moveing = true;
-                    MoveAnchorPoint = e.Position;
-                }
+                if (_owner.IsSelected && _owner.AllowMove && GetChildControls().FirstHover is null or IconTextBox)
+                    MCOS.Instance.FormContextOf(_owner)?.DragUpForm(e.CursorContext, e.Position);
+
+                //if (_owner.Moveing)
+                //    _owner.Moveing = false;
+                //else if (_owner.IsSelected && _owner.AllowMove && GetChildControls().FirstHover is null or IconTextBox)
+                //{
+                //    _owner.Moveing = true;
+                //    MoveAnchorPoint = e.Position;
+                //}
             }
 
             private void Exit_Button_RightClick(Control sender, CursorEventArgs e)

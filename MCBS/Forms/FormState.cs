@@ -14,6 +14,8 @@ namespace MCBS.Forms
 
         Minimize,
 
+        Dragging,
+
         Closed
     }
 }
