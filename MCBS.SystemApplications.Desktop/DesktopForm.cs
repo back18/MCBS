@@ -24,8 +24,8 @@ namespace MCBS.SystemApplications.Desktop
 
         public DesktopForm()
         {
-            AllowMove = false;
-            AllowResize = false;
+            AllowDrag = false;
+            AllowStretch = false;
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;

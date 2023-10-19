@@ -762,7 +762,7 @@ namespace MCBS.BlockForms
 
         public virtual void UpdateHoverState(CursorEventArgs e)
         {
-            bool included = IncludedOnControl(e.Position);
+            bool included = this.IncludedOnControl(e.Position);
             if (_hoverCursors.Contains(e.CursorContext))
             {
                 if (!included)
@@ -1087,13 +1087,6 @@ namespace MCBS.BlockForms
         public virtual void AutoSetSize()
         {
 
-        }
-
-        public virtual bool IncludedOnControl(Point position)
-        {
-            position.X -= OffsetPosition.X;
-            position.Y -= OffsetPosition.Y;
-            return position.X >= 0 && position.Y >= 0 && position.X < ClientSize.Width && position.Y < ClientSize.Height;
         }
 
         public override string ToString()

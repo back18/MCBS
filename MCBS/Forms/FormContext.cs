@@ -2,6 +2,7 @@
 using log4net.Repository.Hierarchy;
 using MCBS.Application;
 using MCBS.Cursor;
+using MCBS.Cursor.Style;
 using MCBS.Logging;
 using MCBS.Processes;
 using MCBS.Screens;
@@ -60,10 +61,11 @@ namespace MCBS.Forms
             StateManager = new(FormState.NotLoaded, new StateContext<FormState>[]
             {
                 new(FormState.NotLoaded, Array.Empty<FormState>(), HandleNotLoadedState),
-                new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize, FormState.Dragging }, HandleActiveState),
+                new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize, FormState.Dragging, FormState.Stretching }, HandleActiveState),
                 new(FormState.Minimize, new FormState[] { FormState.Active }, HandleMinimizeState),
-                new(FormState.Dragging, new FormState[] { FormState.Active }, HandleDraggingState),
-                new(FormState.Closed, new FormState[] { FormState.Active, FormState.Minimize, FormState.Dragging }, HandleClosedState)
+                new(FormState.Dragging, new FormState[] { FormState.Active }, HandleDraggingState, OnDraggingState),
+                new(FormState.Stretching, new FormState[] { FormState.Active }, HandleStretchingState, OnStretchingState),
+                new(FormState.Closed, new FormState[] { FormState.Active, FormState.Minimize }, HandleClosedState)
             });
 
             _closeSemaphore = new(0);
@@ -80,7 +82,9 @@ namespace MCBS.Forms
 
         public FormState FormState => StateManager.CurrentState;
 
-        public CursorContext? DragCursor { get; private set; }
+        public DraggingContext? DraggingContext { get; private set; }
+
+        public StretchingContext? StretchingContext { get; private set; }
 
         public IRootForm RootForm { get; private set; }
 
@@ -120,9 +124,24 @@ namespace MCBS.Forms
                 case FormState.Dragging:
                     if (Form is IRootForm)
                         return false;
+                    if (DraggingContext is null)
+                        return false;
+                    if (!DraggingContext.CursorContext.HoverControls.TryRemove(Form, out var hoverControl))
+                        return false;
                     if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
+                    Point position = DraggingContext.CursorContext.NewInputData.CursorPosition;
+                    Point offset = hoverControl.OffsetPosition;
+                    Form.ClientLocation = new(position.X - offset.X - Form.BorderWidth, position.Y - offset.Y - Form.BorderWidth);
+                    DraggingContext = null;
                     LOGGER.Info($"窗体({Form.Text} #{ID})已被拖动到{MCOS.Instance.ScreenContextOf(RootForm)?.ID ?? -1}号屏幕");
+                    return true;
+                case FormState.Stretching:
+                    if (Form is IRootForm)
+                        return false;
+                    if (StretchingContext is null)
+                        return false;
+                    StretchingContext = null;
                     return true;
                 default:
                     return false;
@@ -143,9 +162,23 @@ namespace MCBS.Forms
         {
             if (Form is IRootForm)
                 return false;
+            if (DraggingContext is null)
+                return false;
+            if (!DraggingContext.CursorContext.HoverControls.TryAdd(Form, DraggingContext.OffsetPosition, out _))
+                return false;
             if (RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
             LOGGER.Info($"窗体({Form.Text} #{ID})已从{MCOS.Instance.ScreenContextOf(RootForm)?.ID ?? -1}号屏幕脱离，开始拖动");
+            return true;
+        }
+
+        protected virtual bool HandleStretchingState(FormState current, FormState next)
+        {
+            if (Form is IRootForm)
+                return false;
+            if (StretchingContext is null)
+                return false;
+
             return true;
         }
 
@@ -157,6 +190,16 @@ namespace MCBS.Forms
             LOGGER.Info($"窗体({Form.Text} #{ID})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
             _closeSemaphore.Release();
             return true;
+        }
+
+        public virtual void OnDraggingState()
+        {
+
+        }
+
+        public virtual void OnStretchingState()
+        {
+
         }
 
         public void OnTick()
@@ -189,32 +232,37 @@ namespace MCBS.Forms
         {
             if (cursorContext is null)
                 throw new ArgumentNullException(nameof(cursorContext));
-            if (DragCursor is not null)
-                throw new InvalidOperationException("当前状态无法完成次操作");
 
-            if (cursorContext.HoverControls.TryAdd(Form, offsetPosition, out _))
-            {
-                DragCursor = cursorContext;
-                StateManager.AddNextState(FormState.Dragging);
-            }
+            DraggingContext = new(cursorContext, offsetPosition);
+            StateManager.AddNextState(FormState.Dragging);
         }
 
         public void DragDownForm(IRootForm rootForm)
         {
             if (rootForm is null)
                 throw new ArgumentNullException(nameof(rootForm));
-            if (DragCursor is null)
-                throw new InvalidOperationException("当前状态无法完成次操作");
+            if (DraggingContext is null)
+                return;
 
-            if (DragCursor.HoverControls.TryRemove(Form, out var hoverControl))
-            {
-                Point position = DragCursor.NewInputData.CursorPosition;
-                Point offset = hoverControl.OffsetPosition;
-                Form.ClientLocation = new(position.X - offset.X - Form.BorderWidth, position.Y - offset.Y - Form.BorderWidth);
-                DragCursor = null;
-                RootForm = rootForm;
-                StateManager.AddNextState(FormState.Active);
-            }
+            RootForm = rootForm;
+            StateManager.AddNextState(FormState.Active);
+        }
+
+        public void StretchUpForm(CursorContext cursorContext, Direction borders)
+        {
+            if (cursorContext is null)
+                throw new ArgumentNullException(nameof(cursorContext));
+
+            StretchingContext = new(cursorContext, borders);
+            StateManager.AddNextState(FormState.Stretching);
+        }
+
+        public void StretchDownForm()
+        {
+            if (StretchingContext is null)
+                return;
+
+            StateManager.AddNextState(FormState.Active);
         }
 
         public void WaitForClose()

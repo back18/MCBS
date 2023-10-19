@@ -72,7 +72,7 @@ namespace MCBS.Screens
 
                 lock (cursorContext)
                 {
-                    if (cursorContext.CursorState == CursorState.Active &&
+                    if (cursorContext.Active &&
                         cursorContext.ScreenContextOf is not null &&
                         cursorContext.ScreenContextOf != _owner &&
                         cursorContext.ScreenContextOf.Screen.GetPlaneDistance(playerPositions[player]) < screen.GetPlaneDistance(playerPositions[player]))

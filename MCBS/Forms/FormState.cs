@@ -16,6 +16,8 @@ namespace MCBS.Forms
 
         Dragging,
 
+        Stretching,
+
         Closed
     }
 }

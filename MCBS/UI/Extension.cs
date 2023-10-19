@@ -61,5 +61,12 @@ namespace MCBS.UI
         {
             return new(position.X + source.ClientLocation.X + source.OffsetPosition.X + source.BorderWidth, position.Y + source.ClientLocation.Y + source.OffsetPosition.Y + source.BorderWidth);
         }
+
+        public static bool IncludedOnControl(this IControl source, Point position)
+        {
+            position.X -= source.OffsetPosition.X;
+            position.Y -= source.OffsetPosition.Y;
+            return position.X >= 0 && position.Y >= 0 && position.X < source.ClientSize.Width && position.Y < source.ClientSize.Height;
+        }
     }
 }

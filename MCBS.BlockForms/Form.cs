@@ -24,10 +24,8 @@ namespace MCBS.BlockForms
         {
             AllowSelected = true;
             AllowDeselected = true;
-            AllowMove = true;
-            AllowResize = true;
-            Moveing = false;
-            Resizeing = false;
+            AllowDrag = true;
+            AllowStretch = true;
             ResizeBorder = Direction.None;
             IsMinimize = false;
             Stretch = Direction.Bottom | Direction.Right;
@@ -49,13 +47,9 @@ namespace MCBS.BlockForms
 
         public virtual bool AllowDeselected { get; set; }
 
-        public virtual bool AllowMove { get; set; }
+        public virtual bool AllowDrag { get; set; }
 
-        public virtual bool AllowResize { get; set; }
-
-        public virtual bool Moveing { get; internal set; }
-
-        public virtual bool Resizeing { get; internal set; }
+        public virtual bool AllowStretch { get; set; }
 
         public virtual Direction ResizeBorder { get; protected set; }
 
@@ -153,46 +147,39 @@ namespace MCBS.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            Point parent = this.ChildPos2ParentPos(e.Position);
-            if (AllowResize && IsSelected && !IsMaximize)
-            {
-                if (Resizeing)
-                {
-                    if (ResizeBorder.HasFlag(Direction.Top))
-                        TopLocation = parent.Y;
-                    if (ResizeBorder.HasFlag(Direction.Bottom))
-                        BottomLocation = parent.Y;
-                    if (ResizeBorder.HasFlag(Direction.Left))
-                        LeftLocation = parent.X;
-                    if (ResizeBorder.HasFlag(Direction.Right))
-                        RightLocation = parent.X;
-                }
-                else
-                {
-                    ResizeBorder = Direction.None;
-                    if (parent.Y >= TopLocation - 2 &&
-                        parent.X >= LeftLocation - 2 &&
-                        parent.Y <= BottomLocation + 2 &&
-                        parent.X <= RightLocation + 2)
-                    {
-                        if (parent.Y <= TopLocation + 2)
-                            ResizeBorder |= Direction.Top;
-                        if (parent.X <= LeftLocation + 2)
-                            ResizeBorder |= Direction.Left;
-                        if (parent.Y >= BottomLocation - 2)
-                            ResizeBorder |= Direction.Bottom;
-                        if (parent.X >= RightLocation - 2)
-                            ResizeBorder |= Direction.Right;
-                    }
+            if (!IsSelected)
+                return;
 
-                    e.CursorContext.StyleType = ResizeBorder switch
-                    {
-                        Direction.Top or Direction.Bottom => CursorStyleType.VerticalResize,
-                        Direction.Left or Direction.Right => CursorStyleType.HorizontalResize,
-                        Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorStyleType.LeftObliqueResize,
-                        Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorStyleType.RightObliqueResize,
-                        _ => CursorStyleType.Default,
-                    };
+            Point parentPos = this.ChildPos2ParentPos(e.Position);
+            if (parentPos.Y < TopLocation - 32 ||
+                parentPos.X < LeftLocation - 32 ||
+                parentPos.Y > BottomLocation + 32 ||
+                parentPos.X > RightLocation + 32)
+                return;
+
+            FormContext? formContext = GetFormContext();
+            if (formContext is not null)
+            {
+                if (formContext.FormState == FormState.Stretching &&
+                    formContext.StretchingContext is not null &&
+                    formContext.StretchingContext.CursorContext == e.CursorContext)
+                {
+                    Direction borders = formContext.StretchingContext.Borders;
+                    e.CursorContext.StyleType = GetCursorStyleType(borders);
+
+                    if (borders.HasFlag(Direction.Top))
+                        TopLocation = parentPos.Y;
+                    if (borders.HasFlag(Direction.Bottom))
+                        BottomLocation = parentPos.Y;
+                    if (borders.HasFlag(Direction.Left))
+                        LeftLocation = parentPos.X;
+                    if (borders.HasFlag(Direction.Right))
+                        RightLocation = parentPos.X;
+                }
+                else if (formContext.FormState == FormState.Active)
+                {
+                    Direction borders = GetStretchingBorders(parentPos);
+                    e.CursorContext.StyleType = GetCursorStyleType(borders);
                 }
             }
         }
@@ -225,7 +212,7 @@ namespace MCBS.BlockForms
 
             CursorContext[] hoverContexts = GetHoverCursors();
             foreach (var hoverContext in hoverContexts)
-                HandleCursorMove(new(new(int.MinValue, int.MinValue), hoverContext));
+                HandleCursorMove(new(new(-1024, -1024), hoverContext));
         }
 
         public virtual Image<Rgba32> GetIcon()
@@ -235,6 +222,30 @@ namespace MCBS.BlockForms
                 return appInfo.GetIcon();
             else
                 return new(16, 16, GetBlockColor(BlockManager.Concrete.White));
+        }
+
+        public Direction GetStretchingBorders(Point position)
+        {
+            Direction result = Direction.None;
+            if (!AllowStretch || !IsSelected || IsMaximize)
+                return result;
+
+            if (position.Y >= TopLocation - 2 &&
+                position.X >= LeftLocation - 2 &&
+                position.Y <= BottomLocation + 2 &&
+                position.X <= RightLocation + 2)
+            {
+                if (position.Y <= TopLocation + 2)
+                    result |= Direction.Top;
+                if (position.X <= LeftLocation + 2)
+                    result |= Direction.Left;
+                if (position.Y >= BottomLocation - 2)
+                    result |= Direction.Bottom;
+                if (position.X >= RightLocation - 2)
+                    result |= Direction.Right;
+            }
+
+            return result;
         }
 
         public virtual void MaximizeForm()
@@ -271,6 +282,18 @@ namespace MCBS.BlockForms
         public FormContext? GetFormContext()
         {
             return MCOS.Instance.FormContextOf(this);
+        }
+
+        public static string GetCursorStyleType(Direction borders)
+        {
+            return borders switch
+            {
+                Direction.Top or Direction.Bottom => CursorStyleType.VerticalResize,
+                Direction.Left or Direction.Right => CursorStyleType.HorizontalResize,
+                Direction.Left | Direction.Top or Direction.Right | Direction.Bottom => CursorStyleType.LeftObliqueResize,
+                Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorStyleType.RightObliqueResize,
+                _ => CursorStyleType.Default,
+            };
         }
     }
 }

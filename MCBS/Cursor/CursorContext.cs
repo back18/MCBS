@@ -37,20 +37,6 @@ namespace MCBS.Cursor
 
         public bool Active => LastActiveTick == MCOS.Instance.SystemTick;
 
-        public CursorState CursorState
-        {
-            get
-            {
-                int tick = MCOS.Instance.SystemTick;
-                if (LastActiveTick == tick)
-                    return CursorState.Active;
-                else if (LastActiveTick == tick - 1)
-                    return CursorState.Ready;
-                else
-                    return CursorState.Offline;
-            }
-        }
-
         public bool Visible { get; set; }
 
         public string StyleType { get; set; }

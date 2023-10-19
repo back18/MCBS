@@ -39,7 +39,7 @@ namespace MCBS.BlockForms
         {
             CursorContext[] hoverContexts = e.Control.GetHoverCursors();
             foreach (var hoverContext in hoverContexts)
-                e.Control.HandleCursorMove(new(new(int.MinValue, int.MinValue), hoverContext));
+                e.Control.HandleCursorMove(new(new(-1024, -1024), hoverContext));
         }
 
         public abstract IReadOnlyControlCollection<TControl> GetChildControls();

@@ -136,12 +136,12 @@ namespace MCBS.Screens
             {
                 foreach (var cursorContext in _offlineCursors)
                 {
-                    RootForm.HandleCursorMove(new(new(int.MinValue, int.MinValue), cursorContext));
+                    RootForm.HandleCursorMove(new(new(-1024, -1024), cursorContext));
                 }
 
                 foreach (var cursorContext in _activeCursors)
                 {
-                    if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active)
+                    if (cursorContext.ScreenContextOf == this)
                         InvokeScreenEvent(cursorContext);
                 }
             });
@@ -160,7 +160,7 @@ namespace MCBS.Screens
                 baseFrame.Overwrite(formFrame, RootForm.ClientLocation);
             foreach (var cursorContext in _activeCursors)
             {
-                if (cursorContext.ScreenContextOf == this && cursorContext.CursorState == CursorState.Active)
+                if (cursorContext.ScreenContextOf == this)
                 {
                     foreach (HoverControl hoverControl in cursorContext.HoverControls.Values)
                     {

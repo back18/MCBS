@@ -254,7 +254,7 @@ namespace MCBS.BlockForms
                 Close_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Red;
                 Close_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Red;
                 Close_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Close"]);
-                Close_Button.RightClick += Exit_Button_RightClick;
+                Close_Button.RightClick += Close_Button_RightClick;
 
                 MaximizeOrRestore_Switch.BorderWidth = 0;
                 MaximizeOrRestore_Switch.ClientSize = new(16, 16);
@@ -309,34 +309,15 @@ namespace MCBS.BlockForms
                 MaximizeOrRestore_Switch.ControlDeselected += MaximizeOrRestore_Switch_ControlDeselected;
             }
 
-            protected override void OnCursorMove(Control sender, CursorEventArgs e)
-            {
-                base.OnCursorMove(sender, e);
-
-                //if (_owner.Moveing)
-                //{
-                //    Point offset = new(e.Position.X - MoveAnchorPoint.X, e.Position.Y - MoveAnchorPoint.Y);
-                //    _owner.ClientLocation = new(_owner.ClientLocation.X + offset.X, _owner.ClientLocation.Y + offset.Y);
-                //}
-            }
-
             protected override void OnRightClick(Control sender, CursorEventArgs e)
             {
                 base.OnRightClick(sender, e);
 
-                if (_owner.IsSelected && _owner.AllowMove && GetChildControls().FirstHover is null or IconTextBox)
+                if (_owner.IsSelected && _owner.AllowDrag && GetChildControls().FirstHover is null or IconTextBox)
                     MCOS.Instance.FormContextOf(_owner)?.DragUpForm(e.CursorContext, e.Position);
-
-                //if (_owner.Moveing)
-                //    _owner.Moveing = false;
-                //else if (_owner.IsSelected && _owner.AllowMove && GetChildControls().FirstHover is null or IconTextBox)
-                //{
-                //    _owner.Moveing = true;
-                //    MoveAnchorPoint = e.Position;
-                //}
             }
 
-            private void Exit_Button_RightClick(Control sender, CursorEventArgs e)
+            private void Close_Button_RightClick(Control sender, CursorEventArgs e)
             {
                 _owner.CloseForm();
             }

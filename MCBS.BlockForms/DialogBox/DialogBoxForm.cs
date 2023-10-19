@@ -16,7 +16,7 @@ namespace MCBS.BlockForms.DialogBox
             _title = title ?? throw new ArgumentNullException(nameof(title));
 
             AllowDeselected = false;
-            AllowResize = false;
+            AllowStretch = false;
             TitleBar.ButtonsToShow = FormButtons.Close;
         }
 

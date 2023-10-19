@@ -66,36 +66,5 @@ namespace MCBS.UI
 
             return frame;
         }
-
-        private static void DrawBorder(ArrayFrame frame, IControlRendering rendering, Point offset)
-        {
-            if (rendering.BorderWidth > 0)
-            {
-                int width = rendering.ClientSize.Width + rendering.BorderWidth * 2;
-                int heigth = rendering.ClientSize.Height + rendering.BorderWidth * 2;
-
-                Point location = rendering.GetRenderingLocation();
-                location = new(location.X - offset.X, location.Y - offset.Y);
-                int startTop = location.Y - 1;
-                int startBottom = location.Y + rendering.ClientSize.Height;
-                int startLeft = location.X - 1;
-                int startRigth = location.X + rendering.ClientSize.Width;
-                int endTop = location.Y - rendering.BorderWidth;
-                int endBottom = location.Y + rendering.ClientSize.Height + rendering.BorderWidth - 1;
-                int endLeft = location.X - rendering.BorderWidth;
-                int endRight = location.X + rendering.ClientSize.Width + rendering.BorderWidth - 1;
-
-                string blockID = rendering.Skin.GetBorderBlockID();
-
-                for (int y = startTop; y >= endTop; y--)
-                    frame.DrawRow(y, endLeft, width, blockID);
-                for (int y = startBottom; y <= endBottom; y++)
-                    frame.DrawRow(y, endLeft, width, blockID);
-                for (int x = startLeft; x >= endLeft; x--)
-                    frame.DrawColumn(x, endTop, heigth, blockID);
-                for (int x = startRigth; x <= endRight; x++)
-                    frame.DrawColumn(x, endTop, heigth, blockID);
-            }
-        }
     }
 }

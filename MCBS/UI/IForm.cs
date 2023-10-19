@@ -15,19 +15,17 @@ namespace MCBS.UI
 
         public bool AllowDeselected { get; set; }
 
-        public bool AllowMove { get; set; }
+        public bool AllowDrag { get; set; }
 
-        public bool AllowResize { get; set; }
-
-        public bool Moveing { get; }
-
-        public bool Resizeing { get; }
+        public bool AllowStretch { get; set; }
 
         public Direction ResizeBorder { get; }
 
         public object? ReturnValue { get; }
 
         public Image<Rgba32> GetIcon();
+
+        public Direction GetStretchingBorders(Point position);
 
         public void MinimizeForm();
 
