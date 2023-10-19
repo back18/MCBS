@@ -26,7 +26,6 @@ namespace MCBS.BlockForms
             AllowDeselected = true;
             AllowDrag = true;
             AllowStretch = true;
-            IsMinimize = false;
             Stretch = Direction.Bottom | Direction.Right;
 
             ReturnValue = null;
@@ -51,8 +50,6 @@ namespace MCBS.BlockForms
         public virtual bool AllowStretch { get; set; }
 
         public virtual object? ReturnValue { get; protected set; }
-
-        public virtual bool IsMinimize { get; protected set; }
 
         public virtual bool IsMaximize
         {
