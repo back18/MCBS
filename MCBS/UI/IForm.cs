@@ -19,8 +19,6 @@ namespace MCBS.UI
 
         public bool AllowStretch { get; set; }
 
-        public Direction ResizeBorder { get; }
-
         public object? ReturnValue { get; }
 
         public Image<Rgba32> GetIcon();
