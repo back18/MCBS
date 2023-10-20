@@ -172,9 +172,12 @@ namespace MCBS.Screens
                         }
                     }
 
-                    if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursorStyle))
-                        cursorStyle = SR.CursorStyleManager[CursorStyleType.Default];
-                    baseFrame.Overwrite(cursorStyle.Frame, cursorContext.NewInputData.CursorPosition, cursorStyle.Offset);
+                    if (cursorContext.Visible)
+                    {
+                        if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursorStyle))
+                            cursorStyle = SR.CursorStyleManager[CursorStyleType.Default];
+                        baseFrame.Overwrite(cursorStyle.Frame, cursorContext.NewInputData.CursorPosition, cursorStyle.Offset);
+                    }
                 }
             }
             _frame = baseFrame;
