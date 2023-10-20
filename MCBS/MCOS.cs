@@ -29,6 +29,7 @@ using MCBS.Cursor;
 using MCBS.RightClickObjective;
 using MCBS.Screens.Building;
 using System.Collections.ObjectModel;
+using QuanLib.Minecraft.Command;
 
 namespace MCBS
 {
@@ -182,6 +183,7 @@ namespace MCBS
                 {
                     _tickStopwatch.Restart();
                     _times.Clear();
+                    CommandManager.SnbtCache.Clear();
                     PreviousTickTime = SystemRunningTime;
                     NextTickTime = PreviousTickTime + TickTime;
                     SystemTick++;
