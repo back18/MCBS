@@ -284,6 +284,7 @@ namespace MCBS.BlockForms
                     }
                 }
 
+                UpdateHoverState(e);
                 IForm? form = ChildControls.FirstSelected;
                 if (form is null)
                     return;
@@ -295,16 +296,6 @@ namespace MCBS.BlockForms
                     return;
 
                 form.HandleCursorMove(e.Clone(form.ParentPos2ChildPos));
-
-                foreach (var control in ChildControls.Reverse())
-                {
-                    if (control.IsSelected)
-                    {
-                        control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos));
-                    }
-                }
-
-                UpdateHoverState(e);
             }
 
             public override bool HandleRightClick(CursorEventArgs e)

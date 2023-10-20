@@ -49,7 +49,7 @@ namespace MCBS.BlockForms
             base.OnTextEditorUpdate(sender, e);
 
             if (!IsReadOnly)
-                Text = e.CursorContext.TextEditor.CurrentText;
+                Text = e.NewData.TextEditor;
         }
 
         private void HandleInput(CursorEventArgs e)

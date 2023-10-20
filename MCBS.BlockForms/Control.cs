@@ -648,7 +648,7 @@ namespace MCBS.BlockForms
         {
             UpdateHoverState(e);
 
-            if (IsHover || InvokeExternalCursorMove)
+            if (this.IncludedOnControl(e.Position) || InvokeExternalCursorMove)
             {
                 CursorMove.Invoke(this, e);
             }
@@ -656,27 +656,27 @@ namespace MCBS.BlockForms
 
         public virtual bool HandleLeftClick(CursorEventArgs e)
         {
-            return TryHandleLeftClick(e);
+            return TryInvokeLeftClick(e);
         }
 
         public virtual bool HandleRightClick(CursorEventArgs e)
         {
-            return TryHandleRightClick(e);
+            return TryInvokeRightClick(e);
         }
 
         public virtual bool HandleTextEditorUpdate(CursorEventArgs e)
         {
-            return TryHandleTextEditorUpdate(e);
+            return TryInvokeTextEditorUpdate(e);
         }
 
         public virtual bool HandleCursorSlotChanged(CursorEventArgs e)
         {
-            return TryHandleCursorSlotChanged(e);
+            return TryInvokeCursorSlotChanged(e);
         }
 
         public virtual bool HandleCursorItemChanged(CursorEventArgs e)
         {
-            return TryHandleCursorItemChanged(e);
+            return TryInvokeCursorItemChanged(e);
         }
 
         public virtual void HandleBeforeFrame(EventArgs e)
@@ -699,9 +699,18 @@ namespace MCBS.BlockForms
             Layout.Invoke(this, e);
         }
 
-        protected bool TryHandleLeftClick(CursorEventArgs e)
+        public virtual void HandleRenderingCompleted(ArrayFrameEventArgs e)
         {
-            if (Visible && IsHover)
+            NeedRendering = false;
+            _frameCache = e.ArrayFrame;
+            RenderingCompleted.Invoke(this, e);
+        }
+
+        #region TryInvoke
+
+        protected bool TryInvokeLeftClick(CursorEventArgs e)
+        {
+            if (Visible && this.IncludedOnControl(e.Position))
             {
                 LeftClick.Invoke(this, e);
                 if ((e.NewData.LeftClickTime - e.OldData.LeftClickTime).TotalMilliseconds <= 500)
@@ -711,9 +720,9 @@ namespace MCBS.BlockForms
             return false;
         }
 
-        protected bool TryHandleRightClick(CursorEventArgs e)
+        protected bool TryInvokeRightClick(CursorEventArgs e)
         {
-            if (Visible && IsHover)
+            if (Visible && this.IncludedOnControl(e.Position))
             {
                 RightClick.Invoke(this, e);
                 if ((e.NewData.RightClickTime - e.OldData.RightClickTime).TotalMilliseconds <= 500)
@@ -723,29 +732,9 @@ namespace MCBS.BlockForms
             return false;
         }
 
-        protected bool TryHandleCursorSlotChanged(CursorEventArgs e)
+        protected bool TryInvokeTextEditorUpdate(CursorEventArgs e)
         {
-            if (Visible && IsHover)
-            {
-                CursorSlotChanged.Invoke(this, e);
-                return true;
-            }
-            return false;
-        }
-
-        protected bool TryHandleCursorItemChanged(CursorEventArgs e)
-        {
-            if (Visible && IsHover)
-            {
-                CursorItemChanged.Invoke(this, e);
-                return true;
-            }
-            return false;
-        }
-
-        protected bool TryHandleTextEditorUpdate(CursorEventArgs e)
-        {
-            if (Visible && IsHover)
+            if (Visible && this.IncludedOnControl(e.Position))
             {
                 TextEditorUpdate.Invoke(this, e);
                 return true;
@@ -753,47 +742,27 @@ namespace MCBS.BlockForms
             return false;
         }
 
-        public virtual void HandleRenderingCompleted(ArrayFrameEventArgs e)
+        protected bool TryInvokeCursorSlotChanged(CursorEventArgs e)
         {
-            NeedRendering = false;
-            _frameCache = e.ArrayFrame;
-            RenderingCompleted.Invoke(this, e);
+            if (Visible && this.IncludedOnControl(e.Position))
+            {
+                CursorSlotChanged.Invoke(this, e);
+                return true;
+            }
+            return false;
         }
 
-        public virtual void UpdateHoverState(CursorEventArgs e)
+        protected bool TryInvokeCursorItemChanged(CursorEventArgs e)
         {
-            bool included = this.IncludedOnControl(e.Position);
-            if (_hoverCursors.Contains(e.CursorContext))
+            if (Visible && this.IncludedOnControl(e.Position))
             {
-                if (!included)
-                {
-                    _hoverCursors.Remove(e.CursorContext);
-                    if (_hoverCursors.Count == 0)
-                        IsHover = false;
-                    CursorLeave.Invoke(this, e);
-                }
+                CursorItemChanged.Invoke(this, e);
+                return true;
             }
-            else
-            {
-                if (included)
-                {
-                    //Control? control = ParentContainer?.GetChildControls().FirstHover;
-                    //if (control is not null)
-                    //{
-                    //    if (control.Index < Index)
-                    //    {
-                    //        control.IsHover = false;
-                    //        control.CursorLeave.Invoke(this, e);
-                    //    }
-                    //    else
-                    //        return;
-                    //}
-                    _hoverCursors.Add(e.CursorContext);
-                    IsHover = true;
-                    CursorEnter.Invoke(this, e);
-                }
-            }
+            return false;
         }
+
+        #endregion
 
         #endregion
 
@@ -1074,6 +1043,30 @@ namespace MCBS.BlockForms
 
         #endregion
 
+        public void UpdateHoverState(CursorEventArgs e)
+        {
+            bool included = this.IncludedOnControl(e.Position);
+            if (_hoverCursors.Contains(e.CursorContext))
+            {
+                if (!included)
+                {
+                    _hoverCursors.Remove(e.CursorContext);
+                    if (_hoverCursors.Count == 0)
+                        IsHover = false;
+                    CursorLeave.Invoke(this, e);
+                }
+            }
+            else
+            {
+                if (included)
+                {
+                    _hoverCursors.Add(e.CursorContext);
+                    IsHover = true;
+                    CursorEnter.Invoke(this, e);
+                }
+            }
+        }
+
         public CursorContext[] GetHoverCursors()
         {
             return _hoverCursors.ToArray();
@@ -1107,41 +1100,6 @@ namespace MCBS.BlockForms
             else if (container is ContainerControl containerControl)
                 ParentContainer = containerControl;
         }
-
-        //public class CursorCollection : IReadOnlyDictionary<string, CursorContext>
-        //{
-        //    private readonly Dictionary<string, CursorContext> _items;
-
-        //    public CursorContext this[string key] => _items[key];
-
-        //    public IEnumerable<string> Keys => _items.Keys;
-
-        //    public IEnumerable<CursorContext> Values => _items.Values;
-
-        //    public int Count => _items.Count;
-
-        //    public void Add()
-
-        //    public bool ContainsKey(string key)
-        //    {
-        //        return _items.ContainsKey(key);
-        //    }
-
-        //    public bool TryGetValue(string key, [MaybeNullWhen(false)] out CursorContext value)
-        //    {
-        //        return _items.TryGetValue(key, out value);
-        //    }
-
-        //    public IEnumerator<KeyValuePair<string, CursorContext>> GetEnumerator()
-        //    {
-        //        return _items.GetEnumerator();
-        //    }
-
-        //    IEnumerator IEnumerable.GetEnumerator()
-        //    {
-        //        return ((IEnumerable)_items).GetEnumerator();
-        //    }
-        //}
 
         public class ControlSkin : ISkin
         {

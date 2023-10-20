@@ -104,7 +104,7 @@ namespace MCBS.BlockForms
             TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleRightClick(e.Clone(control.ParentPos2ChildPos));
 
-            return TryHandleRightClick(e);
+            return TryInvokeRightClick(e);
         }
 
         public override bool HandleLeftClick(CursorEventArgs e)
@@ -112,7 +112,7 @@ namespace MCBS.BlockForms
             TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleLeftClick(e.Clone(control.ParentPos2ChildPos));
 
-            return TryHandleLeftClick(e);
+            return TryInvokeLeftClick(e);
         }
 
         public override bool HandleTextEditorUpdate(CursorEventArgs e)
@@ -120,7 +120,7 @@ namespace MCBS.BlockForms
             TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleTextEditorUpdate(e.Clone(control.ParentPos2ChildPos));
 
-            return TryHandleTextEditorUpdate(e);
+            return TryInvokeTextEditorUpdate(e);
         }
 
         public override bool HandleCursorSlotChanged(CursorEventArgs e)
@@ -128,7 +128,7 @@ namespace MCBS.BlockForms
             TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleCursorSlotChanged(e.Clone(control.ParentPos2ChildPos));
 
-            return TryHandleCursorSlotChanged(e);
+            return TryInvokeCursorSlotChanged(e);
         }
 
         public override bool HandleCursorItemChanged(CursorEventArgs e)
@@ -136,7 +136,7 @@ namespace MCBS.BlockForms
             TControl? control = GetChildControls().HoverControlOf(e.CursorContext);
             control?.HandleCursorItemChanged(e.Clone(control.ParentPos2ChildPos));
 
-            return TryHandleCursorItemChanged(e);
+            return TryInvokeCursorItemChanged(e);
         }
 
         public override void HandleBeforeFrame(EventArgs e)

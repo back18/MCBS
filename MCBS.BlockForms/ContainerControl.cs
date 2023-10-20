@@ -86,7 +86,7 @@ namespace MCBS.BlockForms
             if (control is not null && control.HandleRightClick(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleRightClick)
                 return true;
 
-            return TryHandleRightClick(e);
+            return TryInvokeRightClick(e);
         }
 
         public override bool HandleLeftClick(CursorEventArgs e)
@@ -95,7 +95,7 @@ namespace MCBS.BlockForms
             if (control is not null && control.HandleLeftClick(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleLeftClick)
                 return true;
 
-            return TryHandleLeftClick(e);
+            return TryInvokeLeftClick(e);
         }
 
         public override bool HandleTextEditorUpdate(CursorEventArgs e)
@@ -104,7 +104,7 @@ namespace MCBS.BlockForms
             if (control is not null && control.HandleTextEditorUpdate(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleTextEditorUpdate)
                 return true;
 
-            return TryHandleTextEditorUpdate(e);
+            return TryInvokeTextEditorUpdate(e);
         }
 
         public override bool HandleCursorSlotChanged(CursorEventArgs e)
@@ -113,7 +113,7 @@ namespace MCBS.BlockForms
             if (control is not null && control.HandleCursorSlotChanged(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleCursorSlotChanged)
                 return true;
 
-            return TryHandleCursorSlotChanged(e);
+            return TryInvokeCursorSlotChanged(e);
         }
 
         public override bool HandleCursorItemChanged(CursorEventArgs e)
@@ -122,17 +122,17 @@ namespace MCBS.BlockForms
             if (control is not null && control.HandleCursorItemChanged(e.Clone(control.ParentPos2ChildPos)) && control.FirstHandleCursorItemChanged)
                 return true;
 
-            return TryHandleCursorItemChanged(e);
+            return TryInvokeCursorItemChanged(e);
         }
 
-        public override void UpdateHoverState(CursorEventArgs e)
+        public void UpdateAllHoverState(CursorEventArgs e)
         {
             foreach (var control in GetChildControls().ToArray())
             {
                 control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
             }
 
-            base.UpdateHoverState(e);
+            UpdateHoverState(e);
         }
 
         public class ControlCollection<T> : AbstractControlCollection<T> where T : Control
