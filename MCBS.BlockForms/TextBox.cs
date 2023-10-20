@@ -1,5 +1,6 @@
 ﻿using MCBS.Cursor;
 using MCBS.Events;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using System;
@@ -41,7 +42,7 @@ namespace MCBS.BlockForms
         {
             base.OnCursorLeave(sender, e);
 
-            IsSelected = false;
+            UpdateSelected();
         }
 
         protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)
@@ -52,17 +53,41 @@ namespace MCBS.BlockForms
                 Text = e.NewData.TextEditor;
         }
 
+        public CursorContext[] GetHoverTextEditorCursors()
+        {
+            CursorContext[] cursorContexts = GetHoverCursors();
+            List<CursorContext> result = new();
+            foreach (CursorContext cursorContext in cursorContexts)
+            {
+                if (cursorContext.NewInputData.CursorMode == CursorMode.TextEditor)
+                    result.Add(cursorContext);
+            }
+
+            return result.ToArray();
+        }
+
         private void HandleInput(CursorEventArgs e)
         {
-            if (!IsReadOnly && e.CursorContext.NewInputData.CursorMode == CursorMode.TextEditor)
+            if (IsReadOnly)
+                return;
+
+            if (e.CursorContext.NewInputData.CursorMode == CursorMode.TextEditor)
             {
                 IsSelected = true;
                 e.CursorContext.TextEditor.SetInitialText(Text);
             }
             else
             {
-                IsSelected = false;
+                UpdateSelected();
             }
+        }
+
+        private void UpdateSelected()
+        {
+            if (!IsReadOnly && GetHoverTextEditorCursors().Length > 0)
+                IsSelected = true;
+            else
+                IsSelected = false;
         }
     }
 }
