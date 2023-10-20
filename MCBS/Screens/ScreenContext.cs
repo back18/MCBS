@@ -30,7 +30,7 @@ namespace MCBS.Screens
             Screen = screen ?? throw new ArgumentNullException(nameof(screen));
             RootForm = form ?? throw new ArgumentNullException(nameof(form));
             ScreenInputHandler = new(this);
-            IsRestart = false;
+            IsRestarting = false;
 
             ID = -1;
             StateManager = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
@@ -64,7 +64,7 @@ namespace MCBS.Screens
 
         public ScreenInputHandler ScreenInputHandler { get; }
 
-        public bool IsRestart { get; private set; }
+        public bool IsRestarting { get; private set; }
 
         protected virtual bool HandleNotLoadedState(ScreenState current, ScreenState next)
         {
@@ -76,7 +76,7 @@ namespace MCBS.Screens
             switch (current)
             {
                 case ScreenState.NotLoaded:
-                    IsRestart = false;
+                    IsRestarting = false;
                     Screen.Start();
                     RootForm.ClientSize = Screen.Size;
                     MCOS.Instance.RunStartupChecklist(RootForm);
@@ -209,7 +209,7 @@ namespace MCBS.Screens
         public void RestartScreen()
         {
             StateManager.AddNextState(ScreenState.Unload);
-            IsRestart = true;
+            IsRestarting = true;
         }
 
         public void StartSleep()

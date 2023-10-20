@@ -126,7 +126,7 @@ namespace MCBS.Screens
                     Items.Remove(context.Key);
                     _saves.Remove(new(context.Value.Screen));
                     SaveScreens();
-                    if (context.Value.IsRestart)
+                    if (context.Value.IsRestarting)
                         Items.Add(new(context.Value.Screen)).LoadScreen();
                 }
             }
