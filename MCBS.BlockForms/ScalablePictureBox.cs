@@ -1,4 +1,5 @@
-﻿using MCBS.Events;
+﻿using MCBS.Cursor;
+using MCBS.Events;
 using MCBS.Frame;
 using MCBS.UI;
 using Newtonsoft.Json.Linq;
@@ -25,15 +26,12 @@ namespace MCBS.BlockForms
             ScalingRatio = 0.2;
             EnableZoom = false;
             EnableDrag = false;
-            Dragging = false;
 
-            LastCursorPosition = new(0, 0);
             PixelModeThreshold = 5;
+            _draggingCursors = new();
         }
 
-        private static readonly Point InvalidPosition = new(-1, -1);
-
-        private Point LastCursorPosition;
+        private List<CursorContext> _draggingCursors;
 
         public int PixelModeThreshold { get; set; }
 
@@ -68,8 +66,6 @@ namespace MCBS.BlockForms
 
         public bool EnableDrag { get; set; }
 
-        public bool Dragging { get; private set; }
-
         public override IFrame RenderingFrame()
         {
             ArrayFrame frame = ImageFrame.GetFrameClone();
@@ -94,32 +90,24 @@ namespace MCBS.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            if (!Dragging)
-            {
-                LastCursorPosition = InvalidPosition;
+            if (!_draggingCursors.Contains(e.CursorContext))
                 return;
-            }
-            else if (LastCursorPosition == InvalidPosition)
-            {
-                LastCursorPosition = e.Position;
-                return;
-            }
 
-            Point position1 = ClientPos2ImagePos(LastCursorPosition);
+            Point position1 = ClientPos2ImagePos(new(e.Position.X - e.CursorPositionOffset.X, e.Position.Y - e.CursorPositionOffset.Y));
             Point position2 = ClientPos2ImagePos(e.Position);
             Point offset = new(position2.X - position1.X, position2.Y - position1.Y);
             Rectangle rectangle = Rectangle;
             rectangle.X -= offset.X;
             rectangle.Y -= offset.Y;
             Rectangle = rectangle;
-            LastCursorPosition = e.Position;
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
         {
             base.OnCursorLeave(sender, e);
 
-            Dragging = false;
+            if (_draggingCursors.Contains(e.CursorContext))
+                _draggingCursors.Remove(e.CursorContext);
         }
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
@@ -127,7 +115,12 @@ namespace MCBS.BlockForms
             base.OnRightClick(sender, e);
 
             if (EnableDrag)
-                Dragging = !Dragging;
+            {
+                if (_draggingCursors.Contains(e.CursorContext))
+                    _draggingCursors.Remove(e.CursorContext);
+                else
+                    _draggingCursors.Add(e.CursorContext);
+            }
         }
 
         protected override void OnResize(Control sender, SizeChangedEventArgs e)

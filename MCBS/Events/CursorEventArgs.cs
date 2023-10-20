@@ -37,6 +37,8 @@ namespace MCBS.Events
             }
         }
 
+        public Point CursorPositionOffset => new(NewData.CursorPosition.X - OldData.CursorPosition.X, NewData.CursorPosition.Y - OldData.CursorPosition.Y);
+
         public CursorEventArgs Clone(Func<Point, Point> convert)
         {
             return new(convert.Invoke(Position), CursorContext);

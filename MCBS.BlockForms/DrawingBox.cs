@@ -1,4 +1,5 @@
-﻿using MCBS.Events;
+﻿using MCBS.Cursor;
+using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -19,26 +20,20 @@ namespace MCBS.BlockForms
         public DrawingBox()
         {
             EnableDrag = false;
-            Drawing = false;
             _PenWidth = 1;
 
+            _drawingCursors = new();
             _undos = new();
             _redos = new();
-
-            LastCursorPosition = new(0, 0);
         }
 
-        private static readonly Point InvalidPosition = new(-1, -1);
+        private readonly List<CursorContext> _drawingCursors;
 
         private readonly Stack<Image<Rgba32>> _undos;
 
         private readonly Stack<Image<Rgba32>> _redos;
 
-        private Point LastCursorPosition;
-
         public bool EnableDraw { get; set; }
-
-        public bool Drawing { get; private set; }
 
         public int PenWidth
         {
@@ -58,13 +53,13 @@ namespace MCBS.BlockForms
 
             if (EnableDraw)
             {
-                if (Drawing)
+                if (_drawingCursors.Contains(e.CursorContext))
                 {
-                    Drawing = false;
+                    _drawingCursors.Remove(e.CursorContext);
                 }
                 else
                 {
-                    Drawing = true;
+                    _drawingCursors.Add(e.CursorContext);
                     _undos.Push(ImageFrame.Image.Clone());
                     ClearRedoStack();
                 }
@@ -75,19 +70,11 @@ namespace MCBS.BlockForms
         {
             base.OnCursorMove(sender, e);
 
-            if (!Drawing)
-            {
-                LastCursorPosition = InvalidPosition;
+            if (!_drawingCursors.Contains(e.CursorContext))
                 return;
-            }
-            else if (LastCursorPosition == InvalidPosition)
-            {
-                LastCursorPosition = e.Position;
-                return;
-            }
 
             Rgba32 color = GetCurrentColorOrDefault(e, BlockManager.Concrete.Black);
-            Point position1 = ClientPos2ImagePos(LastCursorPosition);
+            Point position1 = ClientPos2ImagePos(new(e.Position.X - e.CursorPositionOffset.X, e.Position.Y - e.CursorPositionOffset.Y));
             Point position2 = ClientPos2ImagePos(e.Position);
 
             if (PixelMode && PenWidth == 1)
@@ -109,16 +96,15 @@ namespace MCBS.BlockForms
 
             ImageFrame.Update(Rectangle);
             RequestUpdateFrame();
-
-            LastCursorPosition = e.Position;
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
         {
             base.OnCursorEnter(sender, e);
 
-            Drawing = false;
             e.CursorContext.Visible = false;
+            if (_drawingCursors.Contains(e.CursorContext))
+                _drawingCursors.Remove(e.CursorContext);
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
