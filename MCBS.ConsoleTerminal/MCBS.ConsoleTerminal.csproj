@@ -22,4 +22,8 @@
     <ProjectReference Include="..\MCBS.SystemApplications.VideoPlayer\MCBS.SystemApplications.VideoPlayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
 </Project>
