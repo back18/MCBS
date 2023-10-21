@@ -275,6 +275,8 @@ namespace MCBS.BlockForms
 
             public override void HandleCursorMove(CursorEventArgs e)
             {
+                UpdateHoverState(e);
+
                 foreach (HoverControl hoverControl in e.CursorContext.HoverControls.Values)
                 {
                     if (hoverControl.Control is IForm hoverForm)
@@ -284,7 +286,6 @@ namespace MCBS.BlockForms
                     }
                 }
 
-                UpdateHoverState(e);
                 IForm? form = ChildControls.FirstSelected;
                 if (form is null)
                     return;
