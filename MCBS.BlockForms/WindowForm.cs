@@ -249,6 +249,7 @@ namespace MCBS.BlockForms
                 Close_Button.BorderWidth = 0;
                 Close_Button.ClientSize = new(16, 16);
                 Close_Button.Anchor = Direction.Top | Direction.Right;
+                Close_Button.FirstHandleRightClick = true;
                 Close_Button.Skin.IsRenderedImageBackground = true;
                 Close_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 Close_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Red;
@@ -259,6 +260,7 @@ namespace MCBS.BlockForms
                 MaximizeOrRestore_Switch.BorderWidth = 0;
                 MaximizeOrRestore_Switch.ClientSize = new(16, 16);
                 MaximizeOrRestore_Switch.Anchor = Direction.Top | Direction.Right;
+                MaximizeOrRestore_Switch.FirstHandleRightClick = true;
                 MaximizeOrRestore_Switch.Skin.IsRenderedImageBackground = true;
                 MaximizeOrRestore_Switch.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID;
@@ -272,6 +274,7 @@ namespace MCBS.BlockForms
                 Minimize_Button.BorderWidth = 0;
                 Minimize_Button.ClientSize = new(16, 16);
                 Minimize_Button.Anchor = Direction.Top | Direction.Right;
+                Minimize_Button.FirstHandleRightClick = true;
                 Minimize_Button.Skin.IsRenderedImageBackground = true;
                 Minimize_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 Minimize_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
@@ -282,6 +285,7 @@ namespace MCBS.BlockForms
                 FullScreen_Button.BorderWidth = 0;
                 FullScreen_Button.ClientSize = new(16, 16);
                 FullScreen_Button.Anchor = Direction.Top | Direction.Right;
+                FullScreen_Button.FirstHandleRightClick = true;
                 FullScreen_Button.Skin.IsRenderedImageBackground = true;
                 FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
                 FullScreen_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
@@ -313,7 +317,7 @@ namespace MCBS.BlockForms
             {
                 base.OnRightClick(sender, e);
 
-                if (_owner.IsSelected && _owner.AllowDrag && GetChildControls().FirstHover is null or IconTextBox)
+                if (_owner.IsSelected && _owner.AllowDrag)
                     MCOS.Instance.FormContextOf(_owner)?.DragUpForm(e.CursorContext, e.Position);
             }
 
