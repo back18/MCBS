@@ -15,6 +15,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using MCBS.Rendering;
+using System.Collections.ObjectModel;
+using QuanLib.Minecraft;
 
 namespace MCBS
 {
@@ -33,48 +36,22 @@ namespace MCBS
 
         public static McbsDirectory McbsDirectory { get; }
 
-        public static BlockTextureManager BlockTextureManager
-        {
-            get
-            {
-                if (_BlockTextureManager is null)
-                    throw new InvalidOperationException();
-                return _BlockTextureManager;
-            }
-        }
+        public static BlockTextureManager BlockTextureManager => _BlockTextureManager ?? throw new InvalidOperationException();
         private static BlockTextureManager? _BlockTextureManager;
 
-        public static LanguageManager LanguageManager
-        {
-            get
-            {
-                if (_LanguageManager is null)
-                    throw new InvalidOperationException();
-                return _LanguageManager;
-            }
-        }
+        public static ReadOnlyDictionary<Facing, Rgba32BlockMapping> Rgba32BlockMappings => _Rgba32BlockMapping ?? throw new InvalidOperationException();
+        private static ReadOnlyDictionary<Facing, Rgba32BlockMapping>? _Rgba32BlockMapping;
+
+        public static HashBlockMapping HashBlockMapping => _HashBlockMapping ?? throw new InvalidOperationException();
+        private static HashBlockMapping? _HashBlockMapping;
+
+        public static LanguageManager LanguageManager => _LanguageManager ?? throw new InvalidOperationException();
         private static LanguageManager? _LanguageManager;
 
-        public static BdfFont DefaultFont
-        {
-            get
-            {
-                if (_DefaultFont is null)
-                    throw new InvalidOperationException();
-                return _DefaultFont;
-            }
-        }
+        public static BdfFont DefaultFont => _DefaultFont ?? throw new InvalidOperationException();
         private static BdfFont? _DefaultFont;
 
-        public static CursorStyleManager CursorStyleManager
-        {
-            get
-            {
-                if (_CursorStyleManager is null)
-                    throw new InvalidOperationException();
-                return _CursorStyleManager;
-            }
-        }
+        public static CursorStyleManager CursorStyleManager => _CursorStyleManager ?? throw new InvalidOperationException();
         private static CursorStyleManager? _CursorStyleManager;
 
         public static void LoadAll(ResourceEntryManager resources)
@@ -87,6 +64,17 @@ namespace MCBS
 
             LOGGER.Info("开始加载Minecraft方块纹理");
             _BlockTextureManager = BlockTextureManager.LoadInstance(resources, MinecraftConfig.BlockTextureBlacklist);
+            Dictionary<Facing, Rgba32BlockMapping> mappings = new()
+            {
+                { Facing.Xp, new(_BlockTextureManager, Facing.Xp) },
+                { Facing.Xm, new(_BlockTextureManager, Facing.Xm) },
+                { Facing.Yp, new(_BlockTextureManager, Facing.Yp) },
+                { Facing.Ym, new(_BlockTextureManager, Facing.Ym) },
+                { Facing.Zp, new(_BlockTextureManager, Facing.Zp) },
+                { Facing.Zm, new(_BlockTextureManager, Facing.Zm) }
+            };
+            _Rgba32BlockMapping = new(mappings);
+            _HashBlockMapping = new();
             LOGGER.Info("完成，方块数量: " + _BlockTextureManager.Count);
 
             LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);

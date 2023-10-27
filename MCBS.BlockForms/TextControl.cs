@@ -56,7 +56,7 @@ namespace MCBS.BlockForms
                     case AnchorPosition.Centered:
                         foreach (var c in Text)
                         {
-                            result.AddRight(ArrayFrame.BuildFrame(SR.DefaultFont[c].GetBitMap(), foreground, background));
+                            result.AddRight(ArrayFrame.BuildFrame(SR.DefaultFont[c].GetBinary(), foreground, background));
                             if (result.Width >= Width)
                                 break;
                         }
@@ -65,7 +65,7 @@ namespace MCBS.BlockForms
                     case AnchorPosition.LowerRight:
                         for (int i = Text.Length - 1; i >= 0; i--)
                         {
-                            result.AddLeft(ArrayFrame.BuildFrame(SR.DefaultFont[Text[i]].GetBitMap(), foreground, background));
+                            result.AddLeft(ArrayFrame.BuildFrame(SR.DefaultFont[Text[i]].GetBinary(), foreground, background));
                             if (result.Width >= Width)
                                 break;
                         }

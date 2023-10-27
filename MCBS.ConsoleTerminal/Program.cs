@@ -5,6 +5,7 @@ using log4net.Core;
 using MCBS.BlockForms.Utility;
 using MCBS.Config;
 using MCBS.Logging;
+using MCBS.Rendering;
 using MCBS.SystemApplications;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.API;
@@ -15,6 +16,9 @@ using QuanLib.Minecraft.Events;
 using QuanLib.Minecraft.Instance;
 using QuanLib.Minecraft.ResourcePack;
 using QuanLib.Minecraft.ResourcePack.Language;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 
@@ -40,6 +44,19 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
+            OverwriteContext overwrite = new(new(100, 100), new(200, 200), new(-50, -50));
+
+            int y = overwrite.BaseStartPosition.Y;
+            foreach (var item in overwrite)
+            {
+                if (item.BasePosition.Y > y)
+                {
+                    Console.WriteLine();
+                    y = item.BasePosition.Y;
+                }
+                Console.Write($"[{item.OverwritePosition.X}, {item.OverwritePosition.Y}]->[{item.BasePosition.X}, {item.BasePosition.Y}]\t");
+            }
+
             LOGGER.Info("MCBS已启动，欢迎使用！");
             Terminal.Start("Terminal Thread");
             CommandLogger.Start("CommandLogger Thread");

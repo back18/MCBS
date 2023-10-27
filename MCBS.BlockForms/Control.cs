@@ -1008,7 +1008,7 @@ namespace MCBS.BlockForms
             if (TryGetBlockColor(blockID, out var color))
                 return color;
             else
-                return SR.BlockTextureManager[BlockManager.Concrete.White].AverageColors[GetScreenPlane().NormalFacing];
+                return SR.BlockTextureManager[BlockManager.Concrete.White].Textures[GetScreenPlane().NormalFacing].AverageColor;
         }
 
         public Rgba32 GetBlockColorOrDefault(string? blockID, string def)
@@ -1033,7 +1033,7 @@ namespace MCBS.BlockForms
             }
             else if (SR.BlockTextureManager.TryGetValue(blockID, out var texture))
             {
-                color = texture.AverageColors[GetScreenPlane().NormalFacing];
+                color = texture.Textures[GetScreenPlane().NormalFacing].AverageColor;
                 return true;
             }
 

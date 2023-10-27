@@ -159,7 +159,7 @@ namespace MCBS.BlockForms
                 foreach (var c in line)
                 {
                     var data = font[c];
-                    _frame.Overwrite(ArrayFrame.BuildFrame(data.GetBitMap(), Skin.GetForegroundBlockID(), Skin.GetBackgroundBlockID()), position);
+                    _frame.Overwrite(ArrayFrame.BuildFrame(data.GetBinary(), Skin.GetForegroundBlockID(), Skin.GetBackgroundBlockID()), position);
                     position.X += data.Width;
                 }
                 position.X = 0;
