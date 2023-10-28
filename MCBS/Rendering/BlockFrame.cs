@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Core;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,9 +21,32 @@ namespace MCBS.Rendering
 
         public abstract int Height { get; }
 
+        public abstract SearchMode SearchMode { get; }
+
         public virtual bool SupportTransparent => true;
 
         public virtual string TransparentPixel => string.Empty;
+
+        public static IDictionary<Point, string> GetDifferencesPixel(BlockFrame blockFrame1, BlockFrame blockFrame2)
+        {
+            if (blockFrame1 is null)
+                throw new ArgumentNullException(nameof(blockFrame1));
+            if (blockFrame2 is null)
+                throw new ArgumentNullException(nameof(blockFrame2));
+            if (blockFrame1.Width != blockFrame1.Width || blockFrame1.Height != blockFrame2.Height)
+                throw new ArgumentException("帧尺寸不一致");
+
+            PositionEnumerable positions = new(blockFrame1.Width, blockFrame1.Height);
+
+            Dictionary<Point, string> result = new();
+            Foreach.Start(positions, blockFrame1, blockFrame2, (position, pixel1, pixel2) =>
+            {
+                if (pixel1 != pixel2)
+                    result.Add(position, pixel2);
+            });
+
+            return result;
+        }
 
         public virtual OverwriteContext Overwrite(BlockFrame blockFrame, Point location)
         {
@@ -61,14 +85,16 @@ namespace MCBS.Rendering
 
         public abstract void Fill(string pixel);
 
-        public abstract string[] ToArray();
+        public abstract IDictionary<Point, string> GetAllPixel();
 
-        public virtual IPixelCollection<string> AsPixelCollection() => this;
+        public abstract string[] ToArray();
 
         public virtual void CopyPixelDataTo(Span<string> destination)
         {
             ToArray().CopyTo(destination);
         }
+
+        public virtual IPixelCollection<string> AsPixelCollection() => this;
 
         public abstract IEnumerator<string> GetEnumerator();
 

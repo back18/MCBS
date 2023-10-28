@@ -12,7 +12,7 @@ namespace MCBS.Rendering
 
         public abstract TPixel Pixel { get; set; }
 
-        public virtual string ToSrring()
+        public virtual string ToBlockId()
         {
             return BlockConverter[Pixel];
         }

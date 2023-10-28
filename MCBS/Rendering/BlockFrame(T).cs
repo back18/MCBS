@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Core;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace MCBS.Rendering
         public override int Width => Pixels.Width;
 
         public override int Height => Pixels.Height;
+
+        public override SearchMode SearchMode => Pixels.SearchMode;
 
         public override bool SupportTransparent => Pixels.SupportTransparent;
 
@@ -46,6 +49,16 @@ namespace MCBS.Rendering
         public override void Fill(string pixel)
         {
             Pixels.Fill(BlockConverter[pixel]);
+        }
+
+        public override IDictionary<Point, string> GetAllPixel()
+        {
+            PositionEnumerable positions = new(Width, Height);
+
+            Dictionary<Point, string> result = new();
+            Foreach.Start(positions, Pixels, (position, pixel) => result.Add(position, BlockConverter[pixel]));
+
+            return result;
         }
 
         public override string[] ToArray()

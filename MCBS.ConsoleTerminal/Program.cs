@@ -44,17 +44,10 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
-            OverwriteContext overwrite = new(new(100, 100), new(200, 200), new(-50, -50));
-
-            int y = overwrite.BaseStartPosition.Y;
-            foreach (var item in overwrite)
+            PositionEnumerable pos = new(16, 16);
+            foreach (var p in pos)
             {
-                if (item.BasePosition.Y > y)
-                {
-                    Console.WriteLine();
-                    y = item.BasePosition.Y;
-                }
-                Console.Write($"[{item.OverwritePosition.X}, {item.OverwritePosition.Y}]->[{item.BasePosition.X}, {item.BasePosition.Y}]\t");
+                Console.WriteLine(p);
             }
 
             LOGGER.Info("MCBS已启动，欢迎使用！");

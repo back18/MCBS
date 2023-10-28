@@ -13,8 +13,8 @@ namespace MCBS.Rendering
     {
         public HashPixelCollection(int width, int height, int pixel)
         {
-            ThrowHelper.ArgumentOutOfMin(0, width, nameof(width));
-            ThrowHelper.ArgumentOutOfMin(0, height, nameof(height));
+            ThrowHelper.ArgumentOutOfMin(1, width, nameof(width));
+            ThrowHelper.ArgumentOutOfMin(1, height, nameof(height));
 
             Width = width;
             Height = height;
@@ -34,14 +34,11 @@ namespace MCBS.Rendering
 
         public int Height { get; }
 
+        public SearchMode SearchMode => SearchMode.Index;
+
         public virtual bool SupportTransparent => true;
 
         public int TransparentPixel => string.Empty.GetHashCode();
-
-        public void Fill(int pixel)
-        {
-            new Span<int>(_hashs).Fill(pixel);
-        }
 
         public OverwriteContext Overwrite(IPixelCollection<int> pixels, Point location)
         {
@@ -89,6 +86,28 @@ namespace MCBS.Rendering
             }
             
             return overwriteContext;
+        }
+
+        public void Fill(int pixel)
+        {
+            new Span<int>(_hashs).Fill(pixel);
+        }
+
+        public IDictionary<Point, int> GetAllPixel()
+        {
+            PositionEnumerable positions = new(Width, Height);
+
+            Dictionary<Point, int> result = new();
+            Foreach.Start(positions, _hashs, (position, pixel) => result.Add(position, pixel));
+
+            return result;
+        }
+
+        public int[] ToArray()
+        {
+            int[] array = new int[_hashs.Length];
+            new Span<int>(_hashs).CopyTo(new(array));
+            return array;
         }
 
         public void CopyPixelDataTo(Span<int> destination)

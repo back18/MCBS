@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using QuanLib.Core;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -49,14 +50,11 @@ namespace MCBS.Rendering
 
         public int Height => _image.Height;
 
+        public SearchMode SearchMode => SearchMode.Coordinate;
+
         public virtual bool SupportTransparent { get; }
 
         public virtual TPixel TransparentPixel { get; }
-
-        public void Fill(TPixel pixel)
-        {
-            _image.Mutate(ctx => ctx.Fill(Color.FromPixel(pixel)));
-        }
 
         public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Point location)
         {
@@ -83,6 +81,32 @@ namespace MCBS.Rendering
             }
 
             return overwriteContext;
+        }
+
+        public void Fill(TPixel pixel)
+        {
+            _image.Mutate(ctx => ctx.Fill(Color.FromPixel(pixel)));
+        }
+
+        public IDictionary<Point, TPixel> GetAllPixel()
+        {
+            TPixel[] pixels = new TPixel[_image.Width * _image.Height];
+            Span<TPixel> span = new(pixels);
+            _image.CopyPixelDataTo(span);
+            PositionEnumerable positions = new(_image.Width, _image.Height);
+
+            Dictionary<Point, TPixel> result = new();
+            Foreach.Start(positions, pixels, (position, pixel) => result.Add(position, pixel));
+
+            return result;
+        }
+
+        public TPixel[] ToArray()
+        {
+            TPixel[] pixels = new TPixel[_image.Width * _image.Height];
+            Span<TPixel> span = new(pixels);
+            _image.CopyPixelDataTo(span);
+            return pixels;
         }
 
         public void CopyPixelDataTo(Span<TPixel> destination)

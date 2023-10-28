@@ -10,13 +10,19 @@ namespace MCBS.Rendering
 {
     public interface IPixelCollection<TPixel> : IPixelBuffer<TPixel>, IPixelBuffer2D<TPixel>
     {
+        public SearchMode SearchMode { get; }
+
         public bool SupportTransparent { get; }
 
         public TPixel TransparentPixel { get; }
 
+        public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Point position);
+
         public void Fill(TPixel pixel);
 
-        public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Point position);
+        public IDictionary<Point, TPixel> GetAllPixel();
+
+        public TPixel[] ToArray();
 
         public void CopyPixelDataTo(Span<TPixel> destination);
     }
