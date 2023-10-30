@@ -27,7 +27,7 @@ namespace MCBS.BlockForms
     /// <summary>
     /// 控件基类
     /// </summary>
-    public abstract class Control : IControl
+    public abstract partial class Control : IControl
     {
         protected Control()
         {
@@ -397,7 +397,7 @@ namespace MCBS.BlockForms
         }
         private int _MaxDisplayPriority;
 
-        public ControlSkin Skin { get; }
+        public ControlSkin_ Skin { get; }
 
         /// <summary>
         /// 锚定，大小不变，位置自适应父控件
@@ -1101,9 +1101,9 @@ namespace MCBS.BlockForms
                 ParentContainer = containerControl;
         }
 
-        public class ControlSkin : ISkin
+        public class ControlSkin_ : ISkin
         {
-            public ControlSkin(Control owner)
+            public ControlSkin_(Control owner)
             {
                 _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 

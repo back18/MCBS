@@ -8,16 +8,30 @@ namespace MCBS.Rendering
 {
     public class HashBlockPixel : BlockPixel<int>
     {
+        public HashBlockPixel(string pixel)
+        {
+            if (pixel is null)
+                throw new ArgumentNullException(nameof(pixel));
+
+            _blockConverter = new();
+            Pixel = _blockConverter[pixel];
+        }
+
         public HashBlockPixel(int pixel)
         {
-            Pixel = pixel;
             _blockConverter = new();
+            Pixel = pixel;
         }
 
         private readonly HashBlockConverter _blockConverter;
 
-        public override int Pixel { get; set; }
-
         public override IBlockConverter<int> BlockConverter => _blockConverter;
+
+        public override int Pixel { get; }
+
+        public override BlockPixel Clone()
+        {
+            return new HashBlockPixel(Pixel);
+        }
     }
 }

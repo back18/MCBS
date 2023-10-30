@@ -10,18 +10,32 @@ namespace MCBS.Rendering
 {
     public class ColorBlockPixel<TPixel> : BlockPixel<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
+        public ColorBlockPixel(string pixel)
+        {
+            if (pixel is null)
+                throw new ArgumentNullException(nameof(pixel));
+
+            _blockConverter = new();
+            Pixel = _blockConverter[pixel];
+        }
+
         public ColorBlockPixel(TPixel pixel)
         {
-            Pixel = pixel;
             _blockConverter = new();
+            Pixel = pixel;
         }
 
         private readonly ColorBlockConverter<TPixel> _blockConverter;
 
         public override IBlockConverter<TPixel> BlockConverter => _blockConverter;
 
-        public override TPixel Pixel { get; set; }
+        public override TPixel Pixel { get; }
 
         public Facing Facing { get => _blockConverter.Facing; set => _blockConverter.Facing = value; }
+
+        public override BlockPixel Clone()
+        {
+            return new ColorBlockPixel<TPixel>(Pixel);
+        }
     }
 }

@@ -6,15 +6,20 @@ using System.Threading.Tasks;
 
 namespace MCBS.Rendering
 {
-    public abstract class BlockPixel<TPixel>
+    public abstract class BlockPixel
     {
-        public abstract IBlockConverter<TPixel> BlockConverter { get; }
+        public abstract string ToBlockId();
 
-        public abstract TPixel Pixel { get; set; }
+        public abstract BlockPixel Clone();
 
-        public virtual string ToBlockId()
+        public static bool Equals(BlockPixel? blockPixel1, BlockPixel? blockPixel2)
         {
-            return BlockConverter[Pixel];
+            if (blockPixel1 == blockPixel2)
+                return true;
+            if (blockPixel1 is null || blockPixel2 is null)
+                return false;
+
+            return blockPixel1.ToBlockId() == blockPixel2.ToBlockId();
         }
     }
 }
