@@ -1,5 +1,6 @@
-﻿using MCBS.Events;
-using MCBS.Frame;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Events;
+using MCBS.Rendering;
 using MCBS.UI;
 using QuanLib.Core;
 using QuanLib.Minecraft.Blocks;
@@ -11,113 +12,71 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageFrame = MCBS.Frame.ImageFrame;
 
 namespace MCBS.BlockForms
 {
-    public class PictureBox : Control, IDisposable
+    public class PictureBox<TPixel> : Control where TPixel : unmanaged, IPixel<TPixel>
     {
         public PictureBox()
         {
-            DefaultResizeOptions = ImageFrame.DefaultResizeOptions.Clone();
-            DefaultResizeOptions.Size = ClientSize;
-            _ImageFrame = new(new Image<Rgba32>(DefaultResizeOptions.Size.Width, DefaultResizeOptions.Size.Height, GetBlockColor(BlockManager.Concrete.White)), GetScreenPlane().NormalFacing, DefaultResizeOptions.Clone());
+            DefaultResizeOptions = OptionsUtil.CreateDefaultResizeOption();
+            _Texture = new Texture<TPixel>(new(64, 64, this.GetBlockColor<TPixel>(BlockManager.Concrete.White)), DefaultResizeOptions.Clone());
             ClientSize = new(64, 64);
-
             AutoSize = true;
             ContentAnchor = AnchorPosition.Centered;
 
-            ImageFrameChanged += OnImageFrameChanged;
-
-            _autosetsizeing = false;
+            TextureChanged += OnTextureChanged;
         }
-
-        protected bool _autosetsizeing;
 
         public ResizeOptions DefaultResizeOptions { get; }
 
-        public ImageFrame ImageFrame
+        public Texture<TPixel> Texture
         {
-            get => _ImageFrame;
+            get => _Texture;
             set
             {
-                if (_ImageFrame != value)
+                if (!MCBS.Rendering.Texture.Equals(_Texture, value))
                 {
-                    ImageFrame temp = _ImageFrame;
-                    _ImageFrame = value;
-                    ImageFrameChanged.Invoke(this, new(temp, _ImageFrame));
-                    RequestUpdateFrame();
+                    Texture<TPixel> temp = _Texture;
+                    _Texture = value;
+                    TextureChanged.Invoke(this, new(temp, _Texture));
+                    RequestRendering();
                 }
             }
         }
-        private ImageFrame _ImageFrame;
+        private Texture<TPixel> _Texture;
 
-        public event EventHandler<PictureBox, ImageFrameChangedEventArgs> ImageFrameChanged;
+        public event EventHandler<PictureBox<TPixel>, TextureChangedEventArgs<TPixel>> TextureChanged;
 
-        public override IFrame RenderingFrame()
+        protected virtual void OnTextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
         {
-            if (ImageFrame.FrameSize != ClientSize)
-            {
-                ImageFrame.ResizeOptions.Size = ClientSize;
-                ImageFrame.Update();
-            }
+            e.OldTexture.Dispose();
 
-            return ImageFrame.GetFrameClone();
-        }
-
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
-        {
-            base.OnResize(sender, e);
-
-            if (_autosetsizeing)
-                return;
-
-            Size offset = e.NewSize - e.OldSize;
-            DefaultResizeOptions.Size += offset;
-            ImageFrame.ResizeOptions.Size += offset;
-            ImageFrame.Update();
             if (AutoSize)
                 AutoSetSize();
         }
 
-        protected virtual void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
+        protected override BlockFrame Rendering()
         {
-            e.OldImageFrame.Dispose();
-            if (AutoSize)
-                AutoSetSize();
+            BlockFrame textureFrame = Texture.CreateBlockFrame(ClientSize, GetScreenPlane().NormalFacing);
+            if (IsRenderingTransparencyTexture)
+                return textureFrame;
+
+            BlockFrame baseFrame =  base.Rendering();
+            baseFrame.Overwrite(textureFrame, Point.Empty);
+            return baseFrame;
         }
 
         public override void AutoSetSize()
         {
-            _autosetsizeing = true;
-            ClientSize = ImageFrame.FrameSize;
-            _autosetsizeing = false;
+            ClientSize = Texture.GetOutputSize();
         }
 
-        public Image<Rgba32> CreateImage(Size size, string blockID)
+        public void SetImage(Image<TPixel> image)
         {
-            return CreateImage(size, GetBlockColor(blockID));
-        }
-
-        public Image<Rgba32> CreateImage(int width, int height, string blockID)
-        {
-
-            return CreateImage(width, height, GetBlockColor(blockID));
-        }
-
-        public Image<Rgba32> CreateImage(Size size, Rgba32 color)
-        {
-            return CreateImage(size.Width, size.Height, color);
-        }
-
-        public Image<Rgba32> CreateImage(int width, int height, Rgba32 color)
-        {
-            return new Image<Rgba32>(width, height, color);
-        }
-
-        public void SetImage(Image<Rgba32> image)
-        {
-            ImageFrame = new(image, GetScreenPlane().NormalFacing, DefaultResizeOptions.Clone());
+            ResizeOptions resizeOptions = DefaultResizeOptions.Clone();
+            resizeOptions.Size = ClientSize;
+            Texture = new Texture<TPixel>(image, resizeOptions);
         }
 
         public bool TryReadImageFile(string path)
@@ -127,7 +86,7 @@ namespace MCBS.BlockForms
 
             try
             {
-                ImageFrame = new(Image.Load<Rgba32>(File.ReadAllBytes(path)), GetScreenPlane().NormalFacing, DefaultResizeOptions.Clone());
+                SetImage(Image.Load<TPixel>(path));
                 return true;
             }
             catch
@@ -136,11 +95,11 @@ namespace MCBS.BlockForms
             }
         }
 
-        public void Dispose()
+        protected override void DisposeUnmanaged()
         {
-            ImageFrame.Dispose();
+            base.DisposeUnmanaged();
 
-            GC.SuppressFinalize(this);
+            Texture.Dispose();
         }
     }
 }

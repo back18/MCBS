@@ -10,7 +10,7 @@ namespace MCBS.Rendering
 {
     public class OverwriteContext : IEnumerable<OverwriteMapping>
     {
-        public OverwriteContext(Size baseSize, Size overwriteSize, Point location)
+        public OverwriteContext(Size baseSize, Point baseLocation, Size overwriteSize, Point overwriteLocation)
         {
             if (baseSize.Width < 0 || baseSize.Height < 0)
                 throw new ArgumentException("宽度或长度不能小于0", nameof(baseSize));
@@ -22,29 +22,29 @@ namespace MCBS.Rendering
 
             Point baseStartPosition = Point.Empty;
             Point baseEndPosition = new(overwriteSize.Width - 1, overwriteSize.Height - 1);
-            Point overwriteStartPosition = Point.Empty;
+            Point overwriteStartPosition = overwriteLocation;
             Point overwriteEndPosition = new(overwriteSize.Width - 1, overwriteSize.Height - 1);
 
-            if (location.X < 0)
+            if (baseLocation.X < 0)
             {
-                baseEndPosition.X += location.X;
-                overwriteStartPosition.X -= location.X;
+                baseEndPosition.X += baseLocation.X;
+                overwriteStartPosition.X -= baseLocation.X;
             }
             else
             {
-                baseEndPosition.X += location.X;
-                baseStartPosition.X += location.X;
+                baseEndPosition.X += baseLocation.X;
+                baseStartPosition.X += baseLocation.X;
             }
 
-            if (location.Y < 0)
+            if (baseLocation.Y < 0)
             {
-                baseEndPosition.Y += location.Y;
-                overwriteStartPosition.Y -= location.Y;
+                baseEndPosition.Y += baseLocation.Y;
+                overwriteStartPosition.Y -= baseLocation.Y;
             }
             else
             {
-                baseStartPosition.Y += location.Y;
-                baseEndPosition.Y += location.Y;
+                baseStartPosition.Y += baseLocation.Y;
+                baseEndPosition.Y += baseLocation.Y;
             }
 
             Point maxEndPosition = new(baseSize.Width - 1, baseSize.Height - 1);

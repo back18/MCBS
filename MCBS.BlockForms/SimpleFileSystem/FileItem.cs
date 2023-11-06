@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.Blocks;
+using MCBS.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,8 @@ namespace MCBS.BlockForms.SimpleFileSystem
             FileInfo = fileInfo;
 
             Text = fileInfo.Name;
-            Skin.BackgroundBlockID = BlockManager.Concrete.White;
-            Skin.BackgroundBlockID_Hover = BlockManager.Concrete.White;
-            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightGray;
-            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
+            Skin.SetBackgroundColor(BlockManager.Concrete.White, ControlState.None, ControlState.Hover);
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
 
         public override FileSystemInfo FileSystemInfo => FileInfo;

@@ -1,13 +1,14 @@
 ﻿using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Graphics;
 using MCBS.Events;
-using MCBS.Frame;
+using MCBS.Rendering;
 using MCBS.UI;
 using Microsoft.VisualBasic;
 using NAudio.Midi;
 using NAudio.Wave;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
@@ -18,123 +19,80 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public class VideoBox : Control, IDisposable
+    public class VideoBox<TPixel> : Control where TPixel : unmanaged, IPixel<TPixel>
     {
         public VideoBox()
         {
-            DefaultMediaOptions = new();
-            DefaultResizeOptions = VideoFrame.DefaultResizeOptions.Clone();
-            DefaultResizeOptions.Size = ClientSize;
+            DefaultMediaOptions = OptionsUtil.CreateDefaultMediaOptions();
+            DefaultResizeOptions = OptionsUtil.CreateDefaultResizeOption();
+            DefaultResizeOptions.Mode = ResizeMode.Pad;
             ClientSize = new(64, 64);
             ContentAnchor = AnchorPosition.Centered;
 
             Played += OnPlayed;
             Paused += OnPaused;
             VideoFrameChanged += OnVideoFrameChanged;
-            MediaFilePlayerChanged += OnMediaFilePlayerChanged;
         }
 
         public MediaOptions DefaultMediaOptions { get; }
 
         public ResizeOptions DefaultResizeOptions { get; }
 
-        public MediaFilePlayer? MediaFilePlayer
-        {
-            get => _MediaFilePlayer;
-            set
-            {
-                MediaFilePlayer? temp = _MediaFilePlayer;
-                _MediaFilePlayer = value;
-                MediaFilePlayerChanged.Invoke(this, new(temp, _MediaFilePlayer));
-                RequestUpdateFrame();
-            }
-        }
-        private MediaFilePlayer? _MediaFilePlayer;
+        public MediaFilePlayer<TPixel>? MediaFilePlayer { get; private set; }
 
         public TimeSpan CurrentPosition => MediaFilePlayer?.CurrentPosition ?? TimeSpan.Zero;
 
         public TimeSpan TotalTime => MediaFilePlayer?.TotalTime ?? TimeSpan.Zero;
 
-        public event EventHandler<VideoBox, EventArgs> Played;
+        public event EventHandler<VideoBox<TPixel>, EventArgs> Played;
 
-        public event EventHandler<VideoBox, EventArgs> Paused;
+        public event EventHandler<VideoBox<TPixel>, EventArgs> Paused;
 
-        public event EventHandler<VideoBox, VideoFrameChangedEventArgs> VideoFrameChanged;
+        public event EventHandler<VideoBox<TPixel>, VideoFrameChangedEventArgs<TPixel>> VideoFrameChanged;
 
-        public event EventHandler<VideoBox, MediaFilePlayerChangedEventArge> MediaFilePlayerChanged;
+        protected virtual void OnPlayed(VideoBox<TPixel> sender, EventArgs e) { }
 
-        protected virtual void OnPlayed(VideoBox sender, EventArgs e) { }
+        protected virtual void OnPaused(VideoBox<TPixel> sender, EventArgs e) { }
 
-        protected virtual void OnPaused(VideoBox sender, EventArgs e) { }
-
-        protected virtual void OnVideoFrameChanged(VideoBox sender, VideoFrameChangedEventArgs e)
+        protected virtual void OnVideoFrameChanged(VideoBox<TPixel> sender, VideoFrameChangedEventArgs<TPixel> e)
         {
-            RequestUpdateFrame();
-        }
-
-        protected virtual void OnMediaFilePlayerChanged(VideoBox sender, MediaFilePlayerChangedEventArge e)
-        {
-            e.OldMediaFilePlayer?.Dispose();
-
-            if (e.OldMediaFilePlayer is not null)
-            {
-                e.OldMediaFilePlayer.Played -= NewMediaFilePlayer_Played;
-                e.OldMediaFilePlayer.Paused -= NewMediaFilePlayer_Paused;
-                e.OldMediaFilePlayer.VideoFrameChanged -= NewMediaFilePlayer_VideoFrameChanged;
-            }
-
-            if (e.NewMediaFilePlayer is not null)
-            {
-                e.NewMediaFilePlayer.Played += NewMediaFilePlayer_Played;
-                e.NewMediaFilePlayer.Paused += NewMediaFilePlayer_Paused;
-                e.NewMediaFilePlayer.VideoFrameChanged += NewMediaFilePlayer_VideoFrameChanged;
-            }
-        }
-
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
-        {
-            base.OnResize(sender, e);
-
-            Size offset = e.NewSize - e.OldSize;
-            DefaultResizeOptions.Size += offset;
-            if (MediaFilePlayer is not null)
-                MediaFilePlayer.VideoDecoder.ResizeOptions.Size += offset;
+            RequestRendering();
         }
 
         protected override void OnAfterFrame(Control sender, EventArgs e)
         {
             base.OnAfterFrame(sender, e);
 
-            MediaFilePlayer?.Handle();
+            MediaFilePlayer?.OnTick();
         }
 
-        public override IFrame RenderingFrame()
+        protected override BlockFrame Rendering()
         {
-            if (MediaFilePlayer is null || MediaFilePlayer.CurrentVideoFrame is null)
-            {
-                return base.RenderingFrame();
-            }
+            VideoFrame<TPixel>? videoFrame = MediaFilePlayer?.CurrentVideoFrame;
+            if (videoFrame is null)
+                return base.Rendering();
 
-            if (MediaFilePlayer.CurrentVideoFrame.FrameSize != ClientSize)
-            {
-                MediaFilePlayer.CurrentVideoFrame.ResizeOptions.Size = ClientSize;
-                MediaFilePlayer.CurrentVideoFrame.Update();
-            }
+            Texture<TPixel> texture = new(videoFrame.Image, DefaultResizeOptions);
+            BlockFrame textureFrame = texture.CreateBlockFrame(ClientSize, GetScreenPlane().NormalFacing);
+            if (IsRenderingTransparencyTexture)
+                return textureFrame;
 
-            return MediaFilePlayer.CurrentVideoFrame.GetFrameClone();
+            BlockFrame baseFrame = base.Rendering();
+            baseFrame.Overwrite(textureFrame, Point.Empty);
+            return baseFrame;
         }
 
-        private void NewMediaFilePlayer_Played(MediaFilePlayer sender, EventArgs e)
+        private void MediaFilePlayer_Played(MediaFilePlayer<TPixel> sender, EventArgs e)
         {
             Played.Invoke(this, e);
         }
 
-        private void NewMediaFilePlayer_Paused(MediaFilePlayer sender, EventArgs e)
+        private void MediaFilePlayer_Paused(MediaFilePlayer<TPixel> sender, EventArgs e)
         {
             Paused.Invoke(this, e);
         }
 
-        private void NewMediaFilePlayer_VideoFrameChanged(MediaFilePlayer sender, VideoFrameChangedEventArgs e)
+        private void MediaFilePlayer_VideoFrameChanged(MediaFilePlayer<TPixel> sender, VideoFrameChangedEventArgs<TPixel> e)
         {
             VideoFrameChanged.Invoke(this, e);
         }
@@ -146,7 +104,20 @@ namespace MCBS.BlockForms
 
             try
             {
-                MediaFilePlayer = new(path, GetScreenPlane().NormalFacing, DefaultMediaOptions, DefaultResizeOptions);
+                MediaFilePlayer<TPixel> mediaFilePlayer = new(path, DefaultMediaOptions);
+                if (MediaFilePlayer is not null)
+                {
+                    MediaFilePlayer.Played -= MediaFilePlayer_Played;
+                    MediaFilePlayer.Paused -= MediaFilePlayer_Paused;
+                    MediaFilePlayer.VideoFrameChanged -= MediaFilePlayer_VideoFrameChanged;
+                    MediaFilePlayer.Dispose();
+                }
+
+                MediaFilePlayer = mediaFilePlayer;
+                MediaFilePlayer.Played += MediaFilePlayer_Played;
+                MediaFilePlayer.Paused += MediaFilePlayer_Paused;
+                MediaFilePlayer.VideoFrameChanged += MediaFilePlayer_VideoFrameChanged;
+
                 return true;
             }
             catch
@@ -155,11 +126,11 @@ namespace MCBS.BlockForms
             }
         }
 
-        public void Dispose()
+        protected override void DisposeUnmanaged()
         {
-            MediaFilePlayer?.Dispose();
+            base.DisposeUnmanaged();
 
-            GC.SuppressFinalize(this);
+            MediaFilePlayer?.Dispose();
         }
     }
 }

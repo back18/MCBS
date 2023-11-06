@@ -12,6 +12,7 @@ namespace MCBS.Directorys
         public McbsDirectory(string directory) : base(directory)
         {
             ApplicationsDir = AddDirectory<ApplicationsDirectory>("Applications");
+            CachesDir = AddDirectory<CachesDirectory>("Caches");
             ConfigsDir = AddDirectory<ConfigsDirectory>("Configs");
             DllAppComponentsDir = AddDirectory<DllAppComponentsDirectory>("DllAppComponents");
             LogsDir = AddDirectory<LogsDirectory>("Logs");
@@ -20,6 +21,8 @@ namespace MCBS.Directorys
         }
 
         public ApplicationsDirectory ApplicationsDir { get; }
+
+        public CachesDirectory CachesDir { get; }
 
         public ConfigsDirectory ConfigsDir { get; }
 

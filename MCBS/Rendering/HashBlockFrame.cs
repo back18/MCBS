@@ -12,14 +12,29 @@ namespace MCBS.Rendering
     {
         public HashBlockFrame(int width, int height, string pixel = "")
         {
-            ThrowHelper.ArgumentOutOfMin(0, width, nameof(width));
-            ThrowHelper.ArgumentOutOfMin(0, height, nameof(height));
+            ThrowHelper.ArgumentOutOfMin(1, width, nameof(width));
+            ThrowHelper.ArgumentOutOfMin(1, height, nameof(height));
             if (pixel is null)
                 throw new ArgumentNullException(nameof(pixel));
 
             _blockConverter = new();
             _pixelCollection = new(width, height, _blockConverter[pixel]);
         }
+
+        private HashBlockFrame(HashPixelCollection pixelCollection)
+        {
+            if (pixelCollection is null)
+                throw new ArgumentNullException(nameof(pixelCollection));
+
+            _blockConverter = new();
+            _pixelCollection = pixelCollection;
+        }
+
+        public HashBlockFrame(int width, int height, BlockPixel pixel) : this(width, height, pixel?.ToBlockId() ?? throw new ArgumentNullException(nameof(pixel))) { }
+
+        public HashBlockFrame(Size size, string pixel = "") : this(size.Width, size.Height, pixel) { }
+
+        public HashBlockFrame(Size size, BlockPixel pixel) : this(size.Width, size.Height, pixel) { }
 
         private readonly HashBlockConverter _blockConverter;
 
@@ -28,5 +43,10 @@ namespace MCBS.Rendering
         public override IBlockConverter<int> BlockConverter => _blockConverter;
 
         public override IPixelCollection<int> Pixels => _pixelCollection;
+
+        public override BlockFrame Clone()
+        {
+            return new HashBlockFrame(_pixelCollection.Clone());
+        }
     }
 }

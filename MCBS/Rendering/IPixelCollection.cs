@@ -16,7 +16,7 @@ namespace MCBS.Rendering
 
         public TPixel TransparentPixel { get; }
 
-        public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Point position);
+        public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Size size, Point location, Point offset);
 
         public void Fill(TPixel pixel);
 

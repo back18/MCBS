@@ -28,6 +28,8 @@ namespace MCBS.Rendering
                 else
                     _items.TryAdd(texture.Textures[facing].AverageColor, texture.BlockID);
             }
+
+            _items[default] = string.Empty;
         }
 
         private readonly Dictionary<Rgba32, string> _items;
@@ -44,7 +46,8 @@ namespace MCBS.Rendering
 
         public ColorMatcher<TPixel> CreateColorMatcher<TPixel>() where TPixel : unmanaged, IPixel<TPixel>
         {
-            return new(Keys);
+            SR.ColorMappingCaches.TryGetValue(Facing, out var mappingCache);
+            return new(Keys, mappingCache);
         }
 
         public bool ContainsKey(Rgba32 key)

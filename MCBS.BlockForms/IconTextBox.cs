@@ -3,6 +3,7 @@ using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,24 +12,24 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public class IconTextBox : ContainerControl<Control>
+    public class IconTextBox<TPixel> : ContainerControl<Control> where TPixel : unmanaged, IPixel<TPixel>
     {
         public IconTextBox()
         {
             Icon_PictureBox = new();
             Icon_PictureBox.BorderWidth = 0;
             Icon_PictureBox.ClientSize = new(16, 16);
-            Icon_PictureBox.Skin.SetAllBackgroundBlockID(string.Empty);
+            Icon_PictureBox.Skin.SetAllBackgroundColor(string.Empty);
 
             Text_Label = new();
-            Text_Label.Skin.SetAllBackgroundBlockID(string.Empty);
+            Text_Label.Skin.SetAllBackgroundColor(string.Empty);
 
             _Spacing = 0;
 
             ClientSize = new(SR.DefaultFont.HalfWidth * 6, SR.DefaultFont.Height);
         }
 
-        public readonly PictureBox Icon_PictureBox;
+        public readonly PictureBox<TPixel> Icon_PictureBox;
 
         public readonly Label Text_Label;
 
@@ -42,7 +43,7 @@ namespace MCBS.BlockForms
                 if (_Spacing != value)
                 {
                     _Spacing = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -53,7 +54,7 @@ namespace MCBS.BlockForms
             base.Initialize();
 
             ChildControls.Add(Icon_PictureBox);
-            Icon_PictureBox.ImageFrameChanged += Icon_PictureBox_ImageFrameChanged;
+            Icon_PictureBox.TextureChanged += Icon_PictureBox_TextureChanged;
 
             ChildControls.Add(Text_Label);
             Text_Label.TextChanged += Text_Label_TextChanged;
@@ -61,7 +62,7 @@ namespace MCBS.BlockForms
             ActiveLayoutAll();
         }
 
-        private void Icon_PictureBox_ImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
+        private void Icon_PictureBox_TextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
         {
             if (AutoSize)
                 AutoSetSize();
@@ -82,10 +83,10 @@ namespace MCBS.BlockForms
         public override void AutoSetSize()
         {
             Size size = SR.DefaultFont.GetTotalSize(Text_Label.Text);
-            size.Width += Icon_PictureBox.ImageFrame.FrameSize.Width;
-            if (Icon_PictureBox.ImageFrame.FrameSize.Height > size.Height)
+            size.Width += Icon_PictureBox.Texture.ImageSource.Width;
+            if (Icon_PictureBox.Texture.ImageSource.Height > size.Height)
             {
-                size.Height = Math.Max(size.Height, Icon_PictureBox.ImageFrame.FrameSize.Height);
+                size.Height = Math.Max(size.Height, Icon_PictureBox.Texture.ImageSource.Height);
             }
             size.Width += Spacing * 2;
             size.Height += Spacing * 2;

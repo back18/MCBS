@@ -10,6 +10,7 @@ using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
 using System.Reflection;
 using MCBS.Events;
+using MCBS.Rendering;
 
 namespace MCBS.SystemApplications.Desktop
 {
@@ -49,7 +50,12 @@ namespace MCBS.SystemApplications.Desktop
 
             ActiveLayoutAll();
 
-            ClientPanel.Skin.SetAllBackgroundImage(_defaultWallpaper);
+            ClientPanel.Skin.SetAllBackgroundTexture(_defaultWallpaper);
+        }
+
+        protected override BlockFrame Rendering()
+        {
+            return base.Rendering();
         }
 
         public override void ActiveLayoutAll()

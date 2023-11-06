@@ -1,4 +1,4 @@
-﻿using MCBS.Frame;
+﻿using MCBS.Rendering;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -10,22 +10,22 @@ namespace MCBS.Cursor.Style
 {
     public class CursorStyle
     {
-        public CursorStyle(string cursorType, Point offset, ArrayFrame frame)
+        public CursorStyle(string cursorType, Point offset, BlockFrame blockFrame)
         {
             if (string.IsNullOrEmpty(cursorType))
                 throw new ArgumentException($"“{nameof(cursorType)}”不能为 null 或空。", nameof(cursorType));
-            if (frame is null)
-                throw new ArgumentNullException(nameof(frame));
+            if (blockFrame is null)
+                throw new ArgumentNullException(nameof(blockFrame));
 
             CursorType = cursorType;
             Offset = offset;
-            Frame = frame;
+            BlockFrame = blockFrame;
         }
 
         public string CursorType { get; }
 
         public Point Offset { get; }
 
-        public ArrayFrame Frame { get; }
+        public BlockFrame BlockFrame { get; }
     }
 }

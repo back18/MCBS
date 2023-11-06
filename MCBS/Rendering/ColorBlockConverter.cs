@@ -49,5 +49,10 @@ namespace MCBS.Rendering
         public IBlockMapping<TPixel> BlockMapping => _mapping;
 
         public BlockConverterMode ConverterMode => BlockConverterMode.ToBlockId;
+
+        internal async Task BuildCacheAsync(TPixel[] pixels)
+        {
+            await _mapping.BuildCacheAsync(pixels);
+        }
     }
 }

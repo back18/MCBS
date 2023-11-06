@@ -1,4 +1,4 @@
-﻿using MCBS.Frame;
+﻿using MCBS.Rendering;
 using QuanLib.Core;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
@@ -226,7 +226,7 @@ namespace MCBS.Screens
                 return false;
             }
 
-            OutputHandler.HandleOutput(ArrayFrame.BuildFrame(Width, Height, blockID));
+            OutputHandler.HandleOutput(new HashBlockFrame(Width, Height, blockID));
             return true;
         }
 
@@ -367,11 +367,6 @@ namespace MCBS.Screens
                 MCOS.Instance.MinecraftInstance.CommandSender.RemoveForceloadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
 
             _chunks.Clear();
-        }
-
-        public WorldPixel ToWorldPixel(ScreenPixel pixel)
-        {
-            return new(ToWorldPosition(pixel.Position), pixel.BlockID);
         }
 
         public BlockPos ToWorldPosition(Point pixel)
@@ -771,9 +766,9 @@ namespace MCBS.Screens
                 if (newScreen.Width == oldScreen.Width && newScreen.Height == oldScreen.Height)
                     return true;
 
-                ArrayFrame? oldFrame = null;
+                BlockFrame? oldFrame = null;
                 if (newScreen.OutputHandler.LastFrame is null)
-                    newScreen.OutputHandler.LastFrame = ArrayFrame.BuildFrame(newScreen.Width, newScreen.Height, newScreen.DefaultBackgroundBlcokID);
+                    newScreen.OutputHandler.LastFrame = new HashBlockFrame(newScreen.Width, newScreen.Height, newScreen.DefaultBackgroundBlcokID);
 
                 if (newScreen.Width > oldScreen.Width)
                 {
@@ -789,14 +784,14 @@ namespace MCBS.Screens
 
                     for (int x = oldScreen.Width; x < newScreen.Width; x++)
                         for (int y = 0; y < newScreen.Height; y++)
-                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, AIR_BLOCK);
+                            newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
                 }
                 else if (newScreen.Width < oldScreen.Width)
                 {
                     oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
                     for (int x = newScreen.Width; x < oldScreen.Width; x++)
                         for (int y = 0; y < oldScreen.Height; y++)
-                            oldFrame.SetBlockID(x, y, AIR_BLOCK);
+                            oldFrame[x, y] = AIR_BLOCK;
                 }
 
                 if (newScreen.Height > oldScreen.Height)
@@ -814,14 +809,14 @@ namespace MCBS.Screens
 
                     for (int y = oldScreen.Height; y < newScreen.Height; y++)
                         for (int x = 0; x < newScreen.Width; x++)
-                            newScreen.OutputHandler.LastFrame.SetBlockID(x, y, AIR_BLOCK);
+                            newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
                 }
                 else if (newScreen.Height < oldScreen.Height)
                 {
                     oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
                     for (int y = newScreen.Height; y < oldScreen.Height; y++)
                         for (int x = 0; x < oldScreen.Width; x++)
-                            oldFrame.SetBlockID(x, y, AIR_BLOCK);
+                            oldFrame[x, y] = AIR_BLOCK;
                 }
 
                 newScreen.Fill();

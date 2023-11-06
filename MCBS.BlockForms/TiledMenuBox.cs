@@ -28,7 +28,7 @@ namespace MCBS.BlockForms
                 if (_MinWidth != value)
                 {
                     _MinWidth = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }

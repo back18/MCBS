@@ -1,5 +1,4 @@
-﻿using static MCBS.Config.ConfigManager;
-using log4net.Core;
+﻿using log4net.Core;
 using NAudio.Codecs;
 using SixLabors.ImageSharp;
 using System;
@@ -13,8 +12,8 @@ using MCBS.State;
 using MCBS.Events;
 using MCBS.Cursor.Style;
 using MCBS.Cursor;
-using MCBS.Frame;
 using QuanLib.Minecraft.Snbt.Models;
+using MCBS.Rendering;
 
 namespace MCBS.Screens
 {
@@ -46,7 +45,7 @@ namespace MCBS.Screens
             _offlineCursors = new();
         }
 
-        private ArrayFrame? _frame;
+        private BlockFrame? _frame;
 
         private readonly List<CursorContext> _activeCursors;
 
@@ -154,21 +153,23 @@ namespace MCBS.Screens
 
         public async Task HandleUIRenderingAsync()
         {
-            ArrayFrame baseFrame = ArrayFrame.BuildFrame(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
-            ArrayFrame? formFrame = await UIRenderer.RenderingAsync(RootForm);
-            if (formFrame is not null)
-                baseFrame.Overwrite(formFrame, RootForm.ClientLocation);
+            HashBlockFrame baseFrame = new(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
+            BlockFrame formFrame = await RootForm.GetRenderingResultAsync();
+            baseFrame.Overwrite(formFrame, RootForm.ClientSize, RootForm.ClientLocation, RootForm.OffsetPosition);
             foreach (var cursorContext in _activeCursors)
             {
                 if (cursorContext.ScreenContextOf == this)
                 {
+                    Point position = cursorContext.NewInputData.CursorPosition;
+
                     foreach (HoverControl hoverControl in cursorContext.HoverControls.Values)
                     {
-                        ArrayFrame? hoverFrame = await UIRenderer.RenderingAsync(hoverControl.Control);
+                        BlockFrame hoverFrame = await hoverControl.Control.GetRenderingResultAsync();
                         if (hoverFrame is not null)
                         {
-                            baseFrame.Overwrite(hoverFrame, cursorContext.NewInputData.CursorPosition, hoverControl.OffsetPosition);
-                            baseFrame.DrawBorder(hoverControl.Control, cursorContext.NewInputData.CursorPosition, hoverControl.OffsetPosition);
+                            Point offset = hoverControl.OffsetPosition;
+                            baseFrame.Overwrite(hoverFrame, hoverControl.Control.ClientSize, new(position.X - offset.X, position.Y - offset.Y));
+                            baseFrame.DrawBorder(hoverControl.Control, position, hoverControl.OffsetPosition);
                         }
                     }
 
@@ -176,7 +177,8 @@ namespace MCBS.Screens
                     {
                         if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursorStyle))
                             cursorStyle = SR.CursorStyleManager[CursorStyleType.Default];
-                        baseFrame.Overwrite(cursorStyle.Frame, cursorContext.NewInputData.CursorPosition, cursorStyle.Offset);
+                        Point offset = cursorStyle.Offset;
+                        baseFrame.Overwrite(cursorStyle.BlockFrame, new(position.X - offset.X, position.Y - offset.Y));
                     }
                 }
             }

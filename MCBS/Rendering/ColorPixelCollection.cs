@@ -12,8 +12,24 @@ using System.Threading.Tasks;
 
 namespace MCBS.Rendering
 {
-    public class ColorPixelCollection<TPixel> : IPixelCollection<TPixel> where TPixel : unmanaged, IPixel<TPixel>
+    public class ColorPixelCollection<TPixel> : UnmanagedBase, IPixelCollection<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
+        static ColorPixelCollection()
+        {
+            _transparentPixelTypes = new()
+            {
+                typeof(Rgba32),
+                typeof(Rgba64),
+                typeof(Rgba1010102),
+                typeof(Argb32),
+                typeof(Abgr32),
+                typeof(Bgra32),
+                typeof(Bgra4444),
+                typeof(Bgra5551),
+                typeof(A8)
+            };
+        }
+
         public ColorPixelCollection(int width, int height) : this(new(width, height)) { }
 
         public ColorPixelCollection(int width, int height, TPixel pixel) : this(new(width, height, pixel)) { }
@@ -23,20 +39,13 @@ namespace MCBS.Rendering
             _image = image ?? throw new ArgumentNullException(nameof(image));
 
             TransparentPixel = default;
-            Type type = typeof(TPixel);
-            if (type == typeof(Rgba32) ||
-                type == typeof(Rgba64) ||
-                type == typeof(Rgba1010102) ||
-                type == typeof(Argb32) ||
-                type == typeof(Abgr32) ||
-                type == typeof(Bgra32) ||
-                type == typeof(Bgra4444) ||
-                type == typeof(Bgra5551) ||
-                type == typeof(A8))
-            {
+            if (_transparentPixelTypes.Contains(typeof(TPixel)))
                 SupportTransparent = true;
-            }
+            else
+                SupportTransparent = false;
         }
+
+        private static readonly HashSet<Type> _transparentPixelTypes;
 
         private readonly Image<TPixel> _image;
 
@@ -56,12 +65,21 @@ namespace MCBS.Rendering
 
         public virtual TPixel TransparentPixel { get; }
 
-        public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Point location)
+        public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Size size, Point location, Point offset)
         {
             if (pixels is null)
                 throw new ArgumentNullException(nameof(pixels));
 
-            OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), location);
+            if (size.Width < 0)
+                size.Width = 0;
+            if (size.Height < 0)
+                size.Height = 0;
+            if (size.Width > pixels.Width)
+                size.Width = pixels.Width;
+            if (size.Height > pixels.Height)
+                size.Height = pixels.Height;
+
+            OverwriteContext overwriteContext = new(new(Width, Height), location, new(size.Width, size.Height), offset);
             if (pixels.SupportTransparent)
             {
                 TPixel transparent = pixels.TransparentPixel;
@@ -112,6 +130,16 @@ namespace MCBS.Rendering
         public void CopyPixelDataTo(Span<TPixel> destination)
         {
             _image.CopyPixelDataTo(destination);
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            _image.Dispose();
+        }
+
+        public ColorPixelCollection<TPixel> Clone()
+        {
+            return new(_image.Clone());
         }
 
         public IEnumerator<TPixel> GetEnumerator()

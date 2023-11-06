@@ -1,4 +1,4 @@
-﻿using MCBS.Frame;
+﻿using MCBS.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +9,16 @@ namespace MCBS.BlockForms
 {
     public class VerticalScrollBar : ScrollBar
     {
-        public override IFrame RenderingFrame()
+        protected override BlockFrame Rendering()
         {
             int position = (int)Math.Round(ClientSize.Height * SliderPosition);
-            int slider = (int)Math.Round(ClientSize.Height * SliderSize);
-            if (slider < 1)
-                slider = 1;
+            int length = (int)Math.Round(ClientSize.Height * SliderSize);
+            if (length < 1)
+                length = 1;
 
-            ArrayFrame frame = ArrayFrame.BuildFrame(ClientSize, Skin.GetBackgroundBlockID());
-            frame.Overwrite(ArrayFrame.BuildFrame(ClientSize.Width, slider, Skin.GetForegroundBlockID()), new(0, position));
-
-            return frame;
+            BlockFrame baseFrame = base.Rendering();
+            baseFrame.Overwrite(new HashBlockFrame(ClientSize.Width, length, GetForegroundColor()), new(0, position));
+            return baseFrame;
         }
     }
 }

@@ -5,6 +5,7 @@ using MCBS.Screens;
 using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
@@ -25,15 +26,15 @@ namespace MCBS.SystemApplications.Desktop
 
             BorderWidth = 0;
             ClientSize = new(24, 24);
-            Skin.BackgroundBlockID = string.Empty;
-            Skin.BackgroundBlockID_Hover = BlockManager.Concrete.White;
-            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightBlue;
-            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Blue;
+            Skin.SetBackgroundColor(string.Empty, ControlState.None);
+            Skin.SetBackgroundColor(BlockManager.Concrete.White, ControlState.Hover);
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.Selected);
+            Skin.SetBackgroundColor(BlockManager.Concrete.Blue, ControlState.Hover, ControlState.Hover | ControlState.Selected);
         }
 
         private readonly ApplicationInfo _appInfo;
 
-        private readonly PictureBox Icon_PictureBox;
+        private readonly PictureBox<Rgba32> Icon_PictureBox;
 
         private readonly Label Name_Label;
 

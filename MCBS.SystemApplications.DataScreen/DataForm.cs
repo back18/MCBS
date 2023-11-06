@@ -41,17 +41,17 @@ namespace MCBS.SystemApplications.DataScreen
         {
             base.Initialize();
 
-            Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
-            ClientPanel.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
+            Skin.SetAllBackgroundColor(BlockManager.Concrete.LightBlue);
+            ClientPanel.Skin.SetAllBackgroundColor(BlockManager.Concrete.LightBlue);
             OnBeforeFrame(this, EventArgs.Empty);
 
             ClientPanel.ChildControls.Add(DayTime_Label);
             DayTime_Label.ClientLocation = new(2, 2);
-            DayTime_Label.Skin.SetAllBackgroundBlockID(Skin.BackgroundBlockID);
+            DayTime_Label.Skin.SetAllBackgroundColor(Skin.BackgroundColor);
 
             ClientPanel.ChildControls.Add(GameTime_Label);
             GameTime_Label.ClientLocation = new(2, 20);
-            GameTime_Label.Skin.SetAllBackgroundBlockID(Skin.BackgroundBlockID);
+            GameTime_Label.Skin.SetAllBackgroundColor(Skin.BackgroundColor);
         }
 
         protected override void OnBeforeFrame(Control sender, EventArgs e)

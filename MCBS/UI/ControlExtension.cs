@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.UI
 {
-    public static class Extension
+    public static class ControlExtension
     {
         public static int IndexOf<T>(this IReadOnlyControlCollection<T> source, T item) where T : class, IControl
         {

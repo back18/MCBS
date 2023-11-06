@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 using MCBS.Rendering;
 using System.Collections.ObjectModel;
 using QuanLib.Minecraft;
+using SixLabors.ImageSharp.PixelFormats;
+using Newtonsoft.Json;
 
 namespace MCBS
 {
@@ -39,11 +41,14 @@ namespace MCBS
         public static BlockTextureManager BlockTextureManager => _BlockTextureManager ?? throw new InvalidOperationException();
         private static BlockTextureManager? _BlockTextureManager;
 
-        public static ReadOnlyDictionary<Facing, Rgba32BlockMapping> Rgba32BlockMappings => _Rgba32BlockMapping ?? throw new InvalidOperationException();
-        private static ReadOnlyDictionary<Facing, Rgba32BlockMapping>? _Rgba32BlockMapping;
+        public static ReadOnlyDictionary<Facing, Rgba32BlockMapping> Rgba32BlockMappings => _Rgba32BlockMappings ?? new(new Dictionary<Facing, Rgba32BlockMapping>());
+        private static ReadOnlyDictionary<Facing, Rgba32BlockMapping>? _Rgba32BlockMappings;
 
         public static HashBlockMapping HashBlockMapping => _HashBlockMapping ?? throw new InvalidOperationException();
         private static HashBlockMapping? _HashBlockMapping;
+
+        public static ReadOnlyDictionary<Facing, ColorMappingCache> ColorMappingCaches => _ColorMappingCaches ?? new(new Dictionary<Facing, ColorMappingCache>());
+        private static ReadOnlyDictionary<Facing, ColorMappingCache>? _ColorMappingCaches;
 
         public static LanguageManager LanguageManager => _LanguageManager ?? throw new InvalidOperationException();
         private static LanguageManager? _LanguageManager;
@@ -73,9 +78,19 @@ namespace MCBS
                 { Facing.Zp, new(_BlockTextureManager, Facing.Zp) },
                 { Facing.Zm, new(_BlockTextureManager, Facing.Zm) }
             };
-            _Rgba32BlockMapping = new(mappings);
+            _Rgba32BlockMappings = new(mappings);
             _HashBlockMapping = new();
             LOGGER.Info("完成，方块数量: " + _BlockTextureManager.Count);
+
+            LOGGER.Info("开始构建Minecraft方块颜色映射表缓存");
+            Dictionary<Facing, ColorMappingCache> caches = new();
+            foreach (Facing facing in SystemConfig.BuildColorMappingCaches)
+            {
+                ColorMappingCache cache = ColorMappingCacheBuilder.Build(facing);
+                caches.Add(facing, cache);
+            }
+            _ColorMappingCaches = new(caches);
+            LOGGER.Info("完成");
 
             LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);
             string? minecraftLanguageFilePath = versionDirectory.LanguagesDir.Combine(MinecraftConfig.Language + ".json");

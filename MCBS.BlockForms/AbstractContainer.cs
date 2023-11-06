@@ -1,5 +1,6 @@
 ﻿using MCBS.Cursor;
 using MCBS.Events;
+using MCBS.Rendering;
 using MCBS.UI;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
@@ -157,6 +158,36 @@ namespace MCBS.BlockForms
             }
 
             base.HandleAfterFrame(e);
+        }
+
+        public override async Task<BlockFrame> GetRenderingResultAsync()
+        {
+            Task<BlockFrame> baseTask = base.GetRenderingResultAsync();
+
+            List<IControl> childControls = new();
+            List<Task<BlockFrame>> childTasks = new();
+            foreach (var control in GetChildControls())
+            {
+                if (control.Visible && control.ClientSize.Width > 0 && control.ClientSize.Height > 0)
+                {
+                    childControls.Add(control);
+                    childTasks.Add(control.GetRenderingResultAsync());
+                }
+            }
+
+            BlockFrame baseFrame = await baseTask;
+            BlockFrame[] childFrames = await Task.WhenAll(childTasks);
+
+            await Task.Run(() =>
+            {
+                Foreach.Start(childControls, childFrames, (control, frame) =>
+                {
+                    baseFrame.Overwrite(frame, control.ClientSize, control.GetRenderingLocation(), control.OffsetPosition);
+                    baseFrame.DrawBorder(control, control.GetRenderingLocation());
+                });
+            });
+
+            return baseFrame;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace MCBS.BlockForms
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
-            Skin.SetAllBackgroundBlockID(BlockManager.Concrete.LightBlue);
+            Skin.SetAllBackgroundColor(BlockManager.Concrete.LightBlue);
 
             FormContainer = new(this);
             TaskBar = new(this);
@@ -98,7 +98,7 @@ namespace MCBS.BlockForms
 
             StartMenu_Label.Text = "==开始==";
             StartMenu_Label.ClientSize = new(64, 16);
-            StartMenu_Label.Skin.SetAllBackgroundBlockID(string.Empty);
+            StartMenu_Label.Skin.SetAllBackgroundColor(string.Empty);
             StartMenu_ListMenuBox.AddedChildControlAndLayout(StartMenu_Label);
 
             Light_Switch.OnText = "点亮屏幕";
@@ -127,7 +127,7 @@ namespace MCBS.BlockForms
             ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ShowTaskBar_Button.LayoutLeft(this, e.NewSize.Height - ShowTaskBar_Button.Height, 0));
             ShowTaskBar_Button.Anchor = Direction.Bottom | Direction.Right;
-            ShowTaskBar_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Shrink"]);
+            ShowTaskBar_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Shrink"]);
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
             ShowTaskBar_Button.CursorLeave += ShowTaskBar_Button_CursorLeave;
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
@@ -400,7 +400,7 @@ namespace MCBS.BlockForms
                     Width = e.NewSize.Width;
                     ClientLocation = new(0, e.NewSize.Height - Height);
                 });
-                Skin.SetAllBackgroundBlockID(BlockManager.Concrete.White);
+                Skin.SetAllBackgroundColor(BlockManager.Concrete.White);
 
                 StartMenu_Switch = new();
                 FormsMenu = new();
@@ -427,12 +427,10 @@ namespace MCBS.BlockForms
                 StartMenu_Switch.ClientLocation = new(0, 1);
                 StartMenu_Switch.ClientSize = new(16, 16);
                 StartMenu_Switch.Anchor = Direction.Bottom | Direction.Left;
-                StartMenu_Switch.Skin.IsRenderedImageBackground = true;
-                StartMenu_Switch.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-                StartMenu_Switch.Skin.BackgroundBlockID_Hover = Skin.BackgroundBlockID;
-                StartMenu_Switch.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Orange;
-                StartMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
-                StartMenu_Switch.Skin.SetAllBackgroundImage(TextureManager.Instance["Logo"]);
+                StartMenu_Switch.IsRenderingTransparencyTexture = false;
+                StartMenu_Switch.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Hover);
+                StartMenu_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Orange, ControlState.Selected, ControlState.Hover | ControlState.Selected);
+                StartMenu_Switch.Skin.SetAllBackgroundTexture(TextureManager.Instance["Logo"]);
                 StartMenu_Switch.ControlSelected += StartMenu_Switch_ControlSelected;
                 StartMenu_Switch.ControlDeselected += StartMenu_Switch_ControlDeselected; ;
 
@@ -441,11 +439,10 @@ namespace MCBS.BlockForms
                 FullScreen_Button.ClientSize = new(16, 16);
                 FullScreen_Button.LayoutLeft(this, 1, 0);
                 FullScreen_Button.Anchor = Direction.Bottom | Direction.Right;
-                FullScreen_Button.Skin.IsRenderedImageBackground = true;
-                FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-                FullScreen_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
-                FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Expand"]);
+                FullScreen_Button.IsRenderingTransparencyTexture = false;
+                FullScreen_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                FullScreen_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                FullScreen_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Expand"]);
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
 
                 ChildControls.Add(FormsMenu);

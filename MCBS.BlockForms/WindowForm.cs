@@ -9,6 +9,7 @@ using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
 using QuanLib.Core.Events;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace MCBS.BlockForms
 {
@@ -100,7 +101,7 @@ namespace MCBS.BlockForms
             ShowTitleBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
             ShowTitleBar_Button.LayoutLeft(this, 0, 0));
             ShowTitleBar_Button.Anchor = Direction.Top | Direction.Right;
-            ShowTitleBar_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Shrink"]);
+            ShowTitleBar_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Shrink"]);
             ShowTitleBar_Button.CursorEnter += ShowTitleBar_Button_CursorEnter;
             ShowTitleBar_Button.CursorLeave += ShowTitleBar_Button_CursorLeave;
             ShowTitleBar_Button.RightClick += ShowTitleBar_Button_RightClick;
@@ -144,14 +145,14 @@ namespace MCBS.BlockForms
         {
             base.OnControlSelected(sender, e);
 
-            TitleBar.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Black);
+            TitleBar.Skin.SetAllForegroundColor(BlockManager.Concrete.Black);
         }
 
         protected override void OnControlDeselected(Control sender, EventArgs e)
         {
             base.OnControlDeselected(sender, e);
 
-            TitleBar.Skin.SetAllForegroundBlockID(BlockManager.Concrete.LightGray);
+            TitleBar.Skin.SetAllForegroundColor(BlockManager.Concrete.LightGray);
         }
 
         private void ShowTitleBar_Button_CursorEnter(Control sender, CursorEventArgs e)
@@ -195,7 +196,7 @@ namespace MCBS.BlockForms
 
             private readonly WindowForm _owner;
 
-            private readonly IconTextBox Title_IconTextBox;
+            private readonly IconTextBox<Rgba32> Title_IconTextBox;
 
             private readonly Button Close_Button;
 
@@ -250,47 +251,40 @@ namespace MCBS.BlockForms
                 Close_Button.ClientSize = new(16, 16);
                 Close_Button.Anchor = Direction.Top | Direction.Right;
                 Close_Button.FirstHandleRightClick = true;
-                Close_Button.Skin.IsRenderedImageBackground = true;
-                Close_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-                Close_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Red;
-                Close_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Red;
-                Close_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Close"]);
+                Close_Button.IsRenderingTransparencyTexture = false;
+                Close_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                Close_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Red, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                Close_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Close"]);
                 Close_Button.RightClick += Close_Button_RightClick;
 
                 MaximizeOrRestore_Switch.BorderWidth = 0;
                 MaximizeOrRestore_Switch.ClientSize = new(16, 16);
                 MaximizeOrRestore_Switch.Anchor = Direction.Top | Direction.Right;
                 MaximizeOrRestore_Switch.FirstHandleRightClick = true;
-                MaximizeOrRestore_Switch.Skin.IsRenderedImageBackground = true;
-                MaximizeOrRestore_Switch.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-                MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID;
-                MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
-                MaximizeOrRestore_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.Instance["Maximize"]);
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.Instance["Maximize"]);
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.Instance["Restore"]);
-                MaximizeOrRestore_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.Instance["Restore"]);
+                MaximizeOrRestore_Switch.IsRenderingTransparencyTexture = false;
+                MaximizeOrRestore_Switch.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                MaximizeOrRestore_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                MaximizeOrRestore_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Maximize"], new ControlState[] { ControlState.None, ControlState.Hover });
+                MaximizeOrRestore_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Restore"], new ControlState[] { ControlState.Selected, ControlState.Hover | ControlState.Selected });
 
                 Minimize_Button.BorderWidth = 0;
                 Minimize_Button.ClientSize = new(16, 16);
                 Minimize_Button.Anchor = Direction.Top | Direction.Right;
                 Minimize_Button.FirstHandleRightClick = true;
-                Minimize_Button.Skin.IsRenderedImageBackground = true;
-                Minimize_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-                Minimize_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
-                Minimize_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                Minimize_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Minimize"]);
+                Minimize_Button.IsRenderingTransparencyTexture = false;
+                Minimize_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                Minimize_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                Minimize_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Minimize"]);
                 Minimize_Button.RightClick += Minimize_Button_RightClick;
 
                 FullScreen_Button.BorderWidth = 0;
                 FullScreen_Button.ClientSize = new(16, 16);
                 FullScreen_Button.Anchor = Direction.Top | Direction.Right;
                 FullScreen_Button.FirstHandleRightClick = true;
-                FullScreen_Button.Skin.IsRenderedImageBackground = true;
-                FullScreen_Button.Skin.BackgroundBlockID = Skin.BackgroundBlockID;
-                FullScreen_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightGray;
-                FullScreen_Button.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
-                FullScreen_Button.Skin.SetAllBackgroundImage(TextureManager.Instance["Expand"]);
+                FullScreen_Button.IsRenderingTransparencyTexture = false;
+                FullScreen_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                FullScreen_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                FullScreen_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Expand"]);
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
             }
 

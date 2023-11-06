@@ -21,7 +21,7 @@ namespace MCBS.BlockForms
                 if (_Progress != value)
                 {
                     _Progress = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }

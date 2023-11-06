@@ -1,5 +1,5 @@
 ﻿using MCBS.Events;
-using MCBS.Frame;
+using MCBS.Rendering;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -21,16 +21,14 @@ namespace MCBS.UI
 
         public int BorderWidth { get; set; }
 
-        public AnchorPosition ContentAnchor { get; set; }
+        public Task<BlockFrame> GetRenderingResultAsync();
 
-        public ISkin Skin { get; }
+        public BlockPixel GetForegroundColor();
 
-        public bool NeedRendering { get; }
+        public BlockPixel GetBackgroundColor();
 
-        public IFrame RenderingFrame();
+        public BlockPixel GetBorderColor();
 
-        public ArrayFrame? GetFrameCache();
-
-        public void HandleRenderingCompleted(ArrayFrameEventArgs e);
+        public Texture? GetBackgroundTexture();
     }
 }

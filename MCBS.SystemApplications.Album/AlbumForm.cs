@@ -2,11 +2,13 @@
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using MCBS.Rendering;
 using MCBS.UI;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using System;
@@ -14,7 +16,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageFrame = MCBS.Frame.ImageFrame;
 
 namespace MCBS.SystemApplications.Album
 {
@@ -53,7 +54,7 @@ namespace MCBS.SystemApplications.Album
 
         private FileList? _images;
 
-        private readonly ScalablePictureBox ScalablePictureBox;
+        private readonly ScalablePictureBox<Rgba32> ScalablePictureBox;
 
         private readonly Switch Setting_Switch;
 
@@ -81,20 +82,22 @@ namespace MCBS.SystemApplications.Album
         {
             base.Initialize();
 
+            ClientPanel.Resize += ClientPanel_Resize;
+
             ClientPanel.ChildControls.Add(ScalablePictureBox);
             ScalablePictureBox.EnableZoom = true;
             ScalablePictureBox.EnableDrag = true;
             ScalablePictureBox.BorderWidth = 0;
             ScalablePictureBox.ClientSize = ClientPanel.ClientSize;
-            ScalablePictureBox.Stretch = Direction.Bottom | Direction.Right;
             ScalablePictureBox.Resize += ScalablePictureBox_Resize;
+            ScalablePictureBox.TextureChanged += ScalablePictureBox_TextureChanged;
 
             ClientPanel.ChildControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
             Setting_Switch.OnText = "应用";
-            Setting_Switch.Skin.BackgroundBlockID = string.Empty;
-            Setting_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
-            Setting_Switch.Skin.BackgroundBlockID_Selected = Setting_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
+            Setting_Switch.Skin.SetBackgroundColor(string.Empty, ControlState.None);
+            Setting_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.Hover);
+            Setting_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Orange, ControlState.Selected, ControlState.Hover | ControlState.Selected);
             Setting_Switch.ClientLocation = new(2, 2);
             Setting_Switch.ControlSelected += Setting_Switch_ControlSelected;
             Setting_Switch.ControlDeselected += Setting_Switch_ControlDeselected;
@@ -103,7 +106,7 @@ namespace MCBS.SystemApplications.Album
             Path_TextBox.LayoutRight(ClientPanel, Setting_Switch, 2);
             Path_TextBox.Width = ClientPanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
-            Path_TextBox.Skin.BackgroundBlockID = string.Empty;
+            Path_TextBox.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Path_TextBox.TextChanged += Path_TextBox_TextChanged;
 
             ClientPanel.ChildControls.Add(PreviousImage_Button);
@@ -111,7 +114,7 @@ namespace MCBS.SystemApplications.Album
             PreviousImage_Button.ClientSize = new(16, 16);
             PreviousImage_Button.LayoutSyncer = new(ClientPanel, (sender, e) => { }, (sender, e) =>
             PreviousImage_Button.LayoutVerticalCentered(ClientPanel, 2));
-            PreviousImage_Button.Skin.BackgroundBlockID = string.Empty;
+            PreviousImage_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             PreviousImage_Button.RightClick += PreviousImage_Button_RightClick;
 
             ClientPanel.ChildControls.Add(NextImage_Button);
@@ -119,18 +122,18 @@ namespace MCBS.SystemApplications.Album
             NextImage_Button.ClientSize = new(16, 16);
             NextImage_Button.LayoutSyncer = new(ClientPanel, (sender, e) => { }, (sender, e) =>
             NextImage_Button.LayoutVerticalCentered(ClientPanel, ClientPanel.ClientSize.Width - NextImage_Button.Width - 3));
-            NextImage_Button.Skin.BackgroundBlockID = string.Empty;
+            NextImage_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             NextImage_Button.RightClick += NextImage_Button_RightClick;
 
             Setting_ListMenuBox.ClientSize = new(128, 20 * 3 + 2);
             Setting_ListMenuBox.Spacing = 2;
             Setting_ListMenuBox.LayoutDown(ClientPanel, Setting_Switch, 2);
-            Setting_ListMenuBox.Skin.SetAllBackgroundBlockID(string.Empty);
+            Setting_ListMenuBox.Skin.SetAllBackgroundColor(string.Empty);
 
             int width = Setting_ListMenuBox.ClientSize.Width - 4;
 
             ResizeMode_ComboButton.Width = width;
-            ResizeMode_ComboButton.Skin.BackgroundBlockID = string.Empty;
+            ResizeMode_ComboButton.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             ResizeMode_ComboButton.Title = "模式";
             ResizeMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<ResizeMode>());
             ResizeMode_ComboButton.Items.SelectedItem = ScalablePictureBox.DefaultResizeOptions.Mode;
@@ -151,7 +154,7 @@ namespace MCBS.SystemApplications.Album
             Setting_ListMenuBox.AddedChildControlAndLayout(ResizeMode_ComboButton);
 
             AnchorPositionMode_ComboButton.Width = width;
-            AnchorPositionMode_ComboButton.Skin.BackgroundBlockID = string.Empty;
+            AnchorPositionMode_ComboButton.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             AnchorPositionMode_ComboButton.Title = "锚点";
             AnchorPositionMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<AnchorPositionMode>());
             AnchorPositionMode_ComboButton.Items.SelectedItem = ScalablePictureBox.DefaultResizeOptions.Position;
@@ -174,7 +177,7 @@ namespace MCBS.SystemApplications.Album
             Setting_ListMenuBox.AddedChildControlAndLayout(AnchorPositionMode_ComboButton);
 
             Resampler_ComboButton.Width = width;
-            Resampler_ComboButton.Skin.BackgroundBlockID = string.Empty;
+            Resampler_ComboButton.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Resampler_ComboButton.Title = "算法";
             Resampler_ComboButton.Items.Add(KnownResamplers.Bicubic, nameof(KnownResamplers.Bicubic));
             Resampler_ComboButton.Items.Add(KnownResamplers.Box, nameof(KnownResamplers.Box));
@@ -193,7 +196,7 @@ namespace MCBS.SystemApplications.Album
             Setting_ListMenuBox.AddedChildControlAndLayout(Resampler_ComboButton);
 
             SetAsWallpaper_Button.Width = width;
-            SetAsWallpaper_Button.Skin.BackgroundBlockID = string.Empty;
+            SetAsWallpaper_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             SetAsWallpaper_Button.Text = "设为壁纸";
             SetAsWallpaper_Button.RightClick += SetAsWallpaper_Button_RightClick;
             Setting_ListMenuBox.AddedChildControlAndLayout(SetAsWallpaper_Button);
@@ -206,7 +209,7 @@ namespace MCBS.SystemApplications.Album
             if (_open is not null)
                 Path_TextBox.Text = _open;
             else
-                ScalablePictureBox.SetImage(ScalablePictureBox.CreateImage(ScalablePictureBox.ClientSize, BlockManager.Concrete.White));
+                ScalablePictureBox.SetImage(new Image<Rgba32>(ClientPanel.Width, ClientPanel.Height, ScalablePictureBox.GetBlockColor<Rgba32>(BlockManager.Concrete.White)));
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -219,7 +222,7 @@ namespace MCBS.SystemApplications.Album
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
-            if (ClientPanel.ChildControls.FirstHover is null or BlockForms.ScalablePictureBox)
+            if (ClientPanel.ChildControls.FirstHover is null or ScalablePictureBox<Rgba32>)
             {
                 if (Setting_Switch.Visible)
                 {
@@ -238,7 +241,7 @@ namespace MCBS.SystemApplications.Album
         {
             base.OnBeforeFrame(sender, e);
 
-            if (ClientPanel.ChildControls.FirstHover is null or BlockForms.ScalablePictureBox)
+            if (ClientPanel.ChildControls.FirstHover is null or BlockForms.ScalablePictureBox<Rgba32>)
             {
                 if (OverlayHideTime <= 0)
                     HideOverlay();
@@ -262,9 +265,19 @@ namespace MCBS.SystemApplications.Album
             NextImage_Button.Visible = false;
         }
 
+        private void ClientPanel_Resize(Control sender, SizeChangedEventArgs e)
+        {
+            ScalablePictureBox.ClientSize = ClientPanel.ClientSize;
+        }
+
         private void ScalablePictureBox_Resize(Control sender, SizeChangedEventArgs e)
         {
             ScalablePictureBox.LayoutCentered(ClientPanel);
+        }
+
+        private void ScalablePictureBox_TextureChanged(PictureBox<Rgba32> sender, TextureChangedEventArgs<Rgba32> e)
+        {
+            ScalablePictureBox.ClientSize = ClientPanel.ClientSize;
         }
 
         private void Setting_Switch_ControlSelected(Control sender, EventArgs e)
@@ -275,8 +288,7 @@ namespace MCBS.SystemApplications.Album
         private void Setting_Switch_ControlDeselected(Control sender, EventArgs e)
         {
             ApplySetting(ScalablePictureBox.DefaultResizeOptions);
-            ApplySetting(ScalablePictureBox.ImageFrame.ResizeOptions);
-            ScalablePictureBox.ImageFrame.Update(ScalablePictureBox.Rectangle);
+            ApplySetting(ScalablePictureBox.Texture.ResizeOptions);
             ScalablePictureBox.AutoSetSize();
             ClientPanel.ChildControls.Remove(Setting_ListMenuBox);
         }
@@ -327,7 +339,7 @@ namespace MCBS.SystemApplications.Album
         {
             options.Mode = ResizeMode_ComboButton.Items.SelectedItem;
             options.Position = AnchorPositionMode_ComboButton.Items.SelectedItem;
-            options.Sampler = Resampler_ComboButton.Items.SelectedItem ?? ImageFrame.DefaultResizeOptions.Sampler;
+            options.Sampler = Resampler_ComboButton.Items.SelectedItem ?? OptionsUtil.CreateDefaultResizeOption().Sampler;
         }
     }
 }

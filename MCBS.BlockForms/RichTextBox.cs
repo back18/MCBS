@@ -1,12 +1,15 @@
 ﻿using MCBS.Cursor;
 using MCBS.Events;
-using MCBS.Frame;
+using MCBS.Rendering;
+using MCBS.UI;
 using QuanLib.BDF;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,25 +20,17 @@ namespace MCBS.BlockForms
     {
         public RichTextBox()
         {
+            Lines = new(Array.Empty<string>());
             IsReadOnly = true;
-            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightBlue;
-            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightBlue;
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.Selected, ControlState.Hover | ControlState.Selected);
 
-            _frame = ArrayFrame.BuildFrame(PageSize, Skin.GetBackgroundBlockID());
             _text = new();
-            _lines = new();
             _WordWrap = true;
         }
 
-        private ArrayFrame _frame;
-
         private readonly StringBuilder _text;
 
-        private readonly List<string> _lines;
-
-        public IReadOnlyList<string> Lines => _lines;
-
-        public int LineCount => _lines.Count;
+        public ReadOnlyCollection<string> Lines { get; private set; }
 
         public bool IsReadOnly { get; set; }
 
@@ -50,7 +45,7 @@ namespace MCBS.BlockForms
                     _text.Clear();
                     _text.Append(value);
                     HandleTextChanged(new(temp, value));
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -63,16 +58,46 @@ namespace MCBS.BlockForms
                 if (_WordWrap != value)
                 {
                     _WordWrap = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
         private bool _WordWrap;
 
-        public override IFrame RenderingFrame()
+        protected override BlockFrame Rendering()
         {
-            ActiveLayoutAll();
-            return _frame;
+            BlockFrame baseFrame = base.Rendering();
+            if (Lines.Count == 0)
+                return baseFrame;
+
+            Point start = OffsetPosition;
+            Point end = new(OffsetPosition.X + ClientSize.Width, OffsetPosition.Y + ClientSize.Height);
+            Point position = new(0, start.Y / SR.DefaultFont.Height * SR.DefaultFont.Height);
+            for (int i = start.Y / SR.DefaultFont.Height; i < Lines.Count; i++)
+            {
+                if (position.Y > end.Y)
+                    break;
+
+                foreach (char c in Lines[i])
+                {
+                    FontData fontData = SR.DefaultFont[c];
+                    if (position.X > end.X)
+                        break;
+                    if (position.X + fontData.Width < start.X)
+                    {
+                        position.X += fontData.Width;
+                        break;
+                    }
+
+                    baseFrame.DrawBinary(fontData.GetBinary(), GetForegroundColor().ToBlockId(), position);
+                    position.X += fontData.Width;
+                }
+
+                position.X = 0;
+                position.Y += SR.DefaultFont.Height;
+            }
+
+            return baseFrame;
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -96,75 +121,63 @@ namespace MCBS.BlockForms
             UpdateSelected();
         }
 
-        protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)
+        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
         {
-            base.OnTextEditorUpdate(sender, e);
+            base.OnTextChanged(sender, e);
 
-            if (!IsReadOnly)
-                Text = e.NewData.TextEditor;
-        }
+            string[] lines = e.NewText.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-        public override void ActiveLayoutAll()
-        {
-            _lines.Clear();
-            BdfFont font = SR.DefaultFont;
-            string[] lines = _text.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             if (WordWrap)
             {
-                if (ClientSize.Width < font.FullWidth)
+                if (ClientSize.Width < SR.DefaultFont.FullWidth)
                 {
+                    Lines = new(Array.Empty<string>());
                     PageSize = ClientSize;
-                    _frame = ArrayFrame.BuildFrame(PageSize, Skin.GetBackgroundBlockID());
-                    return;
                 }
 
+                List<string> words = new();
                 foreach (string line in lines)
                 {
                     int start = 0;
                     int width = 0;
                     for (int i = 0; i < line.Length; i++)
                     {
-                        var data = font[line[i]];
+                        var data = SR.DefaultFont[line[i]];
                         width += data.Width;
                         if (width > ClientSize.Width)
                         {
-                            _lines.Add(line[start..i]);
+                            words.Add(line[start..i]);
                             start = i;
                             width = data.Width;
                         }
                     }
-
-                    _lines.Add(line[start..line.Length]);
+                    words.Add(line[start..line.Length]);
                 }
-                PageSize = new(ClientSize.Width, _lines.Count * font.Height);
+
+                Lines = new(words);
+                PageSize = new(ClientSize.Width, Lines.Count * SR.DefaultFont.Height);
             }
             else
             {
-                _lines.AddRange(lines);
-                int height = _lines.Count * font.Height;
-                int width = 0;
-                foreach (var line in _lines)
+                int maxWidth = 0;
+                foreach (string line in lines)
                 {
-                    int lineWidth = font.GetTotalSize(line).Width;
-                    if (lineWidth > width)
-                        width = lineWidth;
+                    int width = SR.DefaultFont.GetTotalSize(line).Width;
+                    if (width > maxWidth)
+                        maxWidth = width;
                 }
-                PageSize = new(width, height);
-            }
 
-            _frame = ArrayFrame.BuildFrame(PageSize, Skin.GetBackgroundBlockID());
-            Point position = new(0, 0);
-            foreach (var line in _lines)
-            {
-                foreach (var c in line)
-                {
-                    var data = font[c];
-                    _frame.Overwrite(ArrayFrame.BuildFrame(data.GetBinary(), Skin.GetForegroundBlockID(), Skin.GetBackgroundBlockID()), position);
-                    position.X += data.Width;
-                }
-                position.X = 0;
-                position.Y += font.Height;
+                Lines = new(lines);
+                PageSize = new(maxWidth, Lines.Count * SR.DefaultFont.Height);
             }
+        }
+
+        protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)
+        {
+            base.OnTextEditorUpdate(sender, e);
+
+            if (!IsReadOnly)
+                Text = e.NewData.TextEditor;
         }
 
         public CursorContext[] GetHoverTextEditorCursors()

@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.Blocks;
+using MCBS.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,8 @@ namespace MCBS.BlockForms
             _SliderSize = 1;
             _SliderPosition = 0;
 
-            Skin.ForegroundBlockID = BlockManager.Concrete.LightGray;
-            Skin.ForegroundBlockID_Selected = BlockManager.Concrete.LightGray;
-            Skin.ForegroundBlockID_Hover = BlockManager.Concrete.LightBlue;
-            Skin.ForegroundBlockID_Hover_Selected = BlockManager.Concrete.LightBlue;
+            Skin.SetForegroundColor(BlockManager.Concrete.LightGray, ControlState.None, ControlState.Selected);
+            Skin.SetForegroundColor(BlockManager.Concrete.LightBlue, ControlState.Hover, ControlState.Hover | ControlState.Selected);
         }
 
         public double SliderSize
@@ -35,7 +34,7 @@ namespace MCBS.BlockForms
                 if (_SliderSize != value)
                 {
                     _SliderSize = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -54,7 +53,7 @@ namespace MCBS.BlockForms
                 if (_SliderPosition != value)
                 {
                     _SliderPosition = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }

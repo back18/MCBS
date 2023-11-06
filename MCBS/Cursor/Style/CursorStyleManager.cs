@@ -9,9 +9,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.Frame;
 using QuanLib.Minecraft;
 using QuanLib.Core.Extensions;
+using MCBS.Rendering;
 
 namespace MCBS.Cursor.Style
 {
@@ -80,8 +80,8 @@ namespace MCBS.Cursor.Style
             {
                 using Stream stream = assembly.GetManifestResourceStream(SR.SystemResourceNamespace.CursorsNamespace.Combine(index.Image)) ?? throw new InvalidOperationException();
                 var image = Image.Load<Rgba32>(stream);
-                ArrayFrame frame = ArrayFrame.FromImage(Facing.Zm, image, string.Empty);
-                CursorStyle cursor = new(index.Type, new(index.XOffset, index.YOffset), frame);
+                ColorBlockFrame<Rgba32> colorBlockFrame = new(image);
+                CursorStyle cursor = new(index.Type, new(index.XOffset, index.YOffset), colorBlockFrame);
                 result.Add(cursor.CursorType, cursor);
             }
 

@@ -165,7 +165,7 @@ namespace MCBS.BlockForms
                 ((IControl)item).SetGenericContainerControl(_owner);
                 RecentlyAddedControl = item;
                 _owner.AddedChildControl.Invoke(_owner, new(item));
-                _owner.RequestUpdateFrame();
+                _owner.RequestRendering();
             }
 
             public override bool Remove(T item)
@@ -179,7 +179,7 @@ namespace MCBS.BlockForms
                 ((IControl)item).SetGenericContainerControl(null);
                 RecentlyRemovedControl = item;
                 _owner.RemovedChildControl.Invoke(_owner, new(item));
-                _owner.RequestUpdateFrame();
+                _owner.RequestRendering();
                 return true;
             }
 

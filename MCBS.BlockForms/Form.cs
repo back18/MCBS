@@ -1,4 +1,5 @@
 ﻿using MCBS.Application;
+using MCBS.BlockForms.Utility;
 using MCBS.Cursor;
 using MCBS.Cursor.Style;
 using MCBS.Events;
@@ -215,7 +216,7 @@ namespace MCBS.BlockForms
             if (appInfo is not null)
                 return appInfo.GetIcon();
             else
-                return new(16, 16, GetBlockColor(BlockManager.Concrete.White));
+                return new(16, 16, this.GetBlockColor<Rgba32>(BlockManager.Concrete.White));
         }
 
         public Direction GetStretchingBorders(Point position)

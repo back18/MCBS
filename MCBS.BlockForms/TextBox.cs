@@ -1,6 +1,6 @@
 ﻿using MCBS.Cursor;
 using MCBS.Events;
-using QuanLib.Core.Events;
+using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using System;
@@ -18,8 +18,7 @@ namespace MCBS.BlockForms
             IsReadOnly = false;
 
             ClientSize = new(64, 16);
-            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.LightBlue;
-            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightBlue;
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
 
         public bool IsReadOnly { get; set; }

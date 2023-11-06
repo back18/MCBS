@@ -44,12 +44,6 @@ namespace MCBS.ConsoleTerminal
 
         private static void Main(string[] args)
         {
-            PositionEnumerable pos = new(16, 16);
-            foreach (var p in pos)
-            {
-                Console.WriteLine(p);
-            }
-
             LOGGER.Info("MCBS已启动，欢迎使用！");
             Terminal.Start("Terminal Thread");
             CommandLogger.Start("CommandLogger Thread");

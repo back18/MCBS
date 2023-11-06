@@ -17,8 +17,8 @@ namespace MCBS.BlockForms
             _OnText = string.Empty;
             _OffText = string.Empty;
 
-            Skin.BackgroundBlockID = Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Red;
-            Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Lime;
+            Skin.SetBackgroundColor(BlockManager.Concrete.Red, ControlState.None, ControlState.Hover);
+            Skin.SetBackgroundColor(BlockManager.Concrete.Lime, ControlState.Selected, ControlState.Hover | ControlState.Selected);
             ContentAnchor = AnchorPosition.Centered;
         }
 
@@ -85,7 +85,7 @@ namespace MCBS.BlockForms
                 {
                     _OffText = value;
                     if (!string.IsNullOrEmpty(_OffText) && !IsSelected)
-                        RequestUpdateFrame();
+                        RequestRendering();
                     Text = OffText;
                 }
             }

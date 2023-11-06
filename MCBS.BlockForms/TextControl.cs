@@ -1,4 +1,5 @@
-﻿using MCBS.Frame;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Rendering;
 using MCBS.UI;
 using QuanLib.Core.Events;
 using System;
@@ -19,62 +20,22 @@ namespace MCBS.BlockForms
                 AutoSetSize();
         }
 
-        public override IFrame RenderingFrame()
+        protected override BlockFrame Rendering()
         {
-            ArrayFrame? image = Skin.GetBackgroundImage()?.GetFrame();
-            if (image is not null && Skin.IsRenderedImageBackground)
+            BlockFrame baseFrame = base.Rendering();
+            if (string.IsNullOrEmpty(Text))
+                return baseFrame;
+
+            HashBlockFrame fontFrame = new(SR.DefaultFont.GetTotalSize(Text));
+            int x = 0;
+            foreach (char c in Text)
             {
-                ArrayFrame frame = ArrayFrame.BuildFrame(image!.Width, image.Width, Skin.GetBackgroundBlockID());
-                frame.Overwrite(image, new(0, 0));
-                image = frame;
+                OverwriteContext overwriteContext = fontFrame.DrawBinary(SR.DefaultFont[c].GetBinary(), GetForegroundColor().ToBlockId(), new(x, 0));
+                x = overwriteContext.BaseEndPosition.X + 1;
             }
 
-            switch (ControlContent)
-            {
-                case ControlContent.None:
-                    return base.RenderingFrame();
-                case ControlContent.Text:
-                    LinkedFrame fb = RenderingText(Skin.GetForegroundBlockID(), Skin.GetBackgroundBlockID());
-                    return fb;
-                case ControlContent.Image:
-                    return image!;
-                case ControlContent.Text | ControlContent.Image:
-                    LinkedFrame text = RenderingText(Skin.GetForegroundBlockID(), string.Empty);
-                    image!.Overwrite(text.ToArrayFrame(), new(0, 0));
-                    return image!;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            LinkedFrame RenderingText(string foreground, string background)
-            {
-                LinkedFrame result = new();
-                switch (ContentAnchor)
-                {
-                    case AnchorPosition.UpperLeft:
-                    case AnchorPosition.LowerLeft:
-                    case AnchorPosition.Centered:
-                        foreach (var c in Text)
-                        {
-                            result.AddRight(ArrayFrame.BuildFrame(SR.DefaultFont[c].GetBinary(), foreground, background));
-                            if (result.Width >= Width)
-                                break;
-                        }
-                        break;
-                    case AnchorPosition.UpperRight:
-                    case AnchorPosition.LowerRight:
-                        for (int i = Text.Length - 1; i >= 0; i--)
-                        {
-                            result.AddLeft(ArrayFrame.BuildFrame(SR.DefaultFont[Text[i]].GetBinary(), foreground, background));
-                            if (result.Width >= Width)
-                                break;
-                        }
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-                return result;
-            }
+            baseFrame.Overwrite(fontFrame, ContentAnchor);
+            return baseFrame;
         }
 
         public override void AutoSetSize()

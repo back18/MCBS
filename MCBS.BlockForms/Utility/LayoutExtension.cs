@@ -104,7 +104,7 @@ namespace MCBS.BlockForms.Utility
             if (container is null)
                 throw new ArgumentNullException(nameof(container));
 
-            source.ClientLocation = new(container.Width / 2 - source.Width / 2, container.Height / 2 - source.Height / 2);
+            source.ClientLocation = new(container.ClientSize.Width / 2 - source.ClientSize.Width / 2, container.ClientSize.Height / 2 - source.ClientSize.Height / 2);
         }
 
         public static void LayoutVerticalCentered(this Control source, ContainerControl container, int location)
@@ -112,7 +112,7 @@ namespace MCBS.BlockForms.Utility
             if (container is null)
                 throw new ArgumentNullException(nameof(container));
 
-            source.ClientLocation = new(location, container.Height / 2 - source.Height / 2);
+            source.ClientLocation = new(location, container.ClientSize.Height / 2 - source.ClientSize.Height / 2);
         }
 
         public static void LayoutHorizontalCentered(this Control source, ContainerControl container, int location)
@@ -120,7 +120,7 @@ namespace MCBS.BlockForms.Utility
             if (container is null)
                 throw new ArgumentNullException(nameof(container));
 
-            source.ClientLocation = new(container.Width / 2 - source.Width / 2, location);
+            source.ClientLocation = new(container.ClientSize.Width / 2 - source.ClientSize.Width / 2, location);
         }
 
         #endregion

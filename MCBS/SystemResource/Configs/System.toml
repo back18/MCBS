@@ -5,6 +5,8 @@ CrashAutoRestart = true
 #支持的文件类型: 程序集.dll
 LoadDllAppComponents = false
 
+BuildColorMappingCaches = [-3]
+
 #系统服务AppID
 ServicesAppID = "Services"
 

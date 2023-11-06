@@ -1,7 +1,9 @@
 ﻿using MCBS.Application;
 using MCBS.BlockForms;
 using MCBS.Events;
+using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +12,14 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms.DialogBox
 {
-    public class ApplicationItem : IconTextBox
+    public class ApplicationItem : IconTextBox<Rgba32>
     {
         public ApplicationItem(ApplicationInfo appInfo)
         {
             ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
 
-            Skin.BackgroundBlockID = Skin.BackgroundBlockID_Hover = BlockManager.Concrete.White;
-            Skin.BackgroundBlockID_Selected = Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.LightGray;
+            Skin.SetBackgroundColor(BlockManager.Concrete.White, ControlState.None, ControlState.Hover);
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
 
         public ApplicationInfo ApplicationInfo { get; }

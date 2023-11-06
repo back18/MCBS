@@ -1,5 +1,6 @@
-﻿using MCBS.Events;
-using MCBS.Frame;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Events;
+using MCBS.Rendering;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
 using System;
@@ -52,7 +53,7 @@ namespace MCBS.BlockForms
                     Size temp = _PageSize;
                     _PageSize = value;
                     PageSizeChanged.Invoke(this, new(temp, _PageSize));
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -95,9 +96,9 @@ namespace MCBS.BlockForms
             RefreshHorizontalScrollBar();
         }
 
-        public override IFrame RenderingFrame()
+        protected override BlockFrame Rendering()
         {
-            return ArrayFrame.BuildFrame(GetRenderingSize(), Skin.GetBackgroundBlockID());
+            return this.RenderingBackground(GetRenderingSize());
         }
 
         protected override void OnResize(Control sender, SizeChangedEventArgs e)

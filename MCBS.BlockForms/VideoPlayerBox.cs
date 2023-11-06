@@ -8,10 +8,11 @@ using MCBS.BlockForms.Utility;
 using MCBS.UI;
 using MCBS;
 using MCBS.Events;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace MCBS.BlockForms
 {
-    public class VideoPlayerBox : ContainerControl<Control>
+    public partial class VideoPlayerBox<TPixel> : ContainerControl<Control> where TPixel : unmanaged, IPixel<TPixel>
     {
         public VideoPlayerBox()
         {
@@ -24,13 +25,13 @@ namespace MCBS.BlockForms
             OverlayHideTime = 0;
         }
 
-        public readonly VideoBox VideoBox;
+        public readonly VideoBox<TPixel> VideoBox;
 
         private readonly Switch PauseOrResume_Switch;
 
         private readonly VideoProgressBar ProgressBar_VideoProgressBar;
 
-        private readonly VideoTimeTextBox TimeText_VideoTimeTextBox;
+        private readonly TimeTextBox TimeText_VideoTimeTextBox;
 
         public int OverlayShowTime { get; set; }
 
@@ -68,10 +69,8 @@ namespace MCBS.BlockForms
             PauseOrResume_Switch.ClientSize = new(16, 16);
             PauseOrResume_Switch.LayoutLeft(this, TimeText_VideoTimeTextBox.TopLocation, 2);
             PauseOrResume_Switch.Anchor = Direction.Bottom | Direction.Right;
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.None, TextureManager.Instance["Play"]);
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover, TextureManager.Instance["Play"]);
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Selected, TextureManager.Instance["Pause"]);
-            PauseOrResume_Switch.Skin.SetBackgroundImage(ControlState.Hover | ControlState.Selected, TextureManager.Instance["Pause"]);
+            PauseOrResume_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Play"], new ControlState[] { ControlState.None, ControlState.Hover });
+            PauseOrResume_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Pause"], new ControlState[] { ControlState.Selected, ControlState.Hover | ControlState.Selected });
             PauseOrResume_Switch.IsSelected = false;
             PauseOrResume_Switch.ControlSelected += PauseOrResume_Switch_OnSelected;
             PauseOrResume_Switch.ControlDeselected += PauseOrResume_Switch_ControlDeselected;
@@ -89,7 +88,7 @@ namespace MCBS.BlockForms
         {
             base.OnRightClick(sender, e);
 
-            if (ChildControls.FirstHover is null or BlockForms.VideoBox)
+            if (ChildControls.FirstHover is null or VideoBox<TPixel>)
             {
                 if (PauseOrResume_Switch.Visible)
                 {
@@ -108,7 +107,7 @@ namespace MCBS.BlockForms
         {
             base.OnBeforeFrame(sender, e);
 
-            if (ChildControls.FirstHover is null or BlockForms.VideoBox)
+            if (ChildControls.FirstHover is null or VideoBox<TPixel>)
             {
                 if (OverlayHideTime <= 0)
                     HideOverlay();
@@ -130,12 +129,12 @@ namespace MCBS.BlockForms
             TimeText_VideoTimeTextBox.Visible = false;
         }
 
-        private void VideoBox_Played(VideoBox sender, EventArgs e)
+        private void VideoBox_Played(VideoBox<TPixel> sender, EventArgs e)
         {
             PauseOrResume_Switch.IsSelected = true;
         }
 
-        private void VideoBox_Paused(VideoBox sender, EventArgs e)
+        private void VideoBox_Paused(VideoBox<TPixel> sender, EventArgs e)
         {
             PauseOrResume_Switch.IsSelected = false;
         }
@@ -148,15 +147,6 @@ namespace MCBS.BlockForms
         private void PauseOrResume_Switch_ControlDeselected(Control sender, EventArgs e)
         {
             VideoBox.MediaFilePlayer?.Pause();
-        }
-
-        public static string FromTimeSpan(TimeSpan time)
-        {
-            string result = string.Empty;
-            if (time.Hours > 0)
-                result += time.Hours.ToString().PadLeft(2, '0') + ':';
-            result += $"{time.Minutes.ToString().PadLeft(2, '0')}:{time.Seconds.ToString().PadLeft(2, '0')}";
-            return result;
         }
     }
 }

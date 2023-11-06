@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,20 +14,23 @@ namespace MCBS.Rendering
 {
     public class ColorMatcher<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
-        public ColorMatcher(IEnumerable<Rgba32> colors)
+        public ColorMatcher(IEnumerable<Rgba32> colors, ColorMappingCache? mappingCache = null)
         {
             _colors = colors ?? throw new ArgumentNullException(nameof(colors));
-            _cache = new();
+            _mappingCache = mappingCache;
+            _tempCache = new();
         }
 
         private readonly IEnumerable<Rgba32> _colors;
 
-        private readonly Dictionary<TPixel, Rgba32> _cache;
+        private readonly ColorMappingCache? _mappingCache;
+
+        private readonly ConcurrentDictionary<TPixel, Rgba32> _tempCache;
 
         private Rgba32 Match(Rgba32 rgba32)
         {
             Rgba32 result = _colors.FirstOrDefault();
-            int distance = 0;
+            int distance = int.MaxValue;
             foreach (var color in _colors)
             {
                 int newDistance = RgbaVector.DistanceSquared(rgba32, color);
@@ -42,81 +46,124 @@ namespace MCBS.Rendering
 
         public Rgba32 Match(TPixel pixel)
         {
-            if (_cache.TryGetValue(pixel, out var result))
+            if (_tempCache.TryGetValue(pixel, out var result))
                 return result;
 
             if (pixel is not Rgba32 rgba32)
             {
-                rgba32 = new();
+                rgba32 = default;
                 pixel.ToRgba32(ref rgba32);
             }
 
+            if (_mappingCache is not null && rgba32.A == byte.MaxValue)
+                return _mappingCache[rgba32];
+
             result = Match(rgba32);
-
-            if (!_cache.ContainsKey(pixel))
-            {
-                lock (_cache)
-                    _cache.TryAdd(pixel, result);
-            }
-
+            _tempCache.TryAdd(pixel, result);
             return result;
         }
 
-        public Rgba32[] Match(TPixel[] pixels)
+        public async Task<Rgba32[]> MatchAsync(TPixel[] pixels)
+        {
+            await BuildCacheAsync(pixels);
+
+            return await Task.Run(() =>
+            {
+                Rgba32[] result = new Rgba32[pixels.Length];
+                for (int i = 0; i < pixels.Length; i++)
+                    result[i] = _tempCache[pixels[i]];
+                return result;
+            });
+        }
+
+        public async Task<Image<Rgba32>> MatchAsync(Image<TPixel> image)
+        {
+            if (image is null)
+                throw new ArgumentNullException(nameof(image));
+
+            TPixel[] pixels = await GetPixelsAsync(image);
+            Rgba32[] matchs = await MatchAsync(pixels);
+
+            return await Task.Run(() =>
+            {
+                int index = 0;
+                Image<Rgba32> result = new(image.Width, image.Height);
+                for (int y = 0; y < result.Width; y++)
+                {
+                    for (int x = 0; x < result.Height; x++)
+                    {
+                        result[x, y] = matchs[index++];
+                    }
+                }
+                return result;
+            });
+        }
+
+        public async Task BuildCacheAsync(TPixel[] pixels)
         {
             if (pixels is null)
                 throw new ArgumentNullException(nameof(pixels));
 
             HashSet<TPixel> matchs = new();
-            foreach (TPixel pixel in pixels)
+            await Task.Run(() =>
             {
-                if (!matchs.Contains(pixel) && !_cache.ContainsKey(pixel))
-                    matchs.Add(pixel);
-            }
+                foreach (TPixel pixel in pixels)
+                {
+                    if (!matchs.Contains(pixel) && !_tempCache.ContainsKey(pixel))
+                        matchs.Add(pixel);
+                }
 
-            int count = 0;
-            Parallel.ForEach(matchs, match =>
-            {
-                Match(match);
-                Interlocked.Increment(ref count);
+                ParallelLoopResult parallelLoopResult = Parallel.ForEach(matchs, match =>
+                {
+                    Match(match);
+                });
+
+                if (!parallelLoopResult.IsCompleted)
+                     Thread.Yield();
             });
-
-            if (count < matchs.Count)
-                Thread.Yield();
-
-            Rgba32[] result = new Rgba32[pixels.Length];
-            for (int i = 0; i < pixels.Length; i++)
-                result[i] = _cache[pixels[i]];
-
-            return result;
         }
 
-        public Image<Rgba32> Match(Image<TPixel> image)
+        public async Task BuildCacheAsync(Image<TPixel> image)
         {
             if (image is null)
                 throw new ArgumentNullException(nameof(image));
 
-            TPixel[] pixels = new TPixel[image.Width * image.Height];
-            Span<TPixel> span = new(pixels);
-            image.CopyPixelDataTo(span);
-            Rgba32[] matchs = Match(pixels);
+            TPixel[] pixels = await GetPixelsAsync(image);
+            await BuildCacheAsync(pixels);
+        }
 
-            int index = 0;
-            Image<Rgba32> result = new(image.Width, image.Height);
-            for (int y = 0; y < result.Width; y++)
+        public ColorMappingCache BuildMappingCache()
+        {
+            int length = 256 * 256 * 256;
+            Rgba32[] mapping = new Rgba32[length];
+            ParallelLoopResult parallelLoopResult = Parallel.For(0, length, (i) =>
             {
-                for (int x = 0; x < result.Height; x++)
-                {
-                    result[x, y] = matchs[index++];
-                }
-            }
+                mapping[i] = Match(ColorMappingCache.ToColor(i));
+            });
 
-            return result;
+            while (!parallelLoopResult.IsCompleted)
+                Thread.Sleep(10);
+
+            return new(mapping);
+        }
+
+        private static async Task<TPixel[]> GetPixelsAsync(Image<TPixel> image)
+        {
+            if (image is null)
+                throw new ArgumentNullException(nameof(image));
+
+            return await Task.Run(() =>
+            {
+                TPixel[] pixels = new TPixel[image.Width * image.Height];
+                Span<TPixel> span = new(pixels);
+                image.CopyPixelDataTo(span);
+                return pixels;
+            });
         }
 
         internal IReadOnlyDictionary<TPixel, Rgba32> GetCache()
         {
-            return _cache;
+            return _tempCache;
         }
 
         private class RgbaVector

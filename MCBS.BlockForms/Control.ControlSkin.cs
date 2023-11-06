@@ -48,7 +48,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -65,7 +65,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -82,7 +82,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -99,7 +99,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor_Hover = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -116,7 +116,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor_Hover = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -133,7 +133,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor_Hover = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -150,7 +150,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor_Selected = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -167,7 +167,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor_Selected = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -184,7 +184,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor_Selected = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -201,7 +201,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -218,7 +218,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -235,7 +235,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -248,11 +248,11 @@ namespace MCBS.BlockForms
 				{
 					if (value is null)
 						throw new ArgumentNullException(nameof(value));
-					if (Texture.Equals(_BackgroundTexture, value))
+					if (!Texture.Equals(_BackgroundTexture, value))
 					{
 						_BackgroundTexture = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -263,11 +263,11 @@ namespace MCBS.BlockForms
 				get => _BackgroundTexture_Selected;
 				set
 				{
-					if (Texture.Equals(_BackgroundTexture_Selected, value))
+					if (!Texture.Equals(_BackgroundTexture_Selected, value))
 					{
 						_BackgroundTexture_Selected = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -280,11 +280,11 @@ namespace MCBS.BlockForms
 				{
 					if (value is null)
 						throw new ArgumentNullException(nameof(value));
-					if (Texture.Equals(_BackgroundTexture_Hover, value))
+					if (!Texture.Equals(_BackgroundTexture_Hover, value))
 					{
 						_BackgroundTexture_Hover = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -297,11 +297,11 @@ namespace MCBS.BlockForms
 				{
 					if (value is null)
 						throw new ArgumentNullException(nameof(value));
-					if (Texture.Equals(_BackgroundTexture_Hover_Selected, value))
+					if (!Texture.Equals(_BackgroundTexture_Hover_Selected, value))
 					{
 						_BackgroundTexture_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestUpdateFrame();
+							_owner.RequestRendering();
 					}
 				}
 			}
@@ -355,12 +355,13 @@ namespace MCBS.BlockForms
 				};
 			}
 
-			public void SetForegroundColor(ControlState state, BlockPixel color)
+			public void SetForegroundColor(BlockPixel color, ControlState state)
 			{
                 if (color is null)
 					throw new ArgumentNullException(nameof(color));
 
-				switch (state)
+                color = color.Clone();
+                switch (state)
 				{
 					case ControlState.None:
 						ForegroundColor = color;
@@ -379,12 +380,13 @@ namespace MCBS.BlockForms
 				}
 			}
 
-			public void SetBackgroundColor(ControlState state, BlockPixel color)
-			{
+			public void SetBackgroundColor(BlockPixel color, ControlState state)
+            {
 				if (color is null)
 					throw new ArgumentNullException(nameof(color));
 
-				switch (state)
+                color = color.Clone();
+                switch (state)
 				{
 					case ControlState.None:
 						BackgroundColor = color;
@@ -403,12 +405,13 @@ namespace MCBS.BlockForms
 				}
 			}
 
-			public void SetBorderColor(ControlState state, BlockPixel color)
-			{
+			public void SetBorderColor(BlockPixel color, ControlState state)
+            {
 				if (color is null)
 					throw new ArgumentNullException(nameof(color));
 
-				switch (state)
+                color = color.Clone();
+                switch (state)
 				{
 					case ControlState.None:
 						BorderColor = color;
@@ -427,31 +430,115 @@ namespace MCBS.BlockForms
 				}
 			}
 
-			public void SetForegroundColor(ControlState state, string color)
+			public void SetForegroundColor(string color, ControlState state)
 			{
 				if (color is null)
 					throw new ArgumentNullException(nameof(color));
 
-				SetForegroundColor(state, new HashBlockPixel(color));
-			}
+                switch (state)
+                {
+                    case ControlState.None:
+                        ForegroundColor = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Hover:
+                        ForegroundColor_Hover = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Selected:
+                        ForegroundColor_Selected = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Hover | ControlState.Selected:
+                        ForegroundColor_Hover_Selected = new HashBlockPixel(color);
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
 
-			public void SetBackgroundColor(ControlState state, string color)
-			{
+			public void SetBackgroundColor(string color, ControlState state)
+            {
 				if (color is null)
 					throw new ArgumentNullException(nameof(color));
 
-				SetBackgroundColor(state, new HashBlockPixel(color));
-			}
+                switch (state)
+                {
+                    case ControlState.None:
+                        BackgroundColor = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Hover:
+                        BackgroundColor_Hover = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Selected:
+                        BackgroundColor_Selected = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Hover | ControlState.Selected:
+                        BackgroundColor_Hover_Selected = new HashBlockPixel(color);
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
 
-			public void SetBorderColor(ControlState state, string color)
-			{
+			public void SetBorderColor(string color, ControlState state)
+            {
 				if (color is null)
 					throw new ArgumentNullException(nameof(color));
 
-				SetBorderColor(state, new HashBlockPixel(color));
-			}
+                switch (state)
+                {
+                    case ControlState.None:
+                        BorderColor = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Hover:
+                        BorderColor_Hover = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Selected:
+                        BorderColor_Selected = new HashBlockPixel(color);
+                        break;
+                    case ControlState.Hover | ControlState.Selected:
+                        BorderColor_Hover_Selected = new HashBlockPixel(color);
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
 
-			public void SetAllForegroundColor(BlockPixel color)
+            public void SetForegroundColor(BlockPixel color, params ControlState[] states)
+			{
+				foreach (var state in states)
+                    SetForegroundColor(color, state);
+            }
+
+            public void SetBackgroundColor(BlockPixel color, params ControlState[] states)
+            {
+                foreach (var state in states)
+                    SetBackgroundColor(color, state);
+            }
+
+            public void SetBorderColor(BlockPixel color, params ControlState[] states)
+            {
+                foreach (var state in states)
+                    SetBorderColor(color, state);
+            }
+
+            public void SetForegroundColor(string color, params ControlState[] states)
+            {
+                foreach (var state in states)
+                    SetForegroundColor(color, state);
+            }
+
+            public void SetBackgroundColor(string color, params ControlState[] states)
+            {
+                foreach (var state in states)
+                    SetBackgroundColor(color, state);
+            }
+
+            public void SetBorderColor(string color, params ControlState[] states)
+            {
+                foreach (var state in states)
+                    SetBorderColor(color, state);
+            }
+
+            public void SetAllForegroundColor(BlockPixel color)
 			{
 				if (color is null)
 					throw new ArgumentNullException(nameof(color));
@@ -508,38 +595,67 @@ namespace MCBS.BlockForms
 				SetAllBorderColor(new HashBlockPixel(color));
 			}
 
-			public void SetBackgroundTexture(ControlState state, Texture? texture)
+			public void SetBackgroundTexture(Texture? texture, ControlState state)
 			{
-				switch (state)
+				texture = texture?.Clone();
+                switch (state)
 				{
 					case ControlState.None:
-						BackgroundTexture = texture?.Clone();
+						BackgroundTexture = texture;
 						break;
 					case ControlState.Hover:
-						BackgroundTexture_Hover = texture?.Clone();
+						BackgroundTexture_Hover = texture;
 						break;
 					case ControlState.Selected:
-						BackgroundTexture_Selected = texture?.Clone();
+						BackgroundTexture_Selected = texture;
 						break;
 					case ControlState.Hover | ControlState.Selected:
-						BackgroundTexture_Hover_Selected = texture?.Clone();
+						BackgroundTexture_Hover_Selected = texture;
 						break;
 					default:
 						throw new InvalidOperationException();
 				}
 			}
 
-			public void SetBackgroundTexture<TPixel>(ControlState state, Image<TPixel> image) where TPixel : unmanaged, IPixel<TPixel>
+			public void SetBackgroundTexture<TPixel>(Image<TPixel> image, ControlState state) where TPixel : unmanaged, IPixel<TPixel>
 			{
                 if (image is null)
 					throw new ArgumentNullException(nameof(image));
 
-				SetBackgroundTexture(state, new Texture<TPixel>(image));
-			}
+                switch (state)
+                {
+                    case ControlState.None:
+                        BackgroundTexture = new Texture<TPixel>(image);
+                        break;
+                    case ControlState.Hover:
+                        BackgroundTexture_Hover = new Texture<TPixel>(image);
+                        break;
+                    case ControlState.Selected:
+                        BackgroundTexture_Selected = new Texture<TPixel>(image);
+                        break;
+                    case ControlState.Hover | ControlState.Selected:
+                        BackgroundTexture_Hover_Selected = new Texture<TPixel>(image);
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
 
-			public void SetAllBackgroundTexture(Texture? texture)
+            public void SetBackgroundTexture(Texture? texture, ControlState[] states)
 			{
-				BackgroundTexture = texture?.Clone();
+				foreach (var state in states)
+                    SetBackgroundTexture(texture, state);
+            }
+
+            public void SetBackgroundTexture<TPixel>(Image<TPixel> image, ControlState[] states) where TPixel : unmanaged, IPixel<TPixel>
+            {
+                foreach (var state in states)
+                    SetBackgroundTexture(image, state);
+            }
+
+            public void SetAllBackgroundTexture(Texture? texture)
+			{
+                BackgroundTexture = texture?.Clone();
 				BackgroundTexture_Hover = texture?.Clone();
 				BackgroundTexture_Selected = texture?.Clone();
 				BackgroundTexture_Hover_Selected = texture?.Clone();

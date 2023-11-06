@@ -3,9 +3,11 @@ using MCBS.BlockForms;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using MCBS.UI;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,7 +70,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private readonly Button Save_Button;
 
-        private readonly DrawingBox DrawingBox;
+        private readonly DrawingBox<Rgba32> DrawingBox;
 
         public int MinSize { get; set; }
 
@@ -77,6 +79,8 @@ namespace MCBS.SystemApplications.Drawing
         public override void Initialize()
         {
             base.Initialize();
+
+            ClientPanel.Resize += ClientPanel_Resize;
 
             ClientPanel.ChildControls.Add(Draw_Switch);
             Draw_Switch.Text = "绘制";
@@ -101,7 +105,7 @@ namespace MCBS.SystemApplications.Drawing
             Drag_Switch.ControlDeselected += Drag_Switch_ControlDeselected;
 
             ClientPanel.ChildControls.Add(PenWidth_NumberBox);
-            PenWidth_NumberBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Pink);
+            PenWidth_NumberBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Pink);
             PenWidth_NumberBox.MinNumberValue = 1;
             PenWidth_NumberBox.LayoutDown(ClientPanel, Drag_Switch, 1);
             PenWidth_NumberBox.Anchor = Direction.Top | Direction.Right;
@@ -109,8 +113,8 @@ namespace MCBS.SystemApplications.Drawing
             PenWidth_NumberBox.NumberValue = 5;
 
             ClientPanel.ChildControls.Add(MoreMenu_Switch);
-            MoreMenu_Switch.Skin.BackgroundBlockID = MoreMenu_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
-            MoreMenu_Switch.Skin.BackgroundBlockID_Selected = MoreMenu_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Orange;
+            MoreMenu_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.None, ControlState.Hover);
+            MoreMenu_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Orange, ControlState.Selected, ControlState.Hover | ControlState.Selected);
             MoreMenu_Switch.OffText = "更多";
             MoreMenu_Switch.OnText = "隐藏";
             MoreMenu_Switch.LayoutDown(ClientPanel, PenWidth_NumberBox, 1);
@@ -119,43 +123,43 @@ namespace MCBS.SystemApplications.Drawing
             MoreMenu_Switch.ControlDeselected += MoreMenu_Switch_ControlDeselected; ;
 
             More_ListMenuBox.Size = new(45, MoreMenu_Switch.BottomLocation);
-            More_ListMenuBox.Skin.SetAllBackgroundBlockID(string.Empty);
+            More_ListMenuBox.Skin.SetAllBackgroundColor(string.Empty);
             More_ListMenuBox.Anchor = Direction.Top | Direction.Right;
 
             Undo_Button.Text = "撤销";
-            Undo_Button.Skin.BackgroundBlockID = string.Empty;
+            Undo_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Undo_Button.RightClick += Undo_Button_RightClick;
             More_ListMenuBox.AddedChildControlAndLayout(Undo_Button);
 
             Redo_Button.Text = "重做";
-            Redo_Button.Skin.BackgroundBlockID = string.Empty;
+            Redo_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Redo_Button.RightClick += Redo_Button_RightClick;
             More_ListMenuBox.AddedChildControlAndLayout(Redo_Button);
 
             FillButton.Text = "填充";
-            FillButton.Skin.BackgroundBlockID = string.Empty;
+            FillButton.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             FillButton.RightClick += Fill_Button_RightClick;
             More_ListMenuBox.AddedChildControlAndLayout(FillButton);
 
             Create_Button.Text = "新建";
-            Create_Button.Skin.BackgroundBlockID = string.Empty;
+            Create_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Create_Button.RightClick += Create_Button_RightClick;
             More_ListMenuBox.AddedChildControlAndLayout(Create_Button);
 
             Open_Button.Text = "打开";
-            Open_Button.Skin.BackgroundBlockID = string.Empty;
+            Open_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Open_Button.RightClick += Open_Button_RightClick;
             More_ListMenuBox.AddedChildControlAndLayout(Open_Button);
 
             Save_Button.Text = "保存";
-            Save_Button.Skin.BackgroundBlockID = string.Empty;
+            Save_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Save_Button.RightClick += Save_Button_RightClick;
             More_ListMenuBox.AddedChildControlAndLayout(Save_Button);
 
             ClientPanel.ChildControls.Add(DrawingBox);
             DrawingBox.ClientLocation = new(1, 1);
             DrawingBox.Size = new(ClientPanel.ClientSize.Width - Draw_Switch.Width - 3, ClientPanel.ClientSize.Height - 2);
-            DrawingBox.Stretch = Direction.Bottom | Direction.Right;
+            //DrawingBox.Stretch = Direction.Bottom | Direction.Right;
         }
 
         public override void OnInitCompleted3()
@@ -165,7 +169,12 @@ namespace MCBS.SystemApplications.Drawing
             if (_open is not null)
                 OpenImage(_open);
             else
-                DrawingBox.SetImage(DrawingBox.CreateImage(DrawingBox.ClientSize, BlockManager.Concrete.White));
+                DrawingBox.SetImage(new Image<Rgba32>(DrawingBox.ClientSize.Width, DrawingBox.ClientSize.Height, DrawingBox.GetBlockColor<Rgba32>(BlockManager.Concrete.White)));
+        }
+
+        private void ClientPanel_Resize(Control sender, SizeChangedEventArgs e)
+        {
+            DrawingBox.Size = new(ClientPanel.ClientSize.Width - Draw_Switch.Width - 3, ClientPanel.ClientSize.Height - 2);
         }
 
         private void Draw_Switch_ControlSelected(Control sender, EventArgs e)
@@ -231,7 +240,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private void Create_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            SizeSettingsBoxForm dialogBox = new(this, "输入尺寸", DrawingBox.DefaultResizeOptions.Size);
+            SizeSettingsBoxForm dialogBox = new(this, "输入尺寸", DrawingBox.Texture.GetOutputSize());
             _ = DialogBoxHelper.OpenDialogBoxAsync(this, dialogBox, (size) =>
             {
                 if (size == dialogBox.DefaultResult)
@@ -243,7 +252,7 @@ namespace MCBS.SystemApplications.Drawing
                     return;
                 }
 
-                DrawingBox.SetImage(DrawingBox.CreateImage(size, string.Empty));
+                DrawingBox.SetImage(new Image<Rgba32>(size.Width, size.Height, DrawingBox.GetBlockColor<Rgba32>(string.Empty)));
                 _save = null;
             });
         }
@@ -267,7 +276,7 @@ namespace MCBS.SystemApplications.Drawing
 
             if (_save is not null && _save.StartsWith(dir))
             {
-                DrawingBox.ImageFrame.Image.Save(_save);
+                DrawingBox.Texture.ImageSource.Save(_save);
                 _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", "已成功保存", MessageBoxButtons.OK);
                 return;
             }
@@ -294,7 +303,7 @@ namespace MCBS.SystemApplications.Drawing
                         Directory.CreateDirectory(dir);
 
                     _save = Path.Combine(dir, name + ".png");
-                    DrawingBox.ImageFrame.Image.Save(_save);
+                    DrawingBox.Texture.ImageSource.Save(_save);
                     DialogBoxHelper.OpenMessageBox(this, "温馨提醒", "已成功保存", MessageBoxButtons.OK);
                 }
                 else

@@ -7,13 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp.PixelFormats;
-using ImageFrame = MCBS.Frame.ImageFrame;
 using QuanLib.Core;
 using QuanLib.Minecraft.ResourcePack.Block;
 using QuanLib.Minecraft;
 using MCBS.UI;
 using MCBS.Screens;
-using MCBS.Frame;
 using MCBS.BlockForms.Utility;
 using MCBS.Processes;
 using MCBS.Events;
@@ -21,25 +19,26 @@ using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using MCBS.Cursor;
 using System.Diagnostics.CodeAnalysis;
+using MCBS.Rendering;
 
 namespace MCBS.BlockForms
 {
     /// <summary>
     /// 控件基类
     /// </summary>
-    public abstract partial class Control : IControl
+    public abstract partial class Control : UnmanagedBase, IControl
     {
         protected Control()
         {
-            NeedRendering = true;
             FirstHandleRightClick = false;
             FirstHandleLeftClick = false;
             FirstHandleCursorSlotChanged = false;
             FirstHandleCursorItemChanged = false;
             FirstHandleTextEditorUpdate = false;
             InvokeExternalCursorMove = false;
-            IsInitCompleted = false;
             KeepWhenClear = false;
+            IsRenderingTransparencyTexture = true;
+            IsInitCompleted = false;
             _DisplayPriority = 0;
             _MaxDisplayPriority = 512;
             _Text = string.Empty;
@@ -56,7 +55,8 @@ namespace MCBS.BlockForms
             _ControlState = ControlState.None;
             _LayoutSyncer = null;
 
-            _frameCache = null;
+            _needRendering = true;
+            _renderingCache = null;
             _hoverCursors = new();
 
             CursorMove += OnCursorMove;
@@ -72,7 +72,6 @@ namespace MCBS.BlockForms
             BeforeFrame += OnBeforeFrame;
             AfterFrame += OnAfterFrame;
             InitializeCompleted += OnInitializeCompleted;
-            RenderingCompleted += OnRenderingCompleted;
             ControlSelected += OnControlSelected;
             ControlDeselected += OnControlDeselected;
             Move += OnMove;
@@ -82,7 +81,9 @@ namespace MCBS.BlockForms
             Layout += OnLayout;
         }
 
-        private ArrayFrame? _frameCache;
+        private bool _needRendering;
+
+        private BlockFrame? _renderingCache;
 
         private readonly List<CursorContext> _hoverCursors;
 
@@ -100,9 +101,9 @@ namespace MCBS.BlockForms
 
         public bool KeepWhenClear { get; set; }
 
-        public bool IsInitCompleted { get; private set; }
+        public bool IsRenderingTransparencyTexture { get; set; }
 
-        public bool NeedRendering { get; private set; }
+        public bool IsInitCompleted { get; private set; }
 
         public IContainerControl? GenericParentContainer { get; private set; }
 
@@ -120,7 +121,7 @@ namespace MCBS.BlockForms
                     string temp = _Text;
                     _Text = value;
                     HandleTextChanged(new(temp, _Text));
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -138,7 +139,7 @@ namespace MCBS.BlockForms
                     Point temp = _ClientLocation;
                     _ClientLocation = value;
                     Move.Invoke(this, new(temp, _ClientLocation));
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -154,7 +155,7 @@ namespace MCBS.BlockForms
                     Size temp = _ClientSize;
                     _ClientSize = value;
                     Resize.Invoke(this, new(temp, _ClientSize));
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -170,7 +171,7 @@ namespace MCBS.BlockForms
                     Point temp = _OffsetPosition;
                     _OffsetPosition = value;
                     OffsetPositionChanged.Invoke(this, new(temp, _OffsetPosition));
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -241,7 +242,7 @@ namespace MCBS.BlockForms
                 if (_BorderWidth != value)
                 {
                     _BorderWidth = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -343,7 +344,7 @@ namespace MCBS.BlockForms
                     if (value)
                         AutoSetSize();
                     _AutoSize = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -361,7 +362,7 @@ namespace MCBS.BlockForms
                 if (_Visible != value)
                 {
                     _Visible = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
@@ -397,7 +398,7 @@ namespace MCBS.BlockForms
         }
         private int _MaxDisplayPriority;
 
-        public ControlSkin_ Skin { get; }
+        public ControlSkin Skin { get; }
 
         /// <summary>
         /// 锚定，大小不变，位置自适应父控件
@@ -419,24 +420,11 @@ namespace MCBS.BlockForms
                 if (_ContentAnchor != value)
                 {
                     _ContentAnchor = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }
         private AnchorPosition _ContentAnchor;
-
-        public ControlContent ControlContent
-        {
-            get
-            {
-                ControlContent result = ControlContent.None;
-                if (!string.IsNullOrEmpty(Text))
-                    result |= ControlContent.Text;
-                if (Skin.GetBackgroundImage() is not null)
-                    result |= ControlContent.Image;
-                return result;
-            }
-        }
 
         public ControlState ControlState
         {
@@ -445,12 +433,12 @@ namespace MCBS.BlockForms
             {
                 if (_ControlState != value)
                 {
-                    if (Skin.GetForegroundBlockID(_ControlState) != Skin.GetForegroundBlockID(value) ||
-                        Skin.GetBackgroundBlockID(_ControlState) != Skin.GetBackgroundBlockID(value) ||
-                        Skin.GetBorderBlockID(_ControlState) != Skin.GetBorderBlockID(value) ||
-                        Skin.GetBackgroundImage(_ControlState) != Skin.GetBackgroundImage(value))
+                    if (!BlockPixel.Equals(Skin.GetForegroundColor(_ControlState), Skin.GetForegroundColor(value)) ||
+                        !BlockPixel.Equals(Skin.GetBackgroundColor(_ControlState), Skin.GetBackgroundColor(value)) ||
+                        !BlockPixel.Equals(Skin.GetBorderColor(_ControlState), Skin.GetBorderColor(value)) ||
+                        !Texture.Equals(Skin.GetBackgroundTexture(_ControlState), Skin.GetBackgroundTexture(value)))
                     {
-                        RequestUpdateFrame();
+                        RequestRendering();
                     }
                     _ControlState = value;
                 }
@@ -512,8 +500,6 @@ namespace MCBS.BlockForms
         }
         private LayoutSyncer? _LayoutSyncer;
 
-        ISkin IControlRendering.Skin => Skin;
-
         #endregion
 
         #region 事件发布
@@ -543,8 +529,6 @@ namespace MCBS.BlockForms
         public event EventHandler<Control, EventArgs> AfterFrame;
 
         public event EventHandler<Control, EventArgs> InitializeCompleted;
-
-        public event EventHandler<Control, ArrayFrameEventArgs> RenderingCompleted;
 
         public event EventHandler<Control, EventArgs> ControlSelected;
 
@@ -589,8 +573,6 @@ namespace MCBS.BlockForms
         protected virtual void OnAfterFrame(Control sender, EventArgs e) { }
 
         protected virtual void OnInitializeCompleted(Control sender, EventArgs e) { }
-
-        protected virtual void OnRenderingCompleted(Control sender, ArrayFrameEventArgs e) { }
 
         protected virtual void OnControlSelected(Control sender, EventArgs e) { }
 
@@ -697,13 +679,6 @@ namespace MCBS.BlockForms
         public virtual void HandleLayout(SizeChangedEventArgs e)
         {
             Layout.Invoke(this, e);
-        }
-
-        public virtual void HandleRenderingCompleted(ArrayFrameEventArgs e)
-        {
-            NeedRendering = false;
-            _frameCache = e.ArrayFrame;
-            RenderingCompleted.Invoke(this, e);
         }
 
         #region TryInvoke
@@ -862,42 +837,54 @@ namespace MCBS.BlockForms
 
         #region 帧渲染处理
 
-        protected void RequestUpdateFrame()
+        protected void RequestRendering()
         {
-            NeedRendering = true;
-            ParentContainer?.RequestUpdateFrame();
+            _needRendering = true;
+            ParentContainer?.RequestRendering();
         }
 
-        public virtual IFrame RenderingFrame()
+        public virtual async Task<BlockFrame> GetRenderingResultAsync()
         {
-            return ArrayFrame.BuildFrame(ClientSize.Width, ClientSize.Height, Skin.GetBackgroundBlockID());
+            if (_needRendering || _renderingCache is null)
+            {
+                if (_renderingCache is IDisposable disposable)
+                    disposable.Dispose();
+
+                _renderingCache = await Task.Run(() => Rendering());
+                _needRendering = false;
+            }
+
+            return _renderingCache;
         }
 
-        ArrayFrame? IControlRendering.GetFrameCache()
+        protected virtual BlockFrame Rendering()
         {
-            return _frameCache;
+            return this.RenderingBackground(ClientSize);
+        }
+
+        public BlockPixel GetForegroundColor()
+        {
+            return Skin.GetForegroundColor(ControlState);
+        }
+
+        public BlockPixel GetBackgroundColor()
+        {
+            return Skin.GetBackgroundColor(ControlState);
+        }
+
+        public BlockPixel GetBorderColor()
+        {
+            return Skin.GetBorderColor(ControlState);
+        }
+
+        public Texture? GetBackgroundTexture()
+        {
+            return Skin.GetBackgroundTexture(ControlState);
         }
 
         #endregion
 
         #region 父级相关处理
-
-        /// <summary>
-        /// 顺序从根控件到子控件，不包括当前控件
-        /// </summary>
-        /// <returns></returns>
-        public Control[] GetParentControls()
-        {
-            List<Control> result = new();
-            Control? parent = ParentContainer;
-            while (parent is not null)
-            {
-                result.Add(parent);
-                parent = parent.ParentContainer;
-            }
-            result.Reverse();
-            return result.ToArray();
-        }
 
         public Control GetRootControl()
         {
@@ -1003,44 +990,6 @@ namespace MCBS.BlockForms
             return new Plane(256, 144, Facing.Zp);
         }
 
-        public Rgba32 GetBlockColor(string blockID)
-        {
-            if (TryGetBlockColor(blockID, out var color))
-                return color;
-            else
-                return SR.BlockTextureManager[BlockManager.Concrete.White].Textures[GetScreenPlane().NormalFacing].AverageColor;
-        }
-
-        public Rgba32 GetBlockColorOrDefault(string? blockID, string def)
-        {
-            return GetBlockColorOrDefault(blockID, GetBlockColor(def));
-        }
-
-        public Rgba32 GetBlockColorOrDefault(string? blockID, Rgba32 def)
-        {
-            if (TryGetBlockColor(blockID, out var color))
-                return color;
-            else
-                return def;
-        }
-
-        public bool TryGetBlockColor(string? blockID, out Rgba32 color)
-        {
-            if (string.IsNullOrEmpty(blockID))
-            {
-                color = Color.Transparent;
-                return true;
-            }
-            else if (SR.BlockTextureManager.TryGetValue(blockID, out var texture))
-            {
-                color = texture.Textures[GetScreenPlane().NormalFacing].AverageColor;
-                return true;
-            }
-
-            color = default;
-            return false;
-        }
-
         #endregion
 
         public void UpdateHoverState(CursorEventArgs e)
@@ -1082,6 +1031,11 @@ namespace MCBS.BlockForms
 
         }
 
+        protected override void DisposeUnmanaged()
+        {
+            LayoutSyncer = null;
+        }
+
         public override string ToString()
         {
             return $"Type:{GetType().Name}|Text:{Text}|Pos:{ClientLocation.X},{ClientLocation.Y}|Size:{ClientSize.Width},{ClientSize.Height}";
@@ -1099,498 +1053,6 @@ namespace MCBS.BlockForms
                 ParentContainer = null;
             else if (container is ContainerControl containerControl)
                 ParentContainer = containerControl;
-        }
-
-        public class ControlSkin_ : ISkin
-        {
-            public ControlSkin_(Control owner)
-            {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
-
-                string black = BlockManager.Concrete.Black;
-                string white = BlockManager.Concrete.White;
-                string gray = BlockManager.Concrete.Gray;
-
-                _ForegroundBlockID = black;
-                _BackgroundBlockID = white;
-                _BorderBlockID = gray;
-                _ForegroundBlockID_Selected = black;
-                _BackgroundBlockID_Selected = white;
-                _BorderBlockID_Selected = gray;
-                _ForegroundBlockID_Hover = black;
-                _BackgroundBlockID_Hover = white;
-                _BorderBlockID__Hover = gray;
-                _ForegroundBlockID_Hover_Selected = black;
-                _BackgroundBlockID_Hover_Selected = white;
-                _BorderBlockID_Hover_Selected = gray;
-                _BackgroundImage = null;
-                _BackgroundImage_Hover = null;
-                _BackgroundImage_Selected = null;
-                _BackgroundImage_Hover_Selected = null;
-            }
-
-            private readonly Control _owner;
-
-            /// <summary>
-            /// 渲染图片时是否先渲染背景，具体实现根据派生类渲染器
-            /// </summary>
-            public bool IsRenderedImageBackground
-            {
-                get => _IsIsRenderedImageBackground;
-                set
-                {
-                    if (_IsIsRenderedImageBackground != value)
-                    {
-                        _IsIsRenderedImageBackground = value;
-                        _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private bool _IsIsRenderedImageBackground;
-
-            public string ForegroundBlockID
-            {
-                get => _ForegroundBlockID;
-                set
-                {
-                    if (_ForegroundBlockID != value)
-                    {
-                        _ForegroundBlockID = value;
-                        if (_owner.ControlState == ControlState.None)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _ForegroundBlockID;
-
-            public string BackgroundBlockID
-            {
-                get => _BackgroundBlockID;
-                set
-                {
-                    if (_BackgroundBlockID != value)
-                    {
-                        _BackgroundBlockID = value;
-                        if (_owner.ControlState == ControlState.None)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BackgroundBlockID;
-
-            public string BorderBlockID
-            {
-                get => _BorderBlockID;
-                set
-                {
-                    if (BorderBlockID != value)
-                    {
-                        _BorderBlockID = value;
-                        if (_owner.ControlState == ControlState.None)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BorderBlockID;
-
-            public string ForegroundBlockID_Hover
-            {
-                get => _ForegroundBlockID_Hover;
-                set
-                {
-                    if (_ForegroundBlockID_Hover != value)
-                    {
-                        _ForegroundBlockID_Hover = value;
-                        if (_owner.ControlState == ControlState.Hover)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _ForegroundBlockID_Hover;
-
-            public string BackgroundBlockID_Hover
-            {
-                get => _BackgroundBlockID_Hover;
-                set
-                {
-                    if (BackgroundBlockID_Hover != value)
-                    {
-                        _BackgroundBlockID_Hover = value;
-                        if (_owner.ControlState == ControlState.Hover)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BackgroundBlockID_Hover;
-
-            public string BorderBlockID__Hover
-            {
-                get => _BorderBlockID__Hover;
-                set
-                {
-                    if (_BorderBlockID__Hover != value)
-                    {
-                        _BorderBlockID__Hover = value;
-                        if (_owner.ControlState == ControlState.Hover)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BorderBlockID__Hover;
-
-            public string ForegroundBlockID_Selected
-            {
-                get => _ForegroundBlockID_Selected;
-                set
-                {
-                    if (_ForegroundBlockID_Selected != value)
-                    {
-                        _ForegroundBlockID_Selected = value;
-                        if (_owner.ControlState == ControlState.Selected)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _ForegroundBlockID_Selected;
-
-            public string BackgroundBlockID_Selected
-            {
-                get => _BackgroundBlockID_Selected;
-                set
-                {
-                    if (_BorderBlockID_Selected != value)
-                    {
-                        _BackgroundBlockID_Selected = value;
-                        if (_owner.ControlState == ControlState.Selected)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BackgroundBlockID_Selected;
-
-            public string BorderBlockID_Selected
-            {
-                get => _BorderBlockID_Selected;
-                set
-                {
-                    if (_BorderBlockID_Selected != value)
-                    {
-                        _BorderBlockID_Selected = value;
-                        if (_owner.ControlState == ControlState.Selected)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BorderBlockID_Selected;
-
-            public string ForegroundBlockID_Hover_Selected
-            {
-                get => _ForegroundBlockID_Hover_Selected;
-                set
-                {
-                    if (_ForegroundBlockID_Hover_Selected != value)
-                    {
-                        _ForegroundBlockID_Hover_Selected = value;
-                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _ForegroundBlockID_Hover_Selected;
-
-            public string BackgroundBlockID_Hover_Selected
-            {
-                get => _BackgroundBlockID_Hover_Selected;
-                set
-                {
-                    if (_BackgroundBlockID_Hover_Selected != value)
-                    {
-                        _BackgroundBlockID_Hover_Selected = value;
-                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BackgroundBlockID_Hover_Selected;
-
-            public string BorderBlockID_Hover_Selected
-            {
-                get => _BorderBlockID_Hover_Selected;
-                set
-                {
-                    if (_BorderBlockID_Hover_Selected != value)
-                    {
-                        _BorderBlockID_Hover_Selected = value;
-                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private string _BorderBlockID_Hover_Selected;
-
-            public ImageFrame? BackgroundImage
-            {
-                get => _BackgroundImage;
-                set
-                {
-                    if (_BackgroundImage != value)
-                    {
-                        _BackgroundImage = value;
-                        if (_owner.ControlState == ControlState.None)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private ImageFrame? _BackgroundImage;
-
-            public ImageFrame? BackgroundImage_Hover
-            {
-                get => _BackgroundImage_Hover;
-                set
-                {
-                    if (_BackgroundImage_Hover != value)
-                    {
-                        _BackgroundImage_Hover = value;
-                        if (_owner.ControlState == ControlState.Hover)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private ImageFrame? _BackgroundImage_Hover;
-
-            public ImageFrame? BackgroundImage_Selected
-            {
-                get => _BackgroundImage_Selected;
-                set
-                {
-                    if (_BackgroundImage_Selected != value)
-                    {
-                        _BackgroundImage_Selected = value;
-                        if (_owner.ControlState == ControlState.Selected)
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            public ImageFrame? _BackgroundImage_Selected;
-
-            public ImageFrame? BackgroundImage_Hover_Selected
-            {
-                get => _BackgroundImage_Hover_Selected;
-                set
-                {
-                    if (_BackgroundImage_Hover_Selected != value)
-                    {
-                        _BackgroundImage_Hover_Selected = value;
-                        if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-                            _owner.RequestUpdateFrame();
-                    }
-                }
-            }
-            private ImageFrame? _BackgroundImage_Hover_Selected;
-
-            public string GetForegroundBlockID(ControlState state)
-            {
-                return state switch
-                {
-                    ControlState.None => ForegroundBlockID,
-                    ControlState.Hover => ForegroundBlockID_Hover,
-                    ControlState.Selected => ForegroundBlockID_Selected,
-                    ControlState.Hover | ControlState.Selected => ForegroundBlockID_Hover_Selected,
-                    _ => throw new InvalidOperationException(),
-                };
-            }
-
-            public string GetBackgroundBlockID(ControlState state)
-            {
-                return state switch
-                {
-                    ControlState.None => BackgroundBlockID,
-                    ControlState.Hover => BackgroundBlockID_Hover,
-                    ControlState.Selected => BackgroundBlockID_Selected,
-                    ControlState.Hover | ControlState.Selected => BackgroundBlockID_Hover_Selected,
-                    _ => throw new InvalidOperationException(),
-                };
-            }
-
-            public string GetBorderBlockID(ControlState state)
-            {
-                return state switch
-                {
-                    ControlState.None => BorderBlockID,
-                    ControlState.Hover => BorderBlockID__Hover,
-                    ControlState.Selected => BorderBlockID_Selected,
-                    ControlState.Hover | ControlState.Selected => BorderBlockID_Hover_Selected,
-                    _ => throw new InvalidOperationException(),
-                };
-            }
-
-            public ImageFrame? GetBackgroundImage(ControlState state)
-            {
-                return state switch
-                {
-                    ControlState.None => BackgroundImage,
-                    ControlState.Hover => BackgroundImage_Hover,
-                    ControlState.Selected => BackgroundImage_Selected,
-                    ControlState.Hover | ControlState.Selected => BackgroundImage_Hover_Selected,
-                    _ => throw new InvalidOperationException(),
-                };
-            }
-
-            public string GetForegroundBlockID() => GetForegroundBlockID(_owner.ControlState);
-
-            public string GetBackgroundBlockID() => GetBackgroundBlockID(_owner.ControlState);
-
-            public string GetBorderBlockID() => GetBorderBlockID(_owner.ControlState);
-
-            public ImageFrame? GetBackgroundImage() => GetBackgroundImage(_owner.ControlState);
-
-            public void SetAllForegroundBlockID(string blockID)
-            {
-                ForegroundBlockID = blockID;
-                ForegroundBlockID_Hover = blockID;
-                ForegroundBlockID_Selected = blockID;
-                ForegroundBlockID_Hover_Selected = blockID;
-            }
-
-            public void SetAllBackgroundBlockID(string blockID)
-            {
-                BackgroundBlockID = blockID;
-                BackgroundBlockID_Hover = blockID;
-                BackgroundBlockID_Selected = blockID;
-                BackgroundBlockID_Hover_Selected = blockID;
-            }
-
-            public void SetAllBorderBlockID(string blockID)
-            {
-                BorderBlockID = blockID;
-                BorderBlockID__Hover = blockID;
-                BorderBlockID_Selected = blockID;
-                BorderBlockID_Hover_Selected = blockID;
-            }
-
-            public void SetAllBackgroundImage(ImageFrame? frame)
-            {
-                BackgroundImage = frame;
-                BackgroundImage_Hover = frame;
-                BackgroundImage_Selected = frame;
-                BackgroundImage_Hover_Selected = frame;
-            }
-
-            public void SetAllBackgroundImage(Image<Rgba32> image)
-            {
-                if (image is null)
-                    throw new ArgumentNullException(nameof(image));
-
-                SetAllBackgroundImage(new ImageFrame(image, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
-            }
-
-            public void SetAllBackgroundImage(string path)
-            {
-                if (string.IsNullOrEmpty(path))
-                    throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
-
-                SetAllBackgroundImage(new ImageFrame(path, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
-            }
-
-            public void SetForegroundBlockID(ControlState state, string blockID)
-            {
-                switch (state)
-                {
-                    case ControlState.None:
-                        ForegroundBlockID = blockID;
-                        break;
-                    case ControlState.Hover:
-                        ForegroundBlockID_Hover = blockID;
-                        break;
-                    case ControlState.Selected:
-                        ForegroundBlockID_Selected = blockID;
-                        break;
-                    case ControlState.Hover | ControlState.Selected:
-                        ForegroundBlockID_Hover_Selected = blockID;
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
-
-            public void SetBackgroundBlockID(ControlState state, string blockID)
-            {
-                switch (state)
-                {
-                    case ControlState.None:
-                        BackgroundBlockID = blockID;
-                        break;
-                    case ControlState.Hover:
-                        BackgroundBlockID_Hover = blockID;
-                        break;
-                    case ControlState.Selected:
-                        BackgroundBlockID_Selected = blockID;
-                        break;
-                    case ControlState.Hover | ControlState.Selected:
-                        BackgroundBlockID_Hover_Selected = blockID;
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
-
-            public void SetBorderBlockID(ControlState state, string blockID)
-            {
-                switch (state)
-                {
-                    case ControlState.None:
-                        BorderBlockID = blockID;
-                        break;
-                    case ControlState.Hover:
-                        BorderBlockID__Hover = blockID;
-                        break;
-                    case ControlState.Selected:
-                        BorderBlockID_Selected = blockID;
-                        break;
-                    case ControlState.Hover | ControlState.Selected:
-                        BorderBlockID_Hover_Selected = blockID;
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
-
-            public void SetBackgroundImage(ControlState state, ImageFrame? frame)
-            {
-                switch (state)
-                {
-                    case ControlState.None:
-                        BackgroundImage = frame;
-                        break;
-                    case ControlState.Hover:
-                        BackgroundImage_Hover = frame;
-                        break;
-                    case ControlState.Selected:
-                        BackgroundImage_Selected = frame;
-                        break;
-                    case ControlState.Hover | ControlState.Selected:
-                        BackgroundImage_Hover_Selected = frame;
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
-
-            public void SetBackgroundImage(ControlState state, Image<Rgba32> image)
-            {
-                if (image is null)
-                    throw new ArgumentNullException(nameof(image));
-
-                SetBackgroundImage(state, new ImageFrame(image, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
-            }
-
-            public void SetBackgroundImage(ControlState state, string path)
-            {
-                if (string.IsNullOrEmpty(path))
-                    throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
-
-                SetBackgroundImage(state, new ImageFrame(path, _owner.GetScreenPlane().NormalFacing, _owner.ClientSize));
-            }
         }
     }
 }

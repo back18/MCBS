@@ -30,20 +30,20 @@ namespace MCBS.Rendering
 
         public abstract IPixelCollection<TPixel> Pixels { get; }
 
-        public override OverwriteContext Overwrite(BlockFrame blockFrame, Point location)
+        public override OverwriteContext Overwrite(BlockFrame blockFrame, Size size, Point location, Point offset)
         {
             if (blockFrame is  BlockFrame<TPixel> pixelBlockFrame)
-                Overwrite(pixelBlockFrame, location);
+                return Overwrite(pixelBlockFrame, size, location, offset);
 
-            return base.Overwrite(blockFrame, location);
+            return base.Overwrite(blockFrame, size, location, offset);
         }
 
-        public virtual OverwriteContext Overwrite(BlockFrame<TPixel> blockFrame, Point location)
+        public virtual OverwriteContext Overwrite(BlockFrame<TPixel> blockFrame, Size size, Point location, Point offset)
         {
             if (blockFrame is null)
                 throw new ArgumentNullException(nameof(blockFrame));
 
-            return Pixels.Overwrite(blockFrame.Pixels, location);
+            return Pixels.Overwrite(blockFrame.Pixels, size, location, offset);
         }
 
         public override void Fill(string pixel)

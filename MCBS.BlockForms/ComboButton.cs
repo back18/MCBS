@@ -20,10 +20,9 @@ namespace MCBS.BlockForms
             ReboundCountdown = 0;
             _Title = string.Empty;
 
-            Skin.BackgroundBlockID = BlockManager.Concrete.LightBlue;
-            Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
-            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Lime;
-            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Lime;
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.None);
+            Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.Hover);
+            Skin.SetBackgroundColor(BlockManager.Concrete.Lime, ControlState.Selected, ControlState.Hover | ControlState.Selected);
             ContentAnchor = AnchorPosition.Centered;
 
             Items.SelectedItemChanged += Items_SelectedItemChanged; ;
@@ -43,7 +42,7 @@ namespace MCBS.BlockForms
                 if (_Title != value)
                 {
                     _Title = value;
-                    RequestUpdateFrame();
+                    RequestRendering();
                 }
             }
         }

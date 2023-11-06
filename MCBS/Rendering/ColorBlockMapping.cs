@@ -30,6 +30,11 @@ namespace MCBS.Rendering
 
         public int Count => _mapping.Count;
 
+        internal async Task BuildCacheAsync(TPixel[] pixels)
+        {
+            await _matcher.BuildCacheAsync(pixels);
+        }
+
         public bool ContainsKey(TPixel key)
         {
             return true;

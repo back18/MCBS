@@ -1,4 +1,5 @@
-﻿using MCBS.Cursor;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Cursor;
 using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -15,11 +16,13 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public class DrawingBox : ScalablePictureBox
+    public class DrawingBox<TPixel> : ScalablePictureBox<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
         public DrawingBox()
         {
             EnableDrag = false;
+            IsRenderingTransparencyTexture = false;
+            Skin.SetAllBackgroundColor("minecraft:glass");
             _PenWidth = 1;
 
             _drawingCursors = new();
@@ -29,9 +32,9 @@ namespace MCBS.BlockForms
 
         private readonly List<CursorContext> _drawingCursors;
 
-        private readonly Stack<Image<Rgba32>> _undos;
+        private readonly Stack<Image<TPixel>> _undos;
 
-        private readonly Stack<Image<Rgba32>> _redos;
+        private readonly Stack<Image<TPixel>> _redos;
 
         public bool EnableDraw { get; set; }
 
@@ -60,7 +63,7 @@ namespace MCBS.BlockForms
                 else
                 {
                     _drawingCursors.Add(e.CursorContext);
-                    _undos.Push(ImageFrame.Image.Clone());
+                    _undos.Push(Texture.ImageSource.Clone());
                     ClearRedoStack();
                 }
             }
@@ -73,29 +76,29 @@ namespace MCBS.BlockForms
             if (!_drawingCursors.Contains(e.CursorContext))
                 return;
 
-            Rgba32 color = GetCurrentColorOrDefault(e, BlockManager.Concrete.Black);
+            TPixel color = GetCurrentColorOrDefault(e, BlockManager.Concrete.Black);
             Point position1 = ClientPos2ImagePos(new(e.Position.X - e.CursorPositionOffset.X, e.Position.Y - e.CursorPositionOffset.Y));
             Point position2 = ClientPos2ImagePos(e.Position);
 
             if (PixelMode && PenWidth == 1)
             {
-                ImageFrame.Image[position2.X, position2.Y] = color;
+                Texture.ImageSource[position2.X, position2.Y] = color;
             }
             else
             {
-                PenOptions options = new(color, PenWidth);
+                PenOptions options = new(Color.FromPixel(color), PenWidth);
                 options.JointStyle = JointStyle.Round;
                 options.EndCapStyle = EndCapStyle.Round;
                 SolidPen pen = new(options);
 
-                ImageFrame.Image.Mutate(ctx =>
+                Texture.ImageSource.Mutate(ctx =>
                 {
                     ctx.DrawLine(pen, new PointF[] { position1, position2 });
                 });
             }
 
-            ImageFrame.Update(Rectangle);
-            RequestUpdateFrame();
+            Texture.ImageSourceUpdated();
+            RequestRendering();
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
@@ -114,9 +117,9 @@ namespace MCBS.BlockForms
             e.CursorContext.Visible = true;
         }
 
-        protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
+        protected override void OnTextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
         {
-            base.OnImageFrameChanged(sender, e);
+            base.OnTextureChanged(sender, e);
 
             ClearUndoStack();
             ClearRedoStack();
@@ -132,29 +135,28 @@ namespace MCBS.BlockForms
             Fill(GetCurrentColorOrDefault(e, BlockManager.Concrete.White));
         }
 
-        public void Fill(string blockID)
+        public void Fill(string blockId)
         {
-            Fill(GetBlockColor(blockID));
+            Fill(this.GetBlockColor<TPixel>(blockId));
         }
 
-        public void Fill(Rgba32 color)
+        public void Fill(TPixel color)
         {
-            _undos.Push(ImageFrame.Image.Clone());
+            _undos.Push(Texture.ImageSource.Clone());
             ClearRedoStack();
 
-            ImageFrame.Image.Mutate(ctx => ctx.BackgroundColor(color).Fill(color));
-            ImageFrame.Update(Rectangle);
-            RequestUpdateFrame();
+            Texture.ImageSource.Mutate(ctx => ctx.Fill(Color.FromPixel(color)));
+            Texture.ImageSourceUpdated();
+            RequestRendering();
         }
 
         public void Undo()
         {
             if (_undos.Count > 0)
             {
-                _redos.Push(ImageFrame.Image);
-                ImageFrame.Image = _undos.Pop();
-                ImageFrame.Update(Rectangle);
-                RequestUpdateFrame();
+                _redos.Push(Texture.ImageSource);
+                Texture.ImageSourceUpdated(_undos.Pop(), false);
+                RequestRendering();
             }
         }
 
@@ -162,10 +164,9 @@ namespace MCBS.BlockForms
         {
             if (_redos.Count > 0)
             {
-                _undos.Push(ImageFrame.Image);
-                ImageFrame.Image = _redos.Pop();
-                ImageFrame.Update(Rectangle);
-                RequestUpdateFrame();
+                _undos.Push(Texture.ImageSource);
+                Texture.ImageSourceUpdated(_redos.Pop(), false);
+                RequestRendering();
             }
         }
 
@@ -185,15 +186,15 @@ namespace MCBS.BlockForms
             }
         }
 
-        private Rgba32 GetCurrentColorOrDefault(CursorEventArgs e, string def)
+        private TPixel GetCurrentColorOrDefault(CursorEventArgs e, string defaultBlockId)
         {
-            return GetCurrentColorOrDefault(e, GetBlockColor(def));
+            return GetCurrentColorOrDefault(e, this.GetBlockColor<TPixel>(defaultBlockId));
         }
 
-        private Rgba32 GetCurrentColorOrDefault(CursorEventArgs e, Rgba32 def)
+        private TPixel GetCurrentColorOrDefault(CursorEventArgs e, TPixel defaultColor)
         {
             var id = e.CursorContext.NewInputData.DeputyItem?.ID;
-            return GetBlockColorOrDefault(id, def);
+            return this.GetBlockColorOrDefault<TPixel>(id, defaultColor);
         }
     }
 }

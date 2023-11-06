@@ -10,8 +10,19 @@ using System.Threading.Tasks;
 
 namespace MCBS.Rendering
 {
-    public class ColorBlockFrame<TPixel> : BlockFrame<TPixel> where TPixel : unmanaged, IPixel<TPixel>
+    public class ColorBlockFrame<TPixel> : BlockFrame<TPixel>, IDisposable where TPixel : unmanaged, IPixel<TPixel>
     {
+        public ColorBlockFrame(Image<TPixel> image, Facing facing = Facing.Zm)
+        {
+            if (image is null)
+                throw new ArgumentNullException(nameof(image));
+
+            _blockConverter = new(facing);
+            _pixelCollection = new(image);
+            if (!SR.ColorMappingCaches.ContainsKey(facing))
+                _ = BuildCacheAsync();
+        }
+
         public ColorBlockFrame(int width, int height, string pixel = "", Facing facing = Facing.Zm)
         {
             ThrowHelper.ArgumentOutOfMin(0, width, nameof(width));
@@ -23,14 +34,20 @@ namespace MCBS.Rendering
             _pixelCollection = new(width, height, _blockConverter[pixel]);
         }
 
-        public ColorBlockFrame(Image<TPixel> image, Facing facing = Facing.Zm)
+        private ColorBlockFrame(ColorPixelCollection<TPixel> pixelCollection, Facing facing)
         {
-            if (image is null)
-                throw new ArgumentNullException(nameof(image));
+            if (pixelCollection is null)
+                throw new ArgumentNullException(nameof(pixelCollection));
 
             _blockConverter = new(facing);
-            _pixelCollection = new(image);
+            _pixelCollection = pixelCollection;
         }
+
+        public ColorBlockFrame(int width, int height, BlockPixel pixel) : this(width, height, pixel?.ToBlockId() ?? throw new ArgumentNullException(nameof(pixel))) { }
+
+        public ColorBlockFrame(Size size, string pixel = "") : this(size.Width, size.Height, pixel) { }
+
+        public ColorBlockFrame(Size size, BlockPixel pixel) : this(size.Width, size.Height, pixel) { }
 
         private readonly ColorBlockConverter<TPixel> _blockConverter;
 
@@ -40,6 +57,32 @@ namespace MCBS.Rendering
 
         public override IPixelCollection<TPixel> Pixels => _pixelCollection;
 
-        public Facing Facing { get => _blockConverter.Facing; set => _blockConverter.Facing = value; }
+        public Facing Facing
+        {
+            get => _blockConverter.Facing;
+            set
+            {
+                _blockConverter.Facing = value;
+                if (!SR.ColorMappingCaches.ContainsKey(value))
+                    _ = BuildCacheAsync();
+            }
+        }
+
+        public override BlockFrame Clone()
+        {
+            return new ColorBlockFrame<TPixel>(_pixelCollection.Clone(), Facing);
+        }
+
+        public void Dispose()
+        {
+            _pixelCollection.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        private async Task BuildCacheAsync()
+        {
+            TPixel[] pixels = await Task.Run(() => _pixelCollection.ToArray());
+            await _blockConverter.BuildCacheAsync(pixels);
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using MCBS.Frame;
+﻿using MCBS.Rendering;
+using QuanLib.Minecraft;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -21,54 +23,51 @@ namespace MCBS.Screens
 
         private readonly Screen _owner;
 
-        public ArrayFrame? LastFrame { get; internal set; }
+        public BlockFrame? LastFrame { get; internal set; }
 
         public bool IsGenerated => LastFrame is not null;
 
-        public void HandleOutput(ArrayFrame frame)
+        public void HandleOutput(BlockFrame frame)
         {
-            List<ScreenPixel> screenPixels = GetDifferencesPixels(frame);
-            List<WorldPixel> worldPixels = ToWorldPixels(screenPixels);
+            IDictionary<Point, string> pixels = GetDifferencesPixels(frame);
+            List<ISetBlockArgument> arguments = ToSetBlockArguments(pixels);
             LastFrame = frame;
-            if (worldPixels.Count > 0)
+            if (arguments.Count > 0)
             {
-                MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(worldPixels);
+                MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(arguments);
             }
         }
 
-        public async Task HandleOutputAsync(ArrayFrame frame)
+        public async Task HandleOutputAsync(BlockFrame frame)
         {
-            List<ScreenPixel> screenPixels = GetDifferencesPixels(frame);
-            List<WorldPixel> worldPixels = ToWorldPixels(screenPixels);
+            IDictionary<Point, string> pixels = GetDifferencesPixels(frame);
+            List<ISetBlockArgument> arguments = ToSetBlockArguments(pixels);
             LastFrame = frame;
-            if (worldPixels.Count > 0)
+            if (arguments.Count > 0)
             {
-                await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(worldPixels);
+                await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(arguments);
             }
         }
 
-        private List<ScreenPixel> GetDifferencesPixels(ArrayFrame frame)
+        private IDictionary<Point, string> GetDifferencesPixels(BlockFrame frame)
         {
             if (frame is null)
                 throw new ArgumentNullException(nameof(frame));
             if (frame.Width != _owner.Width || frame.Height != _owner.Height)
                 throw new ArgumentException("帧尺寸不一致");
 
-            List<ScreenPixel> pixels;
             if (LastFrame is null)
-                pixels = frame.GetAllPixel();
+                return frame.GetAllPixel();
             else
-                pixels = ArrayFrame.GetDifferencesPixels(LastFrame, frame);
-
-            return pixels;
+                return BlockFrame.GetDifferencesPixel(LastFrame, frame);
         }
 
-        private List<WorldPixel> ToWorldPixels(IEnumerable<ScreenPixel> pixels)
+        private List<ISetBlockArgument> ToSetBlockArguments(IDictionary<Point, string> pixels)
         {
-            List<WorldPixel> worldPixels = new();
-            foreach (ScreenPixel pixel in pixels)
-                worldPixels.Add(_owner.ToWorldPixel(pixel));
-            return worldPixels;
+            List<ISetBlockArgument> result = new(pixels.Count);
+            foreach (var pixel in pixels)
+                result.Add(new SetBlockArgument(_owner.ToWorldPosition(pixel.Key), pixel.Value));
+            return result;
         }
     }
 }

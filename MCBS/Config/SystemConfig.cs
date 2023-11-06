@@ -1,6 +1,7 @@
 ﻿using Nett;
 using Newtonsoft.Json;
 using QuanLib.Core;
+using QuanLib.Minecraft;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,11 +22,22 @@ namespace MCBS.Config
             LoadDllAppComponents = model.LoadDllAppComponents;
             ServicesAppID = model.ServicesAppID;
             StartupChecklist = new(model.StartupChecklist);
+
+            List<Facing> facings = new();
+            foreach (var item in model.BuildColorMappingCaches)
+            {
+                Facing facing = (Facing)item;
+                if (!facings.Contains(facing))
+                    facings.Add(facing);
+            }
+            BuildColorMappingCaches = new(facings);
         }
 
         public bool CrashAutoRestart { get; }
 
         public bool LoadDllAppComponents { get; }
+
+        public ReadOnlyCollection<Facing> BuildColorMappingCaches { get; }
 
         public string ServicesAppID { get; }
 
@@ -77,6 +89,9 @@ namespace MCBS.Config
             public bool CrashAutoRestart { get; set; }
 
             public bool LoadDllAppComponents { get; set; }
+
+            [Required(ErrorMessage = "配置项缺失")]
+            public int[] BuildColorMappingCaches { get; set; }
 
             [Required(ErrorMessage = "系统服务AppID不能为空")]
             public string ServicesAppID { get; set; }

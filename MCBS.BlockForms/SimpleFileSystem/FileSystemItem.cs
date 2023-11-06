@@ -1,5 +1,6 @@
 ﻿using MCBS.BlockForms;
 using MCBS.Events;
+using MCBS.UI;
 using QuanLib.Core.IO;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -19,8 +20,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
             PathType = pathType;
 
             AutoSize = true;
-            Skin.BorderBlockID__Hover = BlockManager.Concrete.Pink;
-            Skin.BorderBlockID_Hover_Selected = BlockManager.Concrete.Pink;
+            Skin.SetBorderColor(BlockManager.Concrete.Pink, ControlState.Hover, ControlState.Hover | ControlState.Selected);
         }
 
         public PathType PathType { get; }

@@ -74,7 +74,7 @@ namespace MCBS.BlockForms.DialogBox
             Message_RichTextBox.KeepWhenClear = true;
             Message_RichTextBox.BorderWidth = 0;
             Message_RichTextBox.ClientSize = new(110, 48);
-            Message_RichTextBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
+            Message_RichTextBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Lime);
 
             Yes_Button.Text = "是";
             Yes_Button.ClientSize = new(32, 16);

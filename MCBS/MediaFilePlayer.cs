@@ -1,12 +1,14 @@
 ﻿using FFMediaToolkit.Decoding;
 using log4net.Core;
 using MCBS.Events;
-using MCBS.Frame;
 using MCBS.Logging;
+using MCBS.State;
 using NAudio.Wave;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
@@ -17,17 +19,17 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public class MediaFilePlayer : IDisposable
+    public class MediaFilePlayer<TPixel> : UnmanagedBase, ITickable where TPixel : unmanaged, IPixel<TPixel>
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        public MediaFilePlayer(string path, Facing facing, MediaOptions mediaOptions, ResizeOptions resizeOptions, bool enableAudio = true)
+        public MediaFilePlayer(string path, MediaOptions mediaOptions, bool enableAudio = true)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException();
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
 
             MediaFile = MediaFile.Open(path, mediaOptions);
-            VideoDecoder = new(MediaFile.Video, facing, resizeOptions);
+            VideoDecoder = new(MediaFile.Video);
             EnableAudio = enableAudio;
             if (EnableAudio)
             {
@@ -49,13 +51,21 @@ namespace MCBS
                 }
             }
 
+            StateManager = new(MediaFilePlayerState.Unstarted, new StateContext<MediaFilePlayerState>[]
+            {
+                new(MediaFilePlayerState.Unstarted, Array.Empty<MediaFilePlayerState>(), HandleUnstartedState),
+                new(MediaFilePlayerState.Playing, new MediaFilePlayerState[] { MediaFilePlayerState.Unstarted, MediaFilePlayerState.Pause }, HandlePlayingState, OnPlayingState),
+                new(MediaFilePlayerState.Pause, new MediaFilePlayerState[] { MediaFilePlayerState.Playing }, HandlePauseState),
+                new(MediaFilePlayerState.Ended, new MediaFilePlayerState[] { MediaFilePlayerState.Pause }, HandleEndedState),
+            });
+
             _start = TimeSpan.Zero;
             _stopwatch = new();
-            PlayerState = MediaFilePlayerState.Unstarted;
 
             VideoFrameChanged += OnVideoFrameChanged;
             Played += OnPlayed;
             Paused += OnPaused;
+            VideoDecoder.JumpedToFrame += VideoDecoder_JumpedToFrame;
         }
 
         private TimeSpan _start;
@@ -66,13 +76,13 @@ namespace MCBS
 
         public MediaFile MediaFile { get; }
 
-        public VideoDecoder VideoDecoder { get; }
+        public VideoDecoder<TPixel> VideoDecoder { get; }
 
         public MediaFoundationReader? MediaFoundationReader { get; }
 
         public WaveOutEvent? WaveOutEvent { get; }
 
-        public VideoFrame? CurrentVideoFrame { get; private set; }
+        public VideoFrame<TPixel>? CurrentVideoFrame { get; private set; }
 
         public float Volume
         {
@@ -93,146 +103,141 @@ namespace MCBS
 
         public TimeSpan CurrentPosition
         {
-            get => VideoDecoder.CurrentPosition;
-            set => TryJumpToFrame(value);
+            get => CurrentVideoFrame?.Position ?? TimeSpan.Zero;
+            set => JumpToFrame(value);
         }
 
         public TimeSpan TotalTime => MediaFile.Info.Duration;
 
-        public MediaFilePlayerState PlayerState { get; private set; }
+        public StateManager<MediaFilePlayerState> StateManager { get; }
 
-        public event EventHandler<MediaFilePlayer, EventArgs> Played;
+        public MediaFilePlayerState PlayerState => StateManager.CurrentState;
 
-        public event EventHandler<MediaFilePlayer, EventArgs> Paused;
+        public event EventHandler<MediaFilePlayer<TPixel>, EventArgs> Played;
 
-        public event EventHandler<MediaFilePlayer, VideoFrameChangedEventArgs> VideoFrameChanged;
+        public event EventHandler<MediaFilePlayer<TPixel>, EventArgs> Paused;
 
-        protected virtual void OnPlayed(MediaFilePlayer sender, EventArgs e) { }
+        public event EventHandler<MediaFilePlayer<TPixel>, VideoFrameChangedEventArgs<TPixel>> VideoFrameChanged;
 
-        protected virtual void OnPaused(MediaFilePlayer sender, EventArgs e) { }
+        protected virtual void OnPlayed(MediaFilePlayer<TPixel> sender, EventArgs e) { }
 
-        protected virtual void OnVideoFrameChanged(MediaFilePlayer sender, VideoFrameChangedEventArgs e)
+        protected virtual void OnPaused(MediaFilePlayer<TPixel> sender, EventArgs e) { }
+
+        protected virtual void OnVideoFrameChanged(MediaFilePlayer<TPixel> sender, VideoFrameChangedEventArgs<TPixel> e)
         {
             e.OldVideoFrame?.Dispose();
         }
 
-        public bool TryJumpToFrame(TimeSpan time)
+        private void VideoDecoder_JumpedToFrame(VideoDecoder<TPixel> sender, TimeSpanEventArgs e)
         {
-            if (VideoDecoder.TryJumpToFrame(time))
+            _start = e.TimeSpan;
+            if (EnableAudio)
             {
-                _start = time;
-
-                if (EnableAudio)
-                {
-                    if (MediaFoundationReader is not null)
-                        MediaFoundationReader.CurrentTime = _start;
-                    WaveOutEvent?.Play();
-                }
-
-                _stopwatch.Restart();
-                _stopwatch.Start();
-                if (PlayerState != MediaFilePlayerState.Playing)
-                {
-                    PlayerState = MediaFilePlayerState.Playing;
-                    Played.Invoke(this, EventArgs.Empty);
-                }
-                return true;
+                if (MediaFoundationReader is not null)
+                    MediaFoundationReader.CurrentTime = _start;
+                WaveOutEvent?.Play();
             }
+
+            _stopwatch.Restart();
+        }
+
+        protected virtual bool HandleUnstartedState(MediaFilePlayerState current, MediaFilePlayerState next)
+        {
             return false;
         }
 
-        public void Play()
+        protected virtual bool HandlePlayingState(MediaFilePlayerState current, MediaFilePlayerState next)
         {
-            if (PlayerState != MediaFilePlayerState.Playing)
+            switch (current)
             {
-                lock (VideoDecoder)
-                {
+                case MediaFilePlayerState.Unstarted:
                     VideoDecoder.Start("VideoDecoder Thread");
-                }
-
-                if (EnableAudio)
-                {
-                    WaveOutEvent?.Play();
-                }
-
-                _stopwatch.Start();
-
-                PlayerState = MediaFilePlayerState.Playing;
-                Played.Invoke(this, EventArgs.Empty);
-            }
-            else
-            {
-                PlayerState = MediaFilePlayerState.Playing;
+                    if (EnableAudio)
+                        WaveOutEvent?.Play();
+                    _stopwatch.Start();
+                    Played.Invoke(this, EventArgs.Empty);
+                    return true;
+                case MediaFilePlayerState.Pause:
+                    if (EnableAudio)
+                        WaveOutEvent?.Play();
+                    _stopwatch.Start();
+                    Played.Invoke(this, EventArgs.Empty);
+                    return true;
+                default:
+                    return false;
             }
         }
 
-        public void Pause()
+        protected virtual bool HandlePauseState(MediaFilePlayerState current, MediaFilePlayerState next)
         {
-            if (PlayerState != MediaFilePlayerState.Pause)
-            {
-                if (EnableAudio)
-                {
-                    WaveOutEvent?.Stop();
-                }
-
-                _stopwatch.Stop();
-
-                PlayerState = MediaFilePlayerState.Pause;
-                Paused.Invoke(this, EventArgs.Empty);
-            }
-            else
-            {
-                PlayerState = MediaFilePlayerState.Pause;
-            }
+            if (EnableAudio)
+                WaveOutEvent?.Stop();
+            _stopwatch.Stop();
+            Paused.Invoke(this, EventArgs.Empty);
+            return true;
         }
 
-        public void Dispose()
+        protected virtual bool HandleEndedState(MediaFilePlayerState current, MediaFilePlayerState next)
         {
-            if (PlayerState != MediaFilePlayerState.Ended)
-            {
-                Pause();
-
-                VideoDecoder.Stop();
-                MediaFile.Dispose();
-                WaveOutEvent?.Dispose();
-                MediaFoundationReader?.Dispose();
-                CurrentVideoFrame?.Dispose();
-
-                GC.SuppressFinalize(this);
-
-                PlayerState = MediaFilePlayerState.Ended;
-            }
+            Dispose();
+            return true;
         }
 
-        public void Handle()
+        protected virtual void OnPlayingState()
         {
-            if (PlayerState != MediaFilePlayerState.Playing)
-                return;
-
-            VideoFrame? frame;
+            VideoFrame<TPixel>? videoFrame;
             while (true)
             {
-                if (!VideoDecoder.TryGetNextFrame(out frame))
+                if (!VideoDecoder.TryGetNextFrame(out videoFrame))
                 {
                     Pause();
                     break;
                 }
 
-                double next = frame.Position.TotalMilliseconds + VideoDecoder.FrameInterval;
+                double next = videoFrame.Position.TotalMilliseconds + Math.Round(1000 / MediaFile.Video.Info.AvgFrameRate);
                 double now = (_start + _stopwatch.Elapsed).TotalMilliseconds;
-                if (Math.Abs(now - frame.Position.TotalMilliseconds) < Math.Abs(now - next))
+                if (Math.Abs(now - videoFrame.Position.TotalMilliseconds) < Math.Abs(now - next))
                 {
                     break;
                 }
                 else
                 {
-                    frame.Image.Dispose();
+                    videoFrame.Dispose();
                 }
             }
 
-            VideoFrame? temp = CurrentVideoFrame;
-            CurrentVideoFrame = frame;
+            VideoFrame<TPixel>? temp = CurrentVideoFrame;
+            CurrentVideoFrame = videoFrame;
             VideoFrameChanged.Invoke(this, new(temp, CurrentVideoFrame));
+        }
+
+        public void OnTick()
+        {
+            StateManager.HandleAllState();
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            VideoDecoder.Stop();
+            MediaFile.Dispose();
+            WaveOutEvent?.Dispose();
+            MediaFoundationReader?.Dispose();
+            CurrentVideoFrame?.Dispose();
+        }
+
+        public void JumpToFrame(TimeSpan position)
+        {
+            VideoDecoder.JumpToFrame(position);
+        }
+
+        public void Play()
+        {
+            StateManager.AddNextState(MediaFilePlayerState.Playing);
+        }
+
+        public void Pause()
+        {
+            StateManager.AddNextState(MediaFilePlayerState.Pause);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FFMediaToolkit.Decoding;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -18,7 +19,7 @@ namespace MCBS.Rendering
                 Mode = ResizeMode.Crop,
                 Position = AnchorPositionMode.Center,
                 CenterCoordinates = null,
-                Size = new(64, 64),
+                Size = Size.Empty,
                 Sampler = KnownResamplers.Bicubic,
                 Compand = false,
                 TargetRectangle = null,

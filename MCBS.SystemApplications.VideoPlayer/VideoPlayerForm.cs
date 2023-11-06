@@ -11,6 +11,7 @@ using MCBS.UI;
 using QuanLib.Core.Events;
 using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace MCBS.SystemApplications.VideoPlayer
 {
@@ -30,7 +31,7 @@ namespace MCBS.SystemApplications.VideoPlayer
 
         private readonly string? _open;
 
-        private readonly VideoPlayerBox VideoPlayer;
+        private readonly VideoPlayerBox<Bgr24> VideoPlayer;
 
         private readonly Switch Setting_Switch;
 
@@ -52,18 +53,18 @@ namespace MCBS.SystemApplications.VideoPlayer
             ClientPanel.ChildControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
             Setting_Switch.OnText = "应用";
-            Setting_Switch.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Pink);
-            Setting_Switch.Skin.BackgroundBlockID = string.Empty;
-            Setting_Switch.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightBlue;
-            Setting_Switch.Skin.BackgroundBlockID_Selected = Setting_Switch.Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Lime;
+            Setting_Switch.Skin.SetBackgroundColor(string.Empty, ControlState.None);
+            Setting_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.Hover);
+            Setting_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Orange, ControlState.Selected, ControlState.Hover | ControlState.Selected);
+            Setting_Switch.Skin.SetAllForegroundColor(BlockManager.Concrete.Pink);
             Setting_Switch.ClientLocation = new(2, 2);
 
             ClientPanel.ChildControls.Add(Path_TextBox);
             Path_TextBox.LayoutRight(ClientPanel, Setting_Switch, 2);
             Path_TextBox.Width = ClientPanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
-            Path_TextBox.Skin.SetAllForegroundBlockID(BlockManager.Concrete.Pink);
-            Path_TextBox.Skin.BackgroundBlockID = string.Empty;
+            Path_TextBox.Skin.SetAllForegroundColor(BlockManager.Concrete.Pink);
+            Path_TextBox.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Path_TextBox.TextChanged += Path_TextBox_TextChanged;
         }
 
@@ -85,7 +86,7 @@ namespace MCBS.SystemApplications.VideoPlayer
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
-            if (ClientPanel.ChildControls.FirstHover is null or VideoPlayerBox)
+            if (ClientPanel.ChildControls.FirstHover is null or VideoPlayerBox<Bgr24>)
             {
                 if (Setting_Switch.Visible)
                 {
@@ -104,7 +105,7 @@ namespace MCBS.SystemApplications.VideoPlayer
         {
             base.OnBeforeFrame(sender, e);
 
-            if (ClientPanel.ChildControls.FirstHover is null or VideoPlayerBox)
+            if (ClientPanel.ChildControls.FirstHover is null or VideoPlayerBox<Bgr24>)
             {
                 if (OverlayHideTime <= 0)
                     HideOverlay();

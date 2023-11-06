@@ -1,6 +1,7 @@
 ﻿using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public class TaskBarIcon : IconTextBox
+    public class TaskBarIcon : IconTextBox<Rgba32>
     {
         public TaskBarIcon(IForm form)
         {
@@ -18,10 +19,8 @@ namespace MCBS.BlockForms
             Icon_PictureBox.SetImage(form.GetIcon());
             Text_Label.Text = form.Text;
             AutoSetSize();
-            Skin.BorderBlockID = BlockManager.Concrete.Gray;
-            Skin.BorderBlockID_Selected = BlockManager.Concrete.Orange;
-            Skin.BorderBlockID__Hover = BlockManager.Concrete.Pink;
-            Skin.BorderBlockID_Hover_Selected = BlockManager.Concrete.Pink;
+            Skin.SetBorderColor(BlockManager.Concrete.Orange, ControlState.Selected);
+            Skin.SetBorderColor(BlockManager.Concrete.Pink, ControlState.Hover, ControlState.Hover | ControlState.Selected);
         }
 
         public IForm Form { get; }

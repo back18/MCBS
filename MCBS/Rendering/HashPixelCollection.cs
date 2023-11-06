@@ -24,6 +24,11 @@ namespace MCBS.Rendering
 
         private readonly int[] _hashs;
 
+        private HashPixelCollection(int[] pixels)
+        {
+            _hashs = pixels ?? throw new ArgumentNullException(nameof(pixels));
+        }
+
         public int this[int index] { get => _hashs[index]; set => _hashs[index] = value; }
 
         public int this[int x, int y] { get => _hashs[ToIndex(x, y)]; set => _hashs[ToIndex(x, y)] = value; }
@@ -40,13 +45,22 @@ namespace MCBS.Rendering
 
         public int TransparentPixel => string.Empty.GetHashCode();
 
-        public OverwriteContext Overwrite(IPixelCollection<int> pixels, Point location)
+        public OverwriteContext Overwrite(IPixelCollection<int> pixels, Size size, Point location, Point offset)
         {
             if (pixels is null)
                 throw new ArgumentNullException(nameof(pixels));
 
-            OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), location);
-            if (location == Point.Empty && pixels.Width == Width && pixels.Height == Height)
+            if (size.Width < 0)
+                size.Width = 0;
+            if (size.Height < 0)
+                size.Height = 0;
+            if (size.Width > pixels.Width)
+                size.Width = pixels.Width;
+            if (size.Height > pixels.Height)
+                size.Height = pixels.Height;
+
+            OverwriteContext overwriteContext = new(new(Width, Height), location, new(size.Width, size.Height), offset);
+            if (location == Point.Empty && size.Width == Width && size.Height == Height)
             {
                 if (pixels.SupportTransparent)
                 {
@@ -113,6 +127,11 @@ namespace MCBS.Rendering
         public void CopyPixelDataTo(Span<int> destination)
         {
             new Span<int>(_hashs).CopyTo(destination);
+        }
+
+        public HashPixelCollection Clone()
+        {
+            return new(ToArray());
         }
 
         private int ToIndex(int x, int y)

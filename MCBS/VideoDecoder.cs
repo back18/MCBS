@@ -1,194 +1,120 @@
 ﻿using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Graphics;
-using MCBS.Frame;
+using log4net.Core;
 using MCBS.Logging;
 using QuanLib.Core;
-using QuanLib.Minecraft;
+using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public class VideoDecoder : UnmanagedRunnable
+    public class VideoDecoder<TPixel> : UnmanagedRunnable where TPixel : unmanaged, IPixel<TPixel>
     {
-        public VideoDecoder(VideoStream video, Facing facing, Size size) : this(video, facing, VideoFrame.DefaultResizeOptions)
+        public VideoDecoder(VideoStream videoStream) : base(LogUtil.GetLogger)
         {
-            ResizeOptions.Size = size;
+            if (videoStream is null)
+                throw new ArgumentNullException(nameof(videoStream));
+
+            MaxCacheFrames = 16;
+            _videoStream = videoStream;
+            _cacheFrames = new();
+
+            JumpedToFrame += OnJumpedToFrame;
         }
 
-        public VideoDecoder(VideoStream video, Facing facing, ResizeOptions resizeOptions) : base(LogUtil.GetLogger)
+        private readonly VideoStream _videoStream;
+
+        private readonly ConcurrentQueue<VideoFrame<TPixel>> _cacheFrames;
+
+        private TimeSpan? _jumpPosition;
+
+        public int MaxCacheFrames { get; set; }
+
+        public event EventHandler<VideoDecoder<TPixel>, TimeSpanEventArgs> JumpedToFrame;
+
+        protected virtual void OnJumpedToFrame(VideoDecoder<TPixel> sender, TimeSpanEventArgs e)
         {
-            _video = video ?? throw new ArgumentNullException(nameof(video));
-            ResizeOptions = resizeOptions ?? throw new ArgumentNullException(nameof(resizeOptions));
-
-            Facing = facing;
-            MaxFrames = 16;
-            FrameInterval = 0;
-            FrameInterval = Math.Round(1000 / video.Info.AvgFrameRate);
-
-            _frames = new();
-            _semaphore = new(1);
-            _pause = false;
+            while (_cacheFrames.TryDequeue(out var videoFrame))
+                videoFrame.Dispose();
         }
-
-        private readonly ConcurrentQueue<Task<VideoFrame?>> _frames;
-
-        public VideoStream _video;
-
-        private readonly SemaphoreSlim _semaphore;
-
-        private bool _pause;
-
-        public int MaxFrames { get; set; }
-
-        public Facing Facing { get; set; }
-
-        public ResizeOptions ResizeOptions { get; set; }
-
-        public TimeSpan DecodingEndPosition
-        {
-            get => _video.Position;
-            set => TryJumpToFrame(value);
-        }
-
-        public TimeSpan CurrentPosition
-        {
-            get => _CurrentTime;
-            set => TryJumpToFrame(value);
-        }
-        private TimeSpan _CurrentTime;
-
-        public double FrameInterval { get; }
 
         protected override void Run()
         {
             while (IsRunning)
             {
-                if (_frames.Count >= MaxFrames)
-                    Thread.Sleep(10);
-                else
+                if (_cacheFrames.Count >= MaxCacheFrames && _jumpPosition is null)
                 {
-                    while (_pause)
-                        Thread.Yield();
-                    if (!IsRunning)
-                        break;
-
-                    lock (_frames)
-                    {
-                        _frames.Enqueue(Task.Run(() =>
-                        {
-                            _semaphore.Wait();
-                            ImageData imageData;
-                            try
-                            {
-                                imageData = _video.GetNextFrame();
-                            }
-                            catch
-                            {
-                                return null;
-                            }
-                            finally
-                            {
-                                _semaphore.Release();
-                            }
-                            Image<Bgr24> image = VideoFrame.FromImageData(imageData.Data, imageData.ImageSize.Width, imageData.ImageSize.Height);
-                            VideoFrame frame = new VideoFrame(_video.Position, image, Facing, ResizeOptions);
-                            frame.Update();
-                            return frame;
-                        }));
-                    }
+                    Thread.Sleep(10);
+                    continue;
                 }
+
+                if (!TryReadFrame(out var imageData))
+                {
+                    Thread.Sleep(10);
+                    continue;
+                }
+
+                Image<TPixel> image = Image.LoadPixelData<TPixel>(imageData.Data, imageData.ImageSize.Width, imageData.ImageSize.Height);
+                TimeSpan position = _videoStream.Position;
+                _cacheFrames.Enqueue(new(image, position));
             }
         }
 
         protected override void DisposeUnmanaged()
         {
-            _pause = true;
-            Clear();
-            _pause = false;
+            Task task = WaitForStopAsync();
+            IsRunning = false;
+            task.Wait();
+
+            while (_cacheFrames.TryDequeue(out var videoFrame))
+                videoFrame.Dispose();
         }
 
-        public void Clear()
+        public bool TryGetNextFrame([MaybeNullWhen(false)] out VideoFrame<TPixel> videoFrame)
         {
-            while (!_frames.IsEmpty)
-            {
-                if (_frames.TryDequeue(out var frame))
-                    frame.ContinueWith(t => t.Result?.Image.Dispose());
-            }
-        }
-
-        public bool TryGetNextFrame([MaybeNullWhen(false)] out VideoFrame result)
-        {
-            while (true)
+            while (_cacheFrames.IsEmpty)
             {
                 if (!IsRunning)
                 {
-                    result = null;
+                    videoFrame = null;
                     return false;
                 }
-                else if (_frames.IsEmpty)
-                {
-                    Thread.Yield();
-                }
-                else
-                {
-                    if (_frames.TryDequeue(out var task))
-                    {
-                        if (task.Result is null)
-                        {
-                            result = null;
-                            return false;
-                        }
-                        else
-                        {
-                            _CurrentTime = task.Result.Position;
-                            result = task.Result;
-                            return true;
-                        }
-                    }
-                }
+
+                Thread.Yield();
             }
+
+            return _cacheFrames.TryDequeue(out videoFrame);
         }
 
-        public bool TryJumpToFrame(TimeSpan time)
+        public void JumpToFrame(TimeSpan position)
         {
-            _pause = true;
-            Clear();
+            _jumpPosition = position;
+        }
 
-            _semaphore.Wait();
-            ImageData imageData;
-            try
+        private bool TryReadFrame(out ImageData imageData)
+        {
+            if (_jumpPosition is null)
+                return _videoStream.TryGetNextFrame(out imageData);
+
+            if (_videoStream.TryGetFrame(_jumpPosition.Value, out imageData))
             {
-                if (_video is null || !_video.TryGetFrame(time, out imageData))
-                {
-                    _pause = false;
-                    return false;
-                }
+                JumpedToFrame.Invoke(this, new(_videoStream.Position));
+                _jumpPosition = null;
+                return true;
             }
-            finally
+            else
             {
-                _semaphore.Release();
+                _jumpPosition = null;
+                return false;
             }
-
-            Image<Bgr24> image = VideoFrame.FromImageData(imageData.Data, imageData.ImageSize.Width, imageData.ImageSize.Height);
-            VideoFrame frame = new VideoFrame(_video.Position, image, Facing, ResizeOptions);
-            frame.Update();
-            _frames.Enqueue(Task.Run<VideoFrame?>(() => frame));
-
-            _pause = false;
-            return true;
         }
     }
 }

@@ -104,9 +104,9 @@ namespace MCBS.SystemApplications.FileExplorer
             Clear_Button.Text = "X";
             Clear_Button.LayoutRight(ClientPanel, start2, spacing);
             Clear_Button.ClientSize = new(16, 16);
-            Clear_Button.Skin.BackgroundBlockID = BlockManager.Concrete.Pink;
-            Clear_Button.Skin.BackgroundBlockID_Hover = BlockManager.Concrete.Yellow;
-            Clear_Button.Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Red;
+            Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Pink, ControlState.None);
+            Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.Hover);
+            Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Red, ControlState.Selected, ControlState.Hover | ControlState.Selected);
             Clear_Button.Anchor = Direction.Bottom | Direction.Left;
             Clear_Button.RightClick += Clear_Button_RightClick;
 
@@ -122,7 +122,7 @@ namespace MCBS.SystemApplications.FileExplorer
             SimpleFilesBox.Height = ClientPanel.ClientSize.Height - Backward_Button.Height - Cancel_Button.Height - 8;
             SimpleFilesBox.LayoutDown(ClientPanel, Backward_Button, spacing);
             SimpleFilesBox.Stretch = Direction.Bottom | Direction.Right;
-            SimpleFilesBox.Skin.SetAllBackgroundBlockID(BlockManager.Concrete.Lime);
+            SimpleFilesBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Lime);
             SimpleFilesBox.TextChanged += SimpleFilesBox_TextChanged;
             SimpleFilesBox.OpenFile += SimpleFilesBox_OpenFile;
             SimpleFilesBox.OpeningItemException += SimpleFilesBox_OpeningItemException;

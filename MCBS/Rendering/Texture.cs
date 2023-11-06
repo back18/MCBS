@@ -16,6 +16,8 @@ namespace MCBS.Rendering
 
         public abstract ResizeOptions ResizeOptions { get; }
 
+        public abstract void ImageSourceUpdated();
+
         public abstract Image GetImageSource();
 
         public abstract BlockFrame CreateBlockFrame(Size size, Facing facing);
@@ -30,7 +32,7 @@ namespace MCBS.Rendering
                 return false;
 
             return texture1.GetImageSource() == texture2.GetImageSource() &&
-                   texture1.CropRectangle == texture2?.CropRectangle &&
+                   texture1.CropRectangle == texture2.CropRectangle &&
                    OptionsUtil.ResizeOptionsEquals(texture1.ResizeOptions, texture2.ResizeOptions);
         }
     }

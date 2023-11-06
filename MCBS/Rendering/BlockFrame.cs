@@ -48,20 +48,29 @@ namespace MCBS.Rendering
             return result;
         }
 
-        public virtual OverwriteContext Overwrite(BlockFrame blockFrame, Point location)
+        public virtual OverwriteContext Overwrite(BlockFrame blockFrame, Size size, Point location, Point offset)
         {
             if (blockFrame is null)
                 throw new ArgumentNullException(nameof(blockFrame));
 
-            return Overwrite(blockFrame.AsPixelCollection(), location);
+            return Overwrite(blockFrame.AsPixelCollection(), size, location, offset);
         }
 
-        public virtual OverwriteContext Overwrite(IPixelCollection<string> pixels, Point location)
+        public OverwriteContext Overwrite(IPixelCollection<string> pixels, Size size, Point location, Point offset)
         {
             if (pixels is null)
                 throw new ArgumentNullException(nameof(pixels));
 
-            OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), location);
+            if (size.Width < 0)
+                size.Width = 0;
+            if (size.Height < 0)
+                size.Height = 0;
+            if (size.Width > pixels.Width)
+                size.Width = pixels.Width;
+            if (size.Height > pixels.Height)
+                size.Height = pixels.Height;
+
+            OverwriteContext overwriteContext = new(new(Width, Height), location, new(size.Width, size.Height), offset);
             if (pixels.SupportTransparent)
             {
                 string transparent = pixels.TransparentPixel;
@@ -82,6 +91,8 @@ namespace MCBS.Rendering
 
             return overwriteContext;
         }
+
+        public abstract BlockFrame Clone();
 
         public abstract void Fill(string pixel);
 

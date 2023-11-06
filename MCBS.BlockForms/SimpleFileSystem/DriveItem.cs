@@ -1,4 +1,5 @@
 ﻿using QuanLib.Minecraft.Blocks;
+using MCBS.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,8 @@ namespace MCBS.BlockForms.SimpleFileSystem
             DriveInfo = driveInfo ?? throw new ArgumentNullException(nameof(driveInfo));
 
             Text = driveInfo.Name;
-            Skin.BackgroundBlockID = BlockManager.Concrete.LightBlue;
-            Skin.BackgroundBlockID_Hover = BlockManager.Concrete.LightBlue;
-            Skin.BackgroundBlockID_Selected = BlockManager.Concrete.Blue;
-            Skin.BackgroundBlockID_Hover_Selected = BlockManager.Concrete.Blue;
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.None, ControlState.Hover);
+            Skin.SetBackgroundColor(BlockManager.Concrete.Blue, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
 
         public override FileSystemInfo FileSystemInfo => DriveInfo.RootDirectory;

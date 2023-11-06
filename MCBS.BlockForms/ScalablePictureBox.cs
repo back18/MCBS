@@ -1,10 +1,12 @@
-﻿using MCBS.Cursor;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Cursor;
 using MCBS.Events;
-using MCBS.Frame;
+using MCBS.Rendering;
 using MCBS.UI;
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public class ScalablePictureBox : PictureBox
+    public class ScalablePictureBox<TPixel> : PictureBox<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
         public ScalablePictureBox()
         {
@@ -22,7 +24,6 @@ namespace MCBS.BlockForms
 
             FirstHandleCursorSlotChanged = true;
             DefaultResizeOptions.Mode = ResizeMode.Max;
-            _Rectangle = new(0, 0, ImageFrame.ResizeOptions.Size.Width, ImageFrame.ResizeOptions.Size.Height);
             ScalingRatio = 0.2;
             EnableZoom = false;
             EnableDrag = false;
@@ -31,34 +32,11 @@ namespace MCBS.BlockForms
             _draggingCursors = new();
         }
 
-        private List<CursorContext> _draggingCursors;
+        private readonly List<CursorContext> _draggingCursors;
 
         public int PixelModeThreshold { get; set; }
 
-        public bool PixelMode => GetPixelSize() >= PixelModeThreshold;
-
-        public Rectangle Rectangle
-        {
-            get => _Rectangle;
-            set
-            {
-                value = CorrectRectangle(value);
-
-                if (_Rectangle != value)
-                {
-                    _Rectangle = value;
-                    if (_Rectangle.Width > ClientSize.Width)
-                        ImageFrame.ResizeOptions.Sampler = KnownResamplers.Bicubic;
-                    else
-                        ImageFrame.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
-                    ImageFrame.Update(_Rectangle);
-                    if (AutoSize)
-                        AutoSetSize();
-                    RequestUpdateFrame();
-                }
-            }
-        }
-        private Rectangle _Rectangle;
+        public bool PixelMode => GetPixelLength() >= PixelModeThreshold;
 
         public double ScalingRatio { get; set; }
 
@@ -66,24 +44,26 @@ namespace MCBS.BlockForms
 
         public bool EnableDrag { get; set; }
 
-        public override IFrame RenderingFrame()
+        protected override BlockFrame Rendering()
         {
-            ArrayFrame frame = ImageFrame.GetFrameClone();
-            int pixel = GetPixelSize();
-            if (pixel >= PixelModeThreshold)
+            int pixelLength = GetPixelLength();
+            if (pixelLength >= PixelModeThreshold)
             {
-                var imageFrame = ImageFrame.Clone();
-                imageFrame.ResizeOptions.Size = new(Rectangle.Width * pixel, Rectangle.Height * pixel);
-                imageFrame.Update(Rectangle);
-                frame = imageFrame.GetFrame();
-                imageFrame.Dispose();
-                for (int x = frame.Width - 1; x >= 0; x -= pixel)
-                    frame.FillColumn(x, BlockManager.Concrete.Gray);
-                for (int y = frame.Height - 1; y >= 0; y -= pixel)
-                    frame.FillRow(y, BlockManager.Concrete.Gray);
-            }
+                BlockFrame textureFrame = Texture.CreateBlockFrame(new(Texture.CropRectangle.Width * pixelLength, Texture.CropRectangle.Height * pixelLength), GetScreenPlane().NormalFacing);
 
-            return frame;
+                for (int x = textureFrame.Width - 1; x >= 0; x -= pixelLength)
+                    textureFrame.DrawVerticalLine(x, BlockManager.Concrete.Gray);
+                for (int y = textureFrame.Height - 1; y >= 0; y -= pixelLength)
+                    textureFrame.DrawHorizontalLine(y, BlockManager.Concrete.Gray);
+
+                BlockFrame baseFrame = this.RenderingBackground(ClientSize);
+                baseFrame.Overwrite(textureFrame, Point.Empty);
+                return baseFrame;
+            }
+            else
+            {
+                return base.Rendering();
+            }
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -96,10 +76,10 @@ namespace MCBS.BlockForms
             Point position1 = ClientPos2ImagePos(new(e.Position.X - e.CursorPositionOffset.X, e.Position.Y - e.CursorPositionOffset.Y));
             Point position2 = ClientPos2ImagePos(e.Position);
             Point offset = new(position2.X - position1.X, position2.Y - position1.Y);
-            Rectangle rectangle = Rectangle;
+            Rectangle rectangle = Texture.CropRectangle;
             rectangle.X -= offset.X;
             rectangle.Y -= offset.Y;
-            Rectangle = rectangle;
+            CorrectAndUpdateCropRectangle(rectangle);
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
@@ -125,31 +105,22 @@ namespace MCBS.BlockForms
 
         protected override void OnResize(Control sender, SizeChangedEventArgs e)
         {
-            if (_autosetsizeing)
+            Texture.CropRectangle = Texture.ImageSource.Bounds;
+            UpdateTextureTexture();
+
+            if (Texture.GetOutputSize() == e.NewSize)
                 return;
 
-            Size offset = e.NewSize - e.OldSize;
-            DefaultResizeOptions.Size += offset;
-            ImageFrame.ResizeOptions.Size += offset;
-            Rectangle = new(0, 0, ImageFrame.Image.Size.Width, ImageFrame.Image.Size.Height);
-            ImageFrame.Update(Rectangle);
+            Texture.ResizeOptions.Size = e.NewSize;
             if (AutoSize)
                 AutoSetSize();
         }
 
-        protected override void OnImageFrameChanged(PictureBox sender, ImageFrameChangedEventArgs e)
+        protected override void OnTextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
         {
-            e.NewImageFrame.TransparentBlockID = "minecraft:glass";
+            base.OnTextureChanged(sender, e);
 
-            if (e.OldImageFrame.Image.Size != e.NewImageFrame.Image.Size)
-                Rectangle = new(0, 0, e.NewImageFrame.Image.Size.Width, e.NewImageFrame.Image.Size.Height);
-
-            if (_Rectangle.Width > ClientSize.Width)
-                e.NewImageFrame.ResizeOptions.Sampler = KnownResamplers.Bicubic;
-            else
-                e.NewImageFrame.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
-
-            base.OnImageFrameChanged(sender, e);
+            UpdateTextureTexture();
         }
 
         protected override void OnCursorSlotChanged(Control sender, CursorEventArgs e)
@@ -159,10 +130,10 @@ namespace MCBS.BlockForms
             if (!EnableZoom)
                 return;
 
-            Rectangle rectangle = Rectangle;
+            Rectangle rectangle = Texture.CropRectangle;
 
             Point position1 = ClientPos2ImagePos(rectangle, e.Position);
-            Point center1 = GetImageCenter(rectangle);
+            Point center1 = GetImageCenterPosition(rectangle);
             Point offset1 = new(position1.X - center1.X, position1.Y - center1.Y);
 
             rectangle.Width += (int)Math.Round(e.InventorySlotDelta * rectangle.Width * ScalingRatio);
@@ -171,29 +142,29 @@ namespace MCBS.BlockForms
             rectangle.Y = center1.Y - (int)Math.Round(rectangle.Height / 2.0);
 
             Point position2 = ClientPos2ImagePos(rectangle, e.Position);
-            Point center2 = GetImageCenter(rectangle);
+            Point center2 = GetImageCenterPosition(rectangle);
             Point offset2 = new(position2.X - center2.X, position2.Y - center2.Y);
 
             rectangle.X += offset1.X - offset2.X;
             rectangle.Y += offset1.Y - offset2.Y;
 
-            Rectangle = rectangle;
+            CorrectAndUpdateCropRectangle(rectangle);
         }
 
-        public Point GetImageCenter() => GetImageCenter(Rectangle);
+        public Point GetImageCenter() => GetImageCenterPosition(Texture.CropRectangle);
 
-        public Point ClientPos2ImagePos(Point position) => ClientPos2ImagePos(Rectangle, position);
+        public Point ClientPos2ImagePos(Point position) => ClientPos2ImagePos(Texture.CropRectangle, position);
 
-        public int GetPixelSize() => GetPixelSize(Rectangle);
+        public int GetPixelLength() => GetPixelLength(Texture.CropRectangle);
 
-        private Point GetImageCenter(Rectangle rectangle)
+        private static Point GetImageCenterPosition(Rectangle rectangle)
         {
-            return new(rectangle.X + (int)Math.Round(rectangle.Width / 2.0), rectangle.Y + rectangle.Height / 2);
+            return new(rectangle.X + (int)Math.Round(rectangle.Width / 2.0), rectangle.Y + (int)Math.Round(rectangle.Height / 2.0));
         }
 
         private Point ClientPos2ImagePos(Rectangle rectangle, Point position)
         {
-            int pixel = GetPixelSize(rectangle);
+            int pixel = GetPixelLength(rectangle);
             if (pixel >= PixelModeThreshold)
             {
                 Point pxpos = new(rectangle.X + position.X / pixel, rectangle.Y + position.Y / pixel);
@@ -208,9 +179,9 @@ namespace MCBS.BlockForms
             }
         }
 
-        private int GetPixelSize(Rectangle rectangle)
+        private int GetPixelLength(Rectangle rectangle)
         {
-            if (rectangle.Width == ImageFrame.Image.Width && rectangle.Height == ImageFrame.Image.Height)
+            if (rectangle.Width == Texture.ImageSource.Width && rectangle.Height == Texture.ImageSource.Height)
             {
                 int xpx = (int)Math.Round((double)ClientSize.Width / rectangle.Width, MidpointRounding.ToNegativeInfinity);
                 int ypx = (int)Math.Round((double)ClientSize.Height / rectangle.Height, MidpointRounding.ToNegativeInfinity);
@@ -224,32 +195,49 @@ namespace MCBS.BlockForms
             }
         }
 
-        private Rectangle CorrectRectangle(Rectangle rectangle)
+        private void CorrectAndUpdateCropRectangle(Rectangle rectangle)
+        {
+            rectangle = CorrectCropRectangle(rectangle);
+
+            Texture.CropRectangle = rectangle;
+            UpdateTextureTexture();
+            RequestRendering();
+        }
+
+        private Rectangle CorrectCropRectangle(Rectangle rectangle)
         {
             if (rectangle.Width < 1)
                 rectangle.Width = 1;
-            else if (rectangle.Width > ImageFrame.Image.Width)
-                rectangle.Width = ImageFrame.Image.Width;
+            else if (rectangle.Width > Texture.ImageSource.Width)
+                rectangle.Width = Texture.ImageSource.Width;
             if (rectangle.Height < 1)
                 rectangle.Height = 1;
-            else if (rectangle.Height > ImageFrame.Image.Height)
-                rectangle.Height = ImageFrame.Image.Height;
+            else if (rectangle.Height > Texture.ImageSource.Height)
+                rectangle.Height = Texture.ImageSource.Height;
 
-            if (rectangle.X + rectangle.Width > ImageFrame.Image.Width - 1)
-                rectangle.X = ImageFrame.Image.Width - rectangle.Width;
-            if (rectangle.Y + rectangle.Height > ImageFrame.Image.Height - 1)
-                rectangle.Y = ImageFrame.Image.Height - rectangle.Height;
+            if (rectangle.X + rectangle.Width > Texture.ImageSource.Width - 1)
+                rectangle.X = Texture.ImageSource.Width - rectangle.Width;
+            if (rectangle.Y + rectangle.Height > Texture.ImageSource.Height - 1)
+                rectangle.Y = Texture.ImageSource.Height - rectangle.Height;
 
             if (rectangle.X < 0)
                 rectangle.X = 0;
-            else if (rectangle.X > ImageFrame.Image.Width - 1)
-                rectangle.X = ImageFrame.Image.Width - 1;
+            else if (rectangle.X > Texture.ImageSource.Width - 1)
+                rectangle.X = Texture.ImageSource.Width - 1;
             if (rectangle.Y < 0)
                 rectangle.Y = 0;
-            else if (rectangle.Y > ImageFrame.Image.Height - 1)
-                rectangle.Y = ImageFrame.Image.Height - 1;
+            else if (rectangle.Y > Texture.ImageSource.Height - 1)
+                rectangle.Y = Texture.ImageSource.Height - 1;
 
             return rectangle;
+        }
+
+        private void UpdateTextureTexture()
+        {
+            if (Texture.CropRectangle.Width > ClientSize.Width)
+                Texture.ResizeOptions.Sampler = KnownResamplers.Bicubic;
+            else
+                Texture.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MCBS.Frame;
+﻿using MCBS.Rendering;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +10,15 @@ namespace MCBS.BlockForms
 {
     public class HorizontalProgressBar : ProgressBar
     {
-        public override IFrame RenderingFrame()
+        protected override BlockFrame Rendering()
         {
             int length = (int)Math.Round(ClientSize.Width * Progress);
-            if (length < 0)
-                length = 0;
+            if (length <= 0)
+                return base.Rendering();
 
-            ArrayFrame frame = ArrayFrame.BuildFrame(ClientSize, Skin.GetBackgroundBlockID());
-            frame.Overwrite(ArrayFrame.BuildFrame(length, ClientSize.Height, Skin.GetForegroundBlockID()), new(0, 0));
-            return frame;
+            BlockFrame baseFrame = base.Rendering();
+            baseFrame.Overwrite(new HashBlockFrame(length, ClientSize.Height, GetForegroundColor()), Point.Empty);
+            return baseFrame;
         }
     }
 }

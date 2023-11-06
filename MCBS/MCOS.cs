@@ -1,4 +1,4 @@
-﻿#define TryCatch
+﻿//#define TryCatch
 
 using Newtonsoft.Json;
 using System;
@@ -17,7 +17,6 @@ using System.Runtime.CompilerServices;
 using QuanLib.Core;
 using QuanLib.Minecraft.Instance;
 using MCBS.Screens;
-using MCBS.Frame;
 using MCBS.Logging;
 using MCBS.UI;
 using MCBS.Config;
