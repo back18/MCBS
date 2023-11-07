@@ -27,9 +27,8 @@ namespace MCBS.SystemApplications.Desktop
             BorderWidth = 0;
             ClientSize = new(24, 24);
             Skin.SetBackgroundColor(string.Empty, ControlState.None);
-            Skin.SetBackgroundColor(BlockManager.Concrete.White, ControlState.Hover);
-            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.Selected);
-            Skin.SetBackgroundColor(BlockManager.Concrete.Blue, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.Hover);
+            Skin.SetBackgroundColor(BlockManager.Concrete.Blue, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
 
         private readonly ApplicationManifest _applicationManifest;
