@@ -117,9 +117,9 @@ namespace MCBS.BlockForms
             Height = maximizeSize.Height;
             InvokeExternalCursorMove = true;
 
-            ApplicationInfo? appInfo = MCOS.Instance.ProcessOf(this)?.ApplicationInfo;
-            if (appInfo is not null)
-                Text = appInfo.Name;
+            ApplicationManifest? applicationManifest = MCOS.Instance.ProcessContextOf(this)?.Application;
+            if (applicationManifest is not null)
+                Text = applicationManifest.Name;
         }
 
         protected override void OnInitializeCompleted(Control sender, EventArgs e)
@@ -212,9 +212,9 @@ namespace MCBS.BlockForms
 
         public virtual Image<Rgba32> GetIcon()
         {
-            ApplicationInfo? appInfo = MCOS.Instance.ProcessOf(this)?.ApplicationInfo;
-            if (appInfo is not null)
-                return appInfo.GetIcon();
+            ApplicationManifest? applicationManifest = MCOS.Instance.ProcessContextOf(this)?.Application;
+            if (applicationManifest is not null)
+                return applicationManifest.GetIcon();
             else
                 return new(16, 16, this.GetBlockColor<Rgba32>(BlockManager.Concrete.White));
         }

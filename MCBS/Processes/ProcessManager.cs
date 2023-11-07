@@ -71,22 +71,22 @@ namespace MCBS.Processes
 
             public bool IsReadOnly => false;
 
-            public ProcessContext Add(ApplicationInfo appInfo, IForm? initiator = null)
+            public ProcessContext Add(ApplicationManifest applicationManifest, IForm? initiator = null)
             {
-                return Add(appInfo, Array.Empty<string>(), initiator);
+                return Add(applicationManifest, Array.Empty<string>(), initiator);
             }
 
-            public ProcessContext Add(ApplicationInfo APPInfo, string[] args, IForm? initiator = null)
+            public ProcessContext Add(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null)
             {
-                if (APPInfo is null)
-                    throw new ArgumentNullException(nameof(APPInfo));
+                if (applicationManifest is null)
+                    throw new ArgumentNullException(nameof(applicationManifest));
                 if (args is null)
                     throw new ArgumentNullException(nameof(args));
 
                 lock (_items)
                 {
                     int id = _id;
-                    ProcessContext process = new(APPInfo, args, initiator);
+                    ProcessContext process = new(applicationManifest, args, initiator);
                     process.ID = id;
                     _items.TryAdd(id, process);
                     _owner.AddedProcess.Invoke(_owner, new(process));

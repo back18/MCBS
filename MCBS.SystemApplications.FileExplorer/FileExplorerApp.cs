@@ -8,24 +8,16 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.FileExplorer
 {
-    public class FileExplorerApp : ApplicationBase
+    public class FileExplorerApp : IProgram
     {
         public const string ID = "FileExplorer";
 
         public const string Name = "资源管理器";
 
-        public FileExplorerConfig FileExplorerConfig
-        {
-            get
-            {
-                if (_FileExplorerConfig is null)
-                    throw new InvalidOperationException();
-                return _FileExplorerConfig;
-            }
-        }
+        public FileExplorerConfig FileExplorerConfig => _FileExplorerConfig ?? throw new InvalidOperationException();
         private FileExplorerConfig? _FileExplorerConfig;
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
             FileExplorerConfig.CreateIfNotExists();
             _FileExplorerConfig = FileExplorerConfig.Load();
@@ -34,8 +26,13 @@ namespace MCBS.SystemApplications.FileExplorer
             if (args.Length > 0)
                 path = args[0];
 
-            RunForm(new FileExplorerForm(FileExplorerConfig.RootDirectory, path));
-            return null;
+            this.RunForm(new FileExplorerForm(FileExplorerConfig.RootDirectory, path));
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

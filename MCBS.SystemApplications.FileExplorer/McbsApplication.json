@@ -1,0 +1,16 @@
+{
+    "MainClass": "MCBS.SystemApplications.FileExplorer.FileExplorerApp",
+    "ID": "System.FileExplorer",
+    "Name": "资源管理器",
+    "Version": "1.0.0",
+    "Icon": "MCBS.SystemApplications.FileExplorer.SystemResource.Icon.png",
+    "Environment": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+    ],
+    "Descriptions": [],
+    "Authors": [
+        "back18"
+    ]
+}

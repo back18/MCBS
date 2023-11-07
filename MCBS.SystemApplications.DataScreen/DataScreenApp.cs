@@ -7,16 +7,21 @@ using MCBS.Application;
 
 namespace MCBS.SystemApplications.DataScreen
 {
-    public class DataScreenApp : ApplicationBase
+    public class DataScreenApp : IProgram
     {
         public const string ID = "DataScreen";
 
         public const string Name = "数据大屏";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
-            RunForm(new DataScreenForm());
-            return null;
+            this.RunForm(new DataScreenForm());
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+    "MainClass": "MCBS.SystemApplications.Notepad.NotepadApp",
+    "ID": "System.Notepad",
+    "Name": "记事本",
+    "Version": "1.0.0",
+    "Icon": "MCBS.SystemApplications.Notepad.SystemResource.Icon.png",
+    "Environment": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+    ],
+    "Descriptions": [],
+    "Authors": [
+        "back18"
+    ]
+}

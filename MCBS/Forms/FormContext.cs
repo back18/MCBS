@@ -25,9 +25,9 @@ namespace MCBS.Forms
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        internal FormContext(ApplicationBase application, IForm form)
+        internal FormContext(IProgram program, IForm form)
         {
-            Application = application ?? throw new ArgumentNullException(nameof(application));
+            Program = program ?? throw new ArgumentNullException(nameof(program));
             Form = form ?? throw new ArgumentNullException(nameof(form));
 
             if (form is IRootForm rootForm1)
@@ -37,7 +37,7 @@ namespace MCBS.Forms
             else
             {
                 MCOS os = MCOS.Instance;
-                IForm? initiator = os.ProcessOf(Application)?.Initiator;
+                IForm? initiator = os.ProcessContextOf(Program)?.Initiator;
                 if (initiator is IRootForm rootForm2)
                 {
                     RootForm = rootForm2;
@@ -86,9 +86,9 @@ namespace MCBS.Forms
 
         public StretchingContext? StretchingContext { get; private set; }
 
-        public IRootForm RootForm { get; private set; }
+        public IProgram Program { get; }
 
-        public ApplicationBase Application { get; }
+        public IRootForm RootForm { get; private set; }
 
         public IForm Form { get; }
 
@@ -107,11 +107,11 @@ namespace MCBS.Forms
                     else if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormLoad(EventArgs.Empty);
-                    ProcessContext? processContext = MCOS.Instance.ProcessOf(Application);
+                    ProcessContext? processContext = MCOS.Instance.ProcessContextOf(Program);
                     if (processContext is null)
                         LOGGER.Info($"窗体({Form.Text} #{ID})已打开");
                     else
-                        LOGGER.Info($"窗体({Form.Text} #{ID})已被进程({processContext.ApplicationInfo.ID} #{processContext.ID})打开，位于{MCOS.Instance.ScreenContextOf(Form)?.ID ?? -1}号屏幕");
+                        LOGGER.Info($"窗体({Form.Text} #{ID})已被进程({processContext.Application.ID} #{processContext.ID})打开，位于{MCOS.Instance.ScreenContextOf(Form)?.ID ?? -1}号屏幕");
                     return true;
                 case FormState.Minimize:
                     if (Form is IRootForm)
@@ -282,7 +282,7 @@ namespace MCBS.Forms
 
         public override string ToString()
         {
-            return $"State={FormState} FID={ID}, PID={MCOS.Instance.ProcessOf(Form)?.ID}, SID = {MCOS.Instance.ScreenContextOf(Form)?.ID}, Form=[{Form}]";
+            return $"State={FormState} FID={ID}, PID={MCOS.Instance.ProcessContextOf(Form)?.ID}, SID = {MCOS.Instance.ScreenContextOf(Form)?.ID}, Form=[{Form}]";
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+    "MainClass": "MCBS.SystemApplications.Services.ServicesApp",
+    "ID": "System.Services",
+    "Name": "系统服务",
+    "Version": "1.0.0",
+    "Icon": "MCBS.SystemApplications.Services.SystemResource.Icon.png",
+    "Environment": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+    ],
+    "Descriptions": [],
+    "Authors": [
+        "back18"
+    ]
+}

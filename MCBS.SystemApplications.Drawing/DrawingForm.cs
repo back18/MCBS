@@ -1,4 +1,5 @@
 ﻿using MCBS;
+using MCBS.Application;
 using MCBS.BlockForms;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
@@ -259,7 +260,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private void Open_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.ApplicationDirectory;
+            string? dir = MCOS.Instance.ProcessContextOf(this)?.Program.GetApplicationDirectory();
             if (string.IsNullOrEmpty(dir))
                 return;
             dir = Path.Combine(dir, "Saves");
@@ -269,7 +270,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private void Save_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? dir = MCOS.Instance.ProcessOf(this)?.ApplicationInfo.ApplicationDirectory;
+            string? dir = MCOS.Instance.ProcessContextOf(this)?.Program.GetApplicationDirectory();
             if (string.IsNullOrEmpty(dir))
                 return;
             dir = Path.Combine(dir, "Saves");

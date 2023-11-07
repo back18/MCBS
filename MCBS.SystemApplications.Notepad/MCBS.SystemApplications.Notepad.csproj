@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="McbsApplication.json" />
     <None Remove="SystemResource\icon.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="McbsApplication.json" />
     <EmbeddedResource Include="SystemResource\Icon.png" />
   </ItemGroup>
 

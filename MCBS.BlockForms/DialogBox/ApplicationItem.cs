@@ -14,22 +14,22 @@ namespace MCBS.BlockForms.DialogBox
 {
     public class ApplicationItem : IconTextBox<Rgba32>
     {
-        public ApplicationItem(ApplicationInfo appInfo)
+        public ApplicationItem(ApplicationManifest applicationManifest)
         {
-            ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
+            ApplicationManifest = applicationManifest ?? throw new ArgumentNullException(nameof(applicationManifest));
 
             Skin.SetBackgroundColor(BlockManager.Concrete.White, ControlState.None, ControlState.Hover);
             Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
 
-        public ApplicationInfo ApplicationInfo { get; }
+        public ApplicationManifest ApplicationManifest { get; }
 
         public override void Initialize()
         {
             base.Initialize();
 
-            Icon_PictureBox.SetImage(ApplicationInfo.GetIcon());
-            Text_Label.Text = ApplicationInfo.Name;
+            Icon_PictureBox.SetImage(ApplicationManifest.GetIcon());
+            Text_Label.Text = ApplicationManifest.Name;
             Text_Label.AutoSetSize();
         }
 

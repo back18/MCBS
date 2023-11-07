@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 using QuanLib.Minecraft;
 using SixLabors.ImageSharp.PixelFormats;
 using Newtonsoft.Json;
+using MCBS.Application;
 
 namespace MCBS
 {
@@ -64,10 +65,17 @@ namespace MCBS
             if (resources is null)
                 throw new ArgumentNullException(nameof(resources));
 
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            VersionDirectory versionDirectory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
+            LoadBlockTextureManager(resources);
+            BuildColorMappingCache(resources);
+            LoadMinecraftLanguage(resources);
+            LoadFontFile(resources);
+            LoadCursorFile(resources);
+        }
 
+        private static void LoadBlockTextureManager(ResourceEntryManager resources)
+        {
             LOGGER.Info("开始加载Minecraft方块纹理");
+
             _BlockTextureManager = BlockTextureManager.LoadInstance(resources, MinecraftConfig.BlockTextureBlacklist);
             Dictionary<Facing, Rgba32BlockMapping> mappings = new()
             {
@@ -80,9 +88,14 @@ namespace MCBS
             };
             _Rgba32BlockMappings = new(mappings);
             _HashBlockMapping = new();
-            LOGGER.Info("完成，方块数量: " + _BlockTextureManager.Count);
 
+            LOGGER.Info("完成，方块数量: " + _BlockTextureManager.Count);
+        }
+
+        private static void BuildColorMappingCache(ResourceEntryManager resources)
+        {
             LOGGER.Info("开始构建Minecraft方块颜色映射表缓存");
+
             Dictionary<Facing, ColorMappingCache> caches = new();
             foreach (Facing facing in SystemConfig.BuildColorMappingCaches)
             {
@@ -90,22 +103,39 @@ namespace MCBS
                 caches.Add(facing, cache);
             }
             _ColorMappingCaches = new(caches);
-            LOGGER.Info("完成");
 
+            LOGGER.Info("完成");
+        }
+
+        private static void LoadMinecraftLanguage(ResourceEntryManager resources)
+        {
             LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);
+
+            VersionDirectory versionDirectory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
             string? minecraftLanguageFilePath = versionDirectory.LanguagesDir.Combine(MinecraftConfig.Language + ".json");
             if (!File.Exists(minecraftLanguageFilePath))
                 minecraftLanguageFilePath = null;
             _LanguageManager = LanguageManager.LoadInstance(resources, MinecraftConfig.Language, minecraftLanguageFilePath);
+
             LOGGER.Info("完成，语言条目数量: " + _LanguageManager.Count);
+        }
 
-            LOGGER.Info("开始加载默认字体资源文件");
-            using Stream defaultFontStream = assembly.GetManifestResourceStream(SystemResourceNamespace.DefaultFontFile) ?? throw new InvalidOperationException();
+        private static void LoadFontFile(ResourceEntryManager resources)
+        {
+            LOGGER.Info("开始加载字体文件");
+
+            using Stream defaultFontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(SystemResourceNamespace.DefaultFontFile) ?? throw new InvalidOperationException();
             _DefaultFont = BdfFont.Load(defaultFontStream);
-            LOGGER.Info($"完成，字体高度:{_DefaultFont.Height} 半角宽度:{_DefaultFont.HalfWidth} 全角宽度:{_DefaultFont.FullWidth} 字符数量:{_DefaultFont.Count}");
 
-            LOGGER.Info("开始加载光标样式文件");
+            LOGGER.Info($"完成，字体高度:{_DefaultFont.Height} 半角宽度:{_DefaultFont.HalfWidth} 全角宽度:{_DefaultFont.FullWidth} 字符数量:{_DefaultFont.Count}");
+        }
+
+        private static void LoadCursorFile(ResourceEntryManager resources)
+        {
+            LOGGER.Info("开始加载光标文件");
+
             _CursorStyleManager = CursorStyleManager.LoadInstance();
+
             LOGGER.Info("完成，光标样式数量: " + _CursorStyleManager.Count);
         }
     }

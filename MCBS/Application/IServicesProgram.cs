@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Application
 {
-    public abstract class ServicesApplicationBase : ApplicationBase
+    public interface IServicesProgram : IProgram
     {
         public abstract IRootForm RootForm { get; }
     }

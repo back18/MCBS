@@ -20,6 +20,7 @@ namespace MCBS.Config
 
             CrashAutoRestart = model.CrashAutoRestart;
             LoadDllAppComponents = model.LoadDllAppComponents;
+            SystemAppComponents = new(model.SystemAppComponents);
             ServicesAppID = model.ServicesAppID;
             StartupChecklist = new(model.StartupChecklist);
 
@@ -35,9 +36,11 @@ namespace MCBS.Config
 
         public bool CrashAutoRestart { get; }
 
+        public ReadOnlyCollection<Facing> BuildColorMappingCaches { get; }
+
         public bool LoadDllAppComponents { get; }
 
-        public ReadOnlyCollection<Facing> BuildColorMappingCaches { get; }
+        public ReadOnlyCollection<string> SystemAppComponents { get; }
 
         public string ServicesAppID { get; }
 
@@ -88,10 +91,13 @@ namespace MCBS.Config
 
             public bool CrashAutoRestart { get; set; }
 
+            [Required(ErrorMessage = "配置项缺失")]
+            public int[] BuildColorMappingCaches { get; set; }
+
             public bool LoadDllAppComponents { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]
-            public int[] BuildColorMappingCaches { get; set; }
+            public string[] SystemAppComponents { get; set; }
 
             [Required(ErrorMessage = "系统服务AppID不能为空")]
             public string ServicesAppID { get; set; }

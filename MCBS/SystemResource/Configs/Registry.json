@@ -1,15 +1,15 @@
 {
-    "txt": "Notepad",
-    "log": "Notepad",
-    "json": "Notepad",
-    "xml": "Notepad",
-    "jpg": "Album",
-    "jpeg": "Album",
-    "png": "Album",
-    "bmp": "Album",
-    "webp": "Album",
-    "mp4": "VideoPlayer",
-    "avi": "VideoPlayer",
-    "wmv": "VideoPlayer",
-    "mkv": "VideoPlayer"
+  "txt": "System.Notepad",
+  "log": "System.Notepad",
+  "json": "System.Notepad",
+  "xml": "System.Notepad",
+  "jpg": "System.Album",
+  "jpeg": "System.Album",
+  "png": "System.Album",
+  "bmp": "System.Album",
+  "webp": "System.Album",
+  "mp4": "System.VideoPlayer",
+  "avi": "System.VideoPlayer",
+  "wmv": "System.VideoPlayer",
+  "mkv": "System.VideoPlayer"
 }

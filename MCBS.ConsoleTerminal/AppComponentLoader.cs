@@ -5,6 +5,7 @@ using MCBS.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,52 +15,28 @@ namespace MCBS.ConsoleTerminal
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        public static void LoadAll(MCOS mcos)
+        public static ApplicationManifest[] LoadAll()
         {
-            if (mcos is null)
-                throw new ArgumentNullException(nameof(mcos));
-
-            LoadSystemAppComponents(mcos);
+            List<ApplicationManifest> result = new();
+            result.AddRange(LoadSystemAppComponents());
             if (ConfigManager.SystemConfig.LoadDllAppComponents)
-                LoadDllAppComponents(mcos);
+                result.AddRange(LoadDllAppComponents());
+
+            return result.ToArray();
         }
 
-        private static void LoadSystemAppComponents(MCOS mcos)
+        private static ApplicationManifest[] LoadSystemAppComponents()
         {
             LOGGER.Info("开始加载系统应用程序组件");
 
-            if (mcos is null)
-                throw new ArgumentNullException(nameof(mcos));
-
-            mcos.ApplicationManager.Items.Add(new SystemApplications.Services.ServicesAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.Desktop.DesktopAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.Settings.SettingsAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.ScreenManager.ScreenManagerAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.TaskManager.TaskManagerAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.FileExplorer.FileExplorerAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.Notepad.NotepadAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.Album.AlbumAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.Drawing.DrawingAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.VideoPlayer.VideoPlayerAppInfo());
-            mcos.ApplicationManager.Items.Add(new SystemApplications.DataScreen.DataScreenAppInfo());
-
-            LOGGER.Info("完成");
-        }
-
-        private static void LoadDllAppComponents(MCOS mcos)
-        {
-            LOGGER.Info("开始加载DLL应用程序组件");
-
-            if (mcos is null)
-                throw new ArgumentNullException(nameof(mcos));
-
-            string[] dlls = SR.McbsDirectory.DllAppComponentsDir.GetFiles("*.dll");
-            foreach (string dll in dlls)
+            List<ApplicationManifest> result = new();
+            foreach (string dll in ConfigManager.SystemConfig.SystemAppComponents)
             {
                 try
                 {
-                    ApplicationInfo applicationInfo = Application.ApplicationLoader.Load(dll);
-                    mcos.ApplicationManager.Items.Add(applicationInfo);
+                    Assembly assembly = Assembly.Load(dll);
+                    ApplicationManifest applicationManifest = ApplicationManifestReader.Load(assembly);
+                    result.Add(applicationManifest);
                 }
                 catch (Exception ex)
                 {
@@ -67,7 +44,33 @@ namespace MCBS.ConsoleTerminal
                 }
             }
 
-            LOGGER.Info("完成");
+            LOGGER.Info($"完成，共加载{result.Count}个应用程序组件");
+
+            return result.ToArray();
+        }
+
+        private static ApplicationManifest[] LoadDllAppComponents()
+        {
+            LOGGER.Info("开始加载DLL应用程序组件");
+
+            List<ApplicationManifest> result = new();
+            string[] dlls = SR.McbsDirectory.DllAppComponentsDir.GetFiles("*.dll");
+            foreach (string dll in dlls)
+            {
+                try
+                {
+                    ApplicationManifest applicationManifest = ApplicationManifestReader.Load(dll);
+                    result.Add(applicationManifest);
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Error($"无法加载位于“{dll}”的DLL应用程序组件", ex);
+                }
+            }
+
+            LOGGER.Info($"完成，共加载{result.Count}个应用程序组件");
+
+            return result.ToArray();
         }
     }
 }

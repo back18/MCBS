@@ -1,0 +1,16 @@
+{
+    "MainClass": "MCBS.SystemApplications.TaskManager.TaskManagerApp",
+    "ID": "System.TaskManager",
+    "Name": "任务管理器",
+    "Version": "1.0.0",
+    "Icon": "MCBS.SystemApplications.TaskManager.SystemResource.Icon.png",
+    "Environment": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+    ],
+    "Descriptions": [],
+    "Authors": [
+        "back18"
+    ]
+}

@@ -62,9 +62,8 @@ namespace MCBS.SystemApplications.Desktop
         {
             MCOS os = MCOS.Instance;
             ClientPanel.ChildControls.Clear();
-            foreach (var app in os.ApplicationManager.Items.Values)
-                if (app.AppendToDesktop)
-                    ClientPanel.ChildControls.Add(new DesktopIcon(app));
+            foreach (var applicationManifest in MCOS.Instance.AppComponents.Values)
+                ClientPanel.ChildControls.Add(new DesktopIcon(applicationManifest));
 
             if (ClientPanel.ChildControls.Count == 0)
                 return;

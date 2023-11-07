@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms.DialogBox
 {
-    public class ApplicationListBoxForm : DialogBoxForm<ApplicationInfo?>
+    public class ApplicationListBoxForm : DialogBoxForm<ApplicationManifest?>
     {
         public ApplicationListBoxForm(IForm initiator, string title) : base(initiator, title)
         {
@@ -28,9 +28,9 @@ namespace MCBS.BlockForms.DialogBox
 
         private readonly Button Cancel_Button;
 
-        public override ApplicationInfo? DefaultResult { get; }
+        public override ApplicationManifest? DefaultResult { get; }
 
-        public override ApplicationInfo? DialogResult { get; protected set; }
+        public override ApplicationManifest? DialogResult { get; protected set; }
 
         public override void Initialize()
         {
@@ -44,14 +44,11 @@ namespace MCBS.BlockForms.DialogBox
             ApplicationList_ListMenuBox.ClientSize = new(107, 60);
             ApplicationList_ListMenuBox.RightClick += ApplicationList_ListMenuBox_RightClick;
 
-            foreach (var appInfo in MCOS.Instance.ApplicationManager.Items.Values)
+            foreach (var appInfo in MCOS.Instance.AppComponents.Values)
             {
-                if (appInfo.AppendToDesktop)
-                {
-                    ApplicationItem item = new(appInfo);
-                    item.ClientSize = new(96, 16);
-                    ApplicationList_ListMenuBox.AddedChildControlAndLayout(item);
-                }
+                ApplicationItem item = new(appInfo);
+                item.ClientSize = new(96, 16);
+                ApplicationList_ListMenuBox.AddedChildControlAndLayout(item);
             }
 
             ClientPanel.ChildControls.Add(Cancel_Button);
@@ -79,7 +76,7 @@ namespace MCBS.BlockForms.DialogBox
 
         private void OK_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            DialogResult = (ApplicationList_ListMenuBox.ChildControls.FirstSelected as ApplicationItem)?.ApplicationInfo;
+            DialogResult = (ApplicationList_ListMenuBox.ChildControls.FirstSelected as ApplicationItem)?.ApplicationManifest;
             CloseForm();
         }
 

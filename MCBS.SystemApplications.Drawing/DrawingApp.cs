@@ -7,20 +7,25 @@ using MCBS.Application;
 
 namespace MCBS.SystemApplications.Drawing
 {
-    public class DrawingApp : ApplicationBase
+    public class DrawingApp : IProgram
     {
         public const string ID = "Drawing";
 
         public const string Name = "绘画";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
             string? path = null;
             if (args.Length > 0)
                 path = args[0];
 
-            RunForm(new DrawingForm(path));
-            return null;
+            this.RunForm(new DrawingForm(path));
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

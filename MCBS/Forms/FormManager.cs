@@ -21,7 +21,7 @@ namespace MCBS.Forms
             Items = new(this);
 
             AddedForm += OnAddedForm;
-            RemovedForm += OnAddedForm;
+            RemovedForm += OnRemovedForm;
         }
 
         public FormCollection Items { get; }
@@ -70,17 +70,17 @@ namespace MCBS.Forms
 
             FormContext IDictionary<int, FormContext>.this[int index] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
-            public FormContext Add(ApplicationBase application, IForm form)
+            public FormContext Add(IProgram program, IForm form)
             {
-                if (application is null)
-                    throw new ArgumentNullException(nameof(application));
+                if (program is null)
+                    throw new ArgumentNullException(nameof(program));
                 if (form is null)
                     throw new ArgumentNullException(nameof(form));
 
                 lock (_items)
                 {
                     int id = _id;
-                    FormContext context = new(application, form);
+                    FormContext context = new(program, form);
                     context.ID = id;
                     _items.TryAdd(id, context);
                     _owner.AddedForm.Invoke(_owner, new(context));

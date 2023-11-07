@@ -2,6 +2,7 @@
 
 using FFMediaToolkit;
 using log4net.Core;
+using MCBS.Application;
 using MCBS.BlockForms.Utility;
 using MCBS.Config;
 using MCBS.Logging;
@@ -20,6 +21,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection;
 using System.Text;
 
 namespace MCBS.ConsoleTerminal
@@ -108,10 +110,9 @@ namespace MCBS.ConsoleTerminal
             }
 #endif
 
-            MCOS mcos = MCOS.LoadInstance(minecraftInstance);
-            AppComponentLoader.LoadAll(mcos);
+            ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
+            MCOS mcos = MCOS.LoadInstance(minecraftInstance, appComponents);
             mcos.MinecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
-
             mcos.Start("System Thread");
             mcos.WaitForStop();
 

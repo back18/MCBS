@@ -1,0 +1,16 @@
+{
+    "MainClass": "MCBS.SystemApplications.Drawing.DrawingApp",
+    "ID": "System.Drawing",
+    "Name": "绘画",
+    "Version": "1.0.0",
+    "Icon": "MCBS.SystemApplications.Drawing.SystemResource.Icon.png",
+    "Environment": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+    ],
+    "Descriptions": [],
+    "Authors": [
+        "back18"
+    ]
+}

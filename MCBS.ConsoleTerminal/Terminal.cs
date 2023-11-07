@@ -155,11 +155,11 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetApplicationList()
         {
-            var list = MCOS.Instance.ApplicationManager.Items;
+            var list = MCOS.Instance.AppComponents;
             StringBuilder sb = new();
             sb.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
-            foreach (var appInfo in list.Values)
-                sb.AppendLine(appInfo.ToString());
+            foreach (var applicationManifest in list.Values)
+                sb.AppendLine(applicationManifest.ToString());
 
             return sb.ToString().TrimEnd();
         }

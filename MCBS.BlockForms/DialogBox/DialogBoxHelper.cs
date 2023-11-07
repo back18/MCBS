@@ -20,13 +20,13 @@ namespace MCBS.BlockForms.DialogBox
                 throw new ArgumentNullException(nameof(initiator));
 
             MCOS os = MCOS.Instance;
-            ProcessContext? process = os.ProcessOf(initiator);
+            ProcessContext? process = os.ProcessContextOf(initiator);
             FormContext? context = os.FormContextOf(initiator);
             if (process is null || process.ProcessState == ProcessState.Stopped ||
                 context is null || context.FormState == FormState.Closed)
                 return dialogBox.DefaultResult;
 
-            process.Application.RunForm(dialogBox);
+            process.Program.RunForm(dialogBox);
 
             if (process.ProcessState == ProcessState.Stopped || context.FormState == FormState.Closed)
                 return dialogBox.DefaultResult;
@@ -43,13 +43,13 @@ namespace MCBS.BlockForms.DialogBox
                 throw new ArgumentNullException(nameof(initiator));
 
             MCOS os = MCOS.Instance;
-            ProcessContext? process = os.ProcessOf(initiator);
+            ProcessContext? process = os.ProcessContextOf(initiator);
             FormContext? context = os.FormContextOf(initiator);
             if (process is null || process.ProcessState == ProcessState.Stopped ||
                 context is null || context.FormState == FormState.Closed)
                 return dialogBox.DefaultResult;
 
-            await process.Application.RunFormAsync(dialogBox);
+            await process.Program.RunFormAsync(dialogBox);
 
             if (process.ProcessState == ProcessState.Stopped || context.FormState == FormState.Closed)
                 return dialogBox.DefaultResult;
@@ -82,13 +82,13 @@ namespace MCBS.BlockForms.DialogBox
             return await OpenDialogBoxAsync(initiator, dialogBox, callback);
         }
 
-        public static ApplicationInfo? OpenApplicationListBox(IForm initiator, string title, Action<ApplicationInfo?>? callback = null)
+        public static ApplicationManifest? OpenApplicationListBox(IForm initiator, string title, Action<ApplicationManifest?>? callback = null)
         {
             ApplicationListBoxForm dialogBox = new(initiator, title);
             return OpenDialogBox(initiator, dialogBox, callback);
         }
 
-        public static async Task<ApplicationInfo?> OpenApplicationListBoxAsync(IForm initiator, string title, Action<ApplicationInfo?>? callback = null)
+        public static async Task<ApplicationManifest?> OpenApplicationListBoxAsync(IForm initiator, string title, Action<ApplicationManifest?>? callback = null)
         {
             ApplicationListBoxForm dialogBox = new(initiator, title);
             return await OpenDialogBoxAsync(initiator, dialogBox, callback);

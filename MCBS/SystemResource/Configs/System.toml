@@ -1,16 +1,33 @@
 #崩溃时是否自动重启
 CrashAutoRestart = true
 
-#是否加载 MCBS\DllAppComponents\ 文件夹中的DLL应用程序
+#预加载的Minecraft方块颜色映射表缓存
+BuildColorMappingCaches = [-3]
+
+#是否加载“MCBS\DllAppComponents\”文件夹中的DLL应用程序
 #支持的文件类型: 程序集.dll
 LoadDllAppComponents = false
 
-BuildColorMappingCaches = [-3]
+#系统应用程序加载列表
+#值为引用的程序集名称
+SystemAppComponents = [
+    "MCBS.SystemApplications.Services",
+    "MCBS.SystemApplications.Settings",
+    "MCBS.SystemApplications.Desktop",
+    "MCBS.SystemApplications.FileExplorer",
+    "MCBS.SystemApplications.TaskManager",
+    "MCBS.SystemApplications.ScreenManager",
+    "MCBS.SystemApplications.Notepad",
+    "MCBS.SystemApplications.Album",
+    "MCBS.SystemApplications.Drawing",
+    "MCBS.SystemApplications.VideoPlayer",
+    "MCBS.SystemApplications.DataScreen"
+]
 
 #系统服务AppID
-ServicesAppID = "Services"
+ServicesAppID = "System.Services"
 
-#启动项AppID列表
+#开机启动项AppID列表
 StartupChecklist = [
-    "Desktop"
+    "System.Desktop"
 ]

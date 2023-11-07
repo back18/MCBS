@@ -253,7 +253,7 @@ namespace MCBS.Screens
 
                     int id = _id;
                     ProcessContext process = MCOS.Instance.RunServicesApp();
-                    IRootForm rootForm = ((ServicesApplicationBase)process.Application).RootForm;
+                    IRootForm rootForm = ((IServicesProgram)process.Program).RootForm;
                     ScreenContext context = new(screen, rootForm);
                     context.ID = id;
                     _items.TryAdd(id, context);

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace MCBS.Application
 {
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public class ApplicationInfoAttribute : Attribute
+    public interface IProgram
     {
+        public int Main(string[] args);
 
+        public void Exit();
     }
 }

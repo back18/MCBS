@@ -7,20 +7,25 @@ using MCBS.Application;
 
 namespace MCBS.SystemApplications.Notepad
 {
-    public class NotepadApp : ApplicationBase
+    public class NotepadApp : IProgram
     {
         public const string ID = "Notepad";
 
         public const string Name = "记事本";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
             string? path = null;
             if (args.Length > 0)
                 path = args[0];
 
-            RunForm(new NotepadForm(path));
-            return null;
+            this.RunForm(new NotepadForm(path));
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+    "MainClass": "MCBS.SystemApplications.Desktop.DesktopApp",
+    "ID": "System.Desktop",
+    "Name": "桌面",
+    "Version": "1.0.0",
+    "Icon": "MCBS.SystemApplications.Desktop.SystemResource.Icon.png",
+    "Environment": [
+        "WINDOWS",
+        "LINUX",
+        "MACOS"
+    ],
+    "Descriptions": [],
+    "Authors": [
+        "back18"
+    ]
+}

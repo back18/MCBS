@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="McbsApplication.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="McbsApplication.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MCBS.BlockForms\MCBS.BlockForms.csproj" />
   </ItemGroup>
 

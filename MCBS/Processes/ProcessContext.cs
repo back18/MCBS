@@ -18,14 +18,14 @@ namespace MCBS.Processes
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        internal ProcessContext(ApplicationInfo appInfo, string[] args, IForm? initiator = null) : base(LogUtil.GetLogger)
+        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(LogUtil.GetLogger)
         {
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
 
             _args = args;
-            ApplicationInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
-            Application = ApplicationInfo.CreateApplicationInstance();
+            Application = applicationManifest ?? throw new ArgumentNullException(nameof(applicationManifest));
+            Program = Application.CreateApplicationInstance();
             Initiator = initiator;
             ID = -1;
             StateManager = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
@@ -44,9 +44,9 @@ namespace MCBS.Processes
 
         public ProcessState ProcessState => StateManager.CurrentState;
 
-        public ApplicationInfo ApplicationInfo { get; }
+        public ApplicationManifest Application { get; }
 
-        public ApplicationBase Application { get; }
+        public IProgram Program { get; }
 
         public IForm? Initiator { get; }
 
@@ -62,7 +62,7 @@ namespace MCBS.Processes
         {
             base.OnStopped(sender, e);
 
-            foreach (var form in Application.GetForms())
+            foreach (var form in Program.GetForms())
                 form.CloseForm();
         }
 
@@ -73,7 +73,7 @@ namespace MCBS.Processes
 
         protected virtual bool HandleActiveState(ProcessState current, ProcessState next)
         {
-            Start($"{ApplicationInfo.ID} AppThread #{ID}");
+            Start($"{Application.ID} AppThread #{ID}");
             return true;
         }
 
@@ -104,11 +104,11 @@ namespace MCBS.Processes
             string args = _args.Length == 0 ? "empty" : string.Join(", ", _args.Select(arg => $"\"{arg}\""));
             FormContext ? formContext = Initiator is null ? null : MCOS.Instance.FormContextOf(Initiator);
             if (formContext is null)
-                LOGGER.Info($"进程({ApplicationInfo.ID} #{ID})已启动，启动参数为 {args}");
+                LOGGER.Info($"进程({Application.ID} #{ID})已启动，启动参数为 {args}");
             else
-                LOGGER.Info($"进程({ApplicationInfo.ID} #{ID})已被窗体({formContext.Form.Text} #{formContext.ID})启动，启动参数为 {args}");
-            object? result = Application.Main(_args);
-            LOGGER.Info($"进程({ApplicationInfo.ID} #{ID})已停止，返回值为 {result ?? "null"}");
+                LOGGER.Info($"进程({Application.ID} #{ID})已被窗体({formContext.Form.Text} #{formContext.ID})启动，启动参数为 {args}");
+            object? result = Program.Main(_args);
+            LOGGER.Info($"进程({Application.ID} #{ID})已停止，返回值为 {result ?? "null"}");
         }
 
         public ProcessContext StartProcess()
@@ -124,7 +124,7 @@ namespace MCBS.Processes
 
         public override string ToString()
         {
-            return $"State={ProcessState}, PID={ID}, AppID={ApplicationInfo.ID}";
+            return $"State={ProcessState}, PID={ID}, AppID={Application.ID}";
         }
     }
 }

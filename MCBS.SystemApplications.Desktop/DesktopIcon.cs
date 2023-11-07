@@ -17,9 +17,9 @@ namespace MCBS.SystemApplications.Desktop
 {
     public class DesktopIcon : ContainerControl<Control>
     {
-        public DesktopIcon(ApplicationInfo appInfo)
+        public DesktopIcon(ApplicationManifest applicationManifest)
         {
-            _appInfo = appInfo ?? throw new ArgumentNullException(nameof(appInfo));
+            _applicationManifest = applicationManifest ?? throw new ArgumentNullException(nameof(applicationManifest));
 
             Icon_PictureBox = new();
             Name_Label = new();
@@ -32,7 +32,7 @@ namespace MCBS.SystemApplications.Desktop
             Skin.SetBackgroundColor(BlockManager.Concrete.Blue, ControlState.Hover, ControlState.Hover | ControlState.Selected);
         }
 
-        private readonly ApplicationInfo _appInfo;
+        private readonly ApplicationManifest _applicationManifest;
 
         private readonly PictureBox<Rgba32> Icon_PictureBox;
 
@@ -46,10 +46,10 @@ namespace MCBS.SystemApplications.Desktop
             Icon_PictureBox.ClientLocation = new(3, 3);
             Icon_PictureBox.ClientSize = new(16, 16);
             Icon_PictureBox.DefaultResizeOptions.Size = Icon_PictureBox.ClientSize;
-            Icon_PictureBox.SetImage(_appInfo.GetIcon());
+            Icon_PictureBox.SetImage(_applicationManifest.GetIcon());
 
             Name_Label.BorderWidth = 1;
-            Name_Label.Text = _appInfo.Name;
+            Name_Label.Text = _applicationManifest.Name;
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -103,7 +103,7 @@ namespace MCBS.SystemApplications.Desktop
         {
             base.OnDoubleRightClick(sender, e);
 
-            MCOS.Instance.RunApplication(_appInfo, GetForm());
+            MCOS.Instance.RunApplication(_applicationManifest, GetForm());
             ParentContainer?.AsControlCollection<Control>()?.ClearSelecteds();
         }
     }

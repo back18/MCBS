@@ -933,7 +933,7 @@ namespace MCBS.BlockForms
             if (form is null)
                 return null;
 
-            return MCOS.Instance.ProcessOf(form);
+            return MCOS.Instance.ProcessContextOf(form);
         }
 
         public ScreenContext? GetScreenContext()
@@ -954,7 +954,7 @@ namespace MCBS.BlockForms
             Form? form = GetForm();
             if (form is not null)
             {
-                IForm? initiator = MCOS.Instance.ProcessOf(form)?.Initiator;
+                IForm? initiator = MCOS.Instance.ProcessContextOf(form)?.Initiator;
                 if (initiator is not null)
                 {
                     if (initiator is IRootForm rootForm2)
@@ -978,7 +978,7 @@ namespace MCBS.BlockForms
                 if (screen is not null)
                     return screen;
 
-                IForm? initiator = MCOS.Instance.ProcessOf(form)?.Initiator;
+                IForm? initiator = MCOS.Instance.ProcessContextOf(form)?.Initiator;
                 if (initiator is not null)
                 {
                     screen = MCOS.Instance.ScreenContextOf(initiator)?.Screen;

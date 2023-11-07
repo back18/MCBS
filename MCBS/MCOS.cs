@@ -42,12 +42,16 @@ namespace MCBS
             IsLoaded = false;
         }
 
-        private MCOS(MinecraftInstance minecraftInstance) : base(LogUtil.GetLogger)
+        private MCOS(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(LogUtil.GetLogger)
         {
-            MinecraftInstance = minecraftInstance ?? throw new ArgumentNullException(nameof(minecraftInstance));
+            if (minecraftInstance is null)
+                throw new ArgumentNullException(nameof(minecraftInstance));
+            if (appComponents is null)
+                throw new ArgumentNullException(nameof(appComponents));
+
+            MinecraftInstance = minecraftInstance;
             TimeAnalysisManager = new();
             TaskManager = new();
-            ApplicationManager = new();
             ScreenManager = new();
             ProcessManager = new();
             FormManager = new();
@@ -55,6 +59,7 @@ namespace MCBS
             InteractionManager = new();
             RightClickObjectiveManager = new();
             CursorManager = new();
+            AppComponents = new(appComponents.ToDictionary(item => item.ID, item => item));
 
             PreviousTickTime = TimeSpan.Zero;
             NextTickTime = PreviousTickTime + TickTime;
@@ -114,8 +119,6 @@ namespace MCBS
 
         public TaskManager TaskManager { get; }
 
-        public ApplicationManager ApplicationManager { get; }
-
         public ScreenManager ScreenManager { get; }
 
         public ProcessManager ProcessManager { get; }
@@ -130,17 +133,21 @@ namespace MCBS
 
         public CursorManager CursorManager { get; }
 
-        public static MCOS LoadInstance(MinecraftInstance minecraftInstance)
+        public ReadOnlyDictionary<string, ApplicationManifest> AppComponents { get; }
+
+        public static MCOS LoadInstance(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents)
         {
             if (minecraftInstance is null)
                 throw new ArgumentNullException(nameof(minecraftInstance));
+            if (appComponents is null)
+                throw new ArgumentNullException(nameof(appComponents));
 
             lock (_slock)
             {
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                _Instance ??= new(minecraftInstance);
+                _Instance ??= new(minecraftInstance, appComponents);
                 IsLoaded = true;
                 return _Instance;
             }
@@ -420,19 +427,19 @@ namespace MCBS
             return null;
         }
 
-        public ProcessContext? ProcessOf(ApplicationBase application)
+        public ProcessContext? ProcessContextOf(IProgram program)
         {
-            if (application is null)
-                throw new ArgumentNullException(nameof(application));
+            if (program is null)
+                throw new ArgumentNullException(nameof(program));
 
             foreach (var context in ProcessManager.Items.Values)
-                if (application == context.Application)
+                if (program == context.Program)
                     return context;
 
             return null;
         }
 
-        public ProcessContext? ProcessOf(IForm form)
+        public ProcessContext? ProcessContextOf(IForm form)
         {
             if (form is null)
                 throw new ArgumentNullException(nameof(form));
@@ -441,7 +448,7 @@ namespace MCBS
             if (context is null)
                 return null;
 
-            return ProcessOf(context.Application);
+            return ProcessContextOf(context.Program);
         }
 
         public FormContext? FormContextOf(IForm form)
@@ -456,22 +463,22 @@ namespace MCBS
             return null;
         }
 
-        public ProcessContext RunApplication(ApplicationInfo appInfo, IForm? initiator = null)
+        public ProcessContext RunApplication(ApplicationManifest applicationManifest, IForm? initiator = null)
         {
-            if (appInfo is null)
-                throw new ArgumentNullException(nameof(appInfo));
+            if (applicationManifest is null)
+                throw new ArgumentNullException(nameof(applicationManifest));
 
-            return ProcessManager.Items.Add(appInfo, initiator).StartProcess();
+            return ProcessManager.Items.Add(applicationManifest, initiator).StartProcess();
         }
 
-        public ProcessContext RunApplication(ApplicationInfo appInfo, string[] args, IForm? initiator = null)
+        public ProcessContext RunApplication(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null)
         {
-            if (appInfo is null)
-                throw new ArgumentNullException(nameof(appInfo));
+            if (applicationManifest is null)
+                throw new ArgumentNullException(nameof(applicationManifest));
             if (args is null)
                 throw new ArgumentNullException(nameof(args));
 
-            return ProcessManager.Items.Add(appInfo, args, initiator).StartProcess();
+            return ProcessManager.Items.Add(applicationManifest, args, initiator).StartProcess();
         }
 
         public ProcessContext RunApplication(string appID, string[] args, IForm? initiator = null)
@@ -479,7 +486,7 @@ namespace MCBS
             if (string.IsNullOrEmpty(appID))
                 throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
 
-            return ProcessManager.Items.Add(ApplicationManager.Items[appID], args, initiator).StartProcess();
+            return ProcessManager.Items.Add(AppComponents[appID], args, initiator).StartProcess();
         }
 
         public ProcessContext RunApplication(string appID, IForm? initiator = null)
@@ -487,7 +494,7 @@ namespace MCBS
             if (string.IsNullOrEmpty(appID))
                 throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
 
-            return ProcessManager.Items.Add(ApplicationManager.Items[appID], initiator).StartProcess();
+            return ProcessManager.Items.Add(AppComponents[appID], initiator).StartProcess();
         }
 
         public ScreenContext LoadScreen(Screen screen)
@@ -500,16 +507,16 @@ namespace MCBS
 
         internal ProcessContext RunServicesApp()
         {
-            if (!ApplicationManager.Items[ConfigManager.SystemConfig.ServicesAppID].TypeObject.IsSubclassOf(typeof(ServicesApplicationBase)))
-                throw new InvalidOperationException("无效的ServicesAppID");
+            if (!typeof(IProgram).IsAssignableFrom(AppComponents[ConfigManager.SystemConfig.ServicesAppID].MainClass))
+                throw new InvalidOperationException("无效的IServicesProgram");
 
             return RunApplication(ConfigManager.SystemConfig.ServicesAppID);
         }
 
         internal void RunStartupChecklist(IRootForm rootForm)
         {
-            foreach (var id in ConfigManager.SystemConfig.StartupChecklist)
-                RunApplication(ApplicationManager.Items[id], rootForm);
+            foreach (var appID in ConfigManager.SystemConfig.StartupChecklist)
+                RunApplication(AppComponents[appID], rootForm);
         }
     }
 }

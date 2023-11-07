@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.VideoPlayer
 {
-    public class VideoPlayerApp : ApplicationBase
+    public class VideoPlayerApp : IProgram
     {
         public const string ID = "VideoPlayer";
 
         public const string Name = "视频播放器";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
             try
             {
@@ -24,18 +24,23 @@ namespace MCBS.SystemApplications.VideoPlayer
             }
             catch (Exception ex)
             {
-                IForm? initiator = MCOS.Instance.ProcessOf(this)?.Initiator;
+                IForm? initiator = MCOS.Instance.ProcessContextOf(this)?.Initiator;
                 if (initiator is not null)
-                    DialogBoxHelper.OpenMessageBox(initiator, "警告", $"因为FFmpeg加载失败，视频播放器无法使用，错误信息：\n{ex.GetType()}: {ex.Message}", MessageBoxButtons.OK);
-                return null;
+                    DialogBoxHelper.OpenMessageBox(initiator, "警告", $"由于FFmpeg加载失败，因此视频播放器无法使用，错误信息：\n{ex.GetType()}: {ex.Message}", MessageBoxButtons.OK);
+                return -1;
             }
 
             string? path = null;
             if (args.Length > 0)
                 path = args[0];
 
-            RunForm(new VideoPlayerForm(path));
-            return null;
+            this.RunForm(new VideoPlayerForm(path));
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

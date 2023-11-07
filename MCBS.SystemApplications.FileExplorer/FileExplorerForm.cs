@@ -202,9 +202,9 @@ namespace MCBS.SystemApplications.FileExplorer
         {
             FileInfo fileInfo = e.FileInfo;
             string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
-            if (ConfigManager.Registry.TryGetValue(extension, out var id) && MCOS.Instance.ApplicationManager.Items.TryGetValue(id, out var app))
+            if (ConfigManager.Registry.TryGetValue(extension, out var appID) && MCOS.Instance.AppComponents.TryGetValue(appID, out var applicationManifest))
             {
-                MCOS.Instance.RunApplication(app, new string[] { fileInfo.FullName }, this);
+                MCOS.Instance.RunApplication(applicationManifest, new string[] { fileInfo.FullName }, this);
             }
             else
             {

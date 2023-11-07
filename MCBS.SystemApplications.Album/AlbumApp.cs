@@ -7,20 +7,25 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Album
 {
-    public class AlbumApp : ApplicationBase
+    public class AlbumApp : IProgram
     {
         public const string ID = "Album";
 
         public const string Name = "相册";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
             string? path = null;
             if (args.Length > 0)
                 path = args[0];
 
-            RunForm(new AlbumForm(path));
-            return null;
+            this.RunForm(new AlbumForm(path));
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

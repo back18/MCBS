@@ -486,8 +486,8 @@ namespace MCBS.BlockForms
                 if (e.Control is not IForm form)
                     return;
 
-                bool append = MCOS.Instance.ProcessOf(form)?.ApplicationInfo.AppendToDesktop ?? false;
-                if (!append)
+                var applicationManifest = MCOS.Instance.ProcessContextOf(form)?.Application;
+                if (applicationManifest?.ID is "System.Services" or "System.Desktop")
                     return;
 
                 var context = MCOS.Instance.FormContextOf(form);

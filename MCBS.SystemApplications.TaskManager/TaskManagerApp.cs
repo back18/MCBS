@@ -7,16 +7,21 @@ using MCBS.Application;
 
 namespace MCBS.SystemApplications.TaskManager
 {
-    public class TaskManagerApp : ApplicationBase
+    public class TaskManagerApp : IProgram
     {
         public const string ID = "TaskManager";
 
         public const string Name = "任务管理器";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
-            RunForm(new TaskManagerForm());
-            return null;
+            this.RunForm(new TaskManagerForm());
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

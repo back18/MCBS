@@ -7,16 +7,21 @@ using MCBS.Application;
 
 namespace MCBS.SystemApplications.Settings
 {
-    public class SettingsApp : ApplicationBase
+    public class SettingsApp : IProgram
     {
         public const string ID = "Settings";
 
         public const string Name = "设置";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
-            RunForm(new SettingsForm());
-            return null;
+            this.RunForm(new SettingsForm());
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

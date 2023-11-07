@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Services
 {
-    public class ServicesApp : ServicesApplicationBase
+    public class ServicesApp : IServicesProgram
     {
         public ServicesApp()
         {
@@ -19,12 +19,17 @@ namespace MCBS.SystemApplications.Services
 
         public const string Name = "系统服务";
 
-        public override IRootForm RootForm { get; }
+        public IRootForm RootForm { get; }
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
-            RunForm(RootForm);
-            return null;
+            this.RunForm(RootForm);
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }

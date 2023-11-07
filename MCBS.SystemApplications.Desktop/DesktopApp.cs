@@ -7,16 +7,21 @@ using MCBS.Application;
 
 namespace MCBS.SystemApplications.Desktop
 {
-    public class DesktopApp : ApplicationBase
+    public class DesktopApp : IProgram
     {
         public const string ID = "Desktop";
 
         public const string Name = "系统桌面";
 
-        public override object? Main(string[] args)
+        public int Main(string[] args)
         {
-            RunForm(new DesktopForm());
-            return null;
+            this.RunForm(new DesktopForm());
+            return 0;
+        }
+
+        public void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 }
