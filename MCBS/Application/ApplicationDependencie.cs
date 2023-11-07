@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.Application
 {
-    public class ApplicationDescription
+    public class ApplicationDependencie
     {
-        public ApplicationDescription(Model model)
+        public ApplicationDependencie(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 
@@ -31,7 +31,7 @@ namespace MCBS.Application
 
             public string Version { get; set; }
 
-            public bool Mandatory { get; }
+            public bool Mandatory { get; set; }
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
     }

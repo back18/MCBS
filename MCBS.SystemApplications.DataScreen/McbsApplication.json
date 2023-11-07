@@ -1,16 +1,16 @@
 {
-    "MainClass": "MCBS.SystemApplications.DataScreen.DataScreenApp",
-    "ID": "System.DataScreen",
-    "Name": "数据大屏",
-    "Version": "1.0.0",
-    "Icon": "MCBS.SystemApplications.DataScreen.SystemResource.Icon.png",
-    "Environment": [
-        "WINDOWS",
-        "LINUX",
-        "MACOS"
-    ],
-    "Descriptions": [],
-    "Authors": [
-        "back18"
-    ]
+  "MainClass": "MCBS.SystemApplications.DataScreen.DataScreenApp",
+  "ID": "System.DataScreen",
+  "Name": "数据大屏",
+  "Version": "1.0.0",
+  "Icon": "MCBS.SystemApplications.DataScreen.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
 }

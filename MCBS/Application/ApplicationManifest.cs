@@ -84,11 +84,11 @@ namespace MCBS.Application
                 }
             }
 
-            List<ApplicationDescription> descriptions = new();
-            foreach (ApplicationDescription.Model description in model.Descriptions)
+            List<ApplicationDependencie> descriptions = new();
+            foreach (ApplicationDependencie.Model description in model.Dependencies)
                 descriptions.Add(new(description));
 
-            Descriptions = new(descriptions);
+            Dependencies = new(descriptions);
             Authors = new(model.Authors);
         }
 
@@ -108,7 +108,7 @@ namespace MCBS.Application
 
         public PlatformType Environment { get; }
 
-        public ReadOnlyCollection<ApplicationDescription> Descriptions { get; }
+        public ReadOnlyCollection<ApplicationDependencie> Dependencies { get; }
 
         public ReadOnlyCollection<string> Authors { get; }
 
@@ -140,7 +140,7 @@ namespace MCBS.Application
 
             public string[] Environment { get; set; }
 
-            public ApplicationDescription.Model[] Descriptions { get; set; }
+            public ApplicationDependencie.Model[] Dependencies { get; set; }
 
             public string[] Authors { get; set; }
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。

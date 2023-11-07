@@ -1,22 +1,22 @@
 {
-    "MainClass": "MCBS.SystemApplications.Album.AlbumApp",
-    "ID": "System.Album",
-    "Name": "相册",
-    "Version": "1.0.0",
-    "Icon": "MCBS.SystemApplications.Album.SystemResource.Icon.png",
-    "Environment": [
-        "WINDOWS",
-        "LINUX",
-        "MACOS"
-    ],
-    "Descriptions": [
-        {
-            "ID": "System.Desktop",
-            "Version": "1.0.0",
-            "Mandatory": true
-        }
-    ],
-    "Authors": [
-        "back18"
-    ]
+  "MainClass": "MCBS.SystemApplications.Album.AlbumApp",
+  "ID": "System.Album",
+  "Name": "相册",
+  "Version": "1.0.0",
+  "Icon": "MCBS.SystemApplications.Album.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [
+    {
+      "ID": "System.Desktop",
+      "Version": "1.0.0",
+      "Mandatory": true
+    }
+  ],
+  "Authors": [
+    "back18"
+  ]
 }

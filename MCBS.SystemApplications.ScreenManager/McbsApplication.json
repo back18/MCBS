@@ -1,16 +1,16 @@
 {
-    "MainClass": "MCBS.SystemApplications.ScreenManager.ScreenManagerApp",
-    "ID": "System.ScreenManager",
-    "Name": "屏幕管理器",
-    "Version": "1.0.0",
-    "Icon": "MCBS.SystemApplications.ScreenManager.SystemResource.Icon.png",
-    "Environment": [
-        "WINDOWS",
-        "LINUX",
-        "MACOS"
-    ],
-    "Descriptions": [],
-    "Authors": [
-        "back18"
-    ]
+  "MainClass": "MCBS.SystemApplications.ScreenManager.ScreenManagerApp",
+  "ID": "System.ScreenManager",
+  "Name": "屏幕管理器",
+  "Version": "1.0.0",
+  "Icon": "MCBS.SystemApplications.ScreenManager.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
 }
