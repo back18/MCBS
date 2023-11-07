@@ -14,6 +14,7 @@ SystemAppComponents = [
     "MCBS.SystemApplications.Services",
     "MCBS.SystemApplications.Settings",
     "MCBS.SystemApplications.Desktop",
+    "MCBS.SystemApplications.Console",
     "MCBS.SystemApplications.FileExplorer",
     "MCBS.SystemApplications.TaskManager",
     "MCBS.SystemApplications.ScreenManager",

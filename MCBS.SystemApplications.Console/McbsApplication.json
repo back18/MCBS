@@ -1,0 +1,16 @@
+{
+  "MainClass": "MCBS.SystemApplications.Console.ConsoleApp",
+  "ID": "System.Console",
+  "Name": "控制台",
+  "Version": "1.0.0",
+  "Icon": "MCBS.SystemApplications.Console.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
+}
