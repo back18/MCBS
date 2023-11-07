@@ -3,6 +3,7 @@
   "ID": "System.Console",
   "Name": "控制台",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.Console.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

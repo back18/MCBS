@@ -3,6 +3,7 @@
   "ID": "System.Album",
   "Name": "相册",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.Album.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

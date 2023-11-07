@@ -3,6 +3,7 @@
   "ID": "System.Notepad",
   "Name": "记事本",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.Notepad.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

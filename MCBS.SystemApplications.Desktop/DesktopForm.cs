@@ -60,10 +60,12 @@ namespace MCBS.SystemApplications.Desktop
 
         public override void ActiveLayoutAll()
         {
-            MCOS os = MCOS.Instance;
             ClientPanel.ChildControls.Clear();
             foreach (var applicationManifest in MCOS.Instance.AppComponents.Values)
-                ClientPanel.ChildControls.Add(new DesktopIcon(applicationManifest));
+            {
+                if (!applicationManifest.IsBackground)
+                    ClientPanel.ChildControls.Add(new DesktopIcon(applicationManifest));
+            }
 
             if (ClientPanel.ChildControls.Count == 0)
                 return;

@@ -3,6 +3,7 @@
   "ID": "System.Drawing",
   "Name": "绘画",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.Drawing.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

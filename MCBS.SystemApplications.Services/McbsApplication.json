@@ -3,6 +3,7 @@
   "ID": "System.Services",
   "Name": "系统服务",
   "Version": "1.0.0",
+  "IsBackground": true,
   "Icon": "MCBS.SystemApplications.Services.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

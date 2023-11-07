@@ -3,6 +3,7 @@
   "ID": "System.ScreenManager",
   "Name": "屏幕管理器",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.ScreenManager.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

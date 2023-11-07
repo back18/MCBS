@@ -3,6 +3,7 @@
   "ID": "System.FileExplorer",
   "Name": "资源管理器",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.FileExplorer.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

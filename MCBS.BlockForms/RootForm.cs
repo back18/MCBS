@@ -487,7 +487,7 @@ namespace MCBS.BlockForms
                     return;
 
                 var applicationManifest = MCOS.Instance.ProcessContextOf(form)?.Application;
-                if (applicationManifest?.ID is "System.Services" or "System.Desktop")
+                if (applicationManifest is null || applicationManifest.IsBackground)
                     return;
 
                 var context = MCOS.Instance.FormContextOf(form);

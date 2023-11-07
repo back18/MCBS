@@ -3,6 +3,7 @@
   "ID": "System.DataScreen",
   "Name": "数据大屏",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.DataScreen.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

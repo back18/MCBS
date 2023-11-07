@@ -3,6 +3,7 @@
   "ID": "System.Settings",
   "Name": "系统设置",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.Settings.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

@@ -3,6 +3,7 @@
   "ID": "System.TaskManager",
   "Name": "任务管理器",
   "Version": "1.0.0",
+  "IsBackground": false,
   "Icon": "MCBS.SystemApplications.TaskManager.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",

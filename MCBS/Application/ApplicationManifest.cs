@@ -45,25 +45,7 @@ namespace MCBS.Application
             ID = model.ID;
             Name = model.Name;
             Version = Version.Parse(model.Version);
-
-            Environment = PlatformType.None;
-            foreach (string platform in model.Environment)
-            {
-                switch (platform)
-                {
-                    case "WINDOWS":
-                        Environment |= PlatformType.Windows;
-                        break;
-                    case "LINUX":
-                        Environment |= PlatformType.Linux;
-                        break;
-                    case "MACOS":
-                        Environment |= PlatformType.MacOS;
-                        break;
-                    default:
-                        break;
-                }
-            }
+            IsBackground = model.IsBackground;
 
             Stream? stream = assembly.GetManifestResourceStream(model.Icon);
             if (stream is null)
@@ -81,6 +63,25 @@ namespace MCBS.Application
                 {
                     Icon = GetDefaultIcon();
                     LogUtil.GetLogger().Warn($"应用程序“{ID}”位于路径“{model.Icon}”的图标无法加载，已应用默认图标", ex);
+                }
+            }
+
+            Environment = PlatformType.None;
+            foreach (string platform in model.Environment)
+            {
+                switch (platform)
+                {
+                    case "WINDOWS":
+                        Environment |= PlatformType.Windows;
+                        break;
+                    case "LINUX":
+                        Environment |= PlatformType.Linux;
+                        break;
+                    case "MACOS":
+                        Environment |= PlatformType.MacOS;
+                        break;
+                    default:
+                        break;
                 }
             }
 
@@ -103,6 +104,8 @@ namespace MCBS.Application
         public string Name { get; }
 
         public Version Version { get; }
+
+        public bool IsBackground { get; }
 
         private Image<Rgba32> Icon { get; }
 
@@ -137,6 +140,8 @@ namespace MCBS.Application
             public string Version { get; set; }
 
             public string Icon { get; set; }
+
+            public bool IsBackground { get; set; }
 
             public string[] Environment { get; set; }
 

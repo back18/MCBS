@@ -3,6 +3,7 @@
   "ID": "System.Desktop",
   "Name": "桌面",
   "Version": "1.0.0",
+  "IsBackground": true,
   "Icon": "MCBS.SystemApplications.Desktop.SystemResource.Icon.png",
   "Environment": [
     "WINDOWS",
