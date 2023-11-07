@@ -72,6 +72,8 @@ namespace MCBS
             _tickStopwatch = new();
             _times = new();
             _query = Task.Run(() => 0);
+
+            CreateAppComponentsDirectory();
         }
 
         private static readonly object _slock;
@@ -517,6 +519,16 @@ namespace MCBS
         {
             foreach (var appID in ConfigManager.SystemConfig.StartupChecklist)
                 RunApplication(AppComponents[appID], rootForm);
+        }
+
+        private void CreateAppComponentsDirectory()
+        {
+            foreach (var appID in AppComponents.Keys)
+            {
+                string dir = Path.Combine(SR.McbsDirectory.ApplicationsDir.FullPath, appID);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
         }
     }
 }
