@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.DataScreen
 {
     public class DataScreenApp : IProgram
     {
-        public const string ID = "DataScreen";
+        public const string ID = "System.DataScreen";
 
         public const string Name = "数据大屏";
 

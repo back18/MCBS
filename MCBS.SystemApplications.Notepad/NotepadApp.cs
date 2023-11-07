@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.Notepad
 {
     public class NotepadApp : IProgram
     {
-        public const string ID = "Notepad";
+        public const string ID = "System.Notepad";
 
         public const string Name = "记事本";
 

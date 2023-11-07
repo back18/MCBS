@@ -10,7 +10,7 @@ namespace MCBS.SystemApplications.FileExplorer
 {
     public class FileExplorerApp : IProgram
     {
-        public const string ID = "FileExplorer";
+        public const string ID = "System.FileExplorer";
 
         public const string Name = "资源管理器";
 

@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.Console
 {
     public class ConsoleApp : IProgram
     {
-        public const string ID = "Console";
+        public const string ID = "System.Console";
 
         public const string Name = "控制台";
 

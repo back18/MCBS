@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.TaskManager
 {
     public class TaskManagerApp : IProgram
     {
-        public const string ID = "TaskManager";
+        public const string ID = "System.TaskManager";
 
         public const string Name = "任务管理器";
 

@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.Drawing
 {
     public class DrawingApp : IProgram
     {
-        public const string ID = "Drawing";
+        public const string ID = "System.Drawing";
 
         public const string Name = "绘画";
 

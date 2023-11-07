@@ -15,7 +15,7 @@ namespace MCBS.SystemApplications.Services
             RootForm = new ServicesForm();
         }
 
-        public const string ID = "Services";
+        public const string ID = "System.Services";
 
         public const string Name = "系统服务";
 
