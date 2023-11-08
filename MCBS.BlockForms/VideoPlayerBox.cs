@@ -17,8 +17,8 @@ namespace MCBS.BlockForms
         {
             VideoBox = new();
             PauseOrResume_Switch = new();
-            ProgressBar_VideoProgressBar = new(this);
-            TimeText_VideoTimeTextBox = new(this);
+            VideoProgressBar_Control = new(this);
+            TimeTextBox_Control = new(this);
 
             OverlayShowTime = 20;
             OverlayHideTime = 0;
@@ -28,9 +28,9 @@ namespace MCBS.BlockForms
 
         private readonly Switch PauseOrResume_Switch;
 
-        private readonly VideoProgressBar ProgressBar_VideoProgressBar;
+        private readonly VideoProgressBar VideoProgressBar_Control;
 
-        private readonly TimeTextBox TimeText_VideoTimeTextBox;
+        private readonly TimeTextBox TimeTextBox_Control;
 
         public int OverlayShowTime { get; set; }
 
@@ -49,24 +49,24 @@ namespace MCBS.BlockForms
             VideoBox.Played += VideoBox_Played;
             VideoBox.Paused += VideoBox_Paused;
 
-            ChildControls.Add(ProgressBar_VideoProgressBar);
-            ProgressBar_VideoProgressBar.Visible = false;
-            ProgressBar_VideoProgressBar.Height = 6;
-            ProgressBar_VideoProgressBar.Width = ClientSize.Width - 4;
-            ProgressBar_VideoProgressBar.LayoutUp(this, 2, 2);
-            ProgressBar_VideoProgressBar.Anchor = Direction.Bottom | Direction.Left;
-            ProgressBar_VideoProgressBar.Stretch = Direction.Left;
+            ChildControls.Add(VideoProgressBar_Control);
+            VideoProgressBar_Control.Visible = false;
+            VideoProgressBar_Control.Height = 6;
+            VideoProgressBar_Control.Width = ClientSize.Width - 4;
+            VideoProgressBar_Control.LayoutUp(this, 2, 2);
+            VideoProgressBar_Control.Anchor = Direction.Bottom | Direction.Left;
+            VideoProgressBar_Control.Stretch = Direction.Left;
 
-            ChildControls.Add(TimeText_VideoTimeTextBox);
-            TimeText_VideoTimeTextBox.Visible = false;
-            TimeText_VideoTimeTextBox.LayoutUp(this, ProgressBar_VideoProgressBar, 2);
-            TimeText_VideoTimeTextBox.Anchor = Direction.Bottom | Direction.Left;
+            ChildControls.Add(TimeTextBox_Control);
+            TimeTextBox_Control.Visible = false;
+            TimeTextBox_Control.LayoutUp(this, VideoProgressBar_Control, 2);
+            TimeTextBox_Control.Anchor = Direction.Bottom | Direction.Left;
 
             ChildControls.Add(PauseOrResume_Switch);
             PauseOrResume_Switch.Visible = false;
             PauseOrResume_Switch.BorderWidth = 0;
             PauseOrResume_Switch.ClientSize = new(16, 16);
-            PauseOrResume_Switch.LayoutLeft(this, TimeText_VideoTimeTextBox.TopLocation, 2);
+            PauseOrResume_Switch.LayoutLeft(this, TimeTextBox_Control.TopLocation, 2);
             PauseOrResume_Switch.Anchor = Direction.Bottom | Direction.Right;
             PauseOrResume_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Play"], new ControlState[] { ControlState.None, ControlState.Hover });
             PauseOrResume_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Pause"], new ControlState[] { ControlState.Selected, ControlState.Hover | ControlState.Selected });
@@ -117,15 +117,15 @@ namespace MCBS.BlockForms
         private void ShowOverlay()
         {
             PauseOrResume_Switch.Visible = true;
-            ProgressBar_VideoProgressBar.Visible = true;
-            TimeText_VideoTimeTextBox.Visible = true;
+            VideoProgressBar_Control.Visible = true;
+            TimeTextBox_Control.Visible = true;
         }
 
         private void HideOverlay()
         {
             PauseOrResume_Switch.Visible = false;
-            ProgressBar_VideoProgressBar.Visible = false;
-            TimeText_VideoTimeTextBox.Visible = false;
+            VideoProgressBar_Control.Visible = false;
+            TimeTextBox_Control.Visible = false;
         }
 
         private void VideoBox_Played(VideoBox<TPixel> sender, EventArgs e)
