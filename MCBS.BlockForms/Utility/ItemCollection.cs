@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.UI
+namespace MCBS.BlockForms.Utility
 {
     public class ItemCollection<T> : IList<T>, IReadOnlyList<T> where T : notnull
     {

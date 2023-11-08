@@ -1,12 +1,12 @@
-﻿using MCBS.Rendering;
-using MCBS.UI;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Rendering;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace MCBS.BlockForms
 {
-	public abstract partial class Control
+    public abstract partial class Control
 	{
 		/// <summary>
 		/// 控件外观
