@@ -119,13 +119,6 @@ namespace MCBS.BlockForms
             }
         }
 
-        public override void OnInitCompleted1()
-        {
-            base.OnInitCompleted1();
-
-            ShowTitleBar_Button.LayoutLeft(this, 0, 0);
-        }
-
         protected override void OnMove(Control sender, PositionChangedEventArgs e)
         {
             base.OnMove(sender, e);
@@ -287,9 +280,9 @@ namespace MCBS.BlockForms
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
             }
 
-            public override void OnInitCompleted3()
+            public override void AfterInitialize()
             {
-                base.OnInitCompleted3();
+                base.AfterInitialize();
 
                 ActiveLayoutAll();
             }

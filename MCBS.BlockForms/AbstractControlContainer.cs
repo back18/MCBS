@@ -33,7 +33,11 @@ namespace MCBS.BlockForms
         {
             IControlInitializeHandling handling = e.Control;
             if (IsInitCompleted && !handling.IsInitCompleted)
-                handling.HandleAllInitialize();
+            {
+                handling.HandleBeforeInitialize();
+                handling.HandleInitialize();
+                handling.HandleAfterInitialize();
+            }
         }
 
         protected virtual void OnRemovedChildControl(AbstractControlContainer<TControl> sender, ControlEventArgs<TControl> e)
@@ -60,33 +64,23 @@ namespace MCBS.BlockForms
             }
         }
 
-        public override void HandleInitCompleted1()
+        public override void HandleBeforeInitialize()
         {
-            base.HandleInitCompleted1();
+            base.HandleBeforeInitialize();
 
             foreach (var control in GetChildControls())
             {
-                control.HandleInitCompleted1();
+                control.HandleBeforeInitialize();
             }
         }
 
-        public override void HandleInitCompleted2()
+        public override void HandleAfterInitialize()
         {
-            base.HandleInitCompleted2();
+            base.HandleAfterInitialize();
 
             foreach (var control in GetChildControls())
             {
-                control.HandleInitCompleted2();
-            }
-        }
-
-        public override void HandleInitCompleted3()
-        {
-            base.HandleInitCompleted3();
-
-            foreach (var control in GetChildControls())
-            {
-                control.HandleInitCompleted3();
+                control.HandleAfterInitialize();
             }
         }
 

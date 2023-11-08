@@ -85,9 +85,9 @@ namespace MCBS.BlockForms
                 mediaFilePlayer.JumpToFrame(time);
             }
 
-            public override void OnInitCompleted3()
+            public override void AfterInitialize()
             {
-                base.OnInitCompleted3();
+                base.AfterInitialize();
 
                 ActiveLayoutAll();
             }

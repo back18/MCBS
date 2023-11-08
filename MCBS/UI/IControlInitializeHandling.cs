@@ -12,18 +12,8 @@ namespace MCBS.UI
 
         public void HandleInitialize();
 
-        public void HandleInitCompleted1();
+        public void HandleBeforeInitialize();
 
-        public void HandleInitCompleted2();
-
-        public void HandleInitCompleted3();
-
-        public void HandleAllInitialize()
-        {
-            HandleInitialize();
-            HandleInitCompleted1();
-            HandleInitCompleted2();
-            HandleInitCompleted3();
-        }
+        public void HandleAfterInitialize();
     }
 }

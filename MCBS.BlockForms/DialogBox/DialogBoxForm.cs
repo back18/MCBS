@@ -31,9 +31,9 @@ namespace MCBS.BlockForms.DialogBox
 
         public override object? ReturnValue => DialogResult;
 
-        public override void OnInitCompleted3()
+        public override void AfterInitialize()
         {
-            base.OnInitCompleted3();
+            base.AfterInitialize();
 
             Text = _title;
         }

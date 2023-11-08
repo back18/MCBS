@@ -162,9 +162,9 @@ namespace MCBS.SystemApplications.Drawing
             //DrawingBox.Stretch = Direction.Bottom | Direction.Right;
         }
 
-        public override void OnInitCompleted3()
+        public override void AfterInitialize()
         {
-            base.OnInitCompleted3();
+            base.AfterInitialize();
 
             if (_open is not null)
                 OpenImage(_open);

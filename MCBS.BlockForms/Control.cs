@@ -749,17 +749,12 @@ namespace MCBS.BlockForms
                 AutoSetSize();
         }
 
-        public virtual void OnInitCompleted1()
+        public virtual void BeforeInitialize()
         {
 
         }
 
-        public virtual void OnInitCompleted2()
-        {
-
-        }
-
-        public virtual void OnInitCompleted3()
+        public virtual void AfterInitialize()
         {
             IsInitCompleted = true;
         }
@@ -770,19 +765,14 @@ namespace MCBS.BlockForms
             InitializeCompleted.Invoke(this, EventArgs.Empty);
         }
 
-        public virtual void HandleInitCompleted1()
+        public virtual void HandleBeforeInitialize()
         {
-            OnInitCompleted1();
+            BeforeInitialize();
         }
 
-        public virtual void HandleInitCompleted2()
+        public virtual void HandleAfterInitialize()
         {
-            OnInitCompleted2();
-        }
-
-        public virtual void HandleInitCompleted3()
-        {
-            OnInitCompleted3();
+            AfterInitialize();
         }
 
         #endregion

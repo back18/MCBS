@@ -97,9 +97,9 @@ namespace MCBS.BlockForms.DialogBox
             Retry_Button.RightClick += Retry_Button_RightClick;
         }
 
-        public override void OnInitCompleted3()
+        public override void AfterInitialize()
         {
-            base.OnInitCompleted3();
+            base.AfterInitialize();
 
             Message_RichTextBox.Text = _message;
             ActiveLayoutAll();

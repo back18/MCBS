@@ -129,9 +129,9 @@ namespace MCBS.SystemApplications.FileExplorer
             ClientPanel.ClientSize = size2;
         }
 
-        public override void OnInitCompleted3()
+        public override void AfterInitialize()
         {
-            base.OnInitCompleted3();
+            base.AfterInitialize();
 
             if (_open is not null)
                 Path_TextBox.Text = _open;

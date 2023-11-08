@@ -67,9 +67,9 @@ namespace MCBS.SystemApplications.VideoPlayer
             Path_TextBox.TextChanged += Path_TextBox_TextChanged;
         }
 
-        public override void OnInitCompleted3()
+        public override void AfterInitialize()
         {
-            base.OnInitCompleted3();
+            base.AfterInitialize();
 
             if (_open is not null)
                 Path_TextBox.Text = _open;

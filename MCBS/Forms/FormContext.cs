@@ -103,7 +103,11 @@ namespace MCBS.Forms
             {
                 case FormState.NotLoaded:
                     if (Form is IRootForm)
-                        Form.HandleAllInitialize();
+                    {
+                        Form.HandleBeforeInitialize();
+                        Form.HandleInitialize();
+                        Form.HandleAfterInitialize();
+                    }
                     else if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormLoad(EventArgs.Empty);
