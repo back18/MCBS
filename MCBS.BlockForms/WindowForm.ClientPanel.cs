@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public class ClientPanel : ScrollablePanel
+    public abstract partial class WindowForm
     {
-        public ClientPanel()
+        public class ClientPanel : ScrollablePanel
         {
-            BorderWidth = 0;
+            public ClientPanel()
+            {
+                BorderWidth = 0;
+            }
         }
     }
 }
