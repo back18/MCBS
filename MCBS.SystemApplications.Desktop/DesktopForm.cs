@@ -31,49 +31,42 @@ namespace MCBS.SystemApplications.Desktop
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
 
-            ClientPanel = new();
+            Icons_ScrollablePanel = new();
         }
 
         private static readonly Image<Rgba32> _defaultWallpaper;
 
-        public readonly ClientPanel ClientPanel;
+        public readonly ScrollablePanel Icons_ScrollablePanel;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            ChildControls.Add(ClientPanel);
-            ClientPanel.ClientSize = ClientSize;
-            ClientPanel.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
-            ClientPanel.ClientSize = ClientSize);
-            ClientPanel.LayoutAll += ClientPanel_LayoutAll;
+            ChildControls.Add(Icons_ScrollablePanel);
+            Icons_ScrollablePanel.ClientSize = ClientSize;
+            Icons_ScrollablePanel.Stretch = Direction.Bottom | Direction.Right;
+            Icons_ScrollablePanel.Skin.SetAllBackgroundTexture(_defaultWallpaper.Clone());
+            Icons_ScrollablePanel.LayoutAll += ClientPanel_LayoutAll;
 
             ActiveLayoutAll();
-
-            ClientPanel.Skin.SetAllBackgroundTexture(_defaultWallpaper);
-        }
-
-        protected override BlockFrame Rendering()
-        {
-            return base.Rendering();
         }
 
         public override void ActiveLayoutAll()
         {
-            ClientPanel.ChildControls.Clear();
+            Icons_ScrollablePanel.ChildControls.Clear();
             foreach (var applicationManifest in MCOS.Instance.AppComponents.Values)
             {
                 if (!applicationManifest.IsBackground)
-                    ClientPanel.ChildControls.Add(new DesktopIcon(applicationManifest));
+                    Icons_ScrollablePanel.ChildControls.Add(new DesktopIcon(applicationManifest));
             }
 
-            if (ClientPanel.ChildControls.Count == 0)
+            if (Icons_ScrollablePanel.ChildControls.Count == 0)
                 return;
 
-            LayoutHelper.FillLayoutDownRight(this, ClientPanel.ChildControls, 0);
-            ClientPanel.PageSize = new((ClientPanel.ChildControls.RecentlyAddedControl ?? ClientPanel.ChildControls[^1]).RightLocation + 1, ClientPanel.ClientSize.Height);
-            ClientPanel.OffsetPosition = new(0, 0);
-            ClientPanel.RefreshHorizontalScrollBar();
+            LayoutHelper.FillLayoutDownRight(this, Icons_ScrollablePanel.ChildControls, 0);
+            Icons_ScrollablePanel.PageSize = new((Icons_ScrollablePanel.ChildControls.RecentlyAddedControl ?? Icons_ScrollablePanel.ChildControls[^1]).RightLocation + 1, Icons_ScrollablePanel.ClientSize.Height);
+            Icons_ScrollablePanel.OffsetPosition = new(0, 0);
+            Icons_ScrollablePanel.RefreshHorizontalScrollBar();
         }
 
         [Obsolete("暂时无法设置壁纸", true)]
