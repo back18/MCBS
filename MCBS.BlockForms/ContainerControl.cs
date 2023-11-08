@@ -13,37 +13,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public abstract class ContainerControl<TControl> : ContainerControl where TControl : Control
-    {
-        protected ContainerControl()
-        {
-            ChildControls = new(this);
-        }
-
-        public ControlCollection<TControl> ChildControls { get; }
-
-        public override IReadOnlyControlCollection<Control> GetChildControls() => ChildControls;
-
-        public override ControlCollection<T>? AsControlCollection<T>()
-        {
-            if (ChildControls is ControlCollection<T> result)
-                return result;
-
-            return null;
-        }
-
-        public override void ClearAllLayoutSyncer()
-        {
-            foreach (Control control in ChildControls)
-            {
-                control.ClearAllLayoutSyncer();
-            }
-
-            base.ClearAllLayoutSyncer();
-        }
-    }
-
-    public abstract class ContainerControl : AbstractContainer<Control>
+    public abstract partial class ContainerControl : AbstractControlContainer<Control>
     {
         protected ContainerControl()
         {
@@ -54,11 +24,11 @@ namespace MCBS.BlockForms
 
         public abstract ControlCollection<T>? AsControlCollection<T>() where T : Control;
 
-        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> AddedChildControl;
+        public override event EventHandler<AbstractControlContainer<Control>, ControlEventArgs<Control>> AddedChildControl;
 
-        public override event EventHandler<AbstractContainer<Control>, ControlEventArgs<Control>> RemovedChildControl;
+        public override event EventHandler<AbstractControlContainer<Control>, ControlEventArgs<Control>> RemovedChildControl;
 
-        public event EventHandler<AbstractContainer<Control>, SizeChangedEventArgs> LayoutAll;
+        public event EventHandler<AbstractControlContainer<Control>, SizeChangedEventArgs> LayoutAll;
 
         protected override void OnResize(Control sender, SizeChangedEventArgs e)
         {
@@ -72,7 +42,7 @@ namespace MCBS.BlockForms
 
         }
 
-        protected virtual void OnLayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
+        protected virtual void OnLayoutAll(AbstractControlContainer<Control> sender, SizeChangedEventArgs e)
         {
             foreach (var control in GetChildControls())
             {
@@ -134,75 +104,6 @@ namespace MCBS.BlockForms
             }
 
             UpdateHoverState(e);
-        }
-
-        public class ControlCollection<T> : AbstractControlCollection<T> where T : Control
-        {
-            public ControlCollection(ContainerControl owner)
-            {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
-            }
-
-            private readonly ContainerControl _owner;
-
-            public override void Add(T item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
-
-                bool insert = false;
-                for (int i = _items.Count - 1; i >= 0; i--)
-                {
-                    if (item.DisplayPriority >= _items[i].DisplayPriority)
-                    {
-                        _items.Insert(i + 1, item);
-                        insert = true;
-                        break;
-                    }
-                }
-                if (!insert)
-                    _items.Insert(0, item);
-
-                ((IControl)item).SetGenericContainerControl(_owner);
-                RecentlyAddedControl = item;
-                _owner.AddedChildControl.Invoke(_owner, new(item));
-                _owner.RequestRendering();
-            }
-
-            public override bool Remove(T item)
-            {
-                if (item is null)
-                    throw new ArgumentNullException(nameof(item));
-
-                if (!_items.Remove(item))
-                    return false;
-
-                ((IControl)item).SetGenericContainerControl(null);
-                RecentlyRemovedControl = item;
-                _owner.RemovedChildControl.Invoke(_owner, new(item));
-                _owner.RequestRendering();
-                return true;
-            }
-
-            public override void Clear()
-            {
-                foreach (var item in _items.ToArray())
-                    if (!item.KeepWhenClear)
-                        Remove(item);
-                RecentlyAddedControl = null;
-            }
-
-            public void ClearSelecteds()
-            {
-                foreach (var control in _items.ToArray())
-                    control.IsSelected = false;
-            }
-
-            public void ClearSyncers()
-            {
-                foreach (var control in _items)
-                    control.LayoutSyncer = null;
-            }
         }
     }
 }

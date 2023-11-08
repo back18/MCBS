@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public abstract class AbstractContainer<TControl> : Control, IContainerControl where TControl : class, IControl
+    public abstract class AbstractControlContainer<TControl> : Control, IContainerControl where TControl : class, IControl
     {
-        protected AbstractContainer()
+        protected AbstractControlContainer()
         {
             AddedChildControl += OnAddedChildControl;
             RemovedChildControl += OnRemovedChildControl;
@@ -25,18 +25,18 @@ namespace MCBS.BlockForms
 
         public bool IsChildControlType<T>() => typeof(T) == ChildControlType;
 
-        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> AddedChildControl;
+        public abstract event EventHandler<AbstractControlContainer<TControl>, ControlEventArgs<TControl>> AddedChildControl;
 
-        public abstract event EventHandler<AbstractContainer<TControl>, ControlEventArgs<TControl>> RemovedChildControl;
+        public abstract event EventHandler<AbstractControlContainer<TControl>, ControlEventArgs<TControl>> RemovedChildControl;
 
-        protected virtual void OnAddedChildControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
+        protected virtual void OnAddedChildControl(AbstractControlContainer<TControl> sender, ControlEventArgs<TControl> e)
         {
             IControlInitializeHandling handling = e.Control;
             if (IsInitCompleted && !handling.IsInitCompleted)
                 handling.HandleAllInitialize();
         }
 
-        protected virtual void OnRemovedChildControl(AbstractContainer<TControl> sender, ControlEventArgs<TControl> e)
+        protected virtual void OnRemovedChildControl(AbstractControlContainer<TControl> sender, ControlEventArgs<TControl> e)
         {
             CursorContext[] hoverContexts = e.Control.GetHoverCursors();
             foreach (var hoverContext in hoverContexts)

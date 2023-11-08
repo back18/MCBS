@@ -82,7 +82,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
             ActiveLayoutAll();
         }
 
-        protected override void OnLayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
+        protected override void OnLayoutAll(AbstractControlContainer<Control> sender, SizeChangedEventArgs e)
         {
             ActiveLayoutAll();
         }

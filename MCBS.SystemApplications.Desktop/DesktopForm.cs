@@ -82,7 +82,7 @@ namespace MCBS.SystemApplications.Desktop
             throw new NotSupportedException();
         }
 
-        private void ClientPanel_LayoutAll(AbstractContainer<Control> sender, SizeChangedEventArgs e)
+        private void ClientPanel_LayoutAll(AbstractControlContainer<Control> sender, SizeChangedEventArgs e)
         {
             ActiveLayoutAll();
         }
