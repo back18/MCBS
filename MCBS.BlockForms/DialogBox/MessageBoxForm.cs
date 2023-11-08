@@ -67,10 +67,10 @@ namespace MCBS.BlockForms.DialogBox
         {
             base.Initialize();
 
-            ClientSize = new(110, 70 + TitleBar.Height);
+            ClientSize = new(110, 70 + TitleBar_Control.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel.ChildControls.Add(Message_RichTextBox);
+            ClientPanel_Control.ChildControls.Add(Message_RichTextBox);
             Message_RichTextBox.KeepWhenClear = true;
             Message_RichTextBox.BorderWidth = 0;
             Message_RichTextBox.ClientSize = new(110, 48);
@@ -107,7 +107,7 @@ namespace MCBS.BlockForms.DialogBox
 
         public override void ActiveLayoutAll()
         {
-            ClientPanel.ChildControls.Clear();
+            ClientPanel_Control.ChildControls.Clear();
 
             List<Button> buttons = new();
             if (ButtonsToShow.HasFlag(MessageBoxButtons.Yes))
@@ -141,7 +141,7 @@ namespace MCBS.BlockForms.DialogBox
 
             for (int i = 0; i < Math.Min(3, buttons.Count); i++)
             {
-                ClientPanel.ChildControls.Add(buttons[i]);
+                ClientPanel_Control.ChildControls.Add(buttons[i]);
             }
         }
 

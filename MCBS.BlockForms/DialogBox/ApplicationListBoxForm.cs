@@ -36,10 +36,10 @@ namespace MCBS.BlockForms.DialogBox
         {
             base.Initialize();
 
-            ClientSize = new(113, 86 + TitleBar.Height);
+            ClientSize = new(113, 86 + TitleBar_Control.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel.ChildControls.Add(ApplicationList_ListMenuBox);
+            ClientPanel_Control.ChildControls.Add(ApplicationList_ListMenuBox);
             ApplicationList_ListMenuBox.ClientLocation = new(2, 2);
             ApplicationList_ListMenuBox.ClientSize = new(107, 60);
             ApplicationList_ListMenuBox.RightClick += ApplicationList_ListMenuBox_RightClick;
@@ -51,16 +51,16 @@ namespace MCBS.BlockForms.DialogBox
                 ApplicationList_ListMenuBox.AddedChildControlAndLayout(item);
             }
 
-            ClientPanel.ChildControls.Add(Cancel_Button);
+            ClientPanel_Control.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
             Cancel_Button.LayoutLeft(this, ApplicationList_ListMenuBox.BottomLocation + 3, 2);
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
-            ClientPanel.ChildControls.Add(OK_Button);
+            ClientPanel_Control.ChildControls.Add(OK_Button);
             OK_Button.Text = "确认";
             OK_Button.ClientSize = new(32, 16);
-            OK_Button.LayoutLeft(ClientPanel, Cancel_Button, 2);
+            OK_Button.LayoutLeft(ClientPanel_Control, Cancel_Button, 2);
             OK_Button.RightClick += OK_Button_RightClick;
         }
 

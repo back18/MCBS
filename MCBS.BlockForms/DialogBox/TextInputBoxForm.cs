@@ -35,21 +35,21 @@ namespace MCBS.BlockForms.DialogBox
         {
             base.Initialize();
 
-            ClientSize = new(102, 74 + TitleBar.Height);
+            ClientSize = new(102, 74 + TitleBar_Control.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel.ChildControls.Add(Text_RichTextBox);
+            ClientPanel_Control.ChildControls.Add(Text_RichTextBox);
             Text_RichTextBox.IsReadOnly = false;
             Text_RichTextBox.ClientLocation = new(2, 2);
             Text_RichTextBox.ClientSize = new(96, 48);
 
-            ClientPanel.ChildControls.Add(Cancel_Button);
+            ClientPanel_Control.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
             Cancel_Button.LayoutLeft(this, Text_RichTextBox.BottomLocation + 3, 2);
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
-            ClientPanel.ChildControls.Add(OK_Button);
+            ClientPanel_Control.ChildControls.Add(OK_Button);
             OK_Button.Text = "确认";
             OK_Button.ClientSize = new(32, 16);
             OK_Button.LayoutLeft(this, Cancel_Button, 2);

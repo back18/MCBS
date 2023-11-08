@@ -16,38 +16,38 @@ namespace MCBS.BlockForms
     {
         protected WindowForm()
         {
-            TitleBar = new(this);
-            ClientPanel = new();
+            TitleBar_Control = new(this);
+            ClientPanel_Control = new();
             ShowTitleBar_Button = new();
         }
 
-        public readonly WindowFormTitleBar TitleBar;
+        public readonly TitleBar TitleBar_Control;
 
-        public readonly ClientPanel ClientPanel;
+        public readonly ClientPanel ClientPanel_Control;
 
         public readonly Button ShowTitleBar_Button;
 
         public bool ShowTitleBar
         {
-            get => ChildControls.Contains(TitleBar);
+            get => ChildControls.Contains(TitleBar_Control);
             set
             {
                 if (value)
                 {
                     if (!ShowTitleBar)
                     {
-                        ChildControls.TryAdd(TitleBar);
+                        ChildControls.TryAdd(TitleBar_Control);
                         ChildControls.Remove(ShowTitleBar_Button);
-                        ClientPanel?.LayoutSyncer?.Sync();
+                        ClientPanel_Control?.LayoutSyncer?.Sync();
                     }
                 }
                 else
                 {
                     if (ShowTitleBar)
                     {
-                        ChildControls.Remove(TitleBar);
+                        ChildControls.Remove(TitleBar_Control);
                         ChildControls.TryAdd(ShowTitleBar_Button);
-                        ClientPanel?.LayoutSyncer?.Sync();
+                        ClientPanel_Control?.LayoutSyncer?.Sync();
                     }
                 }
             }
@@ -55,17 +55,17 @@ namespace MCBS.BlockForms
 
         public override string Text
         {
-            get => TitleBar?.Text ?? string.Empty;
+            get => TitleBar_Control?.Text ?? string.Empty;
             set
             {
-                if (TitleBar is null)
+                if (TitleBar_Control is null)
                     return;
 
-                if (TitleBar.Text != value)
+                if (TitleBar_Control.Text != value)
                 {
-                    string temp = TitleBar.Text;
-                    TitleBar.Text = value;
-                    HandleTextChanged(new(temp, TitleBar.Text));
+                    string temp = TitleBar_Control.Text;
+                    TitleBar_Control.Text = value;
+                    HandleTextChanged(new(temp, TitleBar_Control.Text));
                 }
             }
         }
@@ -74,23 +74,23 @@ namespace MCBS.BlockForms
         {
             base.Initialize();
 
-            ChildControls.Add(TitleBar);
+            ChildControls.Add(TitleBar_Control);
 
-            ChildControls.Add(ClientPanel);
-            ClientPanel.BorderWidth = 0;
-            ClientPanel.LayoutSyncer = new(this,
+            ChildControls.Add(ClientPanel_Control);
+            ClientPanel_Control.BorderWidth = 0;
+            ClientPanel_Control.LayoutSyncer = new(this,
             (sender, e) => { },
             (sender, e) =>
             {
                 if (ShowTitleBar)
                 {
-                    ClientPanel.ClientSize = new(ClientSize.Width, ClientSize.Height - TitleBar.Height);
-                    ClientPanel.ClientLocation = new(0, TitleBar.Height);
+                    ClientPanel_Control.ClientSize = new(ClientSize.Width, ClientSize.Height - TitleBar_Control.Height);
+                    ClientPanel_Control.ClientLocation = new(0, TitleBar_Control.Height);
                 }
                 else
                 {
-                    ClientPanel.ClientLocation = new(0, 0);
-                    ClientPanel.ClientSize = ClientSize;
+                    ClientPanel_Control.ClientLocation = new(0, 0);
+                    ClientPanel_Control.ClientSize = ClientSize;
                 }
             });
 
@@ -108,9 +108,9 @@ namespace MCBS.BlockForms
 
         protected override void OnInitializeCompleted(Control sender, EventArgs e)
         {
-            if (ClientPanel.PageSize != new Size(0, 0))
+            if (ClientPanel_Control.PageSize != new Size(0, 0))
             {
-                RestoreSize = new(ClientPanel.PageSize.Width, ClientPanel.PageSize.Height + TitleBar.Height);
+                RestoreSize = new(ClientPanel_Control.PageSize.Width, ClientPanel_Control.PageSize.Height + TitleBar_Control.Height);
                 RestoreLocation = new(Width / 2 - RestoreSize.Width / 2, Height / 2 - RestoreSize.Height / 2);
             }
             else
@@ -123,28 +123,28 @@ namespace MCBS.BlockForms
         {
             base.OnMove(sender, e);
 
-            TitleBar.UpdateMaximizeOrRestore();
+            TitleBar_Control.UpdateMaximizeOrRestore();
         }
 
         protected override void OnResize(Control sender, SizeChangedEventArgs e)
         {
             base.OnResize(sender, e);
 
-            TitleBar.UpdateMaximizeOrRestore();
+            TitleBar_Control.UpdateMaximizeOrRestore();
         }
 
         protected override void OnControlSelected(Control sender, EventArgs e)
         {
             base.OnControlSelected(sender, e);
 
-            TitleBar.Skin.SetAllForegroundColor(BlockManager.Concrete.Black);
+            TitleBar_Control.Skin.SetAllForegroundColor(BlockManager.Concrete.Black);
         }
 
         protected override void OnControlDeselected(Control sender, EventArgs e)
         {
             base.OnControlDeselected(sender, e);
 
-            TitleBar.Skin.SetAllForegroundColor(BlockManager.Concrete.LightGray);
+            TitleBar_Control.Skin.SetAllForegroundColor(BlockManager.Concrete.LightGray);
         }
 
         private void ShowTitleBar_Button_CursorEnter(Control sender, CursorEventArgs e)
@@ -162,9 +162,9 @@ namespace MCBS.BlockForms
             ShowTitleBar = true;
         }
 
-        public class WindowFormTitleBar : ContainerControl<Control>
+        public class TitleBar : ContainerControl<Control>
         {
-            public WindowFormTitleBar(WindowForm owner)
+            public TitleBar(WindowForm owner)
             {
                 _owner = owner ?? throw new ArgumentNullException(nameof(owner));
 

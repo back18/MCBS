@@ -27,16 +27,16 @@ namespace MCBS.SystemApplications.Settings
         {
             base.Initialize();
 
-            ClientPanel.ChildControls.Add(GetInteraction_Button);
+            ClientPanel_Control.ChildControls.Add(GetInteraction_Button);
             GetInteraction_Button.Text = "获取交互";
             GetInteraction_Button.ClientSize = new(64, 16);
             GetInteraction_Button.ClientLocation = new(2, 2);
             GetInteraction_Button.RightClick += GetInteraction_Button_RightClick;
 
-            ClientPanel.ChildControls.Add(ClearInteraction_Button);
+            ClientPanel_Control.ChildControls.Add(ClearInteraction_Button);
             ClearInteraction_Button.Text = "清除交互";
             ClearInteraction_Button.ClientSize = new(64, 16);
-            ClearInteraction_Button.LayoutDown(ClientPanel, GetInteraction_Button, 2);
+            ClearInteraction_Button.LayoutDown(ClientPanel_Control, GetInteraction_Button, 2);
             ClearInteraction_Button.RightClick += ClearInteraction_Button_RightClick;
         }
 

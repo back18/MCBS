@@ -38,40 +38,40 @@ namespace MCBS.SystemApplications.TaskManager
             base.Initialize();
 
             int spacing = 2;
-            int start = ClientPanel.ClientSize.Height - PreviousPage_Button.Height - 2;
+            int start = ClientPanel_Control.ClientSize.Height - PreviousPage_Button.Height - 2;
 
-            ClientPanel.ChildControls.Add(PreviousPage_Button);
+            ClientPanel_Control.ChildControls.Add(PreviousPage_Button);
             PreviousPage_Button.Text = "上一页";
             PreviousPage_Button.ClientSize = new(48, 16);
-            PreviousPage_Button.LayoutRight(ClientPanel, start, spacing);
+            PreviousPage_Button.LayoutRight(ClientPanel_Control, start, spacing);
             PreviousPage_Button.Anchor = Direction.Bottom | Direction.Left;
 
-            ClientPanel.ChildControls.Add(NextPage_Button);
+            ClientPanel_Control.ChildControls.Add(NextPage_Button);
             NextPage_Button.Text = "下一页";
             NextPage_Button.ClientSize = new(48, 16);
-            NextPage_Button.LayoutRight(ClientPanel, PreviousPage_Button, spacing);
+            NextPage_Button.LayoutRight(ClientPanel_Control, PreviousPage_Button, spacing);
             NextPage_Button.Anchor = Direction.Bottom | Direction.Left;
 
-            ClientPanel.ChildControls.Add(PageNumber_Label);
+            ClientPanel_Control.ChildControls.Add(PageNumber_Label);
             PageNumber_Label.Text = "1/1";
-            PageNumber_Label.LayoutRight(ClientPanel, NextPage_Button, spacing);
+            PageNumber_Label.LayoutRight(ClientPanel_Control, NextPage_Button, spacing);
             PageNumber_Label.Anchor = Direction.Bottom | Direction.Left;
 
-            ClientPanel.ChildControls.Add(Close_Button);
+            ClientPanel_Control.ChildControls.Add(Close_Button);
             Close_Button.Text = "关闭";
             Close_Button.ClientSize = new(32, 16);
             Close_Button.LayoutLeft(this, start, spacing);
             Close_Button.Anchor = Direction.Bottom | Direction.Right;
 
-            ClientPanel.ChildControls.Add(Open_Button);
+            ClientPanel_Control.ChildControls.Add(Open_Button);
             Open_Button.Text = "打开";
             Open_Button.ClientSize = new(32, 16);
             Open_Button.LayoutLeft(this, Close_Button, spacing);
             Open_Button.Anchor = Direction.Bottom | Direction.Right;
 
-            ClientPanel.ChildControls.Add(TaskList_Panel);
-            TaskList_Panel.Width = ClientPanel.ClientSize.Width - 4;
-            TaskList_Panel.Height = ClientPanel.ClientSize.Height - PreviousPage_Button.Height - 6;
+            ClientPanel_Control.ChildControls.Add(TaskList_Panel);
+            TaskList_Panel.Width = ClientPanel_Control.ClientSize.Width - 4;
+            TaskList_Panel.Height = ClientPanel_Control.ClientSize.Height - PreviousPage_Button.Height - 6;
             TaskList_Panel.ClientLocation = new(2, 2);
             TaskList_Panel.Stretch = Direction.Bottom | Direction.Right;
         }

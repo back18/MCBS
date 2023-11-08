@@ -18,7 +18,7 @@ namespace MCBS.BlockForms.DialogBox
 
             AllowDeselected = false;
             AllowStretch = false;
-            TitleBar.ButtonsToShow = FormButtons.Close;
+            TitleBar_Control.ButtonsToShow = FormButtons.Close;
         }
 
         protected readonly IForm _initiator;
