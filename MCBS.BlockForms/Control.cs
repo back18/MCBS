@@ -629,7 +629,6 @@ namespace MCBS.BlockForms
         public virtual void HandleCursorMove(CursorEventArgs e)
         {
             UpdateHoverState(e);
-
             if (this.IncludedOnControl(e.Position) || InvokeExternalCursorMove)
             {
                 CursorMove.Invoke(this, e);
@@ -688,7 +687,7 @@ namespace MCBS.BlockForms
             if (Visible && this.IncludedOnControl(e.Position))
             {
                 LeftClick.Invoke(this, e);
-                if ((e.NewData.LeftClickTime - e.OldData.LeftClickTime).TotalMilliseconds <= 500)
+                if (e.NewData.LeftClickPosition == e.OldData.LeftClickPosition && (e.NewData.LeftClickTime - e.OldData.LeftClickTime).TotalMilliseconds <= 500)
                     DoubleLeftClick.Invoke(this, e);
                 return true;
             }
@@ -700,7 +699,7 @@ namespace MCBS.BlockForms
             if (Visible && this.IncludedOnControl(e.Position))
             {
                 RightClick.Invoke(this, e);
-                if ((e.NewData.RightClickTime - e.OldData.RightClickTime).TotalMilliseconds <= 500)
+                if (e.NewData.RightClickPosition == e.OldData.RightClickPosition && (e.NewData.RightClickTime - e.OldData.RightClickTime).TotalMilliseconds <= 500)
                     DoubleRightClick.Invoke(this, e);
                 return true;
             }

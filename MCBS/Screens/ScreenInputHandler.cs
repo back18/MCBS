@@ -103,6 +103,8 @@ namespace MCBS.Screens
             CursorInputData oldData = cursorContext.NewInputData.Clone();
             CursorMode cursorMode = oldData.CursorMode;
             Point cursorPosition = oldData.CursorPosition;
+            Point leftClickPosition = oldData.LeftClickPosition;
+            Point rightClickPosition = oldData.RightClickPosition;
             DateTime leftClickTime = oldData.LeftClickTime;
             DateTime rightClickTime = oldData.RightClickTime;
             string textEditor = oldData.TextEditor;
@@ -149,15 +151,20 @@ namespace MCBS.Screens
                 goto fail;
             }
 
-            DateTime now = DateTime.Now;
             if (mainItem.ID == ScreenConfig.RightClickItemID)
             {
                 cursorMode = CursorMode.Click;
                 ClickResult clickResult = cursorContext.ClickReader.ReadClick();
                 if (clickResult.IsLeftClick)
+                {
+                    leftClickPosition = cursorPosition;
                     leftClickTime = cursorContext.ClickReader.LeftClickTime;
+                }
                 if (clickResult.IsRightClick)
+                {
+                    rightClickPosition = cursorPosition;
                     rightClickTime = cursorContext.ClickReader.RightClickTime;
+                }
             }
             else if (mainItem.ID == ScreenConfig.TextEditorItemID)
             {
@@ -173,6 +180,8 @@ namespace MCBS.Screens
             result = new(
                 cursorMode,
                 cursorPosition,
+                leftClickPosition,
+                rightClickPosition,
                 leftClickTime,
                 rightClickTime,
                 textEditor,

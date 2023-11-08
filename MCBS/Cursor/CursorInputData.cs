@@ -14,14 +14,21 @@ namespace MCBS.Cursor
         {
             CursorMode = CursorMode.Click;
             CursorPosition = Point.Empty;
+            LeftClickPosition = Point.Empty;
+            RightClickPosition = Point.Empty;
+            LeftClickTime = DateTime.MinValue;
+            RightClickTime = DateTime.MinValue;
             TextEditor = string.Empty;
             InventorySlot = 0;
             MainItem = null;
+            DeputyItem = null;
         }
 
         public CursorInputData(
             CursorMode cursorMode,
             Point cursorPosition,
+            Point leftClickPosition,
+            Point rightClickPosition,
             DateTime leftClickTime,
             DateTime rightClickTime,
             string textEditor,
@@ -31,6 +38,8 @@ namespace MCBS.Cursor
         {
             CursorMode = cursorMode;
             CursorPosition = cursorPosition;
+            LeftClickPosition = leftClickPosition;
+            RightClickPosition = rightClickPosition;
             LeftClickTime = leftClickTime;
             RightClickTime = rightClickTime;
             TextEditor = textEditor;
@@ -46,6 +55,8 @@ namespace MCBS.Cursor
 
             CursorMode = cursorInputData.CursorMode;
             CursorPosition = cursorInputData.CursorPosition;
+            LeftClickPosition = cursorInputData.LeftClickPosition;
+            RightClickPosition = cursorInputData.RightClickPosition;
             LeftClickTime = cursorInputData.LeftClickTime;
             RightClickTime = cursorInputData.RightClickTime;
             TextEditor = cursorInputData.TextEditor;
@@ -57,6 +68,10 @@ namespace MCBS.Cursor
         public CursorMode CursorMode { get; internal set; }
 
         public Point CursorPosition { get; internal set; }
+
+        public Point LeftClickPosition { get; internal set; }
+
+        public Point RightClickPosition { get; internal set; }
 
         public DateTime LeftClickTime { get; internal set; }
 
