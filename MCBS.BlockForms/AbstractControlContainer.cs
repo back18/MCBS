@@ -183,5 +183,15 @@ namespace MCBS.BlockForms
 
             return baseFrame;
         }
+
+        public virtual void UpdateAllHoverState(CursorEventArgs e)
+        {
+            foreach (var control in GetChildControls().ToArray())
+            {
+                control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
+            }
+
+            UpdateHoverState(e);
+        }
     }
 }

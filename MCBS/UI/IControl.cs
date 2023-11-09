@@ -1,4 +1,5 @@
 ﻿using MCBS.Cursor;
+using MCBS.Events;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace MCBS.UI
         public bool IsSelected { get; set; }
 
         public int DisplayPriority { get; set; }
+
+        public void UpdateHoverState(CursorEventArgs e);
 
         public CursorContext[] GetHoverCursors();
 

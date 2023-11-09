@@ -981,7 +981,7 @@ namespace MCBS.BlockForms
 
         #endregion
 
-        public void UpdateHoverState(CursorEventArgs e)
+        public virtual void UpdateHoverState(CursorEventArgs e)
         {
             bool included = this.IncludedOnControl(e.Position);
             if (_hoverCursors.Contains(e.CursorContext))
