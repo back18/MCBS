@@ -18,6 +18,7 @@ namespace MCBS.BlockForms
         {
             Lines = new(Array.Empty<string>());
             _WordWrap = true;
+            _AutoScroll = false;
         }
 
         public ReadOnlyCollection<string> Lines { get; private set; }
@@ -35,6 +36,20 @@ namespace MCBS.BlockForms
             }
         }
         private bool _WordWrap;
+
+        public bool AutoScroll
+        {
+            get => _AutoScroll;
+            set
+            {
+                if (_AutoScroll != value)
+                {
+                    _AutoScroll = value;
+                    UpdatePageSize();
+                }
+            }
+        }
+        private bool _AutoScroll;
 
         protected override BlockFrame Rendering()
         {
@@ -85,6 +100,13 @@ namespace MCBS.BlockForms
             base.OnTextChanged(sender, e);
 
             UpdatePageSize();
+
+            if (AutoScroll)
+            {
+                int y = PageSize.Height - ClientSize.Height;
+                if (y > 0)
+                    OffsetPosition = new(OffsetPosition.X, y);
+            }
         }
 
         public override void AutoSetSize()

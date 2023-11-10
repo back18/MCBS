@@ -35,6 +35,7 @@ namespace MCBS.SystemApplications.Console
 
             ClientPanel_Control.ChildControls.Add(Output_MultilineTextBox);
             Output_MultilineTextBox.WordWrap = false;
+            Output_MultilineTextBox.AutoScroll = true;
             Output_MultilineTextBox.IsReadOnly = true;
             Output_MultilineTextBox.BorderWidth = 0;
             Output_MultilineTextBox.ClientSize = new(ClientPanel_Control.ClientSize.Width, ClientPanel_Control.ClientSize.Height - 18);
