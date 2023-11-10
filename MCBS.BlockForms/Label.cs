@@ -12,6 +12,7 @@ namespace MCBS.BlockForms
         {
             AutoSize = true;
             BorderWidth = 0;
+            Skin.SetAllBackgroundColor(string.Empty);
         }
     }
 }

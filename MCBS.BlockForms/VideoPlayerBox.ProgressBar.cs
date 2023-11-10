@@ -50,6 +50,7 @@ namespace MCBS.BlockForms
 
                 if (_owner.ChildControls.Contains(Time_Label))
                 {
+                    Time_Label.Skin.SetAllBackgroundColor(BlockManager.Concrete.White);
                     Time_Label.Text = FormatTime(GetProgressBarPosition(e.Position.X));
                     Time_Label.AutoSetSize();
                     int x = e.Position.X - Time_Label.Width / 2;

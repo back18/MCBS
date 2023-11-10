@@ -49,6 +49,7 @@ namespace MCBS.SystemApplications.Desktop
 
             Name_Label.BorderWidth = 1;
             Name_Label.Text = _applicationManifest.Name;
+            Name_Label.Skin.SetAllBackgroundColor(BlockManager.Concrete.White);
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)

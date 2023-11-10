@@ -54,7 +54,6 @@ namespace MCBS.BlockForms
                 TotalTime_Label.AutoSize = true;
                 TotalTime_Label.Text = '/' + FormatTime(_owner.VideoBox.TotalTime);
                 TotalTime_Label.Skin.SetAllForegroundColor(BlockManager.Concrete.Pink);
-                TotalTime_Label.Skin.SetAllBackgroundColor(string.Empty);
             }
 
             private void CurrentTime_TextBox_TextEditorUpdate(Control sender, CursorEventArgs e)

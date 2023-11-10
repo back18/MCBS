@@ -22,7 +22,6 @@ namespace MCBS.BlockForms
             Icon_PictureBox.Skin.SetAllBackgroundColor(string.Empty);
 
             Text_Label = new();
-            Text_Label.Skin.SetAllBackgroundColor(string.Empty);
 
             _Spacing = 0;
 

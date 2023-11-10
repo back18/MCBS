@@ -98,7 +98,6 @@ namespace MCBS.BlockForms
 
             StartMenu_Label.Text = "==开始==";
             StartMenu_Label.ClientSize = new(64, 16);
-            StartMenu_Label.Skin.SetAllBackgroundColor(string.Empty);
             StartMenu_ListMenuBox.AddedChildControlAndLayout(StartMenu_Label);
 
             Light_Switch.OnText = "点亮屏幕";
