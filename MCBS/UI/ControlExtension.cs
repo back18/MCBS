@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using MCBS.Events;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,19 @@ namespace MCBS.UI
             position.X -= source.OffsetPosition.X;
             position.Y -= source.OffsetPosition.Y;
             return position.X >= 0 && position.Y >= 0 && position.X < source.ClientSize.Width && position.Y < source.ClientSize.Height;
+        }
+
+        public static void UpdateAllHoverState(this IContainerControl source, CursorEventArgs e)
+        {
+            foreach (var control in source.GetChildControls().ToArray())
+            {
+                if (control is IContainerControl containerControl)
+                    containerControl.UpdateAllHoverState(e.Clone(control.ParentPos2ChildPos));
+                else
+                    control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
+            }
+
+            source.UpdateHoverState(e);
         }
     }
 }

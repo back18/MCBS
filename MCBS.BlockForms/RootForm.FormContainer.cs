@@ -50,7 +50,9 @@ namespace MCBS.BlockForms
 
             public override void HandleCursorMove(CursorEventArgs e)
             {
-                UpdateAllHoverState(e);
+                foreach (var control in GetChildControls().ToArray())
+                    control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
+                UpdateHoverState(e);
 
                 foreach (HoverControl hoverControl in e.CursorContext.HoverControls.Values)
                 {

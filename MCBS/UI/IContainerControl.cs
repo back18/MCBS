@@ -10,7 +10,5 @@ namespace MCBS.UI
     public interface IContainerControl : IControl
     {
         public IReadOnlyControlCollection<IControl> GetChildControls();
-
-        public void UpdateAllHoverState(CursorEventArgs e);
     }
 }
