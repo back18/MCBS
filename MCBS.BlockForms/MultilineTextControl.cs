@@ -1,11 +1,7 @@
-﻿using MCBS.BlockForms.Utility;
-using MCBS.Cursor;
-using MCBS.Events;
+﻿using MCBS.Events;
 using MCBS.Rendering;
 using QuanLib.BDF;
 using QuanLib.Core.Events;
-using QuanLib.Minecraft.Blocks;
-using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -16,39 +12,15 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public class RichTextBox : ScrollablePanel
+    public abstract class MultilineTextControl : ScrollablePanel
     {
-        public RichTextBox()
+        protected MultilineTextControl()
         {
             Lines = new(Array.Empty<string>());
-            IsReadOnly = true;
-            Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.Selected, ControlState.Hover | ControlState.Selected);
-
-            _text = new();
             _WordWrap = true;
         }
 
-        private readonly StringBuilder _text;
-
         public ReadOnlyCollection<string> Lines { get; private set; }
-
-        public bool IsReadOnly { get; set; }
-
-        public override string Text
-        {
-            get => _text.ToString();
-            set
-            {
-                string temp = _text.ToString();
-                if (temp != value)
-                {
-                    _text.Clear();
-                    _text.Append(value);
-                    HandleTextChanged(new(temp, value));
-                    RequestRendering();
-                }
-            }
-        }
 
         public bool WordWrap
         {
@@ -58,7 +30,7 @@ namespace MCBS.BlockForms
                 if (_WordWrap != value)
                 {
                     _WordWrap = value;
-                    RequestRendering();
+                    UpdatePageSize();
                 }
             }
         }
@@ -100,32 +72,11 @@ namespace MCBS.BlockForms
             return baseFrame;
         }
 
-        protected override void OnCursorMove(Control sender, CursorEventArgs e)
-        {
-            base.OnCursorMove(sender, e);
-
-            HandleInput(e);
-        }
-
-        protected override void OnCursorEnter(Control sender, CursorEventArgs e)
-        {
-            base.OnCursorEnter(sender, e);
-
-            HandleInput(e);
-        }
-
-        protected override void OnCursorLeave(Control sender, CursorEventArgs e)
-        {
-            base.OnCursorLeave(sender, e);
-
-            UpdateSelected();
-        }
-
         protected override void OnResize(Control sender, SizeChangedEventArgs e)
         {
             base.OnResize(sender, e);
 
-            if (WordWrap)
+            if (AutoSize || WordWrap)
                 UpdatePageSize();
         }
 
@@ -136,57 +87,12 @@ namespace MCBS.BlockForms
             UpdatePageSize();
         }
 
-        protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)
-        {
-            base.OnTextEditorUpdate(sender, e);
-
-            if (!IsReadOnly)
-                Text = e.NewData.TextEditor;
-        }
-
         public override void AutoSetSize()
         {
             UpdatePageSize();
         }
 
-        public CursorContext[] GetHoverTextEditorCursors()
-        {
-            CursorContext[] cursorContexts = GetHoverCursors();
-            List<CursorContext> result = new();
-            foreach (CursorContext cursorContext in cursorContexts)
-            {
-                if (cursorContext.NewInputData.CursorMode == CursorMode.TextEditor)
-                    result.Add(cursorContext);
-            }
-
-            return result.ToArray();
-        }
-
-        private void HandleInput(CursorEventArgs e)
-        {
-            if (IsReadOnly)
-                return;
-
-            if (e.CursorContext.NewInputData.CursorMode == CursorMode.TextEditor)
-            {
-                IsSelected = true;
-                e.CursorContext.TextEditor.SetInitialText(Text);
-            }
-            else
-            {
-                UpdateSelected();
-            }
-        }
-
-        private void UpdateSelected()
-        {
-            if (!IsReadOnly && GetHoverTextEditorCursors().Length > 0)
-                IsSelected = true;
-            else
-                IsSelected = false;
-        }
-
-        private void UpdatePageSize()
+        protected virtual void UpdatePageSize()
         {
             string[] lines = Text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 

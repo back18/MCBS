@@ -12,23 +12,24 @@ namespace MCBS.SystemApplications.Notepad
     {
         public NotepadForm(string? open = null)
         {
-            RichTextBox = new();
+            Text_MultilineTextBox = new();
 
             _open = open;
         }
 
         private string? _open;
 
-        private readonly RichTextBox RichTextBox;
+        private readonly MultilineTextBox Text_MultilineTextBox;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            ClientPanel_Control.ChildControls.Add(RichTextBox);
-            RichTextBox.ClientLocation = new(2, 2);
-            RichTextBox.Size = new(ClientPanel_Control.ClientSize.Width - 4, ClientPanel_Control.ClientSize.Height - 4);
-            RichTextBox.Stretch = Direction.Bottom | Direction.Right;
+            ClientPanel_Control.ChildControls.Add(Text_MultilineTextBox);
+            Text_MultilineTextBox.IsReadOnly = true;
+            Text_MultilineTextBox.ClientLocation = new(2, 2);
+            Text_MultilineTextBox.Size = new(ClientPanel_Control.ClientSize.Width - 4, ClientPanel_Control.ClientSize.Height - 4);
+            Text_MultilineTextBox.Stretch = Direction.Bottom | Direction.Right;
         }
 
         public override void AfterInitialize()
@@ -39,7 +40,7 @@ namespace MCBS.SystemApplications.Notepad
             {
                 try
                 {
-                    RichTextBox.Text = File.ReadAllText(_open);
+                    Text_MultilineTextBox.Text = File.ReadAllText(_open);
                 }
                 catch
                 {

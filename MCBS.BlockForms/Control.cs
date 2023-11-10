@@ -39,6 +39,7 @@ namespace MCBS.BlockForms
             KeepWhenClear = false;
             IsRenderingTransparencyTexture = true;
             IsInitCompleted = false;
+            IsReadOnly = false;
             _DisplayPriority = 0;
             _MaxDisplayPriority = 512;
             _Text = string.Empty;
@@ -104,6 +105,8 @@ namespace MCBS.BlockForms
         public bool IsRenderingTransparencyTexture { get; set; }
 
         public bool IsInitCompleted { get; private set; }
+
+        public bool IsReadOnly { get; set; }
 
         public IContainerControl? GenericParentContainer { get; private set; }
 

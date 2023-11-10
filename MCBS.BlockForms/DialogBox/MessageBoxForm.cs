@@ -16,7 +16,7 @@ namespace MCBS.BlockForms.DialogBox
         {
             _message = message ?? throw new ArgumentNullException(nameof(message));
 
-            Message_RichTextBox = new();
+            Text_MultilineLabel = new();
             Yes_Button = new();
             NO_Button = new();
             OK_Button = new();
@@ -36,7 +36,7 @@ namespace MCBS.BlockForms.DialogBox
 
         private readonly Point _pos1, _pos2, _pos3;
 
-        private readonly RichTextBox Message_RichTextBox;
+        private readonly MultilineLabel Text_MultilineLabel;
 
         private readonly Button Yes_Button;
 
@@ -70,11 +70,11 @@ namespace MCBS.BlockForms.DialogBox
             ClientSize = new(110, 70 + TitleBar_Control.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel_Control.ChildControls.Add(Message_RichTextBox);
-            Message_RichTextBox.KeepWhenClear = true;
-            Message_RichTextBox.BorderWidth = 0;
-            Message_RichTextBox.ClientSize = new(110, 48);
-            Message_RichTextBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Lime);
+            ClientPanel_Control.ChildControls.Add(Text_MultilineLabel);
+            Text_MultilineLabel.KeepWhenClear = true;
+            Text_MultilineLabel.BorderWidth = 0;
+            Text_MultilineLabel.ClientSize = new(110, 48);
+            Text_MultilineLabel.Skin.SetAllBackgroundColor(BlockManager.Concrete.Lime);
 
             Yes_Button.Text = "是";
             Yes_Button.ClientSize = new(32, 16);
@@ -101,7 +101,7 @@ namespace MCBS.BlockForms.DialogBox
         {
             base.AfterInitialize();
 
-            Message_RichTextBox.Text = _message;
+            Text_MultilineLabel.Text = _message;
             ActiveLayoutAll();
         }
 
