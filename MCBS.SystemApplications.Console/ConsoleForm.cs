@@ -2,6 +2,7 @@
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace MCBS.SystemApplications.Console
             Input_TextBox = new();
             Send_Button = new();
 
+            //_consoleProcess = new();
             _consoleProcess = new(new("java", "-jar fabric-server-mc.1.20.1-loader.0.14.22-launcher.0.11.2.jar nogui", "D:\\程序\\HMCL\\fabric-server-mc.1.20.1-loader.0.14.22-launcher.0.11.2"));
         }
 
@@ -42,6 +44,7 @@ namespace MCBS.SystemApplications.Console
             Output_MultilineTextBox.Stretch = Direction.Bottom | Direction.Right;
             Output_MultilineTextBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Black);
             Output_MultilineTextBox.Skin.SetAllForegroundColor(BlockManager.Concrete.White);
+            Output_MultilineTextBox.CursorMove += Output_MultilineTextBox_CursorMove;
             Output_MultilineTextBox.AfterFrame += Output_MultilineTextBox_AfterFrame;
 
             ClientPanel_Control.ChildControls.Add(Input_TextBox);
@@ -60,13 +63,43 @@ namespace MCBS.SystemApplications.Console
             _consoleProcess.Start("Console Thread");
         }
 
-        private void Output_MultilineTextBox_AfterFrame(Control sender, EventArgs e)
+        private void Output_MultilineTextBox_CursorMove(Control sender, CursorEventArgs e)
         {
-            string output = _consoleProcess.GetOutput();
-            if (string.IsNullOrEmpty(output))
+            int xOffset = new Point(e.NewData.CursorPosition.X - e.OldData.CursorPosition.X, e.NewData.CursorPosition.Y - e.OldData.CursorPosition.Y).X;
+            xOffset *= 2;
+            if (xOffset == 0)
                 return;
 
-            Output_MultilineTextBox.Text += output;
+            int left = Output_MultilineTextBox.ClientSize.Width / 3;
+            int right = Output_MultilineTextBox.ClientSize.Width - left;
+            int position = e.Position.X - Output_MultilineTextBox.OffsetPosition.X;
+            if (position <= left)
+            {
+                if (xOffset < 0)
+                    Output_MultilineTextBox.OffsetPosition = new(Math.Max(Output_MultilineTextBox.OffsetPosition.X + xOffset, 0), Output_MultilineTextBox.OffsetPosition.Y);
+            }
+            else if (position >= right)
+            {
+                if (xOffset > 0)
+                    Output_MultilineTextBox.OffsetPosition = new(Math.Min(Output_MultilineTextBox.OffsetPosition.X + xOffset, Output_MultilineTextBox.PageSize.Width - Output_MultilineTextBox.ClientSize.Width), Output_MultilineTextBox.OffsetPosition.Y);
+            }
+        }
+
+        private void Output_MultilineTextBox_AfterFrame(Control sender, EventArgs e)
+        {
+            string output = _consoleProcess.GetOutputText();
+            if (!string.IsNullOrEmpty(output))
+            {
+                Output_MultilineTextBox.Text += output;
+                return;
+            }
+
+            string error = _consoleProcess.GetErrorText();
+            if (!string.IsNullOrEmpty(error))
+            {
+                Output_MultilineTextBox.Text += error;
+                return;
+            }
         }
 
         private void Send_Button_RightClick(Control sender, CursorEventArgs e)

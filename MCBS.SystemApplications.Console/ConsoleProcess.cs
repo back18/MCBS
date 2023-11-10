@@ -30,39 +30,35 @@ namespace MCBS.SystemApplications.Console
                     WorkingDirectory = processRun.WorkingDirectory
                 }
             };
-
-            _output = new();
         }
 
-        private readonly StringBuilder _output;
+        private StandardStreamReader? _outputReader;
+
+        private StandardStreamReader? _errorReader;
 
         public Process Process { get; }
 
-        public string GetOutput()
+        public string GetOutputText()
         {
-            lock (_output)
-            {
-                string output = _output.ToString();
-                _output.Clear();
-                return output;
-            }
+            return _outputReader?.GetOutput() ?? string.Empty;
+        }
+
+        public string GetErrorText()
+        {
+            return _errorReader?.GetOutput() ?? string.Empty;
         }
 
         protected override void Run()
         {
             Process.Start();
-            while (IsRunning)
-            {
-                int c = Process.StandardOutput.Read();
-                if (c == -1)
-                {
-                    IsRunning = false;
-                    break;
-                }
+            _outputReader = new(Process.StandardOutput);
+            _errorReader = new(Process.StandardError);
+            _outputReader.Start();
+            _errorReader.Start();
 
-                lock (_output)
-                    _output.Append((char)c);
-            }
+            Task outputTask = _outputReader.WaitForStopAsync();
+            Task errorTask = _errorReader.WaitForStopAsync();
+            Task.WaitAll(outputTask, errorTask);
         }
 
         protected override void DisposeUnmanaged()
