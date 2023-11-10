@@ -15,7 +15,8 @@ namespace MCBS.SystemApplications.Console
 
         public int Main(string[] args)
         {
-            throw new NotImplementedException();
+            this.RunForm(new ConsoleForm());
+            return 0;
         }
 
         public void Exit()
