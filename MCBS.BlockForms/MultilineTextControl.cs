@@ -58,7 +58,7 @@ namespace MCBS.BlockForms
                     if (position.X + fontData.Width < start.X)
                     {
                         position.X += fontData.Width;
-                        break;
+                        continue;
                     }
 
                     baseFrame.DrawBinary(fontData.GetBinary(), GetForegroundColor().ToBlockId(), position);
