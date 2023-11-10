@@ -121,55 +121,19 @@ namespace MCBS.BlockForms
             UpdateSelected();
         }
 
+        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        {
+            base.OnResize(sender, e);
+
+            if (WordWrap)
+                UpdatePageSize();
+        }
+
         protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
         {
             base.OnTextChanged(sender, e);
 
-            string[] lines = e.NewText.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-            if (WordWrap)
-            {
-                if (ClientSize.Width < SR.DefaultFont.FullWidth)
-                {
-                    Lines = new(Array.Empty<string>());
-                    PageSize = ClientSize;
-                }
-
-                List<string> words = new();
-                foreach (string line in lines)
-                {
-                    int start = 0;
-                    int width = 0;
-                    for (int i = 0; i < line.Length; i++)
-                    {
-                        var data = SR.DefaultFont[line[i]];
-                        width += data.Width;
-                        if (width > ClientSize.Width)
-                        {
-                            words.Add(line[start..i]);
-                            start = i;
-                            width = data.Width;
-                        }
-                    }
-                    words.Add(line[start..line.Length]);
-                }
-
-                Lines = new(words);
-                PageSize = new(ClientSize.Width, Lines.Count * SR.DefaultFont.Height);
-            }
-            else
-            {
-                int maxWidth = 0;
-                foreach (string line in lines)
-                {
-                    int width = SR.DefaultFont.GetTotalSize(line).Width;
-                    if (width > maxWidth)
-                        maxWidth = width;
-                }
-
-                Lines = new(lines);
-                PageSize = new(maxWidth, Lines.Count * SR.DefaultFont.Height);
-            }
+            UpdatePageSize();
         }
 
         protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)
@@ -178,6 +142,11 @@ namespace MCBS.BlockForms
 
             if (!IsReadOnly)
                 Text = e.NewData.TextEditor;
+        }
+
+        public override void AutoSetSize()
+        {
+            UpdatePageSize();
         }
 
         public CursorContext[] GetHoverTextEditorCursors()
@@ -215,6 +184,58 @@ namespace MCBS.BlockForms
                 IsSelected = true;
             else
                 IsSelected = false;
+        }
+
+        private void UpdatePageSize()
+        {
+            string[] lines = Text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            if (AutoSize || !WordWrap)
+            {
+                int maxWidth = 0;
+                foreach (string line in lines)
+                {
+                    int width = SR.DefaultFont.GetTotalSize(line).Width;
+                    if (width > maxWidth)
+                        maxWidth = width;
+                }
+
+                Lines = new(lines);
+                PageSize = new(maxWidth, Lines.Count * SR.DefaultFont.Height);
+
+                if (AutoSize)
+                    ClientSize = PageSize;
+            }
+            else
+            {
+                if (ClientSize.Width < SR.DefaultFont.FullWidth)
+                {
+                    Lines = new(Array.Empty<string>());
+                    PageSize = ClientSize;
+                }
+
+                List<string> words = new();
+                foreach (string line in lines)
+                {
+                    int start = 0;
+                    int width = 0;
+                    for (int i = 0; i < line.Length; i++)
+                    {
+                        var data = SR.DefaultFont[line[i]];
+                        width += data.Width;
+                        if (width > ClientSize.Width)
+                        {
+                            words.Add(line[start..i]);
+                            start = i;
+                            width = data.Width;
+                        }
+                    }
+                    words.Add(line[start..line.Length]);
+                }
+
+                Lines = new(words);
+                PageSize = new(ClientSize.Width, Lines.Count * SR.DefaultFont.Height);
+            }
         }
     }
 }
