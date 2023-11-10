@@ -1,5 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using MCBS.Rendering;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -193,6 +194,16 @@ namespace MCBS.BlockForms
                     else
                         MaximizeOrRestore_Switch.IsSelected = false;
                 }
+            }
+
+            public void SetTitleColor(BlockPixel color)
+            {
+                Title_IconTextBox.Text_Label.Skin.SetAllForegroundColor(color);
+            }
+
+            public void SetTitleColor(string color)
+            {
+                Title_IconTextBox.Text_Label.Skin.SetAllForegroundColor(color);
             }
 
             public override void ActiveLayoutAll()

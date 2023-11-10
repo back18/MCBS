@@ -137,14 +137,14 @@ namespace MCBS.BlockForms
         {
             base.OnControlSelected(sender, e);
 
-            TitleBar_Control.Skin.SetAllForegroundColor(BlockManager.Concrete.Black);
+            TitleBar_Control.SetTitleColor(BlockManager.Concrete.Black);
         }
 
         protected override void OnControlDeselected(Control sender, EventArgs e)
         {
             base.OnControlDeselected(sender, e);
 
-            TitleBar_Control.Skin.SetAllForegroundColor(BlockManager.Concrete.LightGray);
+            TitleBar_Control.SetTitleColor(BlockManager.Concrete.LightGray);
         }
 
         private void ShowTitleBar_Button_CursorEnter(Control sender, CursorEventArgs e)
