@@ -106,6 +106,10 @@ namespace MCBS.BlockForms
             Size oldSize = e.OldSize;
             Size newSize = e.NewSize;
 
+            int maxX = Math.Max(ClientSize.Width, PageSize.Width) - ClientSize.Width;
+            int maxY = Math.Max(ClientSize.Height, PageSize.Height) - ClientSize.Height;
+            OffsetPosition = new(Math.Clamp(OffsetPosition.X, 0, maxX), Math.Clamp(OffsetPosition.Y, 0, maxY));
+
             if (oldSize.Height < PageSize.Height)
                 oldSize.Height = PageSize.Height;
             if (oldSize.Width < PageSize.Width)
@@ -144,19 +148,13 @@ namespace MCBS.BlockForms
             {
                 offset = new(OffsetPosition.X, OffsetPosition.Y + delte);
                 int max = Math.Max(ClientSize.Height, PageSize.Height) - ClientSize.Height;
-                if (offset.Y < 0)
-                    offset.Y = 0;
-                else if (offset.Y > max)
-                    offset.Y = max;
+                offset.Y = Math.Clamp(offset.Y, 0, max);
             }
             else if (ShowHorizontalScrollBar)
             {
                 offset = new(OffsetPosition.X + delte, OffsetPosition.Y);
                 int max = Math.Max(ClientSize.Width, PageSize.Width) - ClientSize.Width;
-                if (offset.X < 0)
-                    offset.X = 0;
-                else if (offset.X > max)
-                    offset.X = max;
+                offset.X = Math.Clamp(offset.X, 0, max);
             }
             else
             {
