@@ -59,6 +59,7 @@ namespace MCBS.SystemApplications.Console
             Output_MultilineTextBox.EnableHorizontalSliding = true;
             Output_MultilineTextBox.AutoScroll = true;
             Output_MultilineTextBox.IsReadOnly = true;
+            Output_MultilineTextBox.ScrollBarShowTime = 5;
             Output_MultilineTextBox.BorderWidth = 0;
             Output_MultilineTextBox.ClientSize = new(ClientPanel_Control.ClientSize.Width, ClientPanel_Control.ClientSize.Height - 18);
             Output_MultilineTextBox.Stretch = Direction.Bottom | Direction.Right;
