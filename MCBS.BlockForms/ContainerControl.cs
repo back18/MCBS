@@ -95,5 +95,13 @@ namespace MCBS.BlockForms
 
             return TryInvokeCursorItemChanged(e);
         }
+
+        protected override void DisposeUnmanaged()
+        {
+            base.DisposeUnmanaged();
+
+            foreach (Control control in GetChildControls())
+                control.Dispose();
+        }
     }
 }

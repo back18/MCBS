@@ -81,7 +81,7 @@ namespace MCBS.BlockForms
 
         protected virtual void OnFormClose(Form sender, EventArgs e)
         {
-
+            Dispose();
         }
 
         protected virtual void OnFormMinimize(Form sender, EventArgs e) { }
