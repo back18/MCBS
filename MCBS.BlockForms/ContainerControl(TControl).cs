@@ -25,15 +25,5 @@ namespace MCBS.BlockForms
 
             return null;
         }
-
-        public override void ClearAllLayoutSyncer()
-        {
-            foreach (Control control in ChildControls)
-            {
-                control.ClearAllLayoutSyncer();
-            }
-
-            base.ClearAllLayoutSyncer();
-        }
     }
 }

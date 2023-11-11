@@ -1013,11 +1013,6 @@ namespace MCBS.BlockForms
             return _hoverCursors.ToArray();
         }
 
-        public virtual void ClearAllLayoutSyncer()
-        {
-            LayoutSyncer = null;
-        }
-
         public virtual void AutoSetSize()
         {
 
