@@ -10,7 +10,7 @@ namespace MCBS.Rendering
 {
     public class OverwriteContext : IEnumerable<OverwriteMapping>
     {
-        public OverwriteContext(Size baseSize, Point baseLocation, Size overwriteSize, Point overwriteLocation)
+        public OverwriteContext(Size baseSize, Size overwriteSize, Size cropSize, Point baseLocation, Point overwriteLocation)
         {
             if (baseSize.Width < 0 || baseSize.Height < 0)
                 throw new ArgumentException("宽度或长度不能小于0", nameof(baseSize));
@@ -19,21 +19,17 @@ namespace MCBS.Rendering
 
             BaseSize = baseSize;
             OverwriteSize = overwriteSize;
+            CropSize = cropSize;
 
-            Point baseStartPosition = Point.Empty;
-            Point baseEndPosition = new(overwriteSize.Width - 1, overwriteSize.Height - 1);
+            Point baseStartPosition = baseLocation;
+            Point baseEndPosition = new(baseLocation.X + cropSize.Width - 1, baseLocation.Y + cropSize.Height - 1);
             Point overwriteStartPosition = overwriteLocation;
-            Point overwriteEndPosition = new(overwriteSize.Width - 1, overwriteSize.Height - 1);
+            Point overwriteEndPosition = new(overwriteLocation.X + cropSize.Width - 1, overwriteLocation.Y + cropSize.Height - 1);
 
             if (baseLocation.X < 0)
             {
                 baseEndPosition.X += baseLocation.X;
                 overwriteStartPosition.X -= baseLocation.X;
-            }
-            else
-            {
-                baseEndPosition.X += baseLocation.X;
-                baseStartPosition.X += baseLocation.X;
             }
 
             if (baseLocation.Y < 0)
@@ -41,25 +37,49 @@ namespace MCBS.Rendering
                 baseEndPosition.Y += baseLocation.Y;
                 overwriteStartPosition.Y -= baseLocation.Y;
             }
-            else
+
+            if (overwriteLocation.X < 0)
             {
-                baseStartPosition.Y += baseLocation.Y;
-                baseEndPosition.Y += baseLocation.Y;
+                overwriteStartPosition.X += overwriteLocation.X;
+                overwriteEndPosition.X += overwriteLocation.X;
             }
 
-            Point maxEndPosition = new(baseSize.Width - 1, baseSize.Height - 1);
-            Point overflow = new(baseEndPosition.X - maxEndPosition.X, baseEndPosition.Y - maxEndPosition.Y);
-
-            if (overflow.X > 0)
+            if (overwriteLocation.Y < 0)
             {
-                baseEndPosition.X -= overflow.X;
-                overwriteEndPosition.X -= overflow.X;
+                overwriteStartPosition.Y += overwriteLocation.Y;
+                overwriteEndPosition.Y += overwriteLocation.Y;
             }
 
-            if (overflow.Y > 0)
+            Point maxBaseEndPosition = new(baseSize.Width - 1, baseSize.Height - 1);
+            Point baseOverflow = new(baseEndPosition.X - maxBaseEndPosition.X, baseEndPosition.Y - maxBaseEndPosition.Y);
+
+            if (baseOverflow.X > 0)
             {
-                baseEndPosition.Y -= overflow.Y;
-                overwriteEndPosition.Y -= overflow.Y;
+                baseEndPosition.X -= baseOverflow.X;
+                overwriteEndPosition.X -= baseOverflow.X;
+            }
+
+            if (baseOverflow.Y > 0)
+            {
+                baseEndPosition.Y -= baseOverflow.Y;
+                overwriteEndPosition.Y -= baseOverflow.Y;
+            }
+
+            Point maxOverwriteEndPosition = new(overwriteSize.Width - 1, overwriteSize.Height - 1);
+            Point overwriteOverflow = new(overwriteEndPosition.X - maxOverwriteEndPosition.X, overwriteEndPosition.Y - maxOverwriteEndPosition.Y);
+
+            if (overwriteOverflow.X > 0)
+            {
+                baseEndPosition.Y -= overwriteOverflow.X;
+                overwriteStartPosition.X -= overwriteOverflow.X;
+                overwriteEndPosition.Y -= overwriteOverflow.Y;
+            }
+
+            if (overwriteOverflow.Y > 0)
+            {
+                baseEndPosition.X -= overwriteOverflow.X;
+                overwriteStartPosition.Y -= overwriteOverflow.Y;
+                overwriteEndPosition.Y -= overwriteOverflow.Y;
             }
 
             BaseStartPosition = baseStartPosition;
@@ -72,6 +92,8 @@ namespace MCBS.Rendering
         public Size BaseSize { get; }
 
         public Size OverwriteSize { get; }
+
+        public Size CropSize { get; }
 
         public Point BaseStartPosition { get; }
 

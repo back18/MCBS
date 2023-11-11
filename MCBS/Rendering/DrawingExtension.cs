@@ -98,9 +98,8 @@ namespace MCBS.Rendering
             if (binary is null)
                 throw new ArgumentNullException(nameof(binary));
 
-            int width = binary.GetLength(0);
-            int height = binary.GetLength(1);
-            OverwriteContext overwriteContext = new(new(source.Width, source.Height), location, new(width, height), Point.Empty);
+            Size size = new(binary.GetLength(0), binary.GetLength(1));
+            OverwriteContext overwriteContext = new(new(source.Width, source.Height), size, size, location, Point.Empty);
 
             foreach (var mapping in overwriteContext)
             {

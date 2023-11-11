@@ -70,16 +70,7 @@ namespace MCBS.Rendering
             if (pixels is null)
                 throw new ArgumentNullException(nameof(pixels));
 
-            if (size.Width < 0)
-                size.Width = 0;
-            if (size.Height < 0)
-                size.Height = 0;
-            if (size.Width > pixels.Width)
-                size.Width = pixels.Width;
-            if (size.Height > pixels.Height)
-                size.Height = pixels.Height;
-
-            OverwriteContext overwriteContext = new(new(Width, Height), location, new(size.Width, size.Height), offset);
+            OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), new(size.Width, size.Height), location, offset);
             if (pixels.SupportTransparent)
             {
                 TPixel transparent = pixels.TransparentPixel;
