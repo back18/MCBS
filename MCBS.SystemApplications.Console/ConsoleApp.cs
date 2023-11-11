@@ -15,7 +15,11 @@ namespace MCBS.SystemApplications.Console
 
         public int Main(string[] args)
         {
-            this.RunForm(new ConsoleForm());
+            string? path = null;
+            if (args.Length > 0)
+                path = args[0];
+
+            this.RunForm(new ConsoleForm(path));
             return 0;
         }
 

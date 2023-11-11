@@ -11,5 +11,6 @@
   "mp4": "System.VideoPlayer",
   "avi": "System.VideoPlayer",
   "wmv": "System.VideoPlayer",
-  "mkv": "System.VideoPlayer"
+  "mkv": "System.VideoPlayer",
+  "process": "System.Console"
 }

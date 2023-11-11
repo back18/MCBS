@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Console
 {
-    public class ProcessRun
+    public class ProcessInfo
     {
-        static ProcessRun()
+        static ProcessInfo()
         {
-            Cmd = new("cmd", string.Empty, "C:\\Users\\Administrator");
+            CMD = new("cmd", string.Empty, "C:\\");
         }
 
-        public ProcessRun(string executableProgram, string startupArguments, string workingDirectory)
+        public ProcessInfo(string executableProgram, string startupArguments, string workingDirectory)
         {
             if (string.IsNullOrEmpty(executableProgram))
                 throw new ArgumentException($"“{nameof(executableProgram)}”不能为 null 或空。", nameof(executableProgram));
@@ -28,7 +28,7 @@ namespace MCBS.SystemApplications.Console
             WorkingDirectory = workingDirectory;
         }
 
-        public static readonly ProcessRun Cmd;
+        public static readonly ProcessInfo CMD;
 
         public string ExecutableProgram { get; }
 
@@ -36,7 +36,7 @@ namespace MCBS.SystemApplications.Console
 
         public string WorkingDirectory { get; }
 
-        public static ProcessRun ReadJsonFile(string path)
+        public static ProcessInfo ReadJsonFile(string path)
         {
             if (path is null)
                 throw new ArgumentNullException(nameof(path));

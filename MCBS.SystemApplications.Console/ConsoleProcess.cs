@@ -12,22 +12,22 @@ namespace MCBS.SystemApplications.Console
 {
     public class ConsoleProcess : UnmanagedRunnable
     {
-        public ConsoleProcess() : this(ProcessRun.Cmd) { }
+        public ConsoleProcess() : this(ProcessInfo.CMD) { }
 
-        public ConsoleProcess(ProcessRun processRun) : base(LogUtil.GetLogger)
+        public ConsoleProcess(ProcessInfo processInfo) : base(LogUtil.GetLogger)
         {
-            if (processRun is null)
-                throw new ArgumentNullException(nameof(processRun));
+            if (processInfo is null)
+                throw new ArgumentNullException(nameof(processInfo));
 
             Process = new()
             {
-                StartInfo = new(processRun.ExecutableProgram, processRun.StartupArguments)
+                StartInfo = new(processInfo.ExecutableProgram, processInfo.StartupArguments)
                 {
                     RedirectStandardOutput = true,
                     RedirectStandardInput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
-                    WorkingDirectory = processRun.WorkingDirectory
+                    WorkingDirectory = processInfo.WorkingDirectory
                 }
             };
         }
@@ -53,8 +53,8 @@ namespace MCBS.SystemApplications.Console
             Process.Start();
             _outputReader = new(Process.StandardOutput);
             _errorReader = new(Process.StandardError);
-            _outputReader.Start();
-            _errorReader.Start();
+            _outputReader.Start("StandardOutputReader Thread");
+            _errorReader.Start("StandardErrorReader Thread");
 
             Task outputTask = _outputReader.WaitForStopAsync();
             Task errorTask = _errorReader.WaitForStopAsync();

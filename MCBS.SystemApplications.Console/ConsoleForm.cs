@@ -13,15 +13,34 @@ namespace MCBS.SystemApplications.Console
 {
     public class ConsoleForm : WindowForm
     {
-        public ConsoleForm()
+        public ConsoleForm(string? path = null)
         {
+            _open = path;
             Output_MultilineTextBox = new();
             Input_TextBox = new();
             Send_Button = new();
 
-            //_consoleProcess = new();
-            _consoleProcess = new(new("java", "-jar fabric-server-mc.1.20.1-loader.0.14.22-launcher.0.11.2.jar nogui", "D:\\程序\\HMCL\\fabric-server-mc.1.20.1-loader.0.14.22-launcher.0.11.2"));
+            ProcessInfo processInfo;
+            if (path is null)
+            {
+                processInfo = ProcessInfo.CMD;
+            }
+            else
+            {
+                try
+                {
+                    processInfo = ProcessInfo.ReadJsonFile(path);
+                }
+                catch
+                {
+                    processInfo = ProcessInfo.CMD;
+                }
+            }
+            
+            _consoleProcess = new(processInfo);
         }
+
+        private readonly string? _open;
 
         private readonly ConsoleProcess _consoleProcess;
 
