@@ -22,6 +22,9 @@ namespace MCBS.BlockForms
             _PageSize = new(0, 0);
             ScrollBarShowTime = 20;
             ScrollBarHideTime = 0;
+            EnableVerticalSliding = false;
+            EnableHorizontalSliding = false;
+            SlidingDelta = 2;
 
             VerticalScrollBar = new();
             HorizontalScrollBar = new();
@@ -42,6 +45,12 @@ namespace MCBS.BlockForms
         public int ScrollBarHideTime { get; private set; }
 
         public int ScrollDelta { get; set; }
+
+        public bool EnableVerticalSliding { get; set; }
+
+        public bool EnableHorizontalSliding { get; set; }
+
+        public int SlidingDelta { get; set; }
 
         public Size PageSize
         {
@@ -181,10 +190,7 @@ namespace MCBS.BlockForms
                 double position = (double)e.Position.Y / VerticalScrollBar.ClientSize.Height - VerticalScrollBar.SliderSize / 2;
                 int max = Math.Max(ClientSize.Height, PageSize.Height) - ClientSize.Height;
                 Point offset = new(OffsetPosition.X, (int)Math.Round(PageSize.Height * position));
-                if (offset.Y < 0)
-                    offset.Y = 0;
-                else if (offset.Y > max)
-                    offset.Y = max;
+                offset.Y = Math.Clamp(offset.Y, 0, max);
                 OffsetPosition = offset;
                 RefreshVerticalScrollBar();
             }
@@ -197,10 +203,7 @@ namespace MCBS.BlockForms
                 double position = (double)e.Position.X / HorizontalScrollBar.ClientSize.Width - HorizontalScrollBar.SliderSize / 2;
                 int max = Math.Max(ClientSize.Width, PageSize.Width) - ClientSize.Width;
                 Point offset = new((int)Math.Round(PageSize.Width * position), OffsetPosition.Y);
-                if (offset.X < 0)
-                    offset.X = 0;
-                else if (offset.X > max)
-                    offset.X = max;
+                offset.X = Math.Clamp(offset.X, 0, max);
                 OffsetPosition = offset;
                 RefreshHorizontalScrollBar();
             }
@@ -211,6 +214,42 @@ namespace MCBS.BlockForms
             base.OnCursorMove(sender, e);
 
             ShowScrollBar();
+
+            Point cursorOffset = new Point(e.NewData.CursorPosition.X - e.OldData.CursorPosition.X, e.NewData.CursorPosition.Y - e.OldData.CursorPosition.Y) * SlidingDelta;
+
+            if (EnableVerticalSliding && cursorOffset.Y != 0)
+            {
+                int up = ClientSize.Height / 3;
+                int down = ClientSize.Height - up;
+                int y = e.Position.Y - OffsetPosition.Y;
+                if (y <= up)
+                {
+                    if (cursorOffset.Y < 0)
+                        OffsetPosition = new(OffsetPosition.X, Math.Max(cursorOffset.Y + cursorOffset.Y, 0));
+                }
+                else if (y >= down)
+                {
+                    if (cursorOffset.Y > 0)
+                        OffsetPosition = new(OffsetPosition.X, Math.Min(cursorOffset.Y + cursorOffset.Y, PageSize.Height - ClientSize.Height));
+                }
+            }
+
+            if (EnableHorizontalSliding && cursorOffset.X != 0)
+            {
+                int left = ClientSize.Width / 3;
+                int right = ClientSize.Width - left;
+                int x = e.Position.X - OffsetPosition.X;
+                if (x <= left)
+                {
+                    if (cursorOffset.X < 0)
+                        OffsetPosition = new(Math.Max(OffsetPosition.X + cursorOffset.X, 0), OffsetPosition.Y);
+                }
+                else if (x >= right)
+                {
+                    if (cursorOffset.X > 0)
+                        OffsetPosition = new(Math.Min(OffsetPosition.X + cursorOffset.X, PageSize.Width - ClientSize.Width), OffsetPosition.Y);
+                }
+            }
         }
 
         protected override void OnBeforeFrame(Control sender, EventArgs e)
