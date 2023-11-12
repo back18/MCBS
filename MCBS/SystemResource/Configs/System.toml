@@ -12,16 +12,17 @@ LoadDllAppComponents = false
 #值为引用的程序集名称
 SystemAppComponents = [
     "MCBS.SystemApplications.Services",
-    "MCBS.SystemApplications.Settings",
     "MCBS.SystemApplications.Desktop",
     "MCBS.SystemApplications.Console",
-    "MCBS.SystemApplications.FileExplorer",
+    "MCBS.SystemApplications.Settings",
     "MCBS.SystemApplications.TaskManager",
+    "MCBS.SystemApplications.FileExplorer",
     "MCBS.SystemApplications.ScreenManager",
-    "MCBS.SystemApplications.Notepad",
+    "MCBS.SystemApplications.VideoPlayer",
     "MCBS.SystemApplications.Album",
     "MCBS.SystemApplications.Drawing",
-    "MCBS.SystemApplications.VideoPlayer",
+    "MCBS.SystemApplications.Notepad",
+    "MCBS.SystemApplications.QRCodeGenerator",
     "MCBS.SystemApplications.DataScreen"
 ]
 

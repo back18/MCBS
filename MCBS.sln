@@ -49,7 +49,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.Vid
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.RCON", "..\QuanLib.Minecraft\QuanLib.Minecraft.RCON\QuanLib.Minecraft.RCON.csproj", "{CD8E71C9-7051-4410-BBFA-89FEBAAC7534}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCBS.SystemApplications.Console", "MCBS.SystemApplications.Console\MCBS.SystemApplications.Console.csproj", "{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.Console", "MCBS.SystemApplications.Console\MCBS.SystemApplications.Console.csproj", "{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCBS.SystemApplications.QRCodeGenerator", "MCBS.SystemApplications.QRCodeGenerator\MCBS.SystemApplications.QRCodeGenerator.csproj", "{1D8D9021-C1DF-4363-8EFB-01F8E41A37C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,6 +155,10 @@ Global
 		{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D8D9021-C1DF-4363-8EFB-01F8E41A37C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D8D9021-C1DF-4363-8EFB-01F8E41A37C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D8D9021-C1DF-4363-8EFB-01F8E41A37C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D8D9021-C1DF-4363-8EFB-01F8E41A37C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
