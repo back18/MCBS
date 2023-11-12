@@ -70,7 +70,7 @@ namespace MCBS.SystemApplications.Console
             ClientPanel_Control.ChildControls.Add(Input_TextBox);
             Input_TextBox.Size = new(ClientSize.Width - 34, 18);
             Input_TextBox.Stretch = Direction.Right;
-            Input_TextBox.Anchor = Direction.Bottom | Direction.Right;
+            Input_TextBox.Anchor = Direction.Bottom;
             Input_TextBox.LayoutDown(ClientPanel_Control, Output_MultilineTextBox, 0);
 
             ClientPanel_Control.ChildControls.Add(Send_Button);
