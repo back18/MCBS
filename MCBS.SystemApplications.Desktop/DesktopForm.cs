@@ -43,6 +43,7 @@ namespace MCBS.SystemApplications.Desktop
             base.Initialize();
 
             ChildControls.Add(Icons_ScrollablePanel);
+            Icons_ScrollablePanel.BorderWidth = 0;
             Icons_ScrollablePanel.ClientSize = ClientSize;
             Icons_ScrollablePanel.Stretch = Direction.Bottom | Direction.Right;
             Icons_ScrollablePanel.Skin.SetAllBackgroundTexture(_defaultWallpaper.Clone());
