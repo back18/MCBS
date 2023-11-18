@@ -42,14 +42,12 @@ namespace MCBS.Rendering
 
             if (overwriteStartPosition.X < 0)
             {
-                overwriteEndPosition.X += overwriteStartPosition.X;
                 cropSize.Width += overwriteStartPosition.X;
                 overwriteStartPosition.X = 0;
             }
 
             if (overwriteStartPosition.Y < 0)
             {
-                overwriteEndPosition.Y += overwriteStartPosition.Y;
                 cropSize.Height += overwriteStartPosition.Y;
                 overwriteStartPosition.Y = 0;
             }
@@ -59,12 +57,14 @@ namespace MCBS.Rendering
 
             if (baseOverflow.X > 0)
             {
+                cropSize.Width -= baseOverflow.X;
                 baseEndPosition.X -= baseOverflow.X;
                 overwriteEndPosition.X -= baseOverflow.X;
             }
 
             if (baseOverflow.Y > 0)
             {
+                cropSize.Height -= baseOverflow.Y;
                 baseEndPosition.Y -= baseOverflow.Y;
                 overwriteEndPosition.Y -= baseOverflow.Y;
             }
@@ -74,15 +74,15 @@ namespace MCBS.Rendering
 
             if (overwriteOverflow.X > 0)
             {
-                baseEndPosition.Y -= overwriteOverflow.X;
-                overwriteStartPosition.X -= overwriteOverflow.X;
-                overwriteEndPosition.Y -= overwriteOverflow.Y;
+                cropSize.Width -= overwriteOverflow.X;
+                baseEndPosition.X -= overwriteOverflow.X;
+                overwriteEndPosition.X -= overwriteOverflow.X;
             }
 
             if (overwriteOverflow.Y > 0)
             {
-                baseEndPosition.X -= overwriteOverflow.X;
-                overwriteStartPosition.Y -= overwriteOverflow.Y;
+                cropSize.Height -= overwriteOverflow.Y;
+                baseEndPosition.Y -= overwriteOverflow.Y;
                 overwriteEndPosition.Y -= overwriteOverflow.Y;
             }
 
