@@ -58,7 +58,10 @@ namespace MCBS.BlockForms
 
             private void CurrentTime_TextBox_TextEditorUpdate(Control sender, CursorEventArgs e)
             {
-                string timeText = e.CursorContext.TextEditor.CurrentText;
+                if (e.NewData.TextEditor == FormatTime(_owner.VideoBox.CurrentPosition))
+                    return;
+
+                string timeText = e.NewData.TextEditor;
                 string[] times = timeText.Split(':');
                 if (times.Length == 1)
                 {
@@ -76,7 +79,7 @@ namespace MCBS.BlockForms
                     Form? form = GetForm();
                     if (form is not null)
                     {
-                        _ = DialogBoxHelper.OpenMessageBoxAsync(form, "警告", $"无法跳转到：“{e.CursorContext.TextEditor.CurrentText}”", MessageBoxButtons.OK);
+                        _ = DialogBoxHelper.OpenMessageBoxAsync(form, "警告", $"无法跳转到：“{timeText}”", MessageBoxButtons.OK);
                     }
                     return;
                 }
