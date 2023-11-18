@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Core.Events;
 
 namespace MCBS.BlockForms
 {
@@ -56,6 +57,17 @@ namespace MCBS.BlockForms
             base.OnCursorLeave(sender, e);
 
             UpdateSelected();
+        }
+
+        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
+        {
+            base.OnTextChanged(sender, e);
+
+            if (!IsReadOnly)
+            {
+                foreach (CursorContext cursorContext in GetHoverTextEditorCursors())
+                    cursorContext.TextEditor.SetInitialText(Text);
+            }
         }
 
         protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)

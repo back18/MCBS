@@ -1,6 +1,7 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Cursor;
 using MCBS.Events;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using System;
@@ -15,13 +16,9 @@ namespace MCBS.BlockForms
     {
         public TextBox()
         {
-            IsReadOnly = false;
-
             ClientSize = new(64, 16);
             Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
-
-        public bool IsReadOnly { get; set; }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
         {
@@ -42,6 +39,17 @@ namespace MCBS.BlockForms
             base.OnCursorLeave(sender, e);
 
             UpdateSelected();
+        }
+
+        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
+        {
+            base.OnTextChanged(sender, e);
+
+            if (!IsReadOnly)
+            {
+                foreach (CursorContext cursorContext in GetHoverTextEditorCursors())
+                    cursorContext.TextEditor.SetInitialText(Text);
+            }
         }
 
         protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)

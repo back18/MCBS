@@ -169,8 +169,8 @@ namespace MCBS.Screens
             else if (mainItem.ID == ScreenConfig.TextEditorItemID)
             {
                 cursorMode = CursorMode.TextEditor;
-                if (cursorContext.TextEditor.ReadText(mainItem))
-                    textEditor = cursorContext.TextEditor.CurrentText;
+                cursorContext.TextEditor.ReadText(mainItem);
+                textEditor = cursorContext.TextEditor.CurrentText;
             }
             else
             {
