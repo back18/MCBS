@@ -26,28 +26,32 @@ namespace MCBS.Rendering
             Point overwriteStartPosition = overwriteLocation;
             Point overwriteEndPosition = new(overwriteLocation.X + cropSize.Width - 1, overwriteLocation.Y + cropSize.Height - 1);
 
-            if (baseLocation.X < 0)
+            if (baseStartPosition.X < 0)
             {
-                baseEndPosition.X += baseLocation.X;
-                overwriteStartPosition.X -= baseLocation.X;
+                overwriteStartPosition.X -= baseStartPosition.X;
+                cropSize.Width += baseStartPosition.X;
+                baseStartPosition.X = 0;
             }
 
-            if (baseLocation.Y < 0)
+            if (baseStartPosition.Y < 0)
             {
-                baseEndPosition.Y += baseLocation.Y;
-                overwriteStartPosition.Y -= baseLocation.Y;
+                overwriteStartPosition.Y -= baseStartPosition.Y;
+                cropSize.Height += baseStartPosition.Y;
+                baseStartPosition.Y = 0;
             }
 
-            if (overwriteLocation.X < 0)
+            if (overwriteStartPosition.X < 0)
             {
-                overwriteStartPosition.X += overwriteLocation.X;
-                overwriteEndPosition.X += overwriteLocation.X;
+                overwriteEndPosition.X += overwriteStartPosition.X;
+                cropSize.Width += overwriteStartPosition.X;
+                overwriteStartPosition.X = 0;
             }
 
-            if (overwriteLocation.Y < 0)
+            if (overwriteStartPosition.Y < 0)
             {
-                overwriteStartPosition.Y += overwriteLocation.Y;
-                overwriteEndPosition.Y += overwriteLocation.Y;
+                overwriteEndPosition.Y += overwriteStartPosition.Y;
+                cropSize.Height += overwriteStartPosition.Y;
+                overwriteStartPosition.Y = 0;
             }
 
             Point maxBaseEndPosition = new(baseSize.Width - 1, baseSize.Height - 1);
