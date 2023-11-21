@@ -88,14 +88,16 @@ namespace MCBS.SystemApplications.Console
             string output = _consoleProcess.GetOutputText();
             if (!string.IsNullOrEmpty(output))
             {
-                Output_MultilineTextBox.Text += output;
+                Output_MultilineTextBox.TextBufffer.Append(output);
+                Output_MultilineTextBox.TextBuffferUpdated();
                 return;
             }
 
             string error = _consoleProcess.GetErrorText();
             if (!string.IsNullOrEmpty(error))
             {
-                Output_MultilineTextBox.Text += error;
+                Output_MultilineTextBox.TextBufffer.Append(error);
+                Output_MultilineTextBox.TextBuffferUpdated();
                 return;
             }
         }
