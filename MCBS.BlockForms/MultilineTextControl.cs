@@ -12,45 +12,8 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms
 {
-    public abstract class MultilineTextControl : ScrollablePanel
+    public abstract class MultilineTextControl : AbstractMultilineTextControl
     {
-        protected MultilineTextControl()
-        {
-            Lines = new(Array.Empty<string>());
-            _WordWrap = true;
-            _AutoScroll = false;
-        }
-
-        public ReadOnlyCollection<string> Lines { get; private set; }
-
-        public bool WordWrap
-        {
-            get => _WordWrap;
-            set
-            {
-                if (_WordWrap != value)
-                {
-                    _WordWrap = value;
-                    UpdatePageSize();
-                }
-            }
-        }
-        private bool _WordWrap;
-
-        public bool AutoScroll
-        {
-            get => _AutoScroll;
-            set
-            {
-                if (_AutoScroll != value)
-                {
-                    _AutoScroll = value;
-                    UpdatePageSize();
-                }
-            }
-        }
-        private bool _AutoScroll;
-
         protected override BlockFrame Rendering()
         {
             BlockFrame baseFrame = base.Rendering();
@@ -58,7 +21,7 @@ namespace MCBS.BlockForms
                 return baseFrame;
 
             Point start = OffsetPosition;
-            Point end = new(OffsetPosition.X + ClientSize.Width, OffsetPosition.Y + ClientSize.Height);
+            Point end = new(OffsetPosition.X + ClientSize.Width - 1, OffsetPosition.Y + ClientSize.Height - 1);
             Point position = new(0, start.Y / SR.DefaultFont.Height * SR.DefaultFont.Height);
             for (int i = start.Y / SR.DefaultFont.Height; i < Lines.Count; i++)
             {
@@ -87,34 +50,7 @@ namespace MCBS.BlockForms
             return baseFrame;
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
-        {
-            base.OnResize(sender, e);
-
-            if (AutoSize || WordWrap)
-                UpdatePageSize();
-        }
-
-        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
-        {
-            base.OnTextChanged(sender, e);
-
-            UpdatePageSize();
-
-            if (AutoScroll)
-            {
-                int y = PageSize.Height - ClientSize.Height;
-                if (y > 0)
-                    OffsetPosition = new(OffsetPosition.X, y);
-            }
-        }
-
-        public override void AutoSetSize()
-        {
-            UpdatePageSize();
-        }
-
-        protected virtual void UpdatePageSize()
+        protected override void UpdatePageSize()
         {
             string[] lines = Text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
