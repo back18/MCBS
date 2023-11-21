@@ -13,10 +13,28 @@ namespace MCBS.BlockForms
     {
         protected AbstractMultilineTextControl()
         {
+            TextBufffer = new();
             Lines = new(Array.Empty<string>());
             _WordWrap = true;
             _AutoScroll = false;
         }
+
+        public override string Text
+        {
+            get => base.Text;
+            set
+            {
+                base.Text = value;
+                string temp = TextBufffer.ToString();
+                if (temp != value)
+                {
+                    TextBufffer.Clear();
+                    TextBufffer.Append(value);
+                }
+            }
+        }
+
+        public StringBuilder TextBufffer { get; }
 
         public ReadOnlyCollection<string> Lines { get; protected set; }
 
@@ -76,5 +94,10 @@ namespace MCBS.BlockForms
         }
 
         protected abstract void UpdatePageSize();
+
+        public void TextBuffferUpdated()
+        {
+            base.Text = TextBufffer.ToString();
+        }
     }
 }

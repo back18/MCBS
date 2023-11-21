@@ -12,26 +12,6 @@ namespace MCBS.BlockForms
         {
             BorderWidth = 0;
             Skin.SetAllBackgroundColor(string.Empty);
-
-            _text = new();
-        }
-
-        private readonly StringBuilder _text;
-
-        public override string Text
-        {
-            get => _text.ToString();
-            set
-            {
-                string temp = _text.ToString();
-                if (temp != value)
-                {
-                    _text.Clear();
-                    _text.Append(value);
-                    HandleTextChanged(new(temp, value));
-                    RequestRendering();
-                }
-            }
         }
     }
 }
