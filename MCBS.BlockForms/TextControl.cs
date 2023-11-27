@@ -30,7 +30,7 @@ namespace MCBS.BlockForms
             int x = 0;
             foreach (char c in Text)
             {
-                OverwriteContext overwriteContext = fontFrame.DrawBinary(SR.DefaultFont[c].GetBinary(), GetForegroundColor().ToBlockId(), new(x, 0));
+                OverwriteContext overwriteContext = fontFrame.DrawBinary(SR.DefaultFont[c].GetBitArray(), GetForegroundColor().ToBlockId(), new(x, 0));
                 x = overwriteContext.BaseEndPosition.X + 1;
             }
 
