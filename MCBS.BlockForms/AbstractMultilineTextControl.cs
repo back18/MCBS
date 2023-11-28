@@ -88,8 +88,8 @@ namespace MCBS.BlockForms
             (bool[,] buffer, Rectangle rectangle) build = BuildBuffer();
             int pow = (int)Math.Pow(2, BlockResolution * BlockResolution - 1);
 
-            for (int y1 = build.rectangle.Y / BlockResolution, y2 = 0; y2 < build.rectangle.Height; y1++, y2 += BlockResolution)
-                for (int x1 = build.rectangle.X / BlockResolution, x2 = 0; x2 < build.rectangle.Width; x1++, x2 += BlockResolution)
+            for (int y1 = build.rectangle.Y / BlockResolution, y2 = 0; y1 < baseFrame.Height && y2 < build.rectangle.Height; y1++, y2 += BlockResolution)
+                for (int x1 = build.rectangle.X / BlockResolution, x2 = 0; x1 < baseFrame.Width && x2 < build.rectangle.Width; x1++, x2 += BlockResolution)
                 {
                     int total = 0;
                     int value = pow;
