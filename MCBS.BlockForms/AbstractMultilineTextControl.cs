@@ -1,4 +1,5 @@
-﻿using MCBS.Events;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Events;
 using MCBS.Rendering;
 using QuanLib.BDF;
 using QuanLib.Core;
@@ -18,7 +19,7 @@ namespace MCBS.BlockForms
         protected AbstractMultilineTextControl()
         {
             TextBufffer = new();
-            Lines = new(Array.Empty<string>());
+            LineBuffer = new();
             BlockResolution = 1;
             FontPixelSize = 1;
             ScrollDelta = SR.DefaultFont.Height / BlockResolution * FontPixelSize;
@@ -43,7 +44,7 @@ namespace MCBS.BlockForms
 
         public StringBuilder TextBufffer { get; }
 
-        public virtual ReadOnlyCollection<string> Lines { get; protected set; }
+        public LineBuffer LineBuffer { get; }
 
         public int BlockResolution { get; protected set; }
 
@@ -81,7 +82,7 @@ namespace MCBS.BlockForms
         {
             Size renderingSize = GetRenderingSize();
             HashBlockFrame baseFrame = new(renderingSize, ToBlockId(0));
-            if (Lines.Count == 0)
+            if (LineBuffer.Lines.Count == 0)
                 return baseFrame;
 
             (bool[,] buffer, Rectangle rectangle) build = BuildBuffer();
@@ -115,15 +116,16 @@ namespace MCBS.BlockForms
             Size size = PageSize2BufferSize(ClientSize);
             Point end = new(start.X + size.Width - 1, start.Y + size.Height - 1);
             Rectangle rectangle = new(start.X, start.Y, size.Width, size.Height);
-            Point position = new(0, start.Y / fontHeight * fontHeight);
+            int lineNumber = start.Y / fontHeight;
+            Point position = new(0, lineNumber * fontHeight);
             bool[,] buffer = new bool[rectangle.Width, rectangle.Height];
 
-            for (int i = start.Y / fontHeight; i < Lines.Count; i++)
+            for (int i = lineNumber; i < LineBuffer.Lines.Count; i++)
             {
                 if (position.Y > end.Y)
                     break;
 
-                foreach (char c in Lines[i])
+                foreach (char c in LineBuffer.Lines[i].Text)
                 {
                     FontData fontData = SR.DefaultFont[c];
                     Size fontSize = new Size(fontData.Width, fontData.Height) * FontPixelSize;
@@ -153,57 +155,21 @@ namespace MCBS.BlockForms
 
             return (buffer, rectangle);
         }
-        
+
         protected virtual void UpdatePageSize()
         {
-            string[] lines = Text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
             if (AutoSize || !WordWrap)
             {
-                int maxWidth = 0;
-                foreach (string line in lines)
-                {
-                    int width = SR.DefaultFont.GetTotalSize(line).Width * FontPixelSize;
-                    if (width > maxWidth)
-                        maxWidth = width;
-                }
-
-                Lines = new(lines);
-                PageSize = BufferSize2PageSize(new(Math.Max(ClientSize.Width * BlockResolution, maxWidth), Lines.Count * SR.DefaultFont.Height * FontPixelSize));
+                LineBuffer.UpdateText(Text, SR.DefaultFont, FontPixelSize);
+                PageSize = BufferSize2PageSize(new(Math.Max(ClientSize.Width * BlockResolution, LineBuffer.BufferSize.Width), LineBuffer.BufferSize.Height));
 
                 if (AutoSize)
                     ClientSize = PageSize;
             }
             else
             {
-                int totalWidth = PageSize2BufferSize(ClientSize).Width;
-                if (totalWidth < SR.DefaultFont.FullWidth)
-                {
-                    Lines = new(Array.Empty<string>());
-                    PageSize = ClientSize;
-                }
-
-                List<string> words = [];
-                foreach (string line in lines)
-                {
-                    int start = 0;
-                    int width = 0;
-                    for (int i = 0; i < line.Length; i++)
-                    {
-                        var data = SR.DefaultFont[line[i]];
-                        width += data.Width * FontPixelSize;
-                        if (width > totalWidth)
-                        {
-                            words.Add(line[start..i]);
-                            start = i;
-                            width = data.Width * FontPixelSize;
-                        }
-                    }
-                    words.Add(line[start..line.Length]);
-                }
-
-                Lines = new(words);
-                PageSize = BufferSize2PageSize(new(ClientSize.Width, Lines.Count * SR.DefaultFont.Height * FontPixelSize));
+                LineBuffer.UpdateText(Text, SR.DefaultFont, FontPixelSize, ClientSize.Width * BlockResolution);
+                PageSize = BufferSize2PageSize(LineBuffer.BufferSize);
             }
         }
 
@@ -244,8 +210,8 @@ namespace MCBS.BlockForms
         protected Point BufferPos2PagePos(Point position)
         {
             return new(
-                NumberUtil.DivisionFloor(position.X , BlockResolution),
-                NumberUtil.DivisionFloor(position.Y , BlockResolution));
+                NumberUtil.DivisionFloor(position.X, BlockResolution),
+                NumberUtil.DivisionFloor(position.Y, BlockResolution));
         }
 
         protected Point PagePosBufferPos(Point position)
@@ -263,6 +229,46 @@ namespace MCBS.BlockForms
         protected Size PageSize2BufferSize(Size size)
         {
             return new Size(size.Width, size.Height) * BlockResolution;
+        }
+
+        public Character GetCharacter(Point bufferPosition)
+        {
+            int fontHeight = SR.DefaultFont.Height * FontPixelSize;
+            int lineNumber = bufferPosition.Y / fontHeight;
+            bufferPosition.Y = lineNumber * fontHeight;
+
+            if (lineNumber < LineBuffer.Lines.Count)
+            {
+                string line = LineBuffer.Lines[lineNumber].Text;
+                int width = 0;
+                for (int i = 0; i < line.Length; i++)
+                {
+                    FontData fontData = SR.DefaultFont[line[i]];
+                    int fontWudth = fontData.Width * FontPixelSize;
+                    if (width + fontWudth > bufferPosition.X || i + 1 == line.Length)
+                    {
+                        char c = line[i];
+                        bufferPosition.X = width;
+                        int columnNumber = i;
+                        Rectangle rectangle = new(bufferPosition.X, bufferPosition.Y, fontData.Width * FontPixelSize, fontData.Height * FontPixelSize);
+                        return new(c, lineNumber, columnNumber, rectangle);
+                    }
+
+                    width += fontData.Width * FontPixelSize;
+                }
+            }
+
+            bufferPosition.X = 0;
+            return new('\0', lineNumber, 0, new(bufferPosition.X, bufferPosition.Y, 0, 0));
+        }
+
+        protected override void OnCursorMove(Control sender, CursorEventArgs e)
+        {
+            base.OnCursorMove(sender, e);
+
+            Point bufferPosition = PagePosBufferPos(e.Position);
+            var c = GetCharacter(bufferPosition);
+            Console.WriteLine(c.LineNumber + " " + c.ColumnNumber);
         }
     }
 }
