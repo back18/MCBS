@@ -89,12 +89,13 @@ namespace MCBS.BlockForms.Utility
                 for (int j = 0; j < line.text.Length; j++)
                 {
                     FontData fontData = bdfFont[line.text[j]];
-                    width += fontData.Width * pixelSize;
+                    int fontWidth = fontData.Width * pixelSize;
+                    width += fontWidth;
                     if (width > maxWidth)
                     {
                         texts.Add(line.text[start..j]);
                         start = j;
-                        width = fontData.Width * pixelSize;
+                        width = fontWidth;
                     }
                 }
                 texts.Add(line.text[start..line.text.Length]);
