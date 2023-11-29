@@ -18,6 +18,8 @@ namespace MCBS.BlockForms.Utility
 
             _paragraphs = [];
             _lines = [];
+
+            Reset();
         }
 
         private readonly List<TextParagraph> _paragraphs;
@@ -37,6 +39,12 @@ namespace MCBS.BlockForms.Utility
             ArgumentNullException.ThrowIfNull(text, nameof(text));
             ArgumentNullException.ThrowIfNull(bdfFont, nameof(bdfFont));
             ThrowHelper.ArgumentOutOfMin(1, pixelSize, nameof(pixelSize));
+
+            if (string.IsNullOrEmpty(text))
+            {
+                Reset();
+                return;
+            }
 
             _paragraphs.Clear();
             _lines.Clear();
@@ -66,6 +74,12 @@ namespace MCBS.BlockForms.Utility
             ArgumentNullException.ThrowIfNull(text, nameof(text));
             ArgumentNullException.ThrowIfNull(bdfFont, nameof(bdfFont));
             ThrowHelper.ArgumentOutOfMin(1, pixelSize, nameof(pixelSize));
+
+            if (string.IsNullOrEmpty(text))
+            {
+                Reset();
+                return;
+            }
 
             _paragraphs.Clear();
             _lines.Clear();
@@ -152,6 +166,16 @@ namespace MCBS.BlockForms.Utility
                 result.Add((buffer.ToString(), index, LineBreak.None));
 
             return result;
+        }
+
+        private void Reset()
+        {
+            Text = string.Empty;
+            BufferSize = Size.Empty;
+            _paragraphs.Clear();
+            _lines.Clear();
+            _paragraphs.Add(new());
+            _lines.Add(new());
         }
     }
 }

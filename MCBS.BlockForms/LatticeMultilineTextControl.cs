@@ -17,8 +17,8 @@ namespace MCBS.BlockForms
     {
         static LatticeMultilineTextControl()
         {
-            _positive = new string[ushort.MaxValue];
-            _negative = new string[ushort.MaxValue];
+            _positive = new string[ushort.MaxValue + 1];
+            _negative = new string[ushort.MaxValue + 1];
             for (int i = ushort.MinValue; i <= ushort.MaxValue; i++)
             {
                 ushort positive = (ushort)i;

@@ -21,6 +21,7 @@ namespace MCBS.Cursor
             InitialText = string.Empty;
             CurrentText = string.Empty;
             IsSynchronized = false;
+            SynchronizeTick = 0;
         }
 
         public string PlayerName { get; }
@@ -30,6 +31,8 @@ namespace MCBS.Cursor
         public string CurrentText { get; private set; }
 
         public bool IsSynchronized { get; private set; }
+
+        public int SynchronizeTick { get; private set; }
 
         public bool ReadText(Item item)
         {
@@ -46,6 +49,7 @@ namespace MCBS.Cursor
                     sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemID}{{pages:[\"{InitialText}\"]}}");
                 CurrentText = InitialText;
                 IsSynchronized = true;
+                SynchronizeTick = MCOS.Instance.SystemTick;
                 return false;
             }
             else if (

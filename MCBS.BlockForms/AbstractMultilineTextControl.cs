@@ -20,6 +20,7 @@ namespace MCBS.BlockForms
         {
             TextBufffer = new();
             LineBuffer = new();
+            HighlightedCharacters = [];
             BlockResolution = 1;
             FontPixelSize = 1;
             ScrollDelta = SR.DefaultFont.Height / BlockResolution * FontPixelSize;
@@ -45,6 +46,8 @@ namespace MCBS.BlockForms
         public StringBuilder TextBufffer { get; }
 
         public LineBuffer LineBuffer { get; }
+
+        public HashSet<int> HighlightedCharacters { get; }
 
         public int BlockResolution { get; protected set; }
 
@@ -125,9 +128,10 @@ namespace MCBS.BlockForms
                 if (position.Y > end.Y)
                     break;
 
-                foreach (char c in LineBuffer.Lines[i].Text)
+                TextLine line = LineBuffer.Lines[i];
+                for (int j = 0; j < line.Text.Length; j++)
                 {
-                    FontData fontData = SR.DefaultFont[c];
+                    FontData fontData = SR.DefaultFont[line.Text[j]];
                     Size fontSize = new Size(fontData.Width, fontData.Height) * FontPixelSize;
 
                     if (position.X > end.X)
@@ -138,7 +142,8 @@ namespace MCBS.BlockForms
                         continue;
                     }
 
-                    var bitmap = fontData.GetBitArray(FontPixelSize);
+                    bool isNegative = HighlightedCharacters.Contains(line.TextIndex + j);
+                    var bitmap = fontData.GetBitArray(FontPixelSize, isNegative);
                     OverwriteContext overwriteContext = new(new(rectangle.Width, rectangle.Height), fontSize, fontSize, new(position.X - start.X, position.Y - start.Y), Point.Empty);
                     foreach (var mapping in overwriteContext)
                     {
@@ -234,7 +239,7 @@ namespace MCBS.BlockForms
         public Character GetCharacter(Point bufferPosition)
         {
             int fontHeight = SR.DefaultFont.Height * FontPixelSize;
-            int lineNumber = bufferPosition.Y / fontHeight;
+            int lineNumber = Math.Clamp(bufferPosition.Y / fontHeight, 0, Math.Max(0, LineBuffer.Lines.Count - 1));
             bufferPosition.Y = lineNumber * fontHeight;
 
             if (lineNumber < LineBuffer.Lines.Count)
@@ -260,15 +265,6 @@ namespace MCBS.BlockForms
 
             bufferPosition.X = 0;
             return new('\0', lineNumber, 0, new(bufferPosition.X, bufferPosition.Y, 0, 0));
-        }
-
-        protected override void OnCursorMove(Control sender, CursorEventArgs e)
-        {
-            base.OnCursorMove(sender, e);
-
-            Point bufferPosition = PagePosBufferPos(e.Position);
-            var c = GetCharacter(bufferPosition);
-            Console.WriteLine(c.LineNumber + " " + c.ColumnNumber);
         }
     }
 }

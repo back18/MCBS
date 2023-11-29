@@ -242,7 +242,7 @@ namespace MCBS.Screens
                 RootForm.HandleLeftClick(new(newData.CursorPosition, cursorContext));
             if (oldData.RightClickTime != newData.RightClickTime)
                 RootForm.HandleRightClick(new(newData.CursorPosition, cursorContext));
-            if (oldData.TextEditor != newData.TextEditor)
+            if (cursorContext.TextEditor.SynchronizeTick != MCOS.Instance.SystemTick && oldData.TextEditor != newData.TextEditor)
                 RootForm.HandleTextEditorUpdate(new(newData.CursorPosition, cursorContext));
             if (oldData.InventorySlot != newData.InventorySlot)
                 RootForm.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));

@@ -8,6 +8,8 @@ namespace MCBS.BlockForms.Utility
 {
     public readonly struct TextLine(string text, int paragraphNumber, int lineNumber, int textIndex)
     {
+        public TextLine() : this(string.Empty, 0, 0, 0) { }
+
         public readonly string Text = text;
 
         public readonly int ParagraphNumber = paragraphNumber;

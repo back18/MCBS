@@ -9,6 +9,15 @@ namespace MCBS.BlockForms.Utility
 {
     public class TextParagraph
     {
+        public TextParagraph()
+        {
+            Text = string.Empty;
+            Lines = new(new string[] { string.Empty });
+            ParagraphNumber = 0;
+            TextIndex = 0;
+            LineBreakType = LineBreak.None;
+        }
+
         public TextParagraph(string text, IList<string> lines, int paragraphNumber, int textIndex, LineBreak lineBreakType)
         {
             ArgumentNullException.ThrowIfNull(text, nameof(text));
