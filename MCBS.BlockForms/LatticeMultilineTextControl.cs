@@ -19,10 +19,10 @@ namespace MCBS.BlockForms
         {
             _positive = new string[ushort.MaxValue];
             _negative = new string[ushort.MaxValue];
-            for (int i = 0; i < ushort.MaxValue; i++)
+            for (int i = ushort.MinValue; i <= ushort.MaxValue; i++)
             {
                 ushort positive = (ushort)i;
-                ushort negative = NumberUtil.ToUshort(NumberUtil.Negate(NumberUtil.ToBitArray((ushort)i)));
+                ushort negative = NumberUtil.ToUshort(NumberUtil.Negate(NumberUtil.ToBitArray(positive)));
                 _positive[i] = "lattice_block:lattice_block_" + positive.ToString("x4");
                 _negative[i] = "lattice_block:lattice_block_" + negative.ToString("x4");
             }
