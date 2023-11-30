@@ -12,7 +12,7 @@ using SixLabors.ImageSharp;
 
 namespace MCBS.BlockForms
 {
-    public class MultilineTextBox : MultilineTextControl
+    public class MultilineTextBox : LatticeMultilineTextControl
     {
         public MultilineTextBox()
         {
@@ -32,7 +32,7 @@ namespace MCBS.BlockForms
             }
 
             e.CursorContext.Visible = false;
-            int newIndex = GetTextIndex(PagePosBufferPos(e.Position));
+            int newIndex = PagePosToTextIndex(e.Position);
             int oldIndex;
             if (_indexs.TryGetValue(e.CursorContext.PlayerName, out var index))
                 oldIndex = index;
@@ -61,7 +61,7 @@ namespace MCBS.BlockForms
                 return;
 
             e.CursorContext.Visible = false;
-            int index = GetTextIndex(PagePosBufferPos(e.Position));
+            int index = PagePosToTextIndex(e.Position);
             HighlightedCharacters.Add(index);
             _indexs.Add(e.CursorContext.PlayerName, index);
             RequestRendering();
@@ -110,9 +110,13 @@ namespace MCBS.BlockForms
             return result.ToArray();
         }
 
-        private int GetTextIndex(Point position)
+        private int PagePosToTextIndex(Point pagePosition)
         {
-            Point bufferPosition = PagePosBufferPos(position);
+            return BufferPosToTextIndex(PagePosBufferPos(pagePosition));
+        }
+
+        private int BufferPosToTextIndex(Point bufferPosition)
+        {
             var character = GetCharacter(bufferPosition);
             return LineBuffer.Lines[character.LineNumber].TextIndex + character.ColumnNumber;
         }
