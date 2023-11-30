@@ -111,6 +111,7 @@ namespace MCBS.Screens
             int inventorySlot = oldData.InventorySlot;
             Item? mainItem = oldData.MainItem;
             Item? deputyItem = oldData.DeputyItem;
+            Item? toolsItem = null;
 
             if (!sender.TryGetPlayerSelectedItemSlot(cursorContext.PlayerName, out inventorySlot))
                 goto fail;
@@ -119,19 +120,12 @@ namespace MCBS.Screens
             sender.TryGetPlayerDualWieldItem(cursorContext.PlayerName, out deputyItem);
 
             if (mainItem is not null && (mainItem.ID == ScreenConfig.RightClickItemID || mainItem.ID == ScreenConfig.TextEditorItemID))
-            {
-
-            }
+                toolsItem = mainItem;
             else if (deputyItem is not null && (deputyItem.ID == ScreenConfig.RightClickItemID || deputyItem.ID == ScreenConfig.TextEditorItemID))
-            {
-                Item? temp = mainItem;
-                mainItem = deputyItem;
-                deputyItem = temp;
-            }
-            else
-            {
+                toolsItem = deputyItem;
+
+            if (toolsItem is null)
                 goto fail;
-            }
 
             if (!sender.TryGetEntityPosition(cursorContext.PlayerName, out var playerPosition) || !sender.TryGetEntityRotation(cursorContext.PlayerName, out var playerRotation))
                 goto fail;
@@ -151,7 +145,7 @@ namespace MCBS.Screens
                 goto fail;
             }
 
-            if (mainItem.ID == ScreenConfig.RightClickItemID)
+            if (toolsItem.ID == ScreenConfig.RightClickItemID)
             {
                 cursorMode = CursorMode.Click;
                 ClickResult clickResult = cursorContext.ClickReader.ReadClick();
@@ -166,7 +160,7 @@ namespace MCBS.Screens
                     rightClickTime = cursorContext.ClickReader.RightClickTime;
                 }
             }
-            else if (mainItem.ID == ScreenConfig.TextEditorItemID)
+            else if (toolsItem.ID == ScreenConfig.TextEditorItemID)
             {
                 cursorMode = CursorMode.TextEditor;
                 cursorContext.TextEditor.ReadText(mainItem);

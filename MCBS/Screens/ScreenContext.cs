@@ -1,4 +1,5 @@
-﻿using log4net.Core;
+﻿using static MCBS.Config.ConfigManager;
+using log4net.Core;
 using NAudio.Codecs;
 using SixLabors.ImageSharp;
 using System;
@@ -244,10 +245,15 @@ namespace MCBS.Screens
                 RootForm.HandleRightClick(new(newData.CursorPosition, cursorContext));
             if (cursorContext.TextEditor.SynchronizeTick != MCOS.Instance.SystemTick && oldData.TextEditor != newData.TextEditor)
                 RootForm.HandleTextEditorUpdate(new(newData.CursorPosition, cursorContext));
-            if (oldData.InventorySlot != newData.InventorySlot)
-                RootForm.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));
-            if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
-                RootForm.HandleCursorItemChanged(new(newData.CursorPosition, cursorContext));
+
+            string? deputyItem = cursorContext.NewInputData.DeputyItem?.ID;
+            if (deputyItem == ScreenConfig.RightClickItemID || deputyItem == ScreenConfig.TextEditorItemID)
+            {
+                if (oldData.InventorySlot != newData.InventorySlot)
+                    RootForm.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));
+                if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
+                    RootForm.HandleCursorItemChanged(new(newData.CursorPosition, cursorContext));
+            }
         }
     }
 }
