@@ -205,7 +205,7 @@ namespace MCBS.BlockForms
             UpdatePageSize();
         }
 
-        public void TextBuffferUpdated()
+        public void TextBufferUpdated()
         {
             base.Text = TextBuffer.ToString();
         }

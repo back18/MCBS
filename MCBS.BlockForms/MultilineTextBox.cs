@@ -94,7 +94,7 @@ namespace MCBS.BlockForms
 
             TextBuffer.Remove(index, oldText.Length);
             TextBuffer.Insert(index, newText);
-            TextBuffferUpdated();
+            TextBufferUpdated();
         }
 
         public CursorContext[] GetHoverTextEditorCursors()
