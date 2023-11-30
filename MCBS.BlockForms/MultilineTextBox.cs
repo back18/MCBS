@@ -92,8 +92,8 @@ namespace MCBS.BlockForms
             if (newText == oldText)
                 return;
 
-            TextBufffer.Remove(index, oldText.Length);
-            TextBufffer.Insert(index, newText);
+            TextBuffer.Remove(index, oldText.Length);
+            TextBuffer.Insert(index, newText);
             TextBuffferUpdated();
         }
 

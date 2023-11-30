@@ -18,7 +18,7 @@ namespace MCBS.BlockForms
     {
         protected AbstractMultilineTextControl()
         {
-            TextBufffer = new();
+            TextBuffer = new();
             LineBuffer = new();
             HighlightedCharacters = [];
             BlockResolution = 1;
@@ -34,16 +34,16 @@ namespace MCBS.BlockForms
             set
             {
                 base.Text = value;
-                string temp = TextBufffer.ToString();
+                string temp = TextBuffer.ToString();
                 if (temp != value)
                 {
-                    TextBufffer.Clear();
-                    TextBufffer.Append(value);
+                    TextBuffer.Clear();
+                    TextBuffer.Append(value);
                 }
             }
         }
 
-        public StringBuilder TextBufffer { get; }
+        public StringBuilder TextBuffer { get; }
 
         public LineBuffer LineBuffer { get; }
 
@@ -207,7 +207,7 @@ namespace MCBS.BlockForms
 
         public void TextBuffferUpdated()
         {
-            base.Text = TextBufffer.ToString();
+            base.Text = TextBuffer.ToString();
         }
 
         protected abstract string ToBlockId(int index);

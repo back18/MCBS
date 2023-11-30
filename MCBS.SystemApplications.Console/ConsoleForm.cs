@@ -88,7 +88,7 @@ namespace MCBS.SystemApplications.Console
             string output = _consoleProcess.GetOutputText();
             if (!string.IsNullOrEmpty(output))
             {
-                Output_MultilineTextBox.TextBufffer.Append(output);
+                Output_MultilineTextBox.TextBuffer.Append(output);
                 Output_MultilineTextBox.TextBuffferUpdated();
                 return;
             }
@@ -96,7 +96,7 @@ namespace MCBS.SystemApplications.Console
             string error = _consoleProcess.GetErrorText();
             if (!string.IsNullOrEmpty(error))
             {
-                Output_MultilineTextBox.TextBufffer.Append(error);
+                Output_MultilineTextBox.TextBuffer.Append(error);
                 Output_MultilineTextBox.TextBuffferUpdated();
                 return;
             }
