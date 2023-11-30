@@ -12,7 +12,7 @@ using SixLabors.ImageSharp;
 
 namespace MCBS.BlockForms
 {
-    public class MultilineTextBox : LatticeMultilineTextControl
+    public class MultilineTextBox : MultilineTextControl
     {
         public MultilineTextBox()
         {
