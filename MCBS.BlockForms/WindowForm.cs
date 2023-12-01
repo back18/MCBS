@@ -17,11 +17,19 @@ namespace MCBS.BlockForms
         protected WindowForm()
         {
             TitleBar_Control = new(this);
+            WindowPanel_Control = new(this);
+            Home_PagePanel = new("Home");
+            WindowPanel_Control.PagePanels.Add(Home_PagePanel.PageKey, Home_PagePanel);
+            WindowPanel_Control.ActivePageKey = Home_PagePanel.PageKey;
             ClientPanel_Control = new();
             ShowTitleBar_Button = new();
         }
 
         public readonly TitleBar TitleBar_Control;
+
+        public readonly WindowPanel WindowPanel_Control;
+
+        public readonly PagePanel Home_PagePanel;
 
         public readonly ClientPanel ClientPanel_Control;
 
