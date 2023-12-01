@@ -14,8 +14,7 @@ namespace MCBS.Rendering
     {
         public ColorMappingCache(byte[] bytes)
         {
-            if (bytes is null)
-                throw new ArgumentNullException(nameof(bytes));
+            ArgumentNullException.ThrowIfNull(bytes, nameof(bytes));
             ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256 * 4, bytes, nameof(bytes));
 
             int index = 0;
@@ -26,8 +25,7 @@ namespace MCBS.Rendering
 
         public ColorMappingCache(Rgba32[] mapping)
         {
-            if (mapping is null)
-                throw new ArgumentNullException(nameof(mapping));
+            ArgumentNullException.ThrowIfNull(mapping, nameof(mapping));
             ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256, mapping, nameof(mapping));
 
             _mapping = new Rgba32[256 * 256 * 256];

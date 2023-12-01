@@ -12,7 +12,9 @@ namespace MCBS.BlockForms.SimpleFileSystem
     {
         public DriveItem(DriveInfo driveInfo) : base(QuanLib.Core.IO.PathType.Drive)
         {
-            DriveInfo = driveInfo ?? throw new ArgumentNullException(nameof(driveInfo));
+            ArgumentNullException.ThrowIfNull(driveInfo, nameof(driveInfo));
+
+            DriveInfo = driveInfo;
 
             Text = driveInfo.Name;
             Skin.SetBackgroundColor(BlockManager.Concrete.LightBlue, ControlState.None, ControlState.Hover);

@@ -12,16 +12,14 @@ namespace MCBS.Rendering
     {
         public static OverwriteContext Overwrite(this BlockFrame source, BlockFrame blockFrame, Size size, Point location)
         {
-            if (blockFrame is null)
-                throw new ArgumentNullException(nameof(blockFrame));
+            ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
 
             return source.Overwrite(blockFrame, size, location, Point.Empty);
         }
 
         public static OverwriteContext Overwrite(this BlockFrame source, BlockFrame blockFrame, Point location)
         {
-            if (blockFrame is null)
-                throw new ArgumentNullException(nameof(blockFrame));
+            ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
 
             return source.Overwrite(blockFrame, new(blockFrame.Width, blockFrame.Height), location, Point.Empty);
         }

@@ -69,8 +69,7 @@ namespace MCBS.Config
 
         public static MinecraftConfig Load(string path)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 
             TomlTable table = Toml.ReadFile(path);
             Model model = table.Get<Model>();
@@ -80,10 +79,8 @@ namespace MCBS.Config
 
         public static void Validate(Model model, string name)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
             List<ValidationResult> results = new();
             StringBuilder message = new();

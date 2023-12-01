@@ -218,8 +218,7 @@ namespace MCBS.SystemApplications.FileExplorer
 
         private void SelectApplication(string[] args)
         {
-            if (args is null)
-                throw new ArgumentNullException(nameof(args));
+            ArgumentNullException.ThrowIfNull(args, nameof(args));
 
             _ = DialogBoxHelper.OpenApplicationListBoxAsync(this, "请选择应用程序", (appInfo) =>
             {

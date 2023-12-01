@@ -14,10 +14,8 @@ namespace MCBS.BlockForms.DialogBox
     {
         public static R OpenDialogBox<R>(IForm initiator, DialogBoxForm<R> dialogBox, Action<R>? callback = null)
         {
-            if (dialogBox is null)
-                throw new ArgumentNullException(nameof(dialogBox));
-            if (initiator is null)
-                throw new ArgumentNullException(nameof(initiator));
+            ArgumentNullException.ThrowIfNull(dialogBox, nameof(dialogBox));
+            ArgumentNullException.ThrowIfNull(initiator, nameof(initiator));
 
             MCOS os = MCOS.Instance;
             ProcessContext? process = os.ProcessContextOf(initiator);
@@ -37,10 +35,8 @@ namespace MCBS.BlockForms.DialogBox
 
         public static async Task<R> OpenDialogBoxAsync<R>(IForm initiator, DialogBoxForm<R> dialogBox, Action<R>? callback = null)
         {
-            if (dialogBox is null)
-                throw new ArgumentNullException(nameof(dialogBox));
-            if (initiator is null)
-                throw new ArgumentNullException(nameof(initiator));
+            ArgumentNullException.ThrowIfNull(dialogBox, nameof(dialogBox));
+            ArgumentNullException.ThrowIfNull(initiator, nameof(initiator));
 
             MCOS os = MCOS.Instance;
             ProcessContext? process = os.ProcessContextOf(initiator);

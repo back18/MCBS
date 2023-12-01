@@ -13,8 +13,7 @@ namespace MCBS.Application
     {
         public static ApplicationManifest Load(string path)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 
             Assembly assembly = Assembly.LoadFrom(path);
             return Load(assembly);
@@ -22,8 +21,7 @@ namespace MCBS.Application
 
         public static ApplicationManifest Load(Assembly assembly)
         {
-            if (assembly is null)
-                throw new ArgumentNullException(nameof(assembly));
+            ArgumentNullException.ThrowIfNull(assembly, nameof(assembly));
 
             string path = assembly.GetName().Name + ".McbsApplication.json";
             Stream? stream = assembly.GetManifestResourceStream(path) ?? throw new InvalidOperationException("找不到配置文件");

@@ -63,16 +63,14 @@ namespace MCBS.Logging
 
         public static LogImpl GetLogger(Type type)
         {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(type, nameof(type));
 
             return GetLogger(type.FullName ?? type.Name);
         }
 
         public static LogImpl GetLogger(string name)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException($"“{nameof(name)}”不能为 null 或空。", nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
             lock (_loggers)
             {

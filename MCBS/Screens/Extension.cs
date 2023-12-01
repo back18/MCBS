@@ -25,8 +25,7 @@ namespace MCBS.Screens
 
         public static bool ContainsScreenOption<T>(this IEnumerable<T> source, IScreenOptions value) where T : IScreenOptions
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
 
             return source.Any(item => value.EqualsScreenOption(item));
         }

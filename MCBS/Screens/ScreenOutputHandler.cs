@@ -18,7 +18,9 @@ namespace MCBS.Screens
     {
         public ScreenOutputHandler(Screen owner)
         {
-            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+            _owner = owner;
         }
 
         private readonly Screen _owner;
@@ -51,8 +53,7 @@ namespace MCBS.Screens
 
         private IDictionary<Point, string> GetDifferencesPixels(BlockFrame frame)
         {
-            if (frame is null)
-                throw new ArgumentNullException(nameof(frame));
+            ArgumentNullException.ThrowIfNull(frame, nameof(frame));
             if (frame.Width != _owner.Width || frame.Height != _owner.Height)
                 throw new ArgumentException("帧尺寸不一致");
 

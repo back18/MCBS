@@ -27,8 +27,11 @@ namespace MCBS.Screens
 
         internal ScreenContext(Screen screen, IRootForm form)
         {
-            Screen = screen ?? throw new ArgumentNullException(nameof(screen));
-            RootForm = form ?? throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(screen, nameof(screen));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
+
+            Screen = screen;
+            RootForm = form;
             ScreenInputHandler = new(this);
             IsRestarting = false;
 
@@ -232,8 +235,7 @@ namespace MCBS.Screens
 
         private void InvokeScreenEvent(CursorContext cursorContext)
         {
-            if (cursorContext is null)
-                throw new ArgumentNullException(nameof(cursorContext));
+            ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
 
             CursorInputData oldData = cursorContext.OldInputData;
             CursorInputData newData = cursorContext.NewInputData;

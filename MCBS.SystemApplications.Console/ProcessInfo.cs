@@ -16,12 +16,9 @@ namespace MCBS.SystemApplications.Console
 
         public ProcessInfo(string executableProgram, string startupArguments, string workingDirectory)
         {
-            if (string.IsNullOrEmpty(executableProgram))
-                throw new ArgumentException($"“{nameof(executableProgram)}”不能为 null 或空。", nameof(executableProgram));
-            if (startupArguments is null)
-                throw new ArgumentNullException(nameof(startupArguments));
-            if (string.IsNullOrEmpty(workingDirectory))
-                throw new ArgumentException($"“{nameof(workingDirectory)}”不能为 null 或空。", nameof(workingDirectory));
+            ArgumentException.ThrowIfNullOrEmpty(executableProgram, nameof(executableProgram));
+            ArgumentNullException.ThrowIfNull(startupArguments, nameof(startupArguments));
+            ArgumentException.ThrowIfNullOrEmpty(workingDirectory, nameof(workingDirectory));
 
             ExecutableProgram = executableProgram;
             StartupArguments = startupArguments;
@@ -38,8 +35,7 @@ namespace MCBS.SystemApplications.Console
 
         public static ProcessInfo ReadJsonFile(string path)
         {
-            if (path is null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path, nameof(path));
 
             string json = File.ReadAllText(path);
             Model model = JsonConvert.DeserializeObject<Model>(json) ?? throw new NullReferenceException();

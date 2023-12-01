@@ -13,7 +13,9 @@ namespace MCBS.SystemApplications.Console
     {
         public StandardStreamReader(StreamReader streamReader) : base(LogUtil.GetLogger)
         {
-            _streamReader = streamReader ?? throw new ArgumentNullException(nameof(streamReader));
+            ArgumentNullException.ThrowIfNull(streamReader, nameof(streamReader));
+
+            _streamReader = streamReader;
             _output = new();
         }
 

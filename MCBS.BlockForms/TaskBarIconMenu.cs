@@ -24,8 +24,7 @@ namespace MCBS.BlockForms
 
         public void SwitchSelectedForm(IForm form)
         {
-            if (form is null)
-                throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             foreach (var item in _items)
                 item.IsSelected = false;

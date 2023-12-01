@@ -12,10 +12,8 @@ namespace MCBS.ConsoleTerminal
     {
         public CommandLog(CommandInfo info, int gameTick, int systemTick, SystemStage systemStage, string threadName)
         {
-            if (info is null)
-                throw new ArgumentNullException(nameof(info));
-            if (string.IsNullOrEmpty(threadName))
-                throw new ArgumentException($"“{nameof(threadName)}”不能为 null 或空。", nameof(threadName));
+            ArgumentNullException.ThrowIfNull(info, nameof(info));
+            ArgumentException.ThrowIfNullOrEmpty(threadName, nameof(threadName));
 
             Info = info;
             GameTick = gameTick;

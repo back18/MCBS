@@ -25,8 +25,7 @@ namespace MCBS.Interaction
 
         public InteractionContext(string playerName)
         {
-            if (string.IsNullOrEmpty(playerName))
-                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
+            ArgumentException.ThrowIfNullOrEmpty(playerName, nameof(playerName));
 
             PlayerName = playerName;
             PlayerUUID = Guid.Empty;
@@ -241,12 +240,9 @@ namespace MCBS.Interaction
         {
             public Json(string playerUUID, string entityUUID, double[] position)
             {
-                if (string.IsNullOrEmpty(playerUUID))
-                    throw new ArgumentException($"“{nameof(playerUUID)}”不能为 null 或空。", nameof(playerUUID));
-                if (string.IsNullOrEmpty(entityUUID))
-                    throw new ArgumentException($"“{nameof(entityUUID)}”不能为 null 或空。", nameof(entityUUID));
-                if (position is null)
-                    throw new ArgumentNullException(nameof(position));
+                ArgumentException.ThrowIfNullOrEmpty(playerUUID, nameof(playerUUID));
+                ArgumentException.ThrowIfNullOrEmpty(entityUUID, nameof(entityUUID));
+                ArgumentNullException.ThrowIfNull(position, nameof(position));
 
                 PlayerUUID = playerUUID;
                 EntityUUID = entityUUID;

@@ -13,8 +13,11 @@ namespace MCBS.BlockForms.DialogBox
     {
         protected DialogBoxForm(IForm initiator, string title)
         {
-            _initiator = initiator ?? throw new ArgumentNullException(nameof(initiator));
-            _title = title ?? throw new ArgumentNullException(nameof(title));
+            ArgumentNullException.ThrowIfNull(initiator, nameof(initiator));
+            ArgumentNullException.ThrowIfNull(title, nameof(title));
+
+            _initiator = initiator;
+            _title = title;
 
             AllowDeselected = false;
             AllowStretch = false;

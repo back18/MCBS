@@ -16,10 +16,8 @@ namespace MCBS.Rendering
     {
         public Texture(Image<TPixel> imageSource, ResizeOptions resizeOptions)
         {
-            if (imageSource is null)
-                throw new ArgumentNullException(nameof(imageSource));
-            if (resizeOptions is null)
-                throw new ArgumentNullException(nameof(resizeOptions));
+            ArgumentNullException.ThrowIfNull(imageSource, nameof(imageSource));
+            ArgumentNullException.ThrowIfNull(resizeOptions, nameof(resizeOptions));
 
             ImageSource = imageSource;
             CropRectangle = imageSource.Bounds;
@@ -73,8 +71,7 @@ namespace MCBS.Rendering
 
         public void ImageSourceUpdated(Image<TPixel> image, bool disposing = true)
         {
-            if (image is null)
-                throw new ArgumentNullException(nameof(image));
+            ArgumentNullException.ThrowIfNull(image, nameof(image));
 
             if (disposing)
                 ImageSource.Dispose();
@@ -109,8 +106,7 @@ namespace MCBS.Rendering
         {
             public TextureOutput(Texture<TPixel> owner)
             {
-                if (owner is null)
-                    throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
                 CropRectangle = owner.CropRectangle;
                 ResizeOptions = owner.ResizeOptions.Clone();

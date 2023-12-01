@@ -84,7 +84,9 @@ namespace MCBS.Interaction
         {
             public InteractionCollection(InteractionManager owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
                 _items = new();
             }
 

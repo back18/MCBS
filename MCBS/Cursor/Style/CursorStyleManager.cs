@@ -25,7 +25,9 @@ namespace MCBS.Cursor.Style
 
         private CursorStyleManager(Dictionary<string, CursorStyle> items)
         {
-            _items = items ?? throw new ArgumentNullException(nameof(items));
+            ArgumentNullException.ThrowIfNull(items, nameof(items));
+
+            _items = items;
         }
 
         private static readonly object _slock;

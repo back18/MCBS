@@ -10,8 +10,7 @@ namespace MCBS.Rendering
     {
         public HashBlockPixel(string pixel)
         {
-            if (pixel is null)
-                throw new ArgumentNullException(nameof(pixel));
+            ArgumentNullException.ThrowIfNull(pixel, nameof(pixel));
 
             _blockConverter = new();
             Pixel = _blockConverter[pixel];

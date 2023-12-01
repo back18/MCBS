@@ -14,10 +14,8 @@ namespace MCBS.Utility
     {
         public static void BuildFFmpegIndex(string ffmpegPath, string savePath)
         {
-            if (string.IsNullOrEmpty(ffmpegPath))
-                throw new ArgumentException($"“{nameof(ffmpegPath)}”不能为 null 或空。", nameof(ffmpegPath));
-            if (string.IsNullOrEmpty(savePath))
-                throw new ArgumentException($"“{nameof(savePath)}”不能为 null 或空。", nameof(savePath));
+            ArgumentException.ThrowIfNullOrEmpty(ffmpegPath, nameof(ffmpegPath));
+            ArgumentException.ThrowIfNullOrEmpty(savePath, nameof(savePath));
 
             ZipPack zipPack = new(ffmpegPath);
             ZipArchiveEntry[] entries = zipPack.GetFiles(Path.GetFileNameWithoutExtension(ffmpegPath) + "/bin/");
@@ -35,10 +33,8 @@ namespace MCBS.Utility
 
         public static void BuildTextureIndex(string texturesDir, string savePath)
         {
-            if (string.IsNullOrEmpty(texturesDir))
-                throw new ArgumentException($"“{nameof(texturesDir)}”不能为 null 或空。", nameof(texturesDir));
-            if (string.IsNullOrEmpty(savePath))
-                throw new ArgumentException($"“{nameof(savePath)}”不能为 null 或空。", nameof(savePath));
+            ArgumentException.ThrowIfNullOrEmpty(texturesDir, nameof(texturesDir));
+            ArgumentException.ThrowIfNullOrEmpty(savePath, nameof(savePath));
 
             string[] files = Directory.GetFiles(texturesDir, "*.png");
             Dictionary<string, string> indexs = new();

@@ -58,8 +58,7 @@ namespace MCBS.Screens
 
         public static void Validate(string name, Model model)
         {
-            if (model is null)
-                throw new ArgumentNullException(nameof(model));
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
 
             List<ValidationResult> results = new();
             if (!Validator.TryValidateObject(model, new(model), results, true))

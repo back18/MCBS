@@ -29,10 +29,8 @@ namespace MCBS.Rendering
 
         public static IDictionary<Point, string> GetDifferencesPixel(BlockFrame blockFrame1, BlockFrame blockFrame2)
         {
-            if (blockFrame1 is null)
-                throw new ArgumentNullException(nameof(blockFrame1));
-            if (blockFrame2 is null)
-                throw new ArgumentNullException(nameof(blockFrame2));
+            ArgumentNullException.ThrowIfNull(blockFrame1, nameof(blockFrame1));
+            ArgumentNullException.ThrowIfNull(blockFrame2, nameof(blockFrame2));
             if (blockFrame1.Width != blockFrame1.Width || blockFrame1.Height != blockFrame2.Height)
                 throw new ArgumentException("帧尺寸不一致");
 
@@ -50,16 +48,14 @@ namespace MCBS.Rendering
 
         public virtual OverwriteContext Overwrite(BlockFrame blockFrame, Size size, Point location, Point offset)
         {
-            if (blockFrame is null)
-                throw new ArgumentNullException(nameof(blockFrame));
+            ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
 
             return Overwrite(blockFrame.AsPixelCollection(), size, location, offset);
         }
 
         public OverwriteContext Overwrite(IPixelCollection<string> pixels, Size size, Point location, Point offset)
         {
-            if (pixels is null)
-                throw new ArgumentNullException(nameof(pixels));
+            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), new(size.Width, size.Height), location, offset);
             if (pixels.SupportTransparent)

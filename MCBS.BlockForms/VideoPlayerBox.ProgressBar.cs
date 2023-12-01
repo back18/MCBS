@@ -17,7 +17,9 @@ namespace MCBS.BlockForms
         {
             public VideoProgressBar(VideoPlayerBox<TPixel> owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
 
                 Time_Label = new();
 

@@ -10,7 +10,9 @@ namespace MCBS.Screens
     {
         protected Pixel(string blockID)
         {
-            BlockID = blockID ?? throw new ArgumentNullException(nameof(blockID));
+            ArgumentNullException.ThrowIfNull(blockID, nameof(blockID));
+
+            BlockID = blockID;
         }
 
         public string BlockID { get; }

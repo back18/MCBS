@@ -14,15 +14,16 @@ namespace MCBS.BlockForms
 		{
 			public ControlCollection(ContainerControl owner)
 			{
-				_owner = owner ?? throw new ArgumentNullException(nameof(owner));
+				ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+				_owner = owner;
 			}
 
 			private readonly ContainerControl _owner;
 
 			public override void Add(T item)
 			{
-				if (item is null)
-					throw new ArgumentNullException(nameof(item));
+				ArgumentNullException.ThrowIfNull(item, nameof(item));
 
 				bool insert = false;
 				for (int i = _items.Count - 1; i >= 0; i--)
@@ -45,8 +46,7 @@ namespace MCBS.BlockForms
 
 			public override bool Remove(T item)
 			{
-				if (item is null)
-					throw new ArgumentNullException(nameof(item));
+				ArgumentNullException.ThrowIfNull(item, nameof(item));
 
 				if (!_items.Remove(item))
 					return false;

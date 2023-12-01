@@ -12,13 +12,17 @@ namespace MCBS.Cursor
     {
         public HoverControl(IControl control)
         {
-            Control = control ?? throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
+
+            Control = control;
             OffsetPosition = Point.Empty;
         }
 
         public HoverControl(IControl control, Point offsetPosition)
         {
-            Control = control ?? throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
+
+            Control = control;
             OffsetPosition = offsetPosition;
         }
 

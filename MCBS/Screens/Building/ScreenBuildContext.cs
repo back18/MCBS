@@ -19,8 +19,7 @@ namespace MCBS.Screens.Building
     {
         public ScreenBuildContext(string playerName)
         {
-            if (string.IsNullOrEmpty(playerName))
-                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
+            ArgumentException.ThrowIfNullOrEmpty(playerName, nameof(playerName));
 
             PlayerName = playerName;
             BuildState = ScreenBuildState.ReadStartPosition;

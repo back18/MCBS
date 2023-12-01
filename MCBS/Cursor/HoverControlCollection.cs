@@ -29,8 +29,7 @@ namespace MCBS.Cursor
 
         public bool TryAdd(IControl control, Point offsetPosition, [MaybeNullWhen(false)] out HoverControl result)
         {
-            if (control is null)
-                throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
 
             if (_items.ContainsKey(control))
             {
@@ -45,8 +44,7 @@ namespace MCBS.Cursor
 
         public bool TryAdd(IControl control, [MaybeNullWhen(false)] out HoverControl result)
         {
-            if (control is null)
-                throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
 
             if (_items.ContainsKey(control))
             {
@@ -61,8 +59,7 @@ namespace MCBS.Cursor
 
         public bool TryRemove(IControl control, [MaybeNullWhen(false)] out HoverControl result)
         {
-            if (control is null)
-                throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
 
             if (_items.TryGetValue(control, out result))
             {
@@ -77,16 +74,14 @@ namespace MCBS.Cursor
 
         public bool ContainsKey(IControl key)
         {
-            if (key is null)
-                throw new ArgumentNullException(nameof(key));
+            ArgumentNullException.ThrowIfNull(key, nameof(key));
 
             return _items.ContainsKey(key);
         }
 
         public bool TryGetValue(IControl key, [MaybeNullWhen(false)] out HoverControl value)
         {
-            if (key is null)
-                throw new ArgumentNullException(nameof(key));
+            ArgumentNullException.ThrowIfNull(key, nameof(key));
 
             return _items.TryGetValue(key, out value);
         }

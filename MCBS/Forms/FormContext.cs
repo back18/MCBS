@@ -27,8 +27,11 @@ namespace MCBS.Forms
 
         internal FormContext(IProgram program, IForm form)
         {
-            Program = program ?? throw new ArgumentNullException(nameof(program));
-            Form = form ?? throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(program, nameof(program));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
+
+            Program = program;
+            Form = form;
 
             if (form is IRootForm rootForm1)
             {
@@ -234,8 +237,7 @@ namespace MCBS.Forms
 
         public void DragUpForm(CursorContext cursorContext, Point offsetPosition)
         {
-            if (cursorContext is null)
-                throw new ArgumentNullException(nameof(cursorContext));
+            ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
 
             DraggingContext = new(cursorContext, offsetPosition);
             StateManager.AddNextState(FormState.Dragging);
@@ -243,8 +245,7 @@ namespace MCBS.Forms
 
         public void DragDownForm(IRootForm rootForm)
         {
-            if (rootForm is null)
-                throw new ArgumentNullException(nameof(rootForm));
+            ArgumentNullException.ThrowIfNull(rootForm, nameof(rootForm));
             if (DraggingContext is null)
                 return;
 
@@ -254,8 +255,7 @@ namespace MCBS.Forms
 
         public void StretchUpForm(CursorContext cursorContext, Direction borders)
         {
-            if (cursorContext is null)
-                throw new ArgumentNullException(nameof(cursorContext));
+            ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
 
             StretchingContext = new(cursorContext, borders);
             StateManager.AddNextState(FormState.Stretching);

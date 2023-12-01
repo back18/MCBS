@@ -48,7 +48,9 @@ namespace MCBS.Processes
         {
             public ProcessCollection(ProcessManager owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
                 _items = new();
                 _id = 0;
             }
@@ -78,10 +80,8 @@ namespace MCBS.Processes
 
             public ProcessContext Add(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null)
             {
-                if (applicationManifest is null)
-                    throw new ArgumentNullException(nameof(applicationManifest));
-                if (args is null)
-                    throw new ArgumentNullException(nameof(args));
+                ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
+                ArgumentNullException.ThrowIfNull(args, nameof(args));
 
                 lock (_items)
                 {

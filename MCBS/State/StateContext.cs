@@ -11,10 +11,8 @@ namespace MCBS.State
     {
         public StateContext(T targetState, IList<T> whitelist, StateHandler<T> stateHandler, Action onState)
         {
-            if (whitelist is null)
-                throw new ArgumentNullException(nameof(whitelist));
-            if (stateHandler is null)
-                throw new ArgumentNullException(nameof(stateHandler));
+            ArgumentNullException.ThrowIfNull(whitelist, nameof(whitelist));
+            ArgumentNullException.ThrowIfNull(stateHandler, nameof(stateHandler));
 
             TargetState = targetState;
             Whitelist = new(whitelist);

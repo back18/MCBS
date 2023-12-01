@@ -25,8 +25,7 @@ namespace MCBS
 
         public MediaFilePlayer(string path, MediaOptions mediaOptions, bool enableAudio = true)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 
             MediaFile = MediaFile.Open(path, mediaOptions);
             VideoDecoder = new(MediaFile.Video);

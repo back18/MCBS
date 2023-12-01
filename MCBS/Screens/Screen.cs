@@ -205,8 +205,7 @@ namespace MCBS.Screens
 
         private bool Check(string blockID)
         {
-            if (blockID is null)
-                throw new ArgumentNullException(nameof(blockID));
+            ArgumentNullException.ThrowIfNull(blockID, nameof(blockID));
 
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
             for (int x = 0; x < Width; x++)
@@ -458,8 +457,7 @@ namespace MCBS.Screens
 
         public double GetPlaneDistance<T>(T position) where T : IVector3<double>
         {
-            if (position is null)
-                throw new ArgumentNullException(nameof(position));
+            ArgumentNullException.ThrowIfNull(position, nameof(position));
 
             return NormalFacing switch
             {
@@ -740,8 +738,7 @@ namespace MCBS.Screens
 
         public static bool Replace(Screen? oldScreen, Screen newScreen, bool check = false)
         {
-            if (newScreen is null)
-                throw new ArgumentNullException(nameof(newScreen));
+            ArgumentNullException.ThrowIfNull(newScreen, nameof(newScreen));
 
             if (oldScreen is null || oldScreen.OutputHandler.LastFrame is null)
             {

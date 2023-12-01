@@ -44,10 +44,8 @@ namespace MCBS
 
         private MCOS(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(LogUtil.GetLogger)
         {
-            if (minecraftInstance is null)
-                throw new ArgumentNullException(nameof(minecraftInstance));
-            if (appComponents is null)
-                throw new ArgumentNullException(nameof(appComponents));
+            ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
+            ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
 
             MinecraftInstance = minecraftInstance;
             TimeAnalysisManager = new();
@@ -139,10 +137,8 @@ namespace MCBS
 
         public static MCOS LoadInstance(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents)
         {
-            if (minecraftInstance is null)
-                throw new ArgumentNullException(nameof(minecraftInstance));
-            if (appComponents is null)
-                throw new ArgumentNullException(nameof(appComponents));
+            ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
+            ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
 
             lock (_slock)
             {
@@ -320,8 +316,7 @@ namespace MCBS
 
         private void HandleAndTimeing(Action action, SystemStage stage)
         {
-            if (action is null)
-                throw new ArgumentNullException(nameof(action));
+            ArgumentNullException.ThrowIfNull(action, nameof(action));
 
             SystemStage = stage;
             Stopwatch stopwatch = Stopwatch.StartNew();
@@ -419,8 +414,7 @@ namespace MCBS
 
         public ScreenContext? ScreenContextOf(IForm form)
         {
-            if (form is null)
-                throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             foreach (var context in ScreenManager.Items.Values)
                 if (context.RootForm == form || context.RootForm.ContainsForm(form))
@@ -431,8 +425,7 @@ namespace MCBS
 
         public ProcessContext? ProcessContextOf(IProgram program)
         {
-            if (program is null)
-                throw new ArgumentNullException(nameof(program));
+            ArgumentNullException.ThrowIfNull(program, nameof(program));
 
             foreach (var context in ProcessManager.Items.Values)
                 if (program == context.Program)
@@ -443,8 +436,7 @@ namespace MCBS
 
         public ProcessContext? ProcessContextOf(IForm form)
         {
-            if (form is null)
-                throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             FormContext? context = FormContextOf(form);
             if (context is null)
@@ -455,8 +447,7 @@ namespace MCBS
 
         public FormContext? FormContextOf(IForm form)
         {
-            if (form is null)
-                throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             foreach (var context in FormManager.Items.Values.ToArray())
                 if (form == context.Form)
@@ -467,42 +458,36 @@ namespace MCBS
 
         public ProcessContext RunApplication(ApplicationManifest applicationManifest, IForm? initiator = null)
         {
-            if (applicationManifest is null)
-                throw new ArgumentNullException(nameof(applicationManifest));
+            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
 
             return ProcessManager.Items.Add(applicationManifest, initiator).StartProcess();
         }
 
         public ProcessContext RunApplication(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null)
         {
-            if (applicationManifest is null)
-                throw new ArgumentNullException(nameof(applicationManifest));
-            if (args is null)
-                throw new ArgumentNullException(nameof(args));
+            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
+            ArgumentNullException.ThrowIfNull(args, nameof(args));
 
             return ProcessManager.Items.Add(applicationManifest, args, initiator).StartProcess();
         }
 
         public ProcessContext RunApplication(string appID, string[] args, IForm? initiator = null)
         {
-            if (string.IsNullOrEmpty(appID))
-                throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
+            ArgumentException.ThrowIfNullOrEmpty(appID, nameof(appID));
 
             return ProcessManager.Items.Add(AppComponents[appID], args, initiator).StartProcess();
         }
 
         public ProcessContext RunApplication(string appID, IForm? initiator = null)
         {
-            if (string.IsNullOrEmpty(appID))
-                throw new ArgumentException($"“{nameof(appID)}”不能为 null 或空。", nameof(appID));
+            ArgumentException.ThrowIfNullOrEmpty(appID, nameof(appID));
 
             return ProcessManager.Items.Add(AppComponents[appID], initiator).StartProcess();
         }
 
         public ScreenContext LoadScreen(Screen screen)
         {
-            if (screen is null)
-                throw new ArgumentNullException(nameof(screen));
+            ArgumentNullException.ThrowIfNull(screen, nameof(screen));
 
             return ScreenManager.Items.Add(screen).LoadScreen();
         }

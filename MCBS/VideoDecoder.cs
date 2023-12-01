@@ -20,8 +20,7 @@ namespace MCBS
     {
         public VideoDecoder(VideoStream videoStream) : base(LogUtil.GetLogger)
         {
-            if (videoStream is null)
-                throw new ArgumentNullException(nameof(videoStream));
+            ArgumentNullException.ThrowIfNull(videoStream, nameof(videoStream));
 
             MaxCacheFrames = 16;
             _videoStream = videoStream;

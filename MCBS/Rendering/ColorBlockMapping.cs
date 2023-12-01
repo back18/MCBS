@@ -14,7 +14,9 @@ namespace MCBS.Rendering
     {
         public ColorBlockMapping(Rgba32BlockMapping mapping)
         {
-            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
+            ArgumentNullException.ThrowIfNull(mapping, nameof(mapping));
+
+            _mapping = mapping;
             _matcher = _mapping.CreateColorMatcher<TPixel>();
         }
 

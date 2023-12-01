@@ -14,8 +14,7 @@ namespace MCBS.Cursor
     {
         public TextEditor(string playerName)
         {
-            if (string.IsNullOrEmpty(playerName))
-                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
+            ArgumentException.ThrowIfNullOrEmpty(playerName, nameof(playerName));
 
             PlayerName = playerName;
             InitialText = string.Empty;
@@ -36,8 +35,7 @@ namespace MCBS.Cursor
 
         public bool ReadText(Item item)
         {
-            if (item is null)
-                throw new ArgumentNullException(nameof(item));
+            ArgumentNullException.ThrowIfNull(item, nameof(item));
 
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
 

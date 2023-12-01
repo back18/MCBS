@@ -62,8 +62,7 @@ namespace MCBS
 
         public static void LoadAll(ResourceEntryManager resources)
         {
-            if (resources is null)
-                throw new ArgumentNullException(nameof(resources));
+            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
 
             LoadBlockTextureManager(resources);
             BuildColorMappingCache(resources);

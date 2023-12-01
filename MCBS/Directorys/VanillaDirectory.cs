@@ -15,8 +15,7 @@ namespace MCBS.Directorys
 
         public VersionDirectory GetVersionDirectory(string version)
         {
-            if (string.IsNullOrEmpty(version))
-                throw new ArgumentException($"“{nameof(version)}”不能为 null 或空。", nameof(version));
+            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
 
             return new VersionDirectory(Combine(version));
         }

@@ -16,7 +16,9 @@ namespace MCBS.Rendering
     {
         public ColorMatcher(IEnumerable<Rgba32> colors, ColorMappingCache? mappingCache = null)
         {
-            _colors = colors ?? throw new ArgumentNullException(nameof(colors));
+            ArgumentNullException.ThrowIfNull(colors, nameof(colors));
+
+            _colors = colors;
             _mappingCache = mappingCache;
             _tempCache = new();
         }
@@ -78,8 +80,7 @@ namespace MCBS.Rendering
 
         public async Task<Image<Rgba32>> MatchAsync(Image<TPixel> image)
         {
-            if (image is null)
-                throw new ArgumentNullException(nameof(image));
+            ArgumentNullException.ThrowIfNull(image, nameof(image));
 
             TPixel[] pixels = await GetPixelsAsync(image);
             Rgba32[] matchs = await MatchAsync(pixels);
@@ -101,8 +102,7 @@ namespace MCBS.Rendering
 
         public async Task BuildCacheAsync(TPixel[] pixels)
         {
-            if (pixels is null)
-                throw new ArgumentNullException(nameof(pixels));
+            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             HashSet<TPixel> matchs = new();
             await Task.Run(() =>
@@ -125,8 +125,7 @@ namespace MCBS.Rendering
 
         public async Task BuildCacheAsync(Image<TPixel> image)
         {
-            if (image is null)
-                throw new ArgumentNullException(nameof(image));
+            ArgumentNullException.ThrowIfNull(image, nameof(image));
 
             TPixel[] pixels = await GetPixelsAsync(image);
             await BuildCacheAsync(pixels);
@@ -149,8 +148,7 @@ namespace MCBS.Rendering
 
         private static async Task<TPixel[]> GetPixelsAsync(Image<TPixel> image)
         {
-            if (image is null)
-                throw new ArgumentNullException(nameof(image));
+            ArgumentNullException.ThrowIfNull(image, nameof(image));
 
             return await Task.Run(() =>
             {

@@ -95,8 +95,7 @@ namespace MCBS.Rendering
 
         public static OverwriteContext DrawBinary<TPixel>(this IPixelBuffer2D<TPixel> source, bool[,] binary, TPixel pixel, Point location)
         {
-            if (binary is null)
-                throw new ArgumentNullException(nameof(binary));
+            ArgumentNullException.ThrowIfNull(binary, nameof(binary));
 
             Size size = new(binary.GetLength(0), binary.GetLength(1));
             OverwriteContext overwriteContext = new(new(source.Width, source.Height), size, size, location, Point.Empty);

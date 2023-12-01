@@ -27,8 +27,7 @@ namespace MCBS.Cursor
 
         public CursorContext GetOrCreate(string key)
         {
-            if (string.IsNullOrEmpty(key))
-                throw new ArgumentException($"“{nameof(key)}”不能为 null 或空。", nameof(key));
+            ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
 
             lock (_items)
             {

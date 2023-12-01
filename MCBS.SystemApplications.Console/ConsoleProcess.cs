@@ -16,8 +16,7 @@ namespace MCBS.SystemApplications.Console
 
         public ConsoleProcess(ProcessInfo processInfo) : base(LogUtil.GetLogger)
         {
-            if (processInfo is null)
-                throw new ArgumentNullException(nameof(processInfo));
+            ArgumentNullException.ThrowIfNull(processInfo, nameof(processInfo));
 
             Process = new()
             {

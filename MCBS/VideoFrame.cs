@@ -13,8 +13,7 @@ namespace MCBS
     {
         public VideoFrame(Image<TPixel> image, TimeSpan position)
         {
-            if (image is null)
-                throw new ArgumentNullException(nameof(image));
+            ArgumentNullException.ThrowIfNull(image, nameof(image));
 
             Image = image;
             Position = position;

@@ -17,7 +17,9 @@ namespace MCBS.BlockForms.Utility
     {
         public LayoutSyncer(Control target, EventHandler<Control, PositionChangedEventArgs> move, EventHandler<Control, SizeChangedEventArgs> resize)
         {
-            Target = target ?? throw new ArgumentNullException(nameof(target));
+            ArgumentNullException.ThrowIfNull(target, nameof(target));
+
+            Target = target;
             Move = move;
             Resize = resize;
         }

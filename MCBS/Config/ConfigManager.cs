@@ -71,10 +71,8 @@ namespace MCBS.Config
 
         private static void CreateIfNotExists(string path, string resource)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
-            if (string.IsNullOrEmpty(resource))
-                throw new ArgumentException($"“{nameof(resource)}”不能为 null 或空。", nameof(resource));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+            ArgumentException.ThrowIfNullOrEmpty(resource, nameof(resource));
 
             if (!File.Exists(path))
             {

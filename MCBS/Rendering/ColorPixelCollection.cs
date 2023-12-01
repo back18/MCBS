@@ -36,7 +36,9 @@ namespace MCBS.Rendering
 
         public ColorPixelCollection(Image<TPixel> image)
         {
-            _image = image ?? throw new ArgumentNullException(nameof(image));
+            ArgumentNullException.ThrowIfNull(image, nameof(image));
+
+            _image = image;
 
             TransparentPixel = default;
             if (_transparentPixelTypes.Contains(typeof(TPixel)))
@@ -67,8 +69,7 @@ namespace MCBS.Rendering
 
         public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Size size, Point location, Point offset)
         {
-            if (pixels is null)
-                throw new ArgumentNullException(nameof(pixels));
+            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), new(size.Width, size.Height), location, offset);
             if (pixels.SupportTransparent)

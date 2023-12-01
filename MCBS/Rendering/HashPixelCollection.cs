@@ -26,7 +26,9 @@ namespace MCBS.Rendering
 
         private HashPixelCollection(int[] pixels)
         {
-            _hashs = pixels ?? throw new ArgumentNullException(nameof(pixels));
+            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
+
+            _hashs = pixels;
         }
 
         public int this[int index] { get => _hashs[index]; set => _hashs[index] = value; }
@@ -47,8 +49,7 @@ namespace MCBS.Rendering
 
         public OverwriteContext Overwrite(IPixelCollection<int> pixels, Size size, Point location, Point offset)
         {
-            if (pixels is null)
-                throw new ArgumentNullException(nameof(pixels));
+            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), new(size.Width, size.Height), location, offset);
             if (location == Point.Empty && size.Width == Width && size.Height == Height)

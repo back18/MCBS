@@ -97,8 +97,7 @@ namespace MCBS
 
         internal void SetCurrentMainTask(Task mainTask)
         {
-            if (mainTask is null)
-                throw new ArgumentNullException(nameof(mainTask));
+            ArgumentNullException.ThrowIfNull(mainTask, nameof(mainTask));
 
             if (_current != mainTask)
                 _current = mainTask;
@@ -108,16 +107,14 @@ namespace MCBS
 
         public void AddTask(Action task)
         {
-            if (task is null)
-                throw new ArgumentNullException(nameof(task));
+            ArgumentNullException.ThrowIfNull(task, nameof(task));
 
             _tasks.Enqueue(task);
         }
 
         public void AddTempTask(Action task)
         {
-            if (task is null)
-                throw new ArgumentNullException(nameof(task));
+            ArgumentNullException.ThrowIfNull(task, nameof(task));
 
             _tempTasks.Enqueue(task);
         }

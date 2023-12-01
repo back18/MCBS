@@ -16,8 +16,7 @@ namespace MCBS.Cursor
     {
         public CursorContext(string playerName)
         {
-            if (string.IsNullOrEmpty(playerName))
-                throw new ArgumentException($"“{nameof(playerName)}”不能为 null 或空。", nameof(playerName));
+            ArgumentException.ThrowIfNullOrEmpty(playerName, nameof(playerName));
 
             PlayerName = playerName;
             LastActiveTick = -1;
@@ -55,10 +54,8 @@ namespace MCBS.Cursor
 
         internal void SetNewInputData(ScreenContext screenContext, CursorInputData inputData)
         {
-            if (screenContext is null)
-                throw new ArgumentNullException(nameof(screenContext));
-            if (inputData is null)
-                throw new ArgumentNullException(nameof(inputData));
+            ArgumentNullException.ThrowIfNull(screenContext, nameof(screenContext));
+            ArgumentNullException.ThrowIfNull(inputData, nameof(inputData));
 
             if (LastActiveTick != MCOS.Instance.SystemTick)
             {

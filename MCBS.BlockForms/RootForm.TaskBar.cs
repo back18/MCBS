@@ -17,7 +17,9 @@ namespace MCBS.BlockForms
         {
             public TaskBar(RootForm owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
 
                 BorderWidth = 0;
                 Height = 18;

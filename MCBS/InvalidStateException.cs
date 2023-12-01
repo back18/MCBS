@@ -24,13 +24,17 @@ namespace MCBS
 
         public InvalidStateException(object currentState, object? targetState)
         {
-            CurrentState = currentState ?? throw new ArgumentNullException(nameof(currentState));
+            ArgumentNullException.ThrowIfNull(currentState, nameof(currentState));
+
+            CurrentState = currentState;
             TargetState = targetState;
         }
 
         public InvalidStateException(object currentState, object? targetState, string? message) : base(message)
         {
-            CurrentState = currentState ?? throw new ArgumentNullException(nameof(currentState));
+            ArgumentNullException.ThrowIfNull(currentState, nameof(currentState));
+
+            CurrentState = currentState;
             TargetState = targetState;
         }
 

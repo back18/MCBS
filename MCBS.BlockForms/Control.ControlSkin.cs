@@ -14,8 +14,10 @@ namespace MCBS.BlockForms
 		public class ControlSkin
 		{
 			public ControlSkin(Control owner)
-			{
-				_owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            {
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
 
 				string black = BlockManager.Concrete.Black;
 				string white = BlockManager.Concrete.White;
@@ -42,8 +44,7 @@ namespace MCBS.BlockForms
 				get => _ForegroundColor;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_ForegroundColor, value))
 					{
 						_ForegroundColor = value;
@@ -59,8 +60,7 @@ namespace MCBS.BlockForms
 				get => _BackgroundColor;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_BackgroundColor, value))
 					{
 						_BackgroundColor = value;
@@ -76,8 +76,7 @@ namespace MCBS.BlockForms
 				get => _BorderColor;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(BorderColor, value))
 					{
 						_BorderColor = value;
@@ -93,8 +92,7 @@ namespace MCBS.BlockForms
 				get => _ForegroundColor_Hover;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_ForegroundColor_Hover, value))
 					{
 						_ForegroundColor_Hover = value;
@@ -110,8 +108,7 @@ namespace MCBS.BlockForms
 				get => _BackgroundColor_Hover;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(BackgroundColor_Hover, value))
 					{
 						_BackgroundColor_Hover = value;
@@ -127,8 +124,7 @@ namespace MCBS.BlockForms
 				get => _BorderColor_Hover;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_BorderColor_Hover, value))
 					{
 						_BorderColor_Hover = value;
@@ -144,8 +140,7 @@ namespace MCBS.BlockForms
 				get => _ForegroundColor_Selected;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_ForegroundColor_Selected, value))
 					{
 						_ForegroundColor_Selected = value;
@@ -161,8 +156,7 @@ namespace MCBS.BlockForms
 				get => _BackgroundColor_Selected;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_BorderColor_Selected, value))
 					{
 						_BackgroundColor_Selected = value;
@@ -178,8 +172,7 @@ namespace MCBS.BlockForms
 				get => _BorderColor_Selected;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_BorderColor_Selected, value))
 					{
 						_BorderColor_Selected = value;
@@ -195,8 +188,7 @@ namespace MCBS.BlockForms
 				get => _ForegroundColor_Hover_Selected;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_ForegroundColor_Hover_Selected, value))
 					{
 						_ForegroundColor_Hover_Selected = value;
@@ -212,8 +204,7 @@ namespace MCBS.BlockForms
 				get => _BackgroundColor_Hover_Selected;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_BackgroundColor_Hover_Selected, value))
 					{
 						_BackgroundColor_Hover_Selected = value;
@@ -229,8 +220,7 @@ namespace MCBS.BlockForms
 				get => _BorderColor_Hover_Selected;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!BlockPixel.Equals(_BorderColor_Hover_Selected, value))
 					{
 						_BorderColor_Hover_Selected = value;
@@ -246,8 +236,7 @@ namespace MCBS.BlockForms
 				get => _BackgroundTexture;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!Texture.Equals(_BackgroundTexture, value))
 					{
 						_BackgroundTexture = value;
@@ -278,8 +267,7 @@ namespace MCBS.BlockForms
 				get => _BackgroundTexture_Hover;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!Texture.Equals(_BackgroundTexture_Hover, value))
 					{
 						_BackgroundTexture_Hover = value;
@@ -295,8 +283,7 @@ namespace MCBS.BlockForms
 				get => _BackgroundTexture_Hover_Selected;
 				set
 				{
-					if (value is null)
-						throw new ArgumentNullException(nameof(value));
+					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!Texture.Equals(_BackgroundTexture_Hover_Selected, value))
 					{
 						_BackgroundTexture_Hover_Selected = value;
@@ -357,8 +344,7 @@ namespace MCBS.BlockForms
 
 			public void SetForegroundColor(BlockPixel color, ControlState state)
 			{
-                if (color is null)
-					throw new ArgumentNullException(nameof(color));
+                ArgumentNullException.ThrowIfNull(color, nameof(color));
 
                 color = color.Clone();
                 switch (state)
@@ -382,8 +368,7 @@ namespace MCBS.BlockForms
 
 			public void SetBackgroundColor(BlockPixel color, ControlState state)
             {
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
                 color = color.Clone();
                 switch (state)
@@ -407,8 +392,7 @@ namespace MCBS.BlockForms
 
 			public void SetBorderColor(BlockPixel color, ControlState state)
             {
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
                 color = color.Clone();
                 switch (state)
@@ -432,8 +416,7 @@ namespace MCBS.BlockForms
 
 			public void SetForegroundColor(string color, ControlState state)
 			{
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
                 switch (state)
                 {
@@ -456,8 +439,7 @@ namespace MCBS.BlockForms
 
 			public void SetBackgroundColor(string color, ControlState state)
             {
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
                 switch (state)
                 {
@@ -480,8 +462,7 @@ namespace MCBS.BlockForms
 
 			public void SetBorderColor(string color, ControlState state)
             {
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
                 switch (state)
                 {
@@ -540,8 +521,7 @@ namespace MCBS.BlockForms
 
             public void SetAllForegroundColor(BlockPixel color)
 			{
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
 				ForegroundColor = color.Clone();
 				ForegroundColor_Hover = color.Clone();
@@ -551,8 +531,7 @@ namespace MCBS.BlockForms
 
 			public void SetAllBackgroundColor(BlockPixel color)
 			{
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
 				BackgroundColor = color.Clone();
 				BackgroundColor_Hover = color.Clone();
@@ -562,8 +541,7 @@ namespace MCBS.BlockForms
 
 			public void SetAllBorderColor(BlockPixel color)
 			{
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
 				BorderColor = color.Clone();
 				BorderColor_Hover = color.Clone();
@@ -573,24 +551,21 @@ namespace MCBS.BlockForms
 
 			public void SetAllForegroundColor(string color)
 			{
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
 				SetAllForegroundColor(new HashBlockPixel(color));
 			}
 
 			public void SetAllBackgroundColor(string color)
 			{
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
 				SetAllBackgroundColor(new HashBlockPixel(color));
 			}
 
 			public void SetAllBorderColor(string color)
 			{
-				if (color is null)
-					throw new ArgumentNullException(nameof(color));
+				ArgumentNullException.ThrowIfNull(color, nameof(color));
 
 				SetAllBorderColor(new HashBlockPixel(color));
 			}
@@ -619,8 +594,7 @@ namespace MCBS.BlockForms
 
 			public void SetBackgroundTexture<TPixel>(Image<TPixel> image, ControlState state) where TPixel : unmanaged, IPixel<TPixel>
 			{
-                if (image is null)
-					throw new ArgumentNullException(nameof(image));
+                ArgumentNullException.ThrowIfNull(image, nameof(image));
 
                 switch (state)
                 {
@@ -663,8 +637,7 @@ namespace MCBS.BlockForms
 
 			public void SetAllBackgroundTexture<TPixel>(Image<TPixel> image) where TPixel : unmanaged, IPixel<TPixel>
 			{
-                if (image is null)
-					throw new ArgumentNullException(nameof(image));
+                ArgumentNullException.ThrowIfNull(image, nameof(image));
 
 				SetAllBackgroundTexture(new Texture<TPixel>(image));
 			}

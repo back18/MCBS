@@ -14,8 +14,7 @@ namespace MCBS.Rendering
         {
             ThrowHelper.ArgumentOutOfMin(1, width, nameof(width));
             ThrowHelper.ArgumentOutOfMin(1, height, nameof(height));
-            if (pixel is null)
-                throw new ArgumentNullException(nameof(pixel));
+            ArgumentNullException.ThrowIfNull(pixel, nameof(pixel));
 
             _blockConverter = new();
             _pixelCollection = new(width, height, _blockConverter[pixel]);
@@ -23,8 +22,7 @@ namespace MCBS.Rendering
 
         private HashBlockFrame(HashPixelCollection pixelCollection)
         {
-            if (pixelCollection is null)
-                throw new ArgumentNullException(nameof(pixelCollection));
+            ArgumentNullException.ThrowIfNull(pixelCollection, nameof(pixelCollection));
 
             _blockConverter = new();
             _pixelCollection = pixelCollection;

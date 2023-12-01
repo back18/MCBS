@@ -11,7 +11,9 @@ namespace MCBS.Forms
     {
         public StretchingContext(CursorContext cursorContext, Direction borders)
         {
-            CursorContext = cursorContext ?? throw new ArgumentNullException(nameof(cursorContext));
+            ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
+
+            CursorContext = cursorContext;
             Borders = borders;
         }
 

@@ -20,11 +20,11 @@ namespace MCBS.Processes
 
         internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(LogUtil.GetLogger)
         {
-            if (args is null)
-                throw new ArgumentNullException(nameof(args));
+            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
+            ArgumentNullException.ThrowIfNull(args, nameof(args));
 
             _args = args;
-            Application = applicationManifest ?? throw new ArgumentNullException(nameof(applicationManifest));
+            Application = applicationManifest;
             Program = Application.CreateApplicationInstance();
             Initiator = initiator;
             ID = -1;

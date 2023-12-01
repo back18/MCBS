@@ -27,7 +27,9 @@ namespace MCBS.BlockForms.Utility
 
         private TextureManager(Dictionary<string, Image<Rgba32>> items)
         {
-            _items = items ?? throw new ArgumentNullException(nameof(items));
+            ArgumentNullException.ThrowIfNull(items, nameof(items));
+
+            _items = items;
         }
 
         private static readonly object _slock;

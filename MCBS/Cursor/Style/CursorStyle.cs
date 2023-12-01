@@ -12,10 +12,8 @@ namespace MCBS.Cursor.Style
     {
         public CursorStyle(string cursorType, Point offset, BlockFrame blockFrame)
         {
-            if (string.IsNullOrEmpty(cursorType))
-                throw new ArgumentException($"“{nameof(cursorType)}”不能为 null 或空。", nameof(cursorType));
-            if (blockFrame is null)
-                throw new ArgumentNullException(nameof(blockFrame));
+            ArgumentException.ThrowIfNullOrEmpty(cursorType, nameof(cursorType));
+            ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
 
             CursorType = cursorType;
             Offset = offset;

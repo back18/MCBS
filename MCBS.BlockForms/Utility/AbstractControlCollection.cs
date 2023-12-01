@@ -62,8 +62,7 @@ namespace MCBS.BlockForms.Utility
 
         public virtual void Add(T item)
         {
-            if (item is null)
-                throw new ArgumentNullException(nameof(item));
+            ArgumentNullException.ThrowIfNull(item, nameof(item));
 
             _items.Add(item);
         }
@@ -80,8 +79,7 @@ namespace MCBS.BlockForms.Utility
 
         public virtual bool Remove(T item)
         {
-            if (item is null)
-                throw new ArgumentNullException(nameof(item));
+            ArgumentNullException.ThrowIfNull(item, nameof(item));
 
             if (!_items.Remove(item))
                 return false;

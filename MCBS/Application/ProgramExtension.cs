@@ -12,8 +12,7 @@ namespace MCBS.Application
     {
         public static object? RunForm(this IProgram source, IForm form)
         {
-            if (form is null)
-                throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             FormContext context = MCOS.Instance.FormManager.Items.Add(source, form).LoadForm();
             context.WaitForClose();
@@ -22,8 +21,7 @@ namespace MCBS.Application
 
         public static async Task<object?> RunFormAsync(this IProgram source, IForm form)
         {
-            if (form is null)
-                throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             FormContext context = MCOS.Instance.FormManager.Items.Add(source, form).LoadForm();
             await context.WaitForCloseAsync();

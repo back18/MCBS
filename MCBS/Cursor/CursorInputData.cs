@@ -50,8 +50,7 @@ namespace MCBS.Cursor
 
         public CursorInputData(CursorInputData cursorInputData)
         {
-            if (cursorInputData is null)
-                throw new ArgumentNullException(nameof(cursorInputData));
+            ArgumentNullException.ThrowIfNull(cursorInputData, nameof(cursorInputData));
 
             CursorMode = cursorInputData.CursorMode;
             CursorPosition = cursorInputData.CursorPosition;

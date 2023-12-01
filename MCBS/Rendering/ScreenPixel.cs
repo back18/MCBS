@@ -11,8 +11,7 @@ namespace MCBS.Rendering
     {
         public ScreenPixel(Point position, string blockId)
         {
-            if (blockId is null)
-                throw new ArgumentNullException(nameof(blockId));
+            ArgumentNullException.ThrowIfNull(blockId, nameof(blockId));
 
             Position = position;
             BlockId = blockId;

@@ -15,8 +15,7 @@ namespace MCBS.Rendering
     {
         public Rgba32BlockMapping(BlockTextureManager blockTextureManager, Facing facing)
         {
-            if (blockTextureManager is null)
-                throw new ArgumentNullException(nameof(blockTextureManager));
+            ArgumentNullException.ThrowIfNull(blockTextureManager, nameof(blockTextureManager));
 
             Facing = facing;
 

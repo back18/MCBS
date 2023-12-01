@@ -12,7 +12,9 @@ namespace MCBS.BlockForms.SimpleFileSystem
     {
         public DirectoryItem(DirectoryInfo directoryInfo) : base(QuanLib.Core.IO.PathType.Directory)
         {
-            DirectoryInfo = directoryInfo ?? throw new ArgumentNullException(nameof(directoryInfo));
+            ArgumentNullException.ThrowIfNull(directoryInfo, nameof(directoryInfo));
+
+            DirectoryInfo = directoryInfo;
 
             Text = directoryInfo.Name;
             Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.None, ControlState.Hover);

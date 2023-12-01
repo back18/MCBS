@@ -78,16 +78,14 @@ namespace MCBS.ConsoleTerminal
 
         public void Submit(CommandLog commandLog)
         {
-            if (commandLog is null)
-                throw new ArgumentNullException(nameof(commandLog));
+            ArgumentNullException.ThrowIfNull(commandLog, nameof(commandLog));
 
             _queue.Enqueue(commandLog);
         }
 
         private void Handle(CommandLog commandLog)
         {
-            if (commandLog is null)
-                throw new ArgumentNullException(nameof(commandLog));
+            ArgumentNullException.ThrowIfNull(commandLog, nameof(commandLog));
 
             double timeSpan = (commandLog.Info.ReceivingTime.Ticks - commandLog.Info.SendingTime.Ticks) / 10.0;
             WriteLine($"[GameTick={commandLog.GameTick}] [SystemTick={commandLog.SystemTick}] [Stage={commandLog.SystemStage}] [Thread={commandLog.ThreadName}] [TimeSpan={timeSpan} us]");

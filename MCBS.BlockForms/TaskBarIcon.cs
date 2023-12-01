@@ -15,7 +15,9 @@ namespace MCBS.BlockForms
     {
         public TaskBarIcon(IForm form)
         {
-            Form = form ?? throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
+
+            Form = form;
 
             Icon_PictureBox.SetImage(form.GetIcon());
             Text_Label.Text = form.Text;

@@ -42,8 +42,7 @@ namespace MCBS.RightClickObjective
 
         public bool Query(string player)
         {
-            if (string.IsNullOrEmpty(player))
-                throw new ArgumentException($"“{nameof(player)}”不能为 null 或空。", nameof(player));
+            ArgumentException.ThrowIfNullOrEmpty(player, nameof(player));
 
             if (_items.TryGetValue(player, out var context))
                 return context.IsRightClick;

@@ -215,7 +215,9 @@ namespace MCBS.Screens
         {
             public ScreenCollection(ScreenManager owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
                 _items = new();
                 _id = 0;
             }
@@ -240,8 +242,7 @@ namespace MCBS.Screens
 
             public ScreenContext Add(Screen screen)
             {
-                if (screen is null)
-                    throw new ArgumentNullException(nameof(screen));
+                ArgumentNullException.ThrowIfNull(screen, nameof(screen));
 
                 lock (_items)
                 {

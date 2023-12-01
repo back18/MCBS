@@ -19,7 +19,9 @@ namespace MCBS.BlockForms
         {
             public TitleBar(WindowForm owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
 
                 base.Text = _owner.Text;
                 LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);

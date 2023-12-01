@@ -28,7 +28,9 @@ namespace MCBS.Screens
     {
         public ScreenInputHandler(ScreenContext owner)
         {
-            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+            _owner = owner;
             IdleTime = 0;
         }
 

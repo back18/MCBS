@@ -13,8 +13,7 @@ namespace MCBS.BlockForms.Utility
     {
         public static OverwriteContext Overwrite(this BlockFrame source, BlockFrame blockFrame, AnchorPosition anchorPosition)
         {
-            if (blockFrame is null)
-                throw new ArgumentNullException(nameof(blockFrame));
+            ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
 
             Point location = anchorPosition switch
             {

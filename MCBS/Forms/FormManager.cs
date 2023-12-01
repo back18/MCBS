@@ -48,7 +48,9 @@ namespace MCBS.Forms
         {
             public FormCollection(FormManager owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
                 _items = new();
             }
 
@@ -72,10 +74,8 @@ namespace MCBS.Forms
 
             public FormContext Add(IProgram program, IForm form)
             {
-                if (program is null)
-                    throw new ArgumentNullException(nameof(program));
-                if (form is null)
-                    throw new ArgumentNullException(nameof(form));
+                ArgumentNullException.ThrowIfNull(program, nameof(program));
+                ArgumentNullException.ThrowIfNull(form, nameof(form));
 
                 lock (_items)
                 {

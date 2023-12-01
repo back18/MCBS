@@ -40,8 +40,7 @@ namespace MCBS.Rendering
 
         public virtual OverwriteContext Overwrite(BlockFrame<TPixel> blockFrame, Size size, Point location, Point offset)
         {
-            if (blockFrame is null)
-                throw new ArgumentNullException(nameof(blockFrame));
+            ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
 
             return Pixels.Overwrite(blockFrame.Pixels, size, location, offset);
         }

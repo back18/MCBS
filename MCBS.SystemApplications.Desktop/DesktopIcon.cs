@@ -19,7 +19,9 @@ namespace MCBS.SystemApplications.Desktop
     {
         public DesktopIcon(ApplicationManifest applicationManifest)
         {
-            _applicationManifest = applicationManifest ?? throw new ArgumentNullException(nameof(applicationManifest));
+            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
+
+            _applicationManifest = applicationManifest;
 
             Icon_PictureBox = new();
             Name_Label = new();

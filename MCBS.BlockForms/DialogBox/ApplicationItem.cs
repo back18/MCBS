@@ -16,7 +16,9 @@ namespace MCBS.BlockForms.DialogBox
     {
         public ApplicationItem(ApplicationManifest applicationManifest)
         {
-            ApplicationManifest = applicationManifest ?? throw new ArgumentNullException(nameof(applicationManifest));
+            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
+
+            ApplicationManifest = applicationManifest;
 
             Skin.SetBackgroundColor(BlockManager.Concrete.White, ControlState.None, ControlState.Hover);
             Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Selected, ControlState.Hover | ControlState.Selected);

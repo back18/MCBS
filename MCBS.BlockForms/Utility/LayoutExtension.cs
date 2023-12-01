@@ -13,10 +13,8 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutUp(this Control source, ContainerControl container, Control control, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
-            if (control is null)
-                throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(control.ClientLocation.X, control.ClientLocation.Y - source.Height - spacing);
@@ -24,10 +22,8 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutDown(this Control source, ContainerControl container, Control control, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
-            if (control is null)
-                throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(control.ClientLocation.X, control.ClientLocation.Y + control.Height + spacing);
@@ -35,10 +31,8 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutLeft(this Control source, ContainerControl container, Control control, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
-            if (control is null)
-                throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(control.ClientLocation.X - source.Width - spacing, control.ClientLocation.Y);
@@ -46,10 +40,8 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutRight(this Control source, ContainerControl container, Control control, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
-            if (control is null)
-                throw new ArgumentNullException(nameof(control));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(control, nameof(control));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(control.ClientLocation.X + control.Width + spacing, control.ClientLocation.Y);
@@ -61,8 +53,7 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutUp(this Control source, ContainerControl container, int location, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(location, container.ClientSize.Height - source.Height - spacing);
@@ -70,8 +61,7 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutDown(this Control source, ContainerControl container, int location, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(location, spacing);
@@ -79,8 +69,7 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutLeft(this Control source, ContainerControl container, int location, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(container.ClientSize.Width - source.Width - spacing, location);
@@ -88,8 +77,7 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutRight(this Control source, ContainerControl container, int location, int spacing = 2)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             source.ClientLocation = new(spacing, location);
@@ -101,24 +89,21 @@ namespace MCBS.BlockForms.Utility
 
         public static void LayoutCentered(this Control source, ContainerControl container)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
 
             source.ClientLocation = new(container.ClientSize.Width / 2 - source.ClientSize.Width / 2, container.ClientSize.Height / 2 - source.ClientSize.Height / 2);
         }
 
         public static void LayoutVerticalCentered(this Control source, ContainerControl container, int location)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
 
             source.ClientLocation = new(location, container.ClientSize.Height / 2 - source.ClientSize.Height / 2);
         }
 
         public static void LayoutHorizontalCentered(this Control source, ContainerControl container, int location)
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
 
             source.ClientLocation = new(container.ClientSize.Width / 2 - source.ClientSize.Width / 2, location);
         }

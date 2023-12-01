@@ -27,8 +27,7 @@ namespace MCBS.Rendering
 
         public int RegistrationHash(string value)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentNullException.ThrowIfNull(value, nameof(value));
 
             int hash = value.GetHashCode();
             if (!_items.ContainsKey(hash))

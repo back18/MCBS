@@ -12,7 +12,9 @@ namespace MCBS.Forms
     {
         public DraggingContext(CursorContext cursorContext, Point offsetPosition)
         {
-            CursorContext = cursorContext ?? throw new ArgumentNullException(nameof(cursorContext));
+            ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
+
+            CursorContext = cursorContext;
             OffsetPosition = offsetPosition;
         }
 

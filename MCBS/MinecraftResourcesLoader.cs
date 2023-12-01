@@ -55,8 +55,7 @@ namespace MCBS
 
         private static async Task<VersionDirectory> BuildResourcesAsync(string version)
         {
-            if (string.IsNullOrEmpty(version))
-                throw new ArgumentException($"“{nameof(version)}”不能为 null 或空。", nameof(version));
+            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
 
             VersionDirectory directory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(version);
             directory.BuildDirectoryTree();
@@ -137,10 +136,8 @@ namespace MCBS
 
         private static async Task<byte[]> ReadOrDownloadAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
         {
-            if (string.IsNullOrEmpty(path))
-                throw new ArgumentException($"“{nameof(path)}”不能为 null 或空。", nameof(path));
-            if (networkAssetIndex is null)
-                throw new ArgumentNullException(nameof(networkAssetIndex));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+            ArgumentNullException.ThrowIfNull(networkAssetIndex, nameof(networkAssetIndex));
 
             if (File.Exists(path))
             {

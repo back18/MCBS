@@ -38,7 +38,9 @@ namespace MCBS.Rendering
         {
             public Enumerator(PositionEnumerable owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
                 _position = new(-1, 0);
             }
 

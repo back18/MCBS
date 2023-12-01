@@ -22,8 +22,7 @@ namespace MCBS.Application
 
         public ApplicationManifest(Assembly assembly, Model model)
         {
-            if (assembly is null)
-                throw new ArgumentNullException(nameof(assembly));
+            ArgumentNullException.ThrowIfNull(assembly, nameof(assembly));
             NullValidator.ValidateObject(model, nameof(model));
 
             Type? type = assembly.GetType(model.MainClass);

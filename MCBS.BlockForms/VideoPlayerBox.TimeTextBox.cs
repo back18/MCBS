@@ -17,7 +17,9 @@ namespace MCBS.BlockForms
         {
             public TimeTextBox(VideoPlayerBox<TPixel> owner)
             {
-                _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+                _owner = owner;
 
                 CurrentTime_TextBox = new();
                 TotalTime_Label = new();

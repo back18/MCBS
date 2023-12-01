@@ -195,8 +195,7 @@ namespace MCBS.BlockForms
 
         public bool TrySwitchSelectedForm(IForm form)
         {
-            if (form is null)
-                throw new ArgumentNullException(nameof(form));
+            ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             if (!FormContainer_Control.ChildControls.Contains(form))
                 return false;

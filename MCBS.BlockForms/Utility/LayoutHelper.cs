@@ -13,10 +13,8 @@ namespace MCBS.BlockForms.Utility
     {
         public static void FillLayoutRightDown<T>(ContainerControl container, IEnumerable<T> controls, int spacing = 2) where T : Control
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
-            if (controls is null)
-                throw new ArgumentNullException(nameof(controls));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(controls, nameof(controls));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             T? previous = null;
@@ -35,10 +33,8 @@ namespace MCBS.BlockForms.Utility
 
         public static void FillLayoutDownRight<T>(ContainerControl container, IEnumerable<T> controls, int spacing = 2) where T : Control
         {
-            if (container is null)
-                throw new ArgumentNullException(nameof(container));
-            if (controls is null)
-                throw new ArgumentNullException(nameof(controls));
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(controls, nameof(controls));
             ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
 
             T? previous = null;

@@ -14,7 +14,9 @@ namespace MCBS.BlockForms.DialogBox
     {
         public MessageBoxForm(IForm initiator, string title, string message, MessageBoxButtons buttons) : base(initiator, title)
         {
-            _message = message ?? throw new ArgumentNullException(nameof(message));
+            ArgumentNullException.ThrowIfNull(message, nameof(message));
+
+            _message = message;
 
             Text_MultilineLabel = new();
             Yes_Button = new();
