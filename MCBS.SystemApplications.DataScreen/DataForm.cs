@@ -42,13 +42,13 @@ namespace MCBS.SystemApplications.DataScreen
             base.Initialize();
 
             Skin.SetAllBackgroundColor(BlockManager.Concrete.LightBlue);
-            ClientPanel_Control.Skin.SetAllBackgroundColor(BlockManager.Concrete.LightBlue);
+            Home_PagePanel.Skin.SetAllBackgroundColor(BlockManager.Concrete.LightBlue);
             OnBeforeFrame(this, EventArgs.Empty);
 
-            ClientPanel_Control.ChildControls.Add(DayTime_Label);
+            Home_PagePanel.ChildControls.Add(DayTime_Label);
             DayTime_Label.ClientLocation = new(2, 2);
 
-            ClientPanel_Control.ChildControls.Add(GameTime_Label);
+            Home_PagePanel.ChildControls.Add(GameTime_Label);
             GameTime_Label.ClientLocation = new(2, 20);
         }
 

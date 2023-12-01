@@ -44,12 +44,12 @@ namespace MCBS.SystemApplications.VideoPlayer
         {
             base.Initialize();
 
-            ClientPanel_Control.ChildControls.Add(VideoPlayer);
+            Home_PagePanel.ChildControls.Add(VideoPlayer);
             VideoPlayer.BorderWidth = 0;
-            VideoPlayer.Size = ClientPanel_Control.ClientSize;
+            VideoPlayer.Size = Home_PagePanel.ClientSize;
             VideoPlayer.Stretch = Direction.Bottom | Direction.Right;
 
-            ClientPanel_Control.ChildControls.Add(Setting_Switch);
+            Home_PagePanel.ChildControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
             Setting_Switch.OnText = "应用";
             Setting_Switch.Skin.SetBackgroundColor(string.Empty, ControlState.None);
@@ -58,9 +58,9 @@ namespace MCBS.SystemApplications.VideoPlayer
             Setting_Switch.Skin.SetAllForegroundColor(BlockManager.Concrete.Pink);
             Setting_Switch.ClientLocation = new(2, 2);
 
-            ClientPanel_Control.ChildControls.Add(Path_TextBox);
-            Path_TextBox.LayoutRight(ClientPanel_Control, Setting_Switch, 2);
-            Path_TextBox.Width = ClientPanel_Control.ClientSize.Width - Setting_Switch.Width - 6;
+            Home_PagePanel.ChildControls.Add(Path_TextBox);
+            Path_TextBox.LayoutRight(Home_PagePanel, Setting_Switch, 2);
+            Path_TextBox.Width = Home_PagePanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.Skin.SetAllForegroundColor(BlockManager.Concrete.Pink);
             Path_TextBox.Skin.SetBackgroundColor(string.Empty, ControlState.None);
@@ -85,7 +85,7 @@ namespace MCBS.SystemApplications.VideoPlayer
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
-            if (ClientPanel_Control.ChildControls.FirstHover is null or VideoPlayerBox<Bgr24>)
+            if (Home_PagePanel.ChildControls.FirstHover is null or VideoPlayerBox<Bgr24>)
             {
                 if (Setting_Switch.Visible)
                 {
@@ -104,7 +104,7 @@ namespace MCBS.SystemApplications.VideoPlayer
         {
             base.OnBeforeFrame(sender, e);
 
-            if (ClientPanel_Control.ChildControls.FirstHover is null or VideoPlayerBox<Bgr24>)
+            if (Home_PagePanel.ChildControls.FirstHover is null or VideoPlayerBox<Bgr24>)
             {
                 if (OverlayHideTime <= 0)
                     HideOverlay();

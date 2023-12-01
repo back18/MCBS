@@ -21,7 +21,6 @@ namespace MCBS.BlockForms
             Home_PagePanel = new("Home");
             WindowPanel_Control.PagePanels.Add(Home_PagePanel.PageKey, Home_PagePanel);
             WindowPanel_Control.ActivePageKey = Home_PagePanel.PageKey;
-            ClientPanel_Control = new();
             ShowTitleBar_Button = new();
         }
 
@@ -30,8 +29,6 @@ namespace MCBS.BlockForms
         public readonly WindowPanel WindowPanel_Control;
 
         public readonly PagePanel Home_PagePanel;
-
-        public readonly ClientPanel ClientPanel_Control;
 
         public readonly Button ShowTitleBar_Button;
 
@@ -46,7 +43,7 @@ namespace MCBS.BlockForms
                     {
                         ChildControls.TryAdd(TitleBar_Control);
                         ChildControls.Remove(ShowTitleBar_Button);
-                        ClientPanel_Control?.LayoutSyncer?.Sync();
+                        WindowPanel_Control?.LayoutSyncer?.Sync();
                     }
                 }
                 else
@@ -55,7 +52,7 @@ namespace MCBS.BlockForms
                     {
                         ChildControls.Remove(TitleBar_Control);
                         ChildControls.TryAdd(ShowTitleBar_Button);
-                        ClientPanel_Control?.LayoutSyncer?.Sync();
+                        WindowPanel_Control?.LayoutSyncer?.Sync();
                     }
                 }
             }
@@ -84,21 +81,21 @@ namespace MCBS.BlockForms
 
             ChildControls.Add(TitleBar_Control);
 
-            ChildControls.Add(ClientPanel_Control);
-            ClientPanel_Control.BorderWidth = 0;
-            ClientPanel_Control.LayoutSyncer = new(this,
+            ChildControls.Add(WindowPanel_Control);
+            WindowPanel_Control.BorderWidth = 0;
+            WindowPanel_Control.LayoutSyncer = new(this,
             (sender, e) => { },
             (sender, e) =>
             {
                 if (ShowTitleBar)
                 {
-                    ClientPanel_Control.ClientSize = new(ClientSize.Width, ClientSize.Height - TitleBar_Control.Height);
-                    ClientPanel_Control.ClientLocation = new(0, TitleBar_Control.Height);
+                    WindowPanel_Control.ClientSize = new(ClientSize.Width, ClientSize.Height - TitleBar_Control.Height);
+                    WindowPanel_Control.ClientLocation = new(0, TitleBar_Control.Height);
                 }
                 else
                 {
-                    ClientPanel_Control.ClientLocation = new(0, 0);
-                    ClientPanel_Control.ClientSize = ClientSize;
+                    WindowPanel_Control.ClientLocation = new(0, 0);
+                    WindowPanel_Control.ClientSize = ClientSize;
                 }
             });
 
@@ -116,9 +113,9 @@ namespace MCBS.BlockForms
 
         protected override void OnInitializeCompleted(Control sender, EventArgs e)
         {
-            if (ClientPanel_Control.PageSize != new Size(0, 0))
+            if (Home_PagePanel.PageSize != Size.Empty)
             {
-                RestoreSize = new(ClientPanel_Control.PageSize.Width, ClientPanel_Control.PageSize.Height + TitleBar_Control.Height);
+                RestoreSize = new(Home_PagePanel.PageSize.Width, Home_PagePanel.PageSize.Height + TitleBar_Control.Height);
                 RestoreLocation = new(Width / 2 - RestoreSize.Width / 2, Height / 2 - RestoreSize.Height / 2);
             }
             else

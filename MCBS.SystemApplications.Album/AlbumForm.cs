@@ -81,17 +81,17 @@ namespace MCBS.SystemApplications.Album
         {
             base.Initialize();
 
-            ClientPanel_Control.Resize += ClientPanel_Resize;
+            Home_PagePanel.Resize += ClientPanel_Resize;
 
-            ClientPanel_Control.ChildControls.Add(ScalablePictureBox);
+            Home_PagePanel.ChildControls.Add(ScalablePictureBox);
             ScalablePictureBox.EnableZoom = true;
             ScalablePictureBox.EnableDrag = true;
             ScalablePictureBox.BorderWidth = 0;
-            ScalablePictureBox.ClientSize = ClientPanel_Control.ClientSize;
+            ScalablePictureBox.ClientSize = Home_PagePanel.ClientSize;
             ScalablePictureBox.Resize += ScalablePictureBox_Resize;
             ScalablePictureBox.TextureChanged += ScalablePictureBox_TextureChanged;
 
-            ClientPanel_Control.ChildControls.Add(Setting_Switch);
+            Home_PagePanel.ChildControls.Add(Setting_Switch);
             Setting_Switch.OffText = "设置";
             Setting_Switch.OnText = "应用";
             Setting_Switch.Skin.SetBackgroundColor(string.Empty, ControlState.None);
@@ -101,32 +101,32 @@ namespace MCBS.SystemApplications.Album
             Setting_Switch.ControlSelected += Setting_Switch_ControlSelected;
             Setting_Switch.ControlDeselected += Setting_Switch_ControlDeselected;
 
-            ClientPanel_Control.ChildControls.Add(Path_TextBox);
-            Path_TextBox.LayoutRight(ClientPanel_Control, Setting_Switch, 2);
-            Path_TextBox.Width = ClientPanel_Control.ClientSize.Width - Setting_Switch.Width - 6;
+            Home_PagePanel.ChildControls.Add(Path_TextBox);
+            Path_TextBox.LayoutRight(Home_PagePanel, Setting_Switch, 2);
+            Path_TextBox.Width = Home_PagePanel.ClientSize.Width - Setting_Switch.Width - 6;
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             Path_TextBox.TextChanged += Path_TextBox_TextChanged;
 
-            ClientPanel_Control.ChildControls.Add(PreviousImage_Button);
+            Home_PagePanel.ChildControls.Add(PreviousImage_Button);
             PreviousImage_Button.Text = "<";
             PreviousImage_Button.ClientSize = new(16, 16);
-            PreviousImage_Button.LayoutSyncer = new(ClientPanel_Control, (sender, e) => { }, (sender, e) =>
-            PreviousImage_Button.LayoutVerticalCentered(ClientPanel_Control, 2));
+            PreviousImage_Button.LayoutSyncer = new(Home_PagePanel, (sender, e) => { }, (sender, e) =>
+            PreviousImage_Button.LayoutVerticalCentered(Home_PagePanel, 2));
             PreviousImage_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             PreviousImage_Button.RightClick += PreviousImage_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(NextImage_Button);
+            Home_PagePanel.ChildControls.Add(NextImage_Button);
             NextImage_Button.Text = ">";
             NextImage_Button.ClientSize = new(16, 16);
-            NextImage_Button.LayoutSyncer = new(ClientPanel_Control, (sender, e) => { }, (sender, e) =>
-            NextImage_Button.LayoutVerticalCentered(ClientPanel_Control, ClientPanel_Control.ClientSize.Width - NextImage_Button.Width - 3));
+            NextImage_Button.LayoutSyncer = new(Home_PagePanel, (sender, e) => { }, (sender, e) =>
+            NextImage_Button.LayoutVerticalCentered(Home_PagePanel, Home_PagePanel.ClientSize.Width - NextImage_Button.Width - 3));
             NextImage_Button.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             NextImage_Button.RightClick += NextImage_Button_RightClick;
 
             Setting_ListMenuBox.ClientSize = new(128, 20 * 3 + 2);
             Setting_ListMenuBox.Spacing = 2;
-            Setting_ListMenuBox.LayoutDown(ClientPanel_Control, Setting_Switch, 2);
+            Setting_ListMenuBox.LayoutDown(Home_PagePanel, Setting_Switch, 2);
             Setting_ListMenuBox.Skin.SetAllBackgroundColor(string.Empty);
 
             int width = Setting_ListMenuBox.ClientSize.Width - 4;
@@ -208,7 +208,7 @@ namespace MCBS.SystemApplications.Album
             if (_open is not null)
                 Path_TextBox.Text = _open;
             else
-                ScalablePictureBox.SetImage(new Image<Rgba32>(ClientPanel_Control.Width, ClientPanel_Control.Height, ScalablePictureBox.GetBlockColor<Rgba32>(BlockManager.Concrete.White)));
+                ScalablePictureBox.SetImage(new Image<Rgba32>(Home_PagePanel.Width, Home_PagePanel.Height, ScalablePictureBox.GetBlockColor<Rgba32>(BlockManager.Concrete.White)));
         }
 
         protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -221,7 +221,7 @@ namespace MCBS.SystemApplications.Album
 
         protected override void OnRightClick(Control sender, CursorEventArgs e)
         {
-            if (ClientPanel_Control.ChildControls.FirstHover is null or ScalablePictureBox<Rgba32>)
+            if (Home_PagePanel.ChildControls.FirstHover is null or ScalablePictureBox<Rgba32>)
             {
                 if (Setting_Switch.Visible)
                 {
@@ -240,7 +240,7 @@ namespace MCBS.SystemApplications.Album
         {
             base.OnBeforeFrame(sender, e);
 
-            if (ClientPanel_Control.ChildControls.FirstHover is null or BlockForms.ScalablePictureBox<Rgba32>)
+            if (Home_PagePanel.ChildControls.FirstHover is null or BlockForms.ScalablePictureBox<Rgba32>)
             {
                 if (OverlayHideTime <= 0)
                     HideOverlay();
@@ -266,22 +266,22 @@ namespace MCBS.SystemApplications.Album
 
         private void ClientPanel_Resize(Control sender, SizeChangedEventArgs e)
         {
-            ScalablePictureBox.ClientSize = ClientPanel_Control.ClientSize;
+            ScalablePictureBox.ClientSize = Home_PagePanel.ClientSize;
         }
 
         private void ScalablePictureBox_Resize(Control sender, SizeChangedEventArgs e)
         {
-            ScalablePictureBox.LayoutCentered(ClientPanel_Control);
+            ScalablePictureBox.LayoutCentered(Home_PagePanel);
         }
 
         private void ScalablePictureBox_TextureChanged(PictureBox<Rgba32> sender, TextureChangedEventArgs<Rgba32> e)
         {
-            ScalablePictureBox.ClientSize = ClientPanel_Control.ClientSize;
+            ScalablePictureBox.ClientSize = Home_PagePanel.ClientSize;
         }
 
         private void Setting_Switch_ControlSelected(Control sender, EventArgs e)
         {
-            ClientPanel_Control.ChildControls.TryAdd(Setting_ListMenuBox);
+            Home_PagePanel.ChildControls.TryAdd(Setting_ListMenuBox);
         }
 
         private void Setting_Switch_ControlDeselected(Control sender, EventArgs e)
@@ -289,7 +289,7 @@ namespace MCBS.SystemApplications.Album
             ApplySetting(ScalablePictureBox.DefaultResizeOptions);
             ApplySetting(ScalablePictureBox.Texture.ResizeOptions);
             ScalablePictureBox.AutoSetSize();
-            ClientPanel_Control.ChildControls.Remove(Setting_ListMenuBox);
+            Home_PagePanel.ChildControls.Remove(Setting_ListMenuBox);
         }
 
         private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)

@@ -53,34 +53,34 @@ namespace MCBS.SystemApplications.Drawing
             ClientSize = new(104, 62 + TitleBar_Control.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel_Control.ChildControls.Add(Width_Label);
+            Home_PagePanel.ChildControls.Add(Width_Label);
             Width_Label.Text = "宽度";
             Width_Label.ClientLocation = new(2, 3);
 
-            ClientPanel_Control.ChildControls.Add(Height_Label);
+            Home_PagePanel.ChildControls.Add(Height_Label);
             Height_Label.Text = "高度";
-            Height_Label.LayoutDown(ClientPanel_Control, Width_Label, 4);
+            Height_Label.LayoutDown(Home_PagePanel, Width_Label, 4);
 
-            ClientPanel_Control.ChildControls.Add(Width_TextBox);
+            Home_PagePanel.ChildControls.Add(Width_TextBox);
             Width_TextBox.Text = _initial.Width.ToString();
             Width_TextBox.ClientLocation = new(Width_Label.RightLocation + 3, 2);
             Width_TextBox.ClientSize = new(64, 16);
 
-            ClientPanel_Control.ChildControls.Add(Height_TextBox);
+            Home_PagePanel.ChildControls.Add(Height_TextBox);
             Height_TextBox.Text = _initial.Height.ToString();
-            Height_TextBox.LayoutDown(ClientPanel_Control, Width_TextBox, 2);
+            Height_TextBox.LayoutDown(Home_PagePanel, Width_TextBox, 2);
             Height_TextBox.ClientSize = new(64, 16);
 
-            ClientPanel_Control.ChildControls.Add(Cancel_Button);
+            Home_PagePanel.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
             Cancel_Button.LayoutLeft(this, Height_TextBox.BottomLocation + 3, 2);
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(OK_Button);
+            Home_PagePanel.ChildControls.Add(OK_Button);
             OK_Button.Text = "确认";
             OK_Button.ClientSize = new(32, 16);
-            OK_Button.LayoutLeft(ClientPanel_Control, Cancel_Button, 2);
+            OK_Button.LayoutLeft(Home_PagePanel, Cancel_Button, 2);
             OK_Button.RightClick += OK_Button_RightClick;
         }
 

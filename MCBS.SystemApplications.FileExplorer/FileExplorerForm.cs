@@ -54,54 +54,54 @@ namespace MCBS.SystemApplications.FileExplorer
         {
             base.Initialize();
 
-            ClientPanel_Control.PageSize = new(178, 85);
-            Size size1 = ClientPanel_Control.ClientSize;
-            Size size2 = ClientPanel_Control.ClientSize;
-            if (size1.Width < ClientPanel_Control.PageSize.Width)
-                size1.Width = ClientPanel_Control.PageSize.Width;
-            if (size1.Height < ClientPanel_Control.PageSize.Height)
-                size1.Height = ClientPanel_Control.PageSize.Height;
-            ClientPanel_Control.ClientSize = size1;
+            Home_PagePanel.PageSize = new(178, 85);
+            Size size1 = Home_PagePanel.ClientSize;
+            Size size2 = Home_PagePanel.ClientSize;
+            if (size1.Width < Home_PagePanel.PageSize.Width)
+                size1.Width = Home_PagePanel.PageSize.Width;
+            if (size1.Height < Home_PagePanel.PageSize.Height)
+                size1.Height = Home_PagePanel.PageSize.Height;
+            Home_PagePanel.ClientSize = size1;
 
             int spacing = 2;
             int start1 = 2;
-            int start2 = ClientPanel_Control.ClientSize.Height - Cancel_Button.Height - 2;
+            int start2 = Home_PagePanel.ClientSize.Height - Cancel_Button.Height - 2;
 
-            ClientPanel_Control.ChildControls.Add(Backward_Button);
+            Home_PagePanel.ChildControls.Add(Backward_Button);
             Backward_Button.Text = "←";
             Backward_Button.ClientSize = new(16, 16);
-            Backward_Button.LayoutRight(ClientPanel_Control, start1, spacing);
+            Backward_Button.LayoutRight(Home_PagePanel, start1, spacing);
             Backward_Button.RightClick += Backward_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(Forward_Button);
+            Home_PagePanel.ChildControls.Add(Forward_Button);
             Forward_Button.Text = "→";
             Forward_Button.ClientSize = new(16, 16);
-            Forward_Button.LayoutRight(ClientPanel_Control, Backward_Button, spacing);
+            Forward_Button.LayoutRight(Home_PagePanel, Backward_Button, spacing);
             Forward_Button.RightClick += Forward_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(Path_TextBox);
-            Path_TextBox.LayoutRight(ClientPanel_Control, Forward_Button, spacing);
-            Path_TextBox.Width = ClientPanel_Control.ClientSize.Width - Backward_Button.Width - Forward_Button.Width - 8;
+            Home_PagePanel.ChildControls.Add(Path_TextBox);
+            Path_TextBox.LayoutRight(Home_PagePanel, Forward_Button, spacing);
+            Path_TextBox.Width = Home_PagePanel.ClientSize.Width - Backward_Button.Width - Forward_Button.Width - 8;
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.TextChanged += Path_TextBox_TextChanged;
 
-            ClientPanel_Control.ChildControls.Add(Cancel_Button);
+            Home_PagePanel.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
             Cancel_Button.LayoutLeft(this, start2, spacing);
             Cancel_Button.Anchor = Direction.Bottom | Direction.Right;
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(OK_Button);
+            Home_PagePanel.ChildControls.Add(OK_Button);
             OK_Button.Text = "确定";
             OK_Button.ClientSize = new(32, 16);
             OK_Button.LayoutLeft(this, Cancel_Button, spacing);
             OK_Button.Anchor = Direction.Bottom | Direction.Right;
             OK_Button.RightClick += OK_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(Clear_Button);
+            Home_PagePanel.ChildControls.Add(Clear_Button);
             Clear_Button.Text = "X";
-            Clear_Button.LayoutRight(ClientPanel_Control, start2, spacing);
+            Clear_Button.LayoutRight(Home_PagePanel, start2, spacing);
             Clear_Button.ClientSize = new(16, 16);
             Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Pink, ControlState.None);
             Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.Hover);
@@ -109,24 +109,24 @@ namespace MCBS.SystemApplications.FileExplorer
             Clear_Button.Anchor = Direction.Bottom | Direction.Left;
             Clear_Button.RightClick += Clear_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(Search_TextBox);
-            Search_TextBox.LayoutRight(ClientPanel_Control, Clear_Button, spacing);
-            Search_TextBox.Width = ClientPanel_Control.ClientSize.Width - Clear_Button.Width - Cancel_Button.Width - OK_Button.Width - 10;
+            Home_PagePanel.ChildControls.Add(Search_TextBox);
+            Search_TextBox.LayoutRight(Home_PagePanel, Clear_Button, spacing);
+            Search_TextBox.Width = Home_PagePanel.ClientSize.Width - Clear_Button.Width - Cancel_Button.Width - OK_Button.Width - 10;
             Search_TextBox.Anchor = Direction.Bottom | Direction.Left;
             Search_TextBox.Stretch = Direction.Right;
             Search_TextBox.TextChanged += Search_TextBox_TextChanged;
 
-            ClientPanel_Control.ChildControls.Add(SimpleFilesBox);
-            SimpleFilesBox.Width = ClientPanel_Control.ClientSize.Width - 4;
-            SimpleFilesBox.Height = ClientPanel_Control.ClientSize.Height - Backward_Button.Height - Cancel_Button.Height - 8;
-            SimpleFilesBox.LayoutDown(ClientPanel_Control, Backward_Button, spacing);
+            Home_PagePanel.ChildControls.Add(SimpleFilesBox);
+            SimpleFilesBox.Width = Home_PagePanel.ClientSize.Width - 4;
+            SimpleFilesBox.Height = Home_PagePanel.ClientSize.Height - Backward_Button.Height - Cancel_Button.Height - 8;
+            SimpleFilesBox.LayoutDown(Home_PagePanel, Backward_Button, spacing);
             SimpleFilesBox.Stretch = Direction.Bottom | Direction.Right;
             SimpleFilesBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Lime);
             SimpleFilesBox.TextChanged += SimpleFilesBox_TextChanged;
             SimpleFilesBox.OpenFile += SimpleFilesBox_OpenFile;
             SimpleFilesBox.OpeningItemException += SimpleFilesBox_OpeningItemException;
 
-            ClientPanel_Control.ClientSize = size2;
+            Home_PagePanel.ClientSize = size2;
         }
 
         public override void AfterInitialize()

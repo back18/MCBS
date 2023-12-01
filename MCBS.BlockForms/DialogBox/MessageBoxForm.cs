@@ -70,7 +70,7 @@ namespace MCBS.BlockForms.DialogBox
             ClientSize = new(110, 70 + TitleBar_Control.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel_Control.ChildControls.Add(Text_MultilineLabel);
+            Home_PagePanel.ChildControls.Add(Text_MultilineLabel);
             Text_MultilineLabel.KeepWhenClear = true;
             Text_MultilineLabel.BorderWidth = 0;
             Text_MultilineLabel.ClientSize = new(110, 48);
@@ -107,7 +107,7 @@ namespace MCBS.BlockForms.DialogBox
 
         public override void ActiveLayoutAll()
         {
-            ClientPanel_Control.ChildControls.Clear();
+            Home_PagePanel.ChildControls.Clear();
 
             List<Button> buttons = new();
             if (ButtonsToShow.HasFlag(MessageBoxButtons.Yes))
@@ -141,7 +141,7 @@ namespace MCBS.BlockForms.DialogBox
 
             for (int i = 0; i < Math.Min(3, buttons.Count); i++)
             {
-                ClientPanel_Control.ChildControls.Add(buttons[i]);
+                Home_PagePanel.ChildControls.Add(buttons[i]);
             }
         }
 

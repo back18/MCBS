@@ -80,44 +80,44 @@ namespace MCBS.SystemApplications.Drawing
         {
             base.Initialize();
 
-            ClientPanel_Control.Resize += ClientPanel_Resize;
+            Home_PagePanel.Resize += ClientPanel_Resize;
 
-            ClientPanel_Control.ChildControls.Add(Draw_Switch);
+            Home_PagePanel.ChildControls.Add(Draw_Switch);
             Draw_Switch.Text = "绘制";
-            Draw_Switch.LayoutLeft(ClientPanel_Control, 1, 1);
+            Draw_Switch.LayoutLeft(Home_PagePanel, 1, 1);
             Draw_Switch.Anchor = Direction.Top | Direction.Right;
             Draw_Switch.ControlSelected += Draw_Switch_ControlSelected;
             Draw_Switch.ControlDeselected += Draw_Switch_ControlDeselected;
             Draw_Switch.IsSelected = true;
 
-            ClientPanel_Control.ChildControls.Add(Zoom_Switch);
+            Home_PagePanel.ChildControls.Add(Zoom_Switch);
             Zoom_Switch.Text = "缩放";
-            Zoom_Switch.LayoutDown(ClientPanel_Control, Draw_Switch, 1);
+            Zoom_Switch.LayoutDown(Home_PagePanel, Draw_Switch, 1);
             Zoom_Switch.Anchor = Direction.Top | Direction.Right;
             Zoom_Switch.ControlSelected += Zoom_Switch_ControlSelected;
             Zoom_Switch.ControlDeselected += Zoom_Switch_ControlDeselected;
 
-            ClientPanel_Control.ChildControls.Add(Drag_Switch);
+            Home_PagePanel.ChildControls.Add(Drag_Switch);
             Drag_Switch.Text = "拖拽";
-            Drag_Switch.LayoutDown(ClientPanel_Control, Zoom_Switch, 1);
+            Drag_Switch.LayoutDown(Home_PagePanel, Zoom_Switch, 1);
             Drag_Switch.Anchor = Direction.Top | Direction.Right;
             Drag_Switch.ControlSelected += Drag_Switch_ControlSelected;
             Drag_Switch.ControlDeselected += Drag_Switch_ControlDeselected;
 
-            ClientPanel_Control.ChildControls.Add(PenWidth_NumberBox);
+            Home_PagePanel.ChildControls.Add(PenWidth_NumberBox);
             PenWidth_NumberBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Pink);
             PenWidth_NumberBox.MinNumberValue = 1;
-            PenWidth_NumberBox.LayoutDown(ClientPanel_Control, Drag_Switch, 1);
+            PenWidth_NumberBox.LayoutDown(Home_PagePanel, Drag_Switch, 1);
             PenWidth_NumberBox.Anchor = Direction.Top | Direction.Right;
             PenWidth_NumberBox.NumberValueChanged += PenWidth_NumberBox_NumberValueChanged;
             PenWidth_NumberBox.NumberValue = 5;
 
-            ClientPanel_Control.ChildControls.Add(MoreMenu_Switch);
+            Home_PagePanel.ChildControls.Add(MoreMenu_Switch);
             MoreMenu_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.None, ControlState.Hover);
             MoreMenu_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Orange, ControlState.Selected, ControlState.Hover | ControlState.Selected);
             MoreMenu_Switch.OffText = "更多";
             MoreMenu_Switch.OnText = "隐藏";
-            MoreMenu_Switch.LayoutDown(ClientPanel_Control, PenWidth_NumberBox, 1);
+            MoreMenu_Switch.LayoutDown(Home_PagePanel, PenWidth_NumberBox, 1);
             MoreMenu_Switch.Anchor = Direction.Top | Direction.Right;
             MoreMenu_Switch.ControlSelected += MoreMenu_Switch_ControlSelected;
             MoreMenu_Switch.ControlDeselected += MoreMenu_Switch_ControlDeselected; ;
@@ -156,9 +156,9 @@ namespace MCBS.SystemApplications.Drawing
             Save_Button.RightClick += Save_Button_RightClick;
             More_ListMenuBox.AddedChildControlAndLayout(Save_Button);
 
-            ClientPanel_Control.ChildControls.Add(DrawingBox);
+            Home_PagePanel.ChildControls.Add(DrawingBox);
             DrawingBox.ClientLocation = new(1, 1);
-            DrawingBox.Size = new(ClientPanel_Control.ClientSize.Width - Draw_Switch.Width - 3, ClientPanel_Control.ClientSize.Height - 2);
+            DrawingBox.Size = new(Home_PagePanel.ClientSize.Width - Draw_Switch.Width - 3, Home_PagePanel.ClientSize.Height - 2);
             //DrawingBox.Stretch = Direction.Bottom | Direction.Right;
         }
 
@@ -174,7 +174,7 @@ namespace MCBS.SystemApplications.Drawing
 
         private void ClientPanel_Resize(Control sender, SizeChangedEventArgs e)
         {
-            DrawingBox.Size = new(ClientPanel_Control.ClientSize.Width - Draw_Switch.Width - 3, ClientPanel_Control.ClientSize.Height - 2);
+            DrawingBox.Size = new(Home_PagePanel.ClientSize.Width - Draw_Switch.Width - 3, Home_PagePanel.ClientSize.Height - 2);
         }
 
         private void Draw_Switch_ControlSelected(Control sender, EventArgs e)
@@ -214,13 +214,13 @@ namespace MCBS.SystemApplications.Drawing
 
         private void MoreMenu_Switch_ControlSelected(Control sender, EventArgs e)
         {
-            ClientPanel_Control.ChildControls.TryAdd(More_ListMenuBox);
+            Home_PagePanel.ChildControls.TryAdd(More_ListMenuBox);
             More_ListMenuBox.ClientLocation = new(sender.LeftLocation - More_ListMenuBox.Width - 1, sender.BottomLocation - More_ListMenuBox.Height + 1);
         }
 
         private void MoreMenu_Switch_ControlDeselected(Control sender, EventArgs e)
         {
-            ClientPanel_Control.ChildControls.Remove(More_ListMenuBox);
+            Home_PagePanel.ChildControls.Remove(More_ListMenuBox);
         }
 
         private void Undo_Button_RightClick(Control sender, CursorEventArgs e)

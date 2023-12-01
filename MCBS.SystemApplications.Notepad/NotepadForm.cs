@@ -25,9 +25,9 @@ namespace MCBS.SystemApplications.Notepad
         {
             base.Initialize();
 
-            ClientPanel_Control.ChildControls.Add(Text_MultilineTextBox);
+            Home_PagePanel.ChildControls.Add(Text_MultilineTextBox);
             Text_MultilineTextBox.ClientLocation = new(2, 2);
-            Text_MultilineTextBox.Size = new(ClientPanel_Control.ClientSize.Width - 4, ClientPanel_Control.ClientSize.Height - 4);
+            Text_MultilineTextBox.Size = new(Home_PagePanel.ClientSize.Width - 4, Home_PagePanel.ClientSize.Height - 4);
             Text_MultilineTextBox.Stretch = Direction.Bottom | Direction.Right;
         }
 

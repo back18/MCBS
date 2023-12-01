@@ -38,17 +38,17 @@ namespace MCBS.BlockForms.DialogBox
             ClientSize = new(102, 74 + TitleBar_Control.Height);
             CenterOnInitiatorForm();
 
-            ClientPanel_Control.ChildControls.Add(Text_MultilineTextBox);
+            Home_PagePanel.ChildControls.Add(Text_MultilineTextBox);
             Text_MultilineTextBox.ClientLocation = new(2, 2);
             Text_MultilineTextBox.ClientSize = new(96, 48);
 
-            ClientPanel_Control.ChildControls.Add(Cancel_Button);
+            Home_PagePanel.ChildControls.Add(Cancel_Button);
             Cancel_Button.Text = "取消";
             Cancel_Button.ClientSize = new(32, 16);
             Cancel_Button.LayoutLeft(this, Text_MultilineTextBox.BottomLocation + 3, 2);
             Cancel_Button.RightClick += Cancel_Button_RightClick;
 
-            ClientPanel_Control.ChildControls.Add(OK_Button);
+            Home_PagePanel.ChildControls.Add(OK_Button);
             OK_Button.Text = "确认";
             OK_Button.ClientSize = new(32, 16);
             OK_Button.LayoutLeft(this, Cancel_Button, 2);

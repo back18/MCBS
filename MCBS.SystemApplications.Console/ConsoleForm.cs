@@ -54,30 +54,30 @@ namespace MCBS.SystemApplications.Console
         {
             base.Initialize();
 
-            ClientPanel_Control.ChildControls.Add(Output_MultilineTextBox);
+            Home_PagePanel.ChildControls.Add(Output_MultilineTextBox);
             Output_MultilineTextBox.WordWrap = false;
             Output_MultilineTextBox.EnableHorizontalSliding = true;
             Output_MultilineTextBox.AutoScroll = true;
             Output_MultilineTextBox.IsReadOnly = true;
             Output_MultilineTextBox.ScrollBarShowTime = 5;
             Output_MultilineTextBox.BorderWidth = 0;
-            Output_MultilineTextBox.ClientSize = new(ClientPanel_Control.ClientSize.Width, ClientPanel_Control.ClientSize.Height - 18);
+            Output_MultilineTextBox.ClientSize = new(Home_PagePanel.ClientSize.Width, Home_PagePanel.ClientSize.Height - 18);
             Output_MultilineTextBox.Stretch = Direction.Bottom | Direction.Right;
             Output_MultilineTextBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Black);
             Output_MultilineTextBox.Skin.SetAllForegroundColor(BlockManager.Concrete.White);
             Output_MultilineTextBox.AfterFrame += Output_MultilineTextBox_AfterFrame;
 
-            ClientPanel_Control.ChildControls.Add(Input_TextBox);
+            Home_PagePanel.ChildControls.Add(Input_TextBox);
             Input_TextBox.Size = new(ClientSize.Width - 34, 18);
             Input_TextBox.Stretch = Direction.Right;
             Input_TextBox.Anchor = Direction.Bottom;
-            Input_TextBox.LayoutDown(ClientPanel_Control, Output_MultilineTextBox, 0);
+            Input_TextBox.LayoutDown(Home_PagePanel, Output_MultilineTextBox, 0);
 
-            ClientPanel_Control.ChildControls.Add(Send_Button);
+            Home_PagePanel.ChildControls.Add(Send_Button);
             Send_Button.Text = "Send";
             Send_Button.ClientSize = new(32, 16);
             Send_Button.Anchor = Direction.Bottom | Direction.Right;
-            Send_Button.LayoutRight(ClientPanel_Control, Input_TextBox, 0);
+            Send_Button.LayoutRight(Home_PagePanel, Input_TextBox, 0);
             Send_Button.RightClick += Send_Button_RightClick;
 
             _consoleProcess.Start("Console Thread");
