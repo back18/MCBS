@@ -193,7 +193,7 @@ namespace MCBS.BlockForms
 
         private TPixel GetCurrentColorOrDefault(CursorEventArgs e, TPixel defaultColor)
         {
-            var id = e.CursorContext.NewInputData.DeputyItem?.ID;
+            var id = e.CursorContext.NewInputData.MainItem?.ID;
             return this.GetBlockColorOrDefault<TPixel>(id, defaultColor);
         }
     }
