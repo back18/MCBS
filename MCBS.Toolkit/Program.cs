@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Level = QuanLib.CommandLine.Level;
 
-namespace MCBS.Utility
+namespace MCBS.Toolkit
 {
     public static class Program
     {

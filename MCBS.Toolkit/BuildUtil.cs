@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Utility
+namespace MCBS.Toolkit
 {
     public static class BuildUtil
     {
