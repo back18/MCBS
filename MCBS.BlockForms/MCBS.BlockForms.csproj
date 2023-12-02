@@ -20,6 +20,7 @@
     <None Remove="SystemResource\Textures\Pause.png" />
     <None Remove="SystemResource\Textures\Play.png" />
     <None Remove="SystemResource\Textures\Restore.png" />
+    <None Remove="SystemResource\Textures\Settings.png" />
     <None Remove="SystemResource\Textures\Shrink.png" />
     <None Remove="SystemResource\Textures\Start.png" />
   </ItemGroup>
@@ -41,6 +42,7 @@
     <EmbeddedResource Include="SystemResource\Textures\Pause.png" />
     <EmbeddedResource Include="SystemResource\Textures\Play.png" />
     <EmbeddedResource Include="SystemResource\Textures\Restore.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Settings.png" />
     <EmbeddedResource Include="SystemResource\Textures\Shrink.png" />
     <EmbeddedResource Include="SystemResource\Textures\Start.png" />
   </ItemGroup>
