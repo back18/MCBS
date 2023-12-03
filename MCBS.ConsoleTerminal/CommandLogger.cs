@@ -19,7 +19,7 @@ namespace MCBS.ConsoleTerminal
 {
     public class CommandLogger : UnmanagedRunnable
     {
-        public CommandLogger() : base(LogUtil.GetLogger)
+        public CommandLogger() : base(Logbuilder.Default)
         {
             string file = SR.McbsDirectory.LogsDir.Combine("Command.log");
             if (File.Exists(file))

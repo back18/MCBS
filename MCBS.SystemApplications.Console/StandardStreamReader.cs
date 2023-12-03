@@ -11,7 +11,7 @@ namespace MCBS.SystemApplications.Console
 {
     public class StandardStreamReader : UnmanagedRunnable
     {
-        public StandardStreamReader(StreamReader streamReader) : base(LogUtil.GetLogger)
+        public StandardStreamReader(StreamReader streamReader) : base(Logbuilder.Default)
         {
             ArgumentNullException.ThrowIfNull(streamReader, nameof(streamReader));
 

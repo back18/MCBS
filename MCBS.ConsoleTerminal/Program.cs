@@ -83,17 +83,17 @@ namespace MCBS.ConsoleTerminal
                 {
                     case InstanceTypes.CLIENT:
                         if (config.CommunicationMode == CommunicationModes.MCAPI)
-                            minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger);
+                            minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default);
                         else
                             throw new InvalidOperationException();
                         break;
                     case InstanceTypes.SERVER:
                         minecraftInstance = config.CommunicationMode switch
                         {
-                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, LogUtil.GetLogger),
-                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
-                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogUtil.GetLogger),
-                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogUtil.GetLogger),
+                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, Logbuilder.Default),
+                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), Logbuilder.Default),
+                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), Logbuilder.Default),
+                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default),
                             _ => throw new InvalidOperationException(),
                         };
                         break;

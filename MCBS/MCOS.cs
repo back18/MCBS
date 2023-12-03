@@ -42,7 +42,7 @@ namespace MCBS
             IsLoaded = false;
         }
 
-        private MCOS(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(LogUtil.GetLogger)
+        private MCOS(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(Logbuilder.Default)
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
