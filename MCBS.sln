@@ -53,6 +53,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.QRC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.Toolkit", "MCBS.Toolkit\MCBS.Toolkit.csproj", "{34058F94-6464-4780-87FA-EE9EC77C3A6C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Downloader", "..\QuanLib\QuanLib.Downloader\QuanLib.Downloader.csproj", "{CCF68E02-4B6A-44F6-92D3-7189AE0D9663}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,10 @@ Global
 		{34058F94-6464-4780-87FA-EE9EC77C3A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34058F94-6464-4780-87FA-EE9EC77C3A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34058F94-6464-4780-87FA-EE9EC77C3A6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCF68E02-4B6A-44F6-92D3-7189AE0D9663}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCF68E02-4B6A-44F6-92D3-7189AE0D9663}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCF68E02-4B6A-44F6-92D3-7189AE0D9663}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCF68E02-4B6A-44F6-92D3-7189AE0D9663}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

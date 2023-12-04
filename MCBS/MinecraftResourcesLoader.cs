@@ -13,6 +13,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using QuanLib.Minecraft.ResourcePack;
+using QuanLib.Downloader;
+using QuanLib.Core.Extensions;
 
 namespace MCBS
 {
@@ -70,87 +72,113 @@ namespace MCBS
             string versionJsonText;
             if (File.Exists(directory.VersionFile))
             {
-                versionJsonText = File.ReadAllText(directory.VersionFile);
+                versionJsonText = await File.ReadAllTextAsync(directory.VersionFile);
             }
             else
             {
-                LOGGER.Info("正在下载: " + downloadProvider.VersionListUrl);
-                VersionList versionList = await VersionList.DownloadAsync(downloadProvider.VersionListUrl);
+                VersionList versionList = await DownloadVersionListAsync(downloadProvider.VersionListUrl);
 
                 if (!versionList.TryGetValue(MinecraftConfig.GameVersion, out var versionIndex))
                     throw new InvalidOperationException("未知的游戏版本：" + MinecraftConfig.GameVersion);
 
-                string versionJsonUrl = downloadProvider.RedirectUrl(versionIndex.Url);
-                LOGGER.Info("正在下载: " + versionJsonUrl);
-                byte[] byees = await DownloadUtil.DownloadBytesAsync(versionJsonUrl);
-                versionJsonText = Encoding.UTF8.GetString(byees);
-                await File.WriteAllBytesAsync(directory.VersionFile, byees);
+                versionJsonText = await DownloadVersionJsonAsync(downloadProvider.RedirectUrl(versionIndex.Url), directory.VersionFile);
             }
 
             VersionJson versionJson = new(JObject.Parse(versionJsonText));
 
             NetworkAssetIndex clientAssetIndex = versionJson.GetClientCore() ?? throw new InvalidOperationException("在版本Json文件找不到客户端核心文件的资源索引");
-            await ReadOrDownloadAsync(directory.ClientFile, clientAssetIndex, downloadProvider);
+            (await ReadOrDownloadAsync(directory.ClientFile, clientAssetIndex, downloadProvider)).Dispose();
 
             NetworkAssetIndex indexFileAssetIndex = versionJson.GetIndexFile() ?? throw new InvalidOperationException("在版本Json文件找不到索引文件的资源索引");
-            byte[] indexFileBytes = await ReadOrDownloadAsync(directory.IndexFile, indexFileAssetIndex, downloadProvider);
-            string indexFileText = Encoding.UTF8.GetString(indexFileBytes);
-            AssetList assetList = new(JsonConvert.DeserializeObject<AssetList.Model>(indexFileText) ?? throw new FormatException());
+            AssetList assetList = await LoadAssetListAsync(directory.IndexFile, indexFileAssetIndex, downloadProvider);
 
-            string lang = "minecraft/lang/";
-            int langCount = 0;
-            List<Task> langTasks = new();
+            string langPath = "minecraft/lang/";
+            DownloadManager downloadManager = new();
             foreach (var asset in assetList)
             {
-                if (asset.Key.StartsWith(lang))
+                if (asset.Key.StartsWith(langPath))
                 {
+                    string path = directory.LanguagesDir.Combine(asset.Key[langPath.Length..]);
+                    if (DownloadHelper.ReadIfValid(path, asset.Value.Hash, HashType.SHA1, out var fileStream))
+                    {
+                        fileStream.Dispose();
+                        continue;
+                    }
+
                     string url = downloadProvider.ToAssetUrl(asset.Value.Hash);
-                    string path = directory.LanguagesDir.Combine(asset.Key[lang.Length..]);
-                    NetworkAssetIndex networkAssetIndex = new(asset.Value.Hash, asset.Value.Size, url);
-                    langTasks.Add(ReadOrDownloadAsync(path, networkAssetIndex, downloadProvider).ContinueWith((task) => Interlocked.Increment(ref langCount)));
+                    downloadManager.Add(url, path);
+                    LOGGER.Info("已添加下载任务: " + url);
                 }
             }
 
-            Task langTask = Task.WhenAll(langTasks.ToArray());
-            string empty = new(' ', 40);
-            int point = 0;
-            Console.CursorVisible = false;
-            while (true)
+            if (downloadManager.Count > 0)
             {
-                Console.CursorLeft = 0;
-                Console.Write(empty);
-                Console.CursorLeft = 0;
-                Console.Write($"共计{langTasks.Count}个语言文件，已加载{langCount}个" + new string('.', point++));
-                if (point > 3)
-                    point = 0;
-                if (langTask.IsCompleted)
-                    break;
-                else
-                    Thread.Sleep(500);
+                while (!downloadManager.IsAllCompleted)
+                {
+                    downloadManager.RetryAllIfFailed();
+                    LOGGER.Info(FormatProgress(downloadManager));
+
+                    try
+                    {
+                        await downloadManager.WaitAllTaskCompletedAsync().WaitAsync(TimeSpan.FromSeconds(1));
+                    }
+                    catch (TimeoutException)
+                    {
+
+                    }
+                }
+                LOGGER.Info(FormatProgress(downloadManager));
+
+                downloadManager.ClearAll();
             }
-            Console.CursorVisible = true;
-            Console.WriteLine();
 
             return directory;
         }
 
-        private static async Task<byte[]> ReadOrDownloadAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
+        private static async Task<Stream> ReadOrDownloadAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
         {
             ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
             ArgumentNullException.ThrowIfNull(networkAssetIndex, nameof(networkAssetIndex));
 
-            if (File.Exists(path))
-            {
-                byte[] bytes1 = await File.ReadAllBytesAsync(path);
-                string hash = HashUtil.GetHashString(bytes1, HashType.SHA1);
-                if (hash == networkAssetIndex.Hash)
-                    return bytes1;
-            }
+            return await DownloadHelper.ReadOrDownloadAsync(downloadProvider?.RedirectUrl(networkAssetIndex.Url) ?? networkAssetIndex.Url, path, networkAssetIndex.Hash, HashType.SHA1);
+        }
 
-            LOGGER.Info("正在下载: " + downloadProvider?.RedirectUrl(networkAssetIndex.Url) ?? networkAssetIndex.Url);
-            byte[] bytes2 = await networkAssetIndex.DownloadBytesAsync(downloadProvider);
-            await File.WriteAllBytesAsync(path, bytes2);
-            return bytes2;
+        private static async Task<VersionList> DownloadVersionListAsync(string url)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
+
+            using Stream stream = await DownloadHelper.DownloadAsync(url);
+            string text = stream.ToUtf8Text();
+            var model = JsonConvert.DeserializeObject<VersionList.Model>(text) ?? throw new FormatException();
+            return new(model);
+        }
+
+        private static async Task<string> DownloadVersionJsonAsync(string url, string path)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+
+            using Stream stream = await DownloadHelper.DownloadAsync(url, path);
+            string text = stream.ToUtf8Text();
+            return text;
+        }
+
+        private static async Task<AssetList> LoadAssetListAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+            ArgumentNullException.ThrowIfNull(networkAssetIndex, nameof(networkAssetIndex));
+
+            using Stream stream = await ReadOrDownloadAsync(path, networkAssetIndex, downloadProvider);
+            string text = stream.ToUtf8Text();
+            var model = JsonConvert.DeserializeObject<AssetList.Model>(text) ?? throw new FormatException();
+            return new(model);
+        }
+
+        private static string FormatProgress(DownloadManager downloadManager)
+        {
+            ArgumentNullException.ThrowIfNull(downloadManager, nameof(downloadManager));
+
+            return $"多个文件下载中: {downloadManager.CompletedCount}/{downloadManager.Count}";
         }
     }
 }
