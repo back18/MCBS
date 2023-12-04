@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class MinecraftResourcesDirectory : DirectoryManager
+    public class MinecraftDirectory : DirectoryManager
     {
-        public MinecraftResourcesDirectory(string directory) : base(directory)
+        public MinecraftDirectory(string directory) : base(directory)
         {
             ResourcePacksDir = AddDirectory<ResourcePacksDirectory>("ResourcePacks");
             VanillaDir = AddDirectory<VanillaDirectory>("Vanilla");

@@ -110,7 +110,7 @@ namespace MCBS
         {
             LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);
 
-            VersionDirectory versionDirectory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
+            VersionDirectory versionDirectory = SR.McbsDirectory.MinecraftDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
             string? minecraftLanguageFilePath = versionDirectory.LanguagesDir.Combine(MinecraftConfig.Language + ".json");
             if (!File.Exists(minecraftLanguageFilePath))
                 minecraftLanguageFilePath = null;

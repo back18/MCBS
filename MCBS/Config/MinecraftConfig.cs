@@ -156,7 +156,7 @@ namespace MCBS.Config
 
             foreach (string resourcePack in model.ResourcePackList)
             {
-                if (!SR.McbsDirectory.MinecraftResourcesDir.ResourcePacksDir.ExistsFile(resourcePack))
+                if (!SR.McbsDirectory.MinecraftDir.ResourcePacksDir.ExistsFile(resourcePack))
                 {
                     message.AppendLine($"[ResourcePackList]: 资源包路径“{resourcePack}”不存在");
                     count++;

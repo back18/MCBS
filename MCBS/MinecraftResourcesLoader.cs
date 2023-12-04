@@ -40,11 +40,11 @@ namespace MCBS
                 }
             }
 
-            VersionDirectory directory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
+            VersionDirectory directory = SR.McbsDirectory.MinecraftDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
             string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
             paths[0] = directory.ClientFile;
             for (int i = 1; i < paths.Length; i++)
-                paths[i] = SR.McbsDirectory.MinecraftResourcesDir.ResourcePacksDir.Combine(MinecraftConfig.ResourcePackList[i]);
+                paths[i] = SR.McbsDirectory.MinecraftDir.ResourcePacksDir.Combine(MinecraftConfig.ResourcePackList[i]);
 
             LOGGER.Info($"开始加载Minecraft资源包，共计{paths.Length}个资源包，资源包列表：");
             foreach (string path in paths)
@@ -59,7 +59,7 @@ namespace MCBS
         {
             ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
 
-            VersionDirectory directory = SR.McbsDirectory.MinecraftResourcesDir.VanillaDir.GetVersionDirectory(version);
+            VersionDirectory directory = SR.McbsDirectory.MinecraftDir.VanillaDir.GetVersionDirectory(version);
             directory.BuildDirectoryTree();
 
             DownloadProvider downloadProvider = MinecraftConfig.DownloadApi switch
