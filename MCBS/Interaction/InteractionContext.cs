@@ -46,7 +46,7 @@ namespace MCBS.Interaction
 
             _lock = new();
             isDisposed = false;
-            _directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory()?.InteractionsDir ?? throw new InvalidOperationException("找不到交互实体数据文件夹");
+            _directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.InteractionsDir ?? throw new InvalidOperationException("找不到交互实体数据文件夹");
             _file = _directory.Combine(PlayerName + ".json");
             _task = SaveJsonAsync();
         }

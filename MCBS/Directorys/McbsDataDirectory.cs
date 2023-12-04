@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class McbsSavesDirectory : DirectoryManager
+    public class McbsDataDirectory : DirectoryManager
     {
-        public McbsSavesDirectory(string directory) : base(directory)
+        public McbsDataDirectory(string directory) : base(directory)
         {
             InteractionsDir = AddDirectory<InteractionsDirectory>("Interactions");
-            ScreenSavesFile = Combine("ScreenSaves.json");
+            ScreenDataFile = Combine("ScreenData.json");
         }
 
         public InteractionsDirectory InteractionsDir { get; }
 
-        public string ScreenSavesFile { get; }
+        public string ScreenDataFile { get; }
     }
 }

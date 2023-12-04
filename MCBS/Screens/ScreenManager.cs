@@ -133,14 +133,14 @@ namespace MCBS.Screens
 
         private void ReadScreens()
         {
-            McbsSavesDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory();
+            McbsDataDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory();
             if (directory is null)
                 return;
 
-            if (!File.Exists(directory.ScreenSavesFile))
+            if (!File.Exists(directory.ScreenDataFile))
                 return;
 
-            string json = File.ReadAllText(directory.ScreenSavesFile);
+            string json = File.ReadAllText(directory.ScreenDataFile);
             ScreenOptions.Model[] items = JsonConvert.DeserializeObject<ScreenOptions.Model[]>(json) ?? throw new FormatException();
             foreach (var item in items)
             {
@@ -152,7 +152,7 @@ namespace MCBS.Screens
 
         private void SaveScreens()
         {
-            McbsSavesDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsSavesDirectory();
+            McbsDataDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory();
             if (directory is null)
                 return;
 
@@ -160,7 +160,7 @@ namespace MCBS.Screens
             foreach (var save in _saves)
                 items.Add(save.ToModel());
             string json = JsonConvert.SerializeObject(items);
-            File.WriteAllText(directory.ScreenSavesFile, json);
+            File.WriteAllText(directory.ScreenDataFile, json);
         }
 
         public void HandleAllScreenInput()

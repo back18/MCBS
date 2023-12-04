@@ -9,9 +9,9 @@ namespace MCBS.Directorys
 {
     public static class MinecraftExtension
     {
-        public static McbsSavesDirectory GetMcbsSavesDirectory(this WorldDirectory source)
+        public static McbsDataDirectory GetMcbsDataDirectory(this WorldDirectory source)
         {
-            return new(source.Combine("McbsSaves"));
+            return new(source.Combine("McbsData"));
         }
     }
 }
