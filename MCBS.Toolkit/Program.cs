@@ -21,7 +21,6 @@ namespace MCBS.Toolkit
 
         private static void RegisterCommands()
         {
-            CommandSystem.Pool.AddCommand(new(new("build FFmpegIndex"), CommandFunc.GetFunc(BuildUtil.BuildFFmpegIndex)));
             CommandSystem.Pool.AddCommand(new(new("build TextureIndex"), CommandFunc.GetFunc(BuildUtil.BuildTextureIndex)));
         }
     }

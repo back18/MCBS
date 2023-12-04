@@ -15,8 +15,6 @@
     <None Remove="SystemResource\Cursors\VerticalResize.png" />
     <None Remove="SystemResource\DefaultFont.bdf" />
     <None Remove="SystemResource\DefaultIcon.png" />
-    <None Remove="SystemResource\ffmpeg-master-latest-win64-gpl-shared.zip" />
-    <None Remove="SystemResource\FFmpegIndex.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,8 +31,6 @@
     <EmbeddedResource Include="SystemResource\Cursors\VerticalResize.png" />
     <EmbeddedResource Include="SystemResource\DefaultFont.bdf" />
     <EmbeddedResource Include="SystemResource\DefaultIcon.png" />
-    <EmbeddedResource Include="SystemResource\ffmpeg-master-latest-win64-gpl-shared.zip" />
-    <EmbeddedResource Include="SystemResource\FFmpegIndex.json" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,22 @@ namespace MCBS.Directorys
     {
         public FFmpegDirectory(string directory) : base(directory)
         {
+            BinDir = AddDirectory<BinDirectory>("bin");
+            FFmpegWin64ZipFile = Combine("ffmpeg-master-latest-win64-gpl-shared.zip");
+            FFmpegWin64IndexFile = Combine("ffmpeg-master-latest-win64-gpl-shared.json");
+        }
+
+        public BinDirectory BinDir { get; }
+
+        public string FFmpegWin64ZipFile { get; }
+
+        public string FFmpegWin64IndexFile { get; }
+
+        public class BinDirectory : DirectoryManager
+        {
+            public BinDirectory(string directory) : base(directory)
+            {
+            }
         }
     }
 }
