@@ -54,7 +54,7 @@ namespace MCBS
             start:
             LOGGER.Info("开始下载: " + url);
             DownloadTask downloadTask = new(url, path);
-            Task<Stream> task = downloadTask.StartAsync();
+            Task<Stream?> task = downloadTask.StartAsync();
 
             while (!task.IsCompleted)
             {
@@ -76,14 +76,14 @@ namespace MCBS
                 }
             }
 
-            if (downloadTask.Download.Status == DownloadStatus.Failed)
+            Stream? result = await task;
+
+            if (result is null || downloadTask.Download.Status == DownloadStatus.Failed)
             {
                 LOGGER.Warn("下载失败，即将重试");
                 await Task.Delay(1000);
                 goto start;
             }
-
-            Stream result = await task;
             if (downloadTask.DownloadProgressAvailable)
                 LOGGER.Info(FormatProgress(downloadTask.DownloadProgressChangedEventArgs));
 
