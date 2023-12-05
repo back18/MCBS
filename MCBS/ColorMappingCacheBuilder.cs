@@ -102,7 +102,7 @@ namespace MCBS
             foreach (Rgba32 color in SR.Rgba32BlockMappings[facing].Keys)
                 colors.Add(color.ToHex());
 
-            if (!colors.SetEquals(buildInfo.Colors))
+            if (colors.Count != buildInfo.Colors.Length || !colors.SetEquals(buildInfo.Colors))
                 return false;
 
             string binPath = GetBinPath(facing);
