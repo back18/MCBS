@@ -37,9 +37,9 @@ namespace MCBS
                 });
 
                 byte[] bytes = cache.ToBytes();
-                List<int> colors = new();
+                List<string> colors = new();
                 foreach (Rgba32 color in SR.Rgba32BlockMappings[facing].Keys)
-                    colors.Add(ColorMappingCache.ToIndex(color));
+                    colors.Add(color.ToHex());
 
                 BuildInfo buildInfo = new()
                 {
@@ -47,8 +47,8 @@ namespace MCBS
                     Colors = colors.ToArray()
                 };
 
-                File.WriteAllText(jsonPath, JsonConvert.SerializeObject(buildInfo));
                 File.WriteAllBytes(binPath, bytes);
+                File.WriteAllText(jsonPath, JsonConvert.SerializeObject(buildInfo));
 
                 return cache;
             }
@@ -98,9 +98,9 @@ namespace MCBS
             if (buildInfo is null)
                 return false;
 
-            HashSet<int> colors = new();
+            HashSet<string> colors = new();
             foreach (Rgba32 color in SR.Rgba32BlockMappings[facing].Keys)
-                colors.Add(ColorMappingCache.ToIndex(color));
+                colors.Add(color.ToHex());
 
             if (!colors.SetEquals(buildInfo.Colors))
                 return false;
@@ -126,7 +126,7 @@ namespace MCBS
 
             public string CacheHash { get; set; }
 
-            public int[] Colors { get; set; }
+            public string[] Colors { get; set; }
 
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }
