@@ -14,16 +14,16 @@ namespace MCBS.Rendering
 {
     public class ColorMatcher<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
-        public ColorMatcher(IEnumerable<Rgba32> colors, ColorMappingCache? mappingCache = null)
+        public ColorMatcher(ISet<Rgba32> colors, ColorMappingCache? mappingCache = null)
         {
             ArgumentNullException.ThrowIfNull(colors, nameof(colors));
 
-            _colors = colors;
+            _colors = colors.ToArray();
             _mappingCache = mappingCache;
             _tempCache = new();
         }
 
-        private readonly IEnumerable<Rgba32> _colors;
+        private readonly Rgba32[] _colors;
 
         private readonly ColorMappingCache? _mappingCache;
 

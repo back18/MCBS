@@ -46,7 +46,7 @@ namespace MCBS.Rendering
         public ColorMatcher<TPixel> CreateColorMatcher<TPixel>() where TPixel : unmanaged, IPixel<TPixel>
         {
             SR.ColorMappingCaches.TryGetValue(Facing, out var mappingCache);
-            return new(Keys, mappingCache);
+            return new(Keys.ToHashSet(), mappingCache);
         }
 
         public bool ContainsKey(Rgba32 key)
