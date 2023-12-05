@@ -1,6 +1,10 @@
-﻿using MCBS.Rendering;
+﻿using log4net.Core;
+using MCBS.Logging;
+using MCBS.Rendering;
 using Newtonsoft.Json;
+using QuanLib.Core;
 using QuanLib.Core.IO;
+using QuanLib.Downloader;
 using QuanLib.Minecraft;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -13,6 +17,8 @@ namespace MCBS
 {
     public static class ColorMappingCacheBuilder
     {
+        private static LogImpl LOGGER => LogUtil.GetLogger();
+
         public static ColorMappingCache Build(Facing facing)
         {
             string jsonPath = GetJsonPath(facing);
@@ -25,7 +31,10 @@ namespace MCBS
             }
             else
             {
-                ColorMappingCache cache = SR.Rgba32BlockMappings[facing].CreateColorMatcher<Rgba32>().BuildMappingCache();
+                ColorMappingCache cache = BuildMappingCache(SR.Rgba32BlockMappings[facing].CreateColorMatcher<Rgba32>(), 1000, (buildProgress) =>
+                {
+                    LOGGER.Info(FormatBuildProgress(buildProgress));
+                });
 
                 byte[] bytes = cache.ToBytes();
                 List<int> colors = new();
@@ -43,6 +52,40 @@ namespace MCBS
 
                 return cache;
             }
+        }
+
+        private static ColorMappingCache BuildMappingCache(ColorMatcher<Rgba32> colorMatcher, int sleepMilliseconds, Action<BuildProgress>? onProgress = null)
+        {
+            ArgumentNullException.ThrowIfNull(colorMatcher, nameof(colorMatcher));
+            ThrowHelper.ArgumentOutOfMin(0, sleepMilliseconds, nameof(sleepMilliseconds));
+
+            BuildProgress buildProgress = new();
+            buildProgress.TotalCount = 256 * 256 * 256;
+            Rgba32[] mapping = new Rgba32[buildProgress.TotalCount];
+
+            bool completed = false;
+            Task.Run(() =>
+            {
+                while (buildProgress.CompletedCount < buildProgress.TotalCount || !completed)
+                {
+                    onProgress?.Invoke(buildProgress);
+                    Thread.Sleep(sleepMilliseconds);
+                }
+            });
+
+            ParallelLoopResult parallelLoopResult = Parallel.For(0, buildProgress.TotalCount, (i) =>
+            {
+                mapping[i] = colorMatcher.Match(ColorMappingCache.ToColor(i));
+                Interlocked.Increment(ref buildProgress.CompletedCount);
+            });
+
+            completed = true;
+            return new(mapping);
+        }
+
+        private static string FormatBuildProgress(BuildProgress buildProgress)
+        {
+            return $"{DownloaderUtil.FormatProgressBar(buildProgress.TotalCount, buildProgress.CompletedCount, 20)} {Math.Round(buildProgress.Percentage, 2)}% - {buildProgress.CompletedCount}/{buildProgress.TotalCount}";
         }
 
         private static bool Validate(Facing facing)
@@ -74,7 +117,7 @@ namespace MCBS
         }
 
         private static string GetJsonPath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".json");
-        
+
         private static string GetBinPath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".bin");
 
         private class BuildInfo
@@ -86,6 +129,21 @@ namespace MCBS
             public int[] Colors { get; set; }
 
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        }
+
+        private class BuildProgress
+        {
+            public BuildProgress()
+            {
+                TotalCount = 0;
+                CompletedCount = 0;
+            }
+
+            public int TotalCount;
+
+            public int CompletedCount;
+
+            public double Percentage => TotalCount == 0 ? 0 : (double)CompletedCount / TotalCount * 100;
         }
     }
 }

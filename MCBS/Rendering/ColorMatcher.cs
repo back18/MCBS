@@ -131,21 +131,6 @@ namespace MCBS.Rendering
             await BuildCacheAsync(pixels);
         }
 
-        public ColorMappingCache BuildMappingCache()
-        {
-            int length = 256 * 256 * 256;
-            Rgba32[] mapping = new Rgba32[length];
-            ParallelLoopResult parallelLoopResult = Parallel.For(0, length, (i) =>
-            {
-                mapping[i] = Match(ColorMappingCache.ToColor(i));
-            });
-
-            while (!parallelLoopResult.IsCompleted)
-                Thread.Sleep(10);
-
-            return new(mapping);
-        }
-
         private static async Task<TPixel[]> GetPixelsAsync(Image<TPixel> image)
         {
             ArgumentNullException.ThrowIfNull(image, nameof(image));
