@@ -33,6 +33,38 @@ namespace MCBS.Rendering
             return new MediaOptions();
         }
 
+        public static MediaOptions Clone(this MediaOptions source)
+        {
+            return new()
+            {
+                PacketBufferSizeLimit = source.PacketBufferSizeLimit,
+                DemuxerOptions = source.DemuxerOptions,
+                VideoPixelFormat = source.VideoPixelFormat,
+                TargetVideoSize = source.TargetVideoSize,
+                VideoSeekThreshold = source.VideoSeekThreshold,
+                AudioSeekThreshold = source.AudioSeekThreshold,
+                DecoderThreads = source.DecoderThreads,
+                DecoderOptions = source.DecoderOptions,
+                StreamsToLoad = source.StreamsToLoad
+            };
+        }
+
+        public static ResizeOptions Clone(this ResizeOptions source)
+        {
+            return new()
+            {
+                Mode = source.Mode,
+                Position = source.Position,
+                CenterCoordinates = source.CenterCoordinates,
+                Size = source.Size,
+                Sampler = source.Sampler,
+                Compand = source.Compand,
+                TargetRectangle = source.TargetRectangle,
+                PremultiplyAlpha = source.PremultiplyAlpha,
+                PadColor = source.PadColor
+            };
+        }
+
         public static bool ResizeOptionsEquals(ResizeOptions? resizeOptions1, ResizeOptions? resizeOptions2)
         {
             if (resizeOptions1 == resizeOptions2)
