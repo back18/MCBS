@@ -87,6 +87,7 @@ BlockTextureBlacklist = [
 "minecraft:warped_nylium",              #诡异菌岩
 "minecraft:tnt",                        #TNT
 "minecraft:snow",                       #雪片
+"minecraft:budding_amethyst",           #紫水晶母岩
 "minecraft:tube_coral_block",           #管珊瑚块
 "minecraft:brain_coral_block",          #脑纹珊瑚块
 "minecraft:bubble_coral_block",         #气泡珊瑚块
