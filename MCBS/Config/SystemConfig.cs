@@ -19,24 +19,16 @@ namespace MCBS.Config
             NullValidator.ValidateObject(model, nameof(model));
 
             CrashAutoRestart = model.CrashAutoRestart;
+            BuildColorMappingCaches = model.BuildColorMappingCaches;
             LoadDllAppComponents = model.LoadDllAppComponents;
             SystemAppComponents = new(model.SystemAppComponents);
             ServicesAppID = model.ServicesAppID;
             StartupChecklist = new(model.StartupChecklist);
-
-            List<Facing> facings = new();
-            foreach (var item in model.BuildColorMappingCaches)
-            {
-                Facing facing = (Facing)item;
-                if (!facings.Contains(facing))
-                    facings.Add(facing);
-            }
-            BuildColorMappingCaches = new(facings);
         }
 
         public bool CrashAutoRestart { get; }
 
-        public ReadOnlyCollection<Facing> BuildColorMappingCaches { get; }
+        public bool BuildColorMappingCaches { get; }
 
         public bool LoadDllAppComponents { get; }
 
@@ -88,8 +80,7 @@ namespace MCBS.Config
 
             public bool CrashAutoRestart { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
-            public int[] BuildColorMappingCaches { get; set; }
+            public bool BuildColorMappingCaches { get; set; }
 
             public bool LoadDllAppComponents { get; set; }
 

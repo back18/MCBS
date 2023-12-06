@@ -1,8 +1,8 @@
 #崩溃时是否自动重启
 CrashAutoRestart = true
 
-#预加载的Minecraft方块颜色映射表缓存
-BuildColorMappingCaches = [-3]
+#是否在启动时构建Minecraft方块颜色映射表缓存
+BuildColorMappingCaches = false
 
 #是否加载“MCBS\DllAppComponents\”文件夹中的DLL应用程序
 #支持的文件类型: 程序集.dll

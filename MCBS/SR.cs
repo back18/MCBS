@@ -93,12 +93,22 @@ namespace MCBS
 
         private static void BuildColorMappingCache(ResourceEntryManager resources)
         {
-            LOGGER.Info("开始构建Minecraft方块颜色映射表缓存");
+            LOGGER.Info("开始加载Minecraft方块颜色映射表缓存");
 
             Dictionary<Facing, ColorMappingCache> caches = new();
-            foreach (Facing facing in SystemConfig.BuildColorMappingCaches)
+            foreach (Facing facing in Enum.GetValues(typeof(Facing)))
             {
-                ColorMappingCache cache = ColorMappingCacheBuilder.Build(facing);
+                ColorMappingCache? cache;
+                if (SystemConfig.BuildColorMappingCaches)
+                {
+                    cache = ColorMappingCacheBuilder.ReadOrBuild(facing);
+                }
+                else
+                {
+                    if (!ColorMappingCacheBuilder.ReadIfValid(facing, out cache))
+                        continue;
+                }
+
                 caches.Add(facing, cache);
             }
             _ColorMappingCaches = new(caches);

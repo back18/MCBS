@@ -9,6 +9,7 @@ using QuanLib.Minecraft;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,10 +20,23 @@ namespace MCBS
     {
         private static LogImpl LOGGER => LogUtil.GetLogger();
 
-        public static ColorMappingCache Build(Facing facing)
+        public static bool ReadIfValid(Facing facing, [MaybeNullWhen(false)] out ColorMappingCache result)
         {
-            string jsonPath = GetJsonPath(facing);
-            string binPath = GetBinPath(facing);
+            if (Validate(facing))
+            {
+                byte[] bytes = File.ReadAllBytes(GetBinFilePath(facing));
+                result = new(bytes);
+                return true;
+            }
+
+            result = null;
+            return false;
+        }
+
+        public static ColorMappingCache ReadOrBuild(Facing facing)
+        {
+            string jsonPath = GetJsonFilePath(facing);
+            string binPath = GetBinFilePath(facing);
 
             if (Validate(facing))
             {
@@ -31,6 +45,7 @@ namespace MCBS
             }
             else
             {
+                LOGGER.Info($"开始构建方块[{facing.ToEnglishString()}]面颜色映射表");
                 ColorMappingCache cache = BuildMappingCache(SR.Rgba32BlockMappings[facing].CreateColorMatcher<Rgba32>(), 1000, (buildProgress) =>
                 {
                     LOGGER.Info(FormatBuildProgress(buildProgress));
@@ -90,7 +105,7 @@ namespace MCBS
 
         private static bool Validate(Facing facing)
         {
-            string jsonPath = GetJsonPath(facing);
+            string jsonPath = GetJsonFilePath(facing);
             if (!File.Exists(jsonPath))
                 return false;
 
@@ -105,7 +120,7 @@ namespace MCBS
             if (colors.Count != buildInfo.Colors.Length || !colors.SetEquals(buildInfo.Colors))
                 return false;
 
-            string binPath = GetBinPath(facing);
+            string binPath = GetBinFilePath(facing);
             if (!File.Exists(binPath))
                 return false;
 
@@ -116,9 +131,9 @@ namespace MCBS
             return true;
         }
 
-        private static string GetJsonPath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".json");
+        private static string GetJsonFilePath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".json");
 
-        private static string GetBinPath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".bin");
+        private static string GetBinFilePath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".bin");
 
         private class BuildInfo
         {
