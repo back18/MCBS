@@ -91,5 +91,5 @@ BlockTextureBlacklist = [
 "minecraft:brain_coral_block",          #脑纹珊瑚块
 "minecraft:bubble_coral_block",         #气泡珊瑚块
 "minecraft:fire_coral_block",           #火珊瑚块
-"minecraft:horn_coral_block"            #鹿角珊瑚块
+"minecraft:horn_coral_block",           #鹿角珊瑚块
 ]
