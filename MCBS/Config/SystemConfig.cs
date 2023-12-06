@@ -87,7 +87,7 @@ namespace MCBS.Config
             [Required(ErrorMessage = "配置项缺失")]
             public string[] SystemAppComponents { get; set; }
 
-            [Required(ErrorMessage = "系统服务AppID不能为空")]
+            [Required(ErrorMessage = "配置项缺失")]
             public string ServicesAppID { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]

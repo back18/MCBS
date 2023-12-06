@@ -86,20 +86,19 @@ namespace MCBS.Screens
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
 
             [Required(ErrorMessage = "配置项缺失")]
-            [MinLength(3, ErrorMessage = "屏幕坐标应该为3个数字")]
-            [MaxLength(3, ErrorMessage = "屏幕坐标应该为3个数字")]
+            [Length(3, 3, ErrorMessage = "数组的长度应该为3")]
             public int[] StartPosition { get; set; }
 
-            [Range(1, 512, ErrorMessage = "屏幕宽度范围应该为1~512")]
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
             public int Width { get; set; }
 
-            [Range(1, 512, ErrorMessage = "屏幕高度范围应该为1~512")]
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
             public int Height { get; set; }
 
-            [Range(-3, 3, ErrorMessage = "屏幕X轴方向范围应该为-3~3")]
+            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = "值只能为 1, -1, 2, -2, 3, -3")]
             public int XFacing { get; set; }
 
-            [Range(-3, 3, ErrorMessage = "屏幕Y轴方向范围应该为-3~3")]
+            [Range(-3, 3, ErrorMessage = "值的范围应该为-3~3")]
             public int YFacing { get; set; }
         }
     }

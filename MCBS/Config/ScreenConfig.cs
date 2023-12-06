@@ -109,19 +109,19 @@ namespace MCBS.Config
 
             if (model.MinLength > model.MaxLength)
             {
-                message.AppendLine($"[MinLength]: MinLength不能大于MaxLength");
+                message.AppendLine($"[MinLength]: MinLength 不能大于 MaxLength");
                 count++;
             }
 
             if (model.MinPixels > model.MaxPixels)
             {
-                message.AppendLine($"[MinPixels]: MinPixels不能大于MaxPixels");
+                message.AppendLine($"[MinPixels]: MinPixels 不能大于 MaxPixels");
                 count++;
             }
 
             if (model.MinY > model.MaxY)
             {
-                message.AppendLine($"[MinY]: MinY不能大于MaxY");
+                message.AppendLine($"[MinY]: MinY 不能大于 MaxY");
                 count++;
             }
 
@@ -141,44 +141,44 @@ namespace MCBS.Config
         {
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
 
-            [Range(0, 64, ErrorMessage = "最大可同时存在的屏幕数量范围应该为0~64")]
+            [Range(0, 64, ErrorMessage = "值的范围应该为0~64")]
             public int MaxCount { get; set; }
 
-            [Range(1, 512, ErrorMessage = "屏幕的最小长度限制范围应该为1~512")]
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
             public int MinLength { get; set; }
 
-            [Range(1, 512, ErrorMessage = "屏幕的最大长度限制范围应该为1~512")]
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
             public int MaxLength { get; set; }
 
-            [Range(1, 262144, ErrorMessage = "屏幕的最小像素数量限制范围应该为1~262144")]
+            [Range(1, 262144, ErrorMessage = "值的范围应该为1~262144")]
             public int MinPixels { get; set; }
 
-            [Range(1, 262144, ErrorMessage = "屏幕的最大像素数量限制范围应该为1~262144")]
+            [Range(1, 262144, ErrorMessage = "值的范围应该为1~262144")]
             public int MaxPixels { get; set; }
 
             public int MinY { get; set; }
 
             public int MaxY { get; set; }
 
-            [Range(-1, int.MaxValue, ErrorMessage = "屏幕构造器的超时时间范围应该为-1~214748367")]
+            [Range(-1, int.MaxValue, ErrorMessage = "值的范围应该为-1~214748367")]
             public int ScreenBuildTimeout { get; set; }
 
-            [Range(-1, int.MaxValue, ErrorMessage = "屏幕的闲置超时时间范围应该为-1~214748367")]
+            [Range(-1, int.MaxValue, ErrorMessage = "值的范围应该为-1~214748367")]
             public int ScreenIdleTimeout { get; set; }
 
-            [Required(ErrorMessage = "右键计分板名称不能为空")]
+            [Required(ErrorMessage = "配置项缺失")]
             public string RightClickObjective { get; set; }
 
-            [Required(ErrorMessage = "右键计分板准则不能为空")]
+            [Required(ErrorMessage = "配置项缺失")]
             public string RightClickCriterion { get; set; }
 
-            [Required(ErrorMessage = "右键计分板物品ID不能为空")]
+            [Required(ErrorMessage = "配置项缺失")]
             public string RightClickItemID { get; set; }
 
-            [Required(ErrorMessage = "文本编辑器物品ID不能为空")]
+            [Required(ErrorMessage = "配置项缺失")]
             public string TextEditorItemID { get; set; }
 
-            [Required(ErrorMessage = "屏幕构建器物品名称不能为空")]
+            [Required(ErrorMessage = "配置项缺失")]
             public string ScreenBuilderItemName { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]
