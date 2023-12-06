@@ -1,58 +1,58 @@
-#最大可同时存在的屏幕数量
+#屏幕数量限制
 #范围: 0~64
 MaxCount = 8
 
-#屏幕的最小长度限制
+#屏幕最小长度限制
 #范围: 1~512
 MinLength = 32
 
-#屏幕的最大长度限制
+#屏幕最大长度限制
 #范围: 1~512
 MaxLength = 256
 
-#屏幕的最小像素数量限制
+#屏幕最小像素数量限制
 #范围: 1~262144
 MinPixels = 1024
 
-#屏幕的最大像素数量限制
+#屏幕最大像素数量限制
 #范围: 1~262144
 MaxPixels = 65536
 
-#屏幕的最小Y轴限制
+#屏幕最小Y轴限制
 #1.17及以下设置为0
 #1.18及以上设置为-64
 MinY = -64
 
-#屏幕的最大Y轴限制
+#屏幕最大Y轴限制
 #1.17及以下设置为255
 #1.18及以上设置为319
 MaxY = 319
 
-#屏幕构造器的超时时间
+#屏幕构造器超时时间
 #设置为-1时将无限等待，不会超时
-#单位: Tick
+#单位: GameTick
 #范围: -1~214748367
 ScreenBuildTimeout = 200
 
-#屏幕的闲置超时时间
+#屏幕闲置超时时间
 #设置为-1时将无限等待，不会超时
-#单位: Tick
+#单位: GameTick
 #范围: -1~214748367
 ScreenIdleTimeout = -1
 
-#触发右键点击操作的计分板名称
+#用于触发右键点击操作的计分板名称
 #不能为空
 RightClickObjective = "snowball_mouse"
 
-#触发右键点击操作的计分板准则
+#用于触发右键点击操作的计分板准则
 #不能为空
 RightClickCriterion = "minecraft.used:minecraft.snowball"
 
-#触发右键点击操作的物品ID
+#用于触发右键点击操作的物品ID
 #不能为空
 RightClickItemID = "minecraft:snowball"
 
-#用于编辑文本的物品ID
+#用于编辑屏幕文本的物品ID
 #一般情况下不支持修改，除非自定义物品的NBT标签结构与书与笔一致
 TextEditorItemID = "minecraft:writable_book"
 
@@ -60,18 +60,17 @@ TextEditorItemID = "minecraft:writable_book"
 #将雪球命名重命名为该名称后，手持雪球载入屏幕创建程序
 ScreenBuilderItemName = "创建屏幕"
 
-#屏幕的操作员白名单列表
+#允许控制屏幕的玩家白名单列表
 #填写玩家名称
 #为空时，所有人都可以控制屏幕
 ScreenOperatorList = []
 
-#屏幕构建器的操作员白名单列表
+#允许创建屏幕的玩家白名单列表
 #填写玩家名称
 #为空时，所有人都可以创建屏幕
 ScreenBuildOperatorList = []
 
 #常驻屏幕列表
-#系统初始化时会自动加载列表中的所有屏幕
 #示例模板：
 #[[ResidentScreenList]]
 #StartPosition = [0, 83, 0] #屏幕的起始位置，既屏幕左上角在世界中的位置
