@@ -20,10 +20,10 @@ namespace MCBS.Config
         {
             NullValidator.ValidateObject(model, nameof(model));
 
-            DownloadApi = model.DownloadApi;
             GameVersion = model.GameVersion;
             InstanceType = model.InstanceType;
             CommunicationMode = model.CommunicationMode;
+            DownloadApi = model.DownloadApi;
             MinecraftPath = model.MinecraftPath;
             ServerAddress = model.ServerAddress;
             JavaPath = model.JavaPath;
@@ -42,13 +42,13 @@ namespace MCBS.Config
             BlockTextureBlacklist = list.AsReadOnly();
         }
 
-        public string DownloadApi { get; }
-
         public string GameVersion { get; }
 
         public string InstanceType { get; }
 
         public string CommunicationMode { get; }
+
+        public string DownloadApi { get; }
 
         public string MinecraftPath { get; }
 
@@ -158,10 +158,6 @@ namespace MCBS.Config
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
 
             [Required(ErrorMessage = "配置项缺失")]
-            [AllowedValues("MOJANG", "BMCLAPI", ErrorMessage = "值只能为 MOJANG 或 BMCLAPI")]
-            public string DownloadApi { get; set; }
-
-            [Required(ErrorMessage = "配置项缺失")]
             public string GameVersion { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]
@@ -171,6 +167,10 @@ namespace MCBS.Config
             [Required(ErrorMessage = "配置项缺失")]
             [AllowedValues("RCON", "CONSOLE", "HYBRID", "MCAPI", ErrorMessage = "值只能为 RCON 或 CONSOLE 或 HYBRID 或 MCAPI")]
             public string CommunicationMode { get; set; }
+
+            [Required(ErrorMessage = "配置项缺失")]
+            [AllowedValues("MOJANG", "BMCLAPI", ErrorMessage = "值只能为 MOJANG 或 BMCLAPI")]
+            public string DownloadApi { get; set; }
 
             [Required(ErrorMessage = "配置项缺失")]
             public string MinecraftPath { get; set; }
