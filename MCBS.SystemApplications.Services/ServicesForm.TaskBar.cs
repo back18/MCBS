@@ -1,4 +1,5 @@
-﻿using MCBS.BlockForms.Utility;
+﻿using MCBS.BlockForms;
+using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using MCBS.Forms;
 using MCBS.UI;
@@ -9,13 +10,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.BlockForms
+namespace MCBS.SystemApplications.Services
 {
-    public abstract partial class RootForm
+    public partial class ServicesForm
     {
         public class TaskBar : ContainerControl<Control>
         {
-            public TaskBar(RootForm owner)
+            public TaskBar(ServicesForm owner)
             {
                 ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
@@ -35,7 +36,7 @@ namespace MCBS.BlockForms
                 FullScreen_Button = new();
             }
 
-            private readonly RootForm _owner;
+            private readonly ServicesForm _owner;
 
             private readonly Switch StartMenu_Switch;
 

@@ -1,4 +1,5 @@
-﻿using MCBS.Cursor;
+﻿using MCBS.BlockForms;
+using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Forms;
 using MCBS.UI;
@@ -8,13 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.BlockForms
+namespace MCBS.SystemApplications.Services
 {
-    public abstract partial class RootForm
+    public partial class ServicesForm
     {
         public class FormContainer : GenericPanel<IForm>
         {
-            public FormContainer(RootForm owner)
+            public FormContainer(ServicesForm owner)
             {
                 ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
@@ -40,7 +41,7 @@ namespace MCBS.BlockForms
                 });
             }
 
-            private readonly RootForm _owner;
+            private readonly ServicesForm _owner;
 
             public override void Initialize()
             {

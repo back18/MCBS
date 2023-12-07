@@ -1,4 +1,5 @@
-﻿using MCBS.BlockForms.Utility;
+﻿using MCBS.BlockForms;
+using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.BlockForms
+namespace MCBS.SystemApplications.Services
 {
     public class TaskBarIcon : IconTextBox<Rgba32>
     {

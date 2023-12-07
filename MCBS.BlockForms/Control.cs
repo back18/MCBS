@@ -891,14 +891,14 @@ namespace MCBS.BlockForms
             }
         }
 
-        public RootForm? GetRootForm()
+        public IRootForm? GetRootForm()
         {
             IControl? result = this;
             while (true)
             {
                 if (result is null)
                     return null;
-                else if (result is RootForm form)
+                else if (result is IRootForm form)
                     return form;
                 else
                     result = result.GenericParentContainer;
