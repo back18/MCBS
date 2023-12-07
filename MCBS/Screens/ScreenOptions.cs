@@ -98,7 +98,7 @@ namespace MCBS.Screens
             [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = "值只能为 1, -1, 2, -2, 3, -3")]
             public int XFacing { get; set; }
 
-            [Range(-3, 3, ErrorMessage = "值的范围应该为-3~3")]
+            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = "值只能为 1, -1, 2, -2, 3, -3")]
             public int YFacing { get; set; }
         }
     }
