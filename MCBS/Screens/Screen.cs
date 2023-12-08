@@ -368,11 +368,11 @@ namespace MCBS.Screens
             _chunks.Clear();
         }
 
-        public BlockPos ScreenPos2WorldPos(Point position)
+        public BlockPos ScreenPos2WorldPos(Point position, int offset = 0)
         {
-            int? x = null;
-            int? y = null;
-            int? z = null;
+            int x = 0;
+            int y = 0;
+            int z = 0;
 
             switch (XFacing)
             {
@@ -422,11 +422,31 @@ namespace MCBS.Screens
                     throw new InvalidOperationException();
             }
 
-            x ??= StartPosition.X;
-            y ??= StartPosition.Y;
-            z ??= StartPosition.Z;
+            switch (NormalFacing)
+            {
+                case Facing.Xp:
+                    x = StartPosition.X + offset;
+                    break;
+                case Facing.Xm:
+                    x = StartPosition.X - offset;
+                    break;
+                case Facing.Yp:
+                    y = StartPosition.Y + offset;
+                    break;
+                case Facing.Ym:
+                    y = StartPosition.Y - offset;
+                    break;
+                case Facing.Zp:
+                    z = StartPosition.Z + offset;
+                    break;
+                case Facing.Zm:
+                    z = StartPosition.Z - offset;
+                    break;
+                default:
+                    break;
+            }
 
-            return new(x.Value, y.Value, z.Value);
+            return new(x, y, z);
         }
 
         public Point WorldPos2ScreenPos(BlockPos position)

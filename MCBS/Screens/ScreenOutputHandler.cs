@@ -18,46 +18,54 @@ namespace MCBS.Screens
     /// </summary>
     public class ScreenOutputHandler
     {
-        private const string AIR_BLOCK = "minecraft:air";
         private const string LIGHT_BLOCK = "minecraft:light";
+        private const string BARRIER_BLOCK = "minecraft:barrier";
+        private const string AIR_BLOCK = "minecraft:air";
 
         public ScreenOutputHandler(Screen owner)
         {
             ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
             _owner = owner;
+            _frames = [];
             ScreenDefaultBlock = "minecraft:smooth_stone";
         }
 
         private readonly Screen _owner;
 
+        private readonly Dictionary<int, BlockFrame> _frames;
+
         public BlockFrame? LastFrame { get; internal set; }
 
         public string ScreenDefaultBlock { get; set; }
 
-        public void HandleOutput(BlockFrame frame)
+        public void HandleOutput(BlockFrame newFrame, int offset = 0)
         {
-            IDictionary<Point, string> pixels = GetDifferencesPixels(frame);
-            List<WorldBlock> blocks = ToSetBlockArguments(pixels);
-            LastFrame = frame;
+            ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
+
+            IDictionary<Point, string> pixels = GetDifferencesPixels(newFrame);
+            List<WorldBlock> blocks = ToSetBlockArguments(pixels, offset);
+            _frames[offset] = newFrame;
             if (blocks.Count > 0)
             {
                 MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
             }
         }
 
-        public async Task HandleOutputAsync(BlockFrame frame)
+        public async Task HandleOutputAsync(BlockFrame newFrame, int offset = 0)
         {
-            IDictionary<Point, string> pixels = GetDifferencesPixels(frame);
-            List<WorldBlock> blocks = ToSetBlockArguments(pixels);
-            LastFrame = frame;
+            ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
+
+            IDictionary<Point, string> pixels = GetDifferencesPixels(newFrame);
+            List<WorldBlock> blocks = ToSetBlockArguments(pixels, offset);
+            _frames[offset] = newFrame;
             if (blocks.Count > 0)
             {
                 await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
             }
         }
 
-        public bool CheckBlcok(string blockId)
+        public bool CheckBlcok(string blockId, int offset = 0)
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
 
@@ -65,58 +73,68 @@ namespace MCBS.Screens
             for (int y = 0; y < _owner.Height; y++)
                 for (int x = 0; x < _owner.Width; x++)
                 {
-                    if (!sender.ConditionalBlock(_owner.ScreenPos2WorldPos(new(x, y)), blockId))
+                    if (!sender.ConditionalBlock(_owner.ScreenPos2WorldPos(new(x, y), offset), blockId))
                         return false;
                 }
 
             return true;
         }
 
-        public bool CheckAirBlock()
+        public bool CheckAirBlock(int offset = 0)
         {
-            return CheckBlcok(AIR_BLOCK);
+            return CheckBlcok(AIR_BLOCK, offset);
         }
 
-        public bool FillBlock(string blockId, bool checkAirBlock = false)
+        public bool FillBlock(string blockId, int offset = 0, bool checkAirBlock = false)
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
 
-            if (checkAirBlock && !CheckAirBlock())
+            if (checkAirBlock && !CheckAirBlock(offset))
                 return false;
 
-            HandleOutput(new HashBlockFrame(_owner.Width, _owner.Height, blockId));
+            HandleOutput(new HashBlockFrame(_owner.Width, _owner.Height, blockId), offset);
             return true;
         }
 
-        public bool FillDefaultBlock(bool checkAirBlock = false)
+        public bool FillDefaultBlock(int offset = 0, bool checkAirBlock = false)
         {
-            return FillBlock(ScreenDefaultBlock, checkAirBlock);
+            return FillBlock(ScreenDefaultBlock, offset, checkAirBlock);
         }
 
-        public bool FillAirBlock()
+        public bool FillLightBlock(int offset = 0, bool checkAirBlock = false)
         {
-            return FillBlock(AIR_BLOCK, false);
+            return FillBlock(LIGHT_BLOCK, offset, checkAirBlock);
         }
 
-        private IDictionary<Point, string> GetDifferencesPixels(BlockFrame frame)
+        public bool FillBarrierBlock(int offset = 0, bool checkAirBlock = false)
         {
-            ArgumentNullException.ThrowIfNull(frame, nameof(frame));
-            if (frame.Width != _owner.Width || frame.Height != _owner.Height)
+            return FillBlock(BARRIER_BLOCK, offset, checkAirBlock);
+        }
+
+        public bool FillAirBlock(int offset = 0)
+        {
+            return FillBlock(AIR_BLOCK, offset, false);
+        }
+
+        private IDictionary<Point, string> GetDifferencesPixels(BlockFrame newFrame, int offset = 0)
+        {
+            ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
+            if (newFrame.Width != _owner.Width || newFrame.Height != _owner.Height)
                 throw new ArgumentException("帧尺寸不一致");
 
-            if (LastFrame is null)
-                return frame.GetAllPixel();
-            else
-                return BlockFrame.GetDifferencesPixel(LastFrame, frame);
+            if (_frames.TryGetValue(offset, out var blockFrame))
+                return BlockFrame.GetDifferencesPixel(blockFrame, newFrame);
+
+            return newFrame.GetAllPixel();
         }
 
-        private List<WorldBlock> ToSetBlockArguments(IDictionary<Point, string> pixels)
+        private List<WorldBlock> ToSetBlockArguments(IDictionary<Point, string> pixels, int offset = 0)
         {
             ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             List<WorldBlock> result = new(pixels.Count);
             foreach (var pixel in pixels)
-                result.Add(new(_owner.ScreenPos2WorldPos(pixel.Key), pixel.Value));
+                result.Add(new(_owner.ScreenPos2WorldPos(pixel.Key, offset), pixel.Value));
             return result;
         }
     }
