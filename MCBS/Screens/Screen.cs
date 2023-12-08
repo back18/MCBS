@@ -167,9 +167,9 @@ namespace MCBS.Screens
 
         public BlockPos StartPosition { get; }
 
-        public BlockPos EndPosition => ToWorldPosition(new(Width - 1, Height - 1));
+        public BlockPos EndPosition => ScreenPos2WorldPos(new(Width - 1, Height - 1));
 
-        public BlockPos CenterPosition => ToWorldPosition(ScreenCenterPosition);
+        public BlockPos CenterPosition => ScreenPos2WorldPos(ScreenCenterPosition);
 
         public Point ScreenCenterPosition => new(Width / 2, Height / 2);
 
@@ -211,7 +211,7 @@ namespace MCBS.Screens
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
                 {
-                    if (!sender.ConditionalBlock(ToWorldPosition(new(x, y)), blockID))
+                    if (!sender.ConditionalBlock(ScreenPos2WorldPos(new(x, y)), blockID))
                         return false;
                 }
 
@@ -350,7 +350,7 @@ namespace MCBS.Screens
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
                 {
-                    var blockPos = ToWorldPosition(new(x, y));
+                    var blockPos = ScreenPos2WorldPos(new(x, y));
                     ChunkPos chunkPos = MinecraftUtil.BlockPos2ChunkPos(blockPos);
                     if (!_chunks.Contains(chunkPos))
                         _chunks.Add(chunkPos);
@@ -368,7 +368,7 @@ namespace MCBS.Screens
             _chunks.Clear();
         }
 
-        public BlockPos ToWorldPosition(Point pixel)
+        public BlockPos ScreenPos2WorldPos(Point position)
         {
             int? x = null;
             int? y = null;
@@ -377,22 +377,22 @@ namespace MCBS.Screens
             switch (XFacing)
             {
                 case Facing.Xp:
-                    x = StartPosition.X + pixel.X;
+                    x = StartPosition.X + position.X;
                     break;
                 case Facing.Xm:
-                    x = StartPosition.X - pixel.X;
+                    x = StartPosition.X - position.X;
                     break;
                 case Facing.Yp:
-                    y = StartPosition.Y + pixel.X;
+                    y = StartPosition.Y + position.X;
                     break;
                 case Facing.Ym:
-                    y = StartPosition.Y - pixel.X;
+                    y = StartPosition.Y - position.X;
                     break;
                 case Facing.Zp:
-                    z = StartPosition.Z + pixel.X;
+                    z = StartPosition.Z + position.X;
                     break;
                 case Facing.Zm:
-                    z = StartPosition.Z - pixel.X;
+                    z = StartPosition.Z - position.X;
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -401,22 +401,22 @@ namespace MCBS.Screens
             switch (YFacing)
             {
                 case Facing.Xp:
-                    x = StartPosition.X + pixel.Y;
+                    x = StartPosition.X + position.Y;
                     break;
                 case Facing.Xm:
-                    x = StartPosition.X - pixel.Y;
+                    x = StartPosition.X - position.Y;
                     break;
                 case Facing.Yp:
-                    y = StartPosition.Y + pixel.Y;
+                    y = StartPosition.Y + position.Y;
                     break;
                 case Facing.Ym:
-                    y = StartPosition.Y - pixel.Y;
+                    y = StartPosition.Y - position.Y;
                     break;
                 case Facing.Zp:
-                    z = StartPosition.Z + pixel.Y;
+                    z = StartPosition.Z + position.Y;
                     break;
                 case Facing.Zm:
-                    z = StartPosition.Z - pixel.Y;
+                    z = StartPosition.Z - position.Y;
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -429,26 +429,26 @@ namespace MCBS.Screens
             return new(x.Value, y.Value, z.Value);
         }
 
-        public Point ToScreenPosition(BlockPos blockPos)
+        public Point WorldPos2ScreenPos(BlockPos position)
         {
             var x = XFacing switch
             {
-                Facing.Xp => blockPos.X - StartPosition.X,
-                Facing.Xm => StartPosition.X - blockPos.X,
-                Facing.Yp => blockPos.Y - StartPosition.Y,
-                Facing.Ym => StartPosition.Y - blockPos.Y,
-                Facing.Zp => blockPos.Z - StartPosition.Z,
-                Facing.Zm => StartPosition.Z - blockPos.Z,
+                Facing.Xp => position.X - StartPosition.X,
+                Facing.Xm => StartPosition.X - position.X,
+                Facing.Yp => position.Y - StartPosition.Y,
+                Facing.Ym => StartPosition.Y - position.Y,
+                Facing.Zp => position.Z - StartPosition.Z,
+                Facing.Zm => StartPosition.Z - position.Z,
                 _ => throw new InvalidOperationException()
             };
             var y = YFacing switch
             {
-                Facing.Xp => blockPos.X - StartPosition.X,
-                Facing.Xm => StartPosition.X - blockPos.X,
-                Facing.Yp => blockPos.Y - StartPosition.Y,
-                Facing.Ym => StartPosition.Y - blockPos.Y,
-                Facing.Zp => blockPos.Z - StartPosition.Z,
-                Facing.Zm => StartPosition.Z - blockPos.Z,
+                Facing.Xp => position.X - StartPosition.X,
+                Facing.Xm => StartPosition.X - position.X,
+                Facing.Yp => position.Y - StartPosition.Y,
+                Facing.Ym => StartPosition.Y - position.Y,
+                Facing.Zp => position.Z - StartPosition.Z,
+                Facing.Zm => StartPosition.Z - position.Z,
                 _ => throw new InvalidOperationException()
             };
 
@@ -471,21 +471,21 @@ namespace MCBS.Screens
             };
         }
 
-        public bool IncludedOnScreen(Point pixel)
+        public bool IncludedOnScreen(Point position)
         {
-            return pixel.X >= 0 && pixel.Y >= 0 && pixel.X < Width && pixel.Y < Height;
+            return position.X >= 0 && position.Y >= 0 && position.X < Width && position.Y < Height;
         }
 
-        public bool IncludedOnScreen(BlockPos blockPos)
+        public bool IncludedOnScreen(BlockPos position)
         {
             bool isScreenPlane = NormalFacing switch
             {
-                Facing.Xp or Facing.Xm => blockPos.X == PlaneCoordinate,
-                Facing.Yp or Facing.Ym => blockPos.Y == PlaneCoordinate,
-                Facing.Zp or Facing.Zm => blockPos.Z == PlaneCoordinate,
+                Facing.Xp or Facing.Xm => position.X == PlaneCoordinate,
+                Facing.Yp or Facing.Ym => position.Y == PlaneCoordinate,
+                Facing.Zp or Facing.Zm => position.Z == PlaneCoordinate,
                 _ => throw new InvalidOperationException()
             };
-            return isScreenPlane && IncludedOnScreen(ToScreenPosition(blockPos));
+            return isScreenPlane && IncludedOnScreen(WorldPos2ScreenPos(position));
         }
 
         public override string ToString()
@@ -774,7 +774,7 @@ namespace MCBS.Screens
                         for (int x = oldScreen.Width; x < newScreen.Width; x++)
                             for (int y = 0; y < newScreen.Height; y++)
                             {
-                                if (!sender.ConditionalBlock(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
+                                if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
                                     return false;
                             }
                     }
@@ -799,7 +799,7 @@ namespace MCBS.Screens
                             for (int x = 0; x < newScreen.Width; x++)
                             {
 
-                                if (!sender.ConditionalBlock(newScreen.ToWorldPosition(new(x, y)), AIR_BLOCK))
+                                if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
                                     return false;
                             }
                     }

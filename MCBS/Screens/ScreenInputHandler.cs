@@ -136,7 +136,7 @@ namespace MCBS.Screens
 
             playerPosition.Y += 1.625;
             BlockPos targetBlock = EntityPos.GetToPlaneIntersection(playerPosition, playerRotation.ToDirection(), screen.NormalFacing, screen.PlaneCoordinate).ToBlockPos();
-            cursorPosition = screen.ToScreenPosition(targetBlock);
+            cursorPosition = screen.WorldPos2ScreenPos(targetBlock);
 
             if (!screen.IncludedOnScreen(cursorPosition))
                 goto fail;

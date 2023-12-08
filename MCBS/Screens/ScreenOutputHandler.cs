@@ -38,22 +38,22 @@ namespace MCBS.Screens
         public void HandleOutput(BlockFrame frame)
         {
             IDictionary<Point, string> pixels = GetDifferencesPixels(frame);
-            List<ISetBlockArgument> arguments = ToSetBlockArguments(pixels);
+            List<WorldBlock> blocks = ToSetBlockArguments(pixels);
             LastFrame = frame;
-            if (arguments.Count > 0)
+            if (blocks.Count > 0)
             {
-                MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(arguments);
+                MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
             }
         }
 
         public async Task HandleOutputAsync(BlockFrame frame)
         {
             IDictionary<Point, string> pixels = GetDifferencesPixels(frame);
-            List<ISetBlockArgument> arguments = ToSetBlockArguments(pixels);
+            List<WorldBlock> blocks = ToSetBlockArguments(pixels);
             LastFrame = frame;
-            if (arguments.Count > 0)
+            if (blocks.Count > 0)
             {
-                await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(arguments);
+                await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
             }
         }
 
@@ -65,7 +65,7 @@ namespace MCBS.Screens
             for (int y = 0; y < _owner.Height; y++)
                 for (int x = 0; x < _owner.Width; x++)
                 {
-                    if (!sender.ConditionalBlock(_owner.ToWorldPosition(new(x, y)), blockId))
+                    if (!sender.ConditionalBlock(_owner.ScreenPos2WorldPos(new(x, y)), blockId))
                         return false;
                 }
 
@@ -110,11 +110,13 @@ namespace MCBS.Screens
                 return BlockFrame.GetDifferencesPixel(LastFrame, frame);
         }
 
-        private List<ISetBlockArgument> ToSetBlockArguments(IDictionary<Point, string> pixels)
+        private List<WorldBlock> ToSetBlockArguments(IDictionary<Point, string> pixels)
         {
-            List<ISetBlockArgument> result = new(pixels.Count);
+            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
+
+            List<WorldBlock> result = new(pixels.Count);
             foreach (var pixel in pixels)
-                result.Add(new SetBlockArgument(_owner.ToWorldPosition(pixel.Key), pixel.Value));
+                result.Add(new(_owner.ScreenPos2WorldPos(pixel.Key), pixel.Value));
             return result;
         }
     }
