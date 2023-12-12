@@ -130,13 +130,6 @@ namespace MCBS.SystemApplications.Services
                 e.CursorContext.StyleType = CursorStyleType.Default;
             }
 
-            protected override void OnCursorLeave(Control sender, CursorEventArgs e)
-            {
-                base.OnCursorLeave(sender, e);
-
-
-            }
-
             public void SwitchSelectedForm(IForm form)
             {
                 FormsMenu.SwitchSelectedForm(form);
