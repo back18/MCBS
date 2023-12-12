@@ -105,13 +105,7 @@ namespace MCBS.Forms
             switch (current)
             {
                 case FormState.NotLoaded:
-                    if (Form is IRootForm)
-                    {
-                        Form.HandleBeforeInitialize();
-                        Form.HandleInitialize();
-                        Form.HandleAfterInitialize();
-                    }
-                    else if (!RootForm.ContainsForm(Form))
+                    if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormLoad(EventArgs.Empty);
                     ProcessContext? processContext = MCOS.Instance.ProcessContextOf(Program);
@@ -129,8 +123,6 @@ namespace MCBS.Forms
                     LOGGER.Info($"窗体({Form.Text} #{ID})已取消最小化");
                     return true;
                 case FormState.Dragging:
-                    if (Form is IRootForm)
-                        return false;
                     if (DraggingContext is null)
                         return false;
                     if (!DraggingContext.CursorContext.HoverControls.TryRemove(Form, out var hoverControl))
@@ -139,13 +131,13 @@ namespace MCBS.Forms
                         RootForm.AddForm(Form);
                     Point position = DraggingContext.CursorContext.NewInputData.CursorPosition;
                     Point offset = hoverControl.OffsetPosition;
-                    Form.ClientLocation = new(position.X - offset.X - Form.BorderWidth, position.Y - offset.Y - Form.BorderWidth);
+                    Form.ClientLocation = new(
+                        position.X - offset.X - RootForm.ClientLocation.X - RootForm.BorderWidth - Form.BorderWidth,
+                        position.Y - offset.Y - RootForm.ClientLocation.Y - RootForm.BorderWidth - Form.BorderWidth);
                     DraggingContext = null;
                     LOGGER.Info($"窗体({Form.Text} #{ID})已被拖动到{MCOS.Instance.ScreenContextOf(RootForm)?.ID ?? -1}号屏幕");
                     return true;
                 case FormState.Stretching:
-                    if (Form is IRootForm)
-                        return false;
                     if (StretchingContext is null)
                         return false;
                     StretchingContext = null;
@@ -167,7 +159,7 @@ namespace MCBS.Forms
         }
         protected virtual bool HandleDraggingState(FormState current, FormState next)
         {
-            if (Form is IRootForm)
+            if (Form is IRootForm rootForm && !rootForm.AllowDrag)
                 return false;
             if (DraggingContext is null)
                 return false;
@@ -181,7 +173,7 @@ namespace MCBS.Forms
 
         protected virtual bool HandleStretchingState(FormState current, FormState next)
         {
-            if (Form is IRootForm)
+            if (Form is IRootForm rootForm && !rootForm.AllowSelected)
                 return false;
             if (StretchingContext is null)
                 return false;

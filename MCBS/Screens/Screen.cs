@@ -1,4 +1,4 @@
-﻿using MCBS.Rendering;
+﻿using static MCBS.Config.ConfigManager;
 using QuanLib.Core;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using MCBS.Events;
 
 namespace MCBS.Screens
 {
@@ -28,9 +29,9 @@ namespace MCBS.Screens
 
         public Screen(BlockPos startPosition, int width, int height, Facing xFacing, Facing yFacing)
         {
-            ThrowHelper.ArgumentOutOfRange(-64, 319, startPosition.Y, "startPosition.Y");
-            ThrowHelper.ArgumentOutOfMin(1, width, nameof(width));
-            ThrowHelper.ArgumentOutOfMin(1, height, nameof(height));
+            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, startPosition.Y, nameof(startPosition) + ".Y");
+            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, width, nameof(width));
+            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, height, nameof(height));
 
             string xyFacing = xFacing.ToString() + yFacing.ToString();
             switch (xyFacing)
@@ -39,7 +40,7 @@ namespace MCBS.Screens
                 case "YmXm":
                 case "XmYp":
                 case "YpXp":
-                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XY;
+                    PlaneAxis = PlaneAxis.XY;
                     NormalFacing = Facing.Zp;
                     PlaneCoordinate = startPosition.Z;
                     break;
@@ -47,7 +48,7 @@ namespace MCBS.Screens
                 case "YmXp":
                 case "XpYp":
                 case "YpXm":
-                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XY;
+                    PlaneAxis = PlaneAxis.XY;
                     NormalFacing = Facing.Zm;
                     PlaneCoordinate = startPosition.Z;
                     break;
@@ -55,7 +56,7 @@ namespace MCBS.Screens
                 case "YmZp":
                 case "ZpYp":
                 case "YpZm":
-                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.ZY;
+                    PlaneAxis = PlaneAxis.ZY;
                     NormalFacing = Facing.Xp;
                     PlaneCoordinate = startPosition.X;
                     break;
@@ -63,7 +64,7 @@ namespace MCBS.Screens
                 case "YmZm":
                 case "ZmYp":
                 case "YpZp":
-                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.ZY;
+                    PlaneAxis = PlaneAxis.ZY;
                     NormalFacing = Facing.Xm;
                     PlaneCoordinate = startPosition.X;
                     break;
@@ -71,7 +72,7 @@ namespace MCBS.Screens
                 case "ZpXm":
                 case "XmZm":
                 case "ZmXp":
-                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XZ;
+                    PlaneAxis = PlaneAxis.XZ;
                     NormalFacing = Facing.Yp;
                     PlaneCoordinate = startPosition.Y;
                     break;
@@ -79,12 +80,12 @@ namespace MCBS.Screens
                 case "ZmXm":
                 case "XmZp":
                 case "ZpXp":
-                    PlaneAxis = QuanLib.Minecraft.PlaneAxis.XZ;
+                    PlaneAxis = PlaneAxis.XZ;
                     NormalFacing = Facing.Ym;
                     PlaneCoordinate = startPosition.Y;
                     break;
                 default:
-                    throw new ArgumentException("xFacing 与 yFacing 不应该在同一轴向上");
+                    throw new ArgumentException($"“{nameof(xFacing)}”与“{nameof(yFacing)}”不应该在同一轴向上");
             }
 
             int top, bottom, left, right;
@@ -148,20 +149,17 @@ namespace MCBS.Screens
             }
 
             StartPosition = startPosition;
-            XFacing = xFacing;
-            YFacing = yFacing;
             Width = width;
             Height = height;
-            DefaultBackgroundBlcokID = "minecraft:smooth_stone";
+            XFacing = xFacing;
+            YFacing = yFacing;
+            _chunks = [];
 
-            _chunks = new();
+            //SizeChanged += OnSizeChanged;
+            //PositionChanged += OnPositionChanged;
 
-            ThrowHelper.ArgumentOutOfRange(-64, 319, EndPosition.Y, "EndPosition.Y");
+            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, EndPosition.Y, nameof(EndPosition) + ".Y");
         }
-
-        private const string LIGHT_BLOCK = "minecraft:light";
-
-        private const string AIR_BLOCK = "minecraft:air";
 
         private readonly List<ChunkPos> _chunks;
 
@@ -169,181 +167,45 @@ namespace MCBS.Screens
 
         public BlockPos EndPosition => ScreenPos2WorldPos(new(Width - 1, Height - 1));
 
-        public BlockPos CenterPosition => ScreenPos2WorldPos(ScreenCenterPosition);
+        public BlockPos CenterPosition => ScreenPos2WorldPos(new(Width / 2, Height / 2));
 
-        public Point ScreenCenterPosition => new(Width / 2, Height / 2);
+        public int Width { get; private set; }
 
-        public PlaneAxis PlaneAxis { get; }
-
-        public Facing NormalFacing { get; }
-
-        public int PlaneCoordinate { get; }
+        public int Height { get; private set; }
 
         public Facing XFacing { get; }
 
         public Facing YFacing { get; }
 
-        public int Width { get; }
+        public Facing NormalFacing { get; }
 
-        public int Height { get; }
+        public PlaneAxis PlaneAxis { get; }
 
-        public Size Size => new(Width, Height);
+        public int PlaneCoordinate { get; }
 
         public int TotalPixels => Width * Height;
 
-        public string DefaultBackgroundBlcokID { get; set; }
+        //public event EventHandler<Screen, SizeChangedEventArgs> SizeChanged;
 
-        public ScreenOutputHandler OutputHandler
-        {
-            get
-            {
-                _OutputHandler ??= new(this);
-                return _OutputHandler;
-            }
-        }
-        private ScreenOutputHandler? _OutputHandler;
+        //public event EventHandler<Screen, PositionChangedEventArgs> PositionChanged;
 
-        private bool Check(string blockID)
-        {
-            ArgumentNullException.ThrowIfNull(blockID, nameof(blockID));
+        //protected virtual void OnSizeChanged(Screen sender, SizeChangedEventArgs e) { }
 
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            for (int x = 0; x < Width; x++)
-                for (int y = 0; y < Height; y++)
-                {
-                    if (!sender.ConditionalBlock(ScreenPos2WorldPos(new(x, y)), blockID))
-                        return false;
-                }
+        //protected virtual void OnPositionChanged(Screen sender, PositionChangedEventArgs e) { }
 
-            return true;
-        }
+        //public void SetSize(Size newSize)
+        //{
+        //    ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, newSize.Width, nameof(newSize) + ".Width");
+        //    ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, newSize.Height, nameof(newSize) + ".Height");
 
-        private bool Fill(string blockID, bool check = false)
-        {
-            if (check && !CheckAir())
-            {
-                return false;
-            }
-
-            OutputHandler.HandleOutput(new HashBlockFrame(Width, Height, blockID));
-            return true;
-        }
-
-        private bool FillDouble(string blockID, bool check = false)
-        {
-            BlockPos position1 = StartPosition;
-            BlockPos position2 = StartPosition;
-            switch (NormalFacing)
-            {
-                case Facing.Xp:
-                case Facing.Xm:
-                    position1.X--;
-                    position2.X++;
-                    break;
-                case Facing.Yp:
-                case Facing.Ym:
-                    position1.Y--;
-                    position2.Y++;
-                    break;
-                case Facing.Zp:
-                case Facing.Zm:
-                    position1.Z--;
-                    position2.Z++;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            Screen screen1 = new(position1, Width, Height, XFacing, YFacing);
-            Screen screen2 = new(position2, Width, Height, XFacing, YFacing);
-
-            if (check && (!screen1.CheckAir() || !screen2.CheckAir()))
-                return false;
-
-            screen1.Fill(blockID);
-            screen2.Fill(blockID);
-
-            return true;
-        }
-
-        public bool Fill(bool check = false)
-        {
-            return Fill(DefaultBackgroundBlcokID, check);
-        }
-
-        public bool CheckAir()
-        {
-            return Check(AIR_BLOCK);
-        }
-
-        public void Clear()
-        {
-            Fill(AIR_BLOCK);
-        }
-
-        public void Start()
-        {
-            LoadScreenChunks();
-            Fill();
-        }
-
-        public void Stop()
-        {
-            if (TestLight())
-                CloseLight();
-            UnloadScreenChunks();
-            Clear();
-        }
-
-        public void OpenLight()
-        {
-            FillDouble(LIGHT_BLOCK);
-        }
-
-        public void CloseLight()
-        {
-            FillDouble(AIR_BLOCK);
-        }
-
-        public bool TestLight()
-        {
-            BlockPos position1 = StartPosition;
-            BlockPos position2 = StartPosition;
-            switch (NormalFacing)
-            {
-                case Facing.Xp:
-                case Facing.Xm:
-                    position1.X--;
-                    position2.X++;
-                    break;
-                case Facing.Yp:
-                case Facing.Ym:
-                    position1.Y--;
-                    position2.Y++;
-                    break;
-                case Facing.Zp:
-                case Facing.Zm:
-                    position1.Z--;
-                    position2.Z++;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            if (sender.ConditionalBlock(position1, LIGHT_BLOCK))
-            {
-                return true;
-            }
-            else if (sender.ConditionalBlock(position2, LIGHT_BLOCK))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        //    Size oldSize = new(Width, Height);
+        //    if (oldSize != newSize)
+        //    {
+        //        Width = newSize.Width;
+        //        Height = newSize.Height;
+        //        SizeChanged.Invoke(this, new(oldSize, newSize));
+        //    }
+        //}
 
         public void LoadScreenChunks()
         {
@@ -515,8 +377,8 @@ namespace MCBS.Screens
 
         public static Screen CreateScreen(BlockPos startPosition, BlockPos endPosition, Facing normalFacing)
         {
-            ThrowHelper.ArgumentOutOfRange(-64, 319, startPosition.Y, "startPosition.Y");
-            ThrowHelper.ArgumentOutOfRange(-64, 319, endPosition.Y, "endPosition.Y");
+            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, startPosition.Y, nameof(startPosition) + ".Y");
+            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, endPosition.Y, nameof(endPosition) + ".Y");
 
             Facing xFacing, yFacing;
             int width, height;
@@ -756,97 +618,97 @@ namespace MCBS.Screens
             return new(startPosition, width, height, xFacing, yFacing);
         }
 
-        public static bool Replace(Screen? oldScreen, Screen newScreen, bool check = false)
-        {
-            ArgumentNullException.ThrowIfNull(newScreen, nameof(newScreen));
+        //public static bool Replace(Screen? oldScreen, Screen newScreen, bool check = false)
+        //{
+        //    ArgumentNullException.ThrowIfNull(newScreen, nameof(newScreen));
 
-            if (oldScreen is null || oldScreen.OutputHandler.LastFrame is null)
-            {
-                return newScreen.Fill(check);
-            }
+        //    if (oldScreen is null || oldScreen.OutputHandler.LastFrame is null)
+        //    {
+        //        return newScreen.Fill(check);
+        //    }
 
-            if (oldScreen.PlaneAxis != newScreen.PlaneAxis || oldScreen.PlaneCoordinate != newScreen.PlaneCoordinate)
-            {
-                if (!newScreen.Fill(check))
-                    return false;
+        //    if (oldScreen.PlaneAxis != newScreen.PlaneAxis || oldScreen.PlaneCoordinate != newScreen.PlaneCoordinate)
+        //    {
+        //        if (!newScreen.Fill(check))
+        //            return false;
 
-                oldScreen.Clear();
-                return true;
-            }
+        //        oldScreen.Clear();
+        //        return true;
+        //    }
 
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            if (oldScreen.DefaultBackgroundBlcokID == newScreen.DefaultBackgroundBlcokID &&
-                oldScreen.StartPosition == oldScreen.StartPosition &&
-                oldScreen.XFacing == newScreen.XFacing &&
-                oldScreen.YFacing == newScreen.YFacing)
-            {
-                if (newScreen.Width == oldScreen.Width && newScreen.Height == oldScreen.Height)
-                    return true;
+        //    CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+        //    if (oldScreen.DefaultBackgroundBlcokID == newScreen.DefaultBackgroundBlcokID &&
+        //        oldScreen.StartPosition == oldScreen.StartPosition &&
+        //        oldScreen.XFacing == newScreen.XFacing &&
+        //        oldScreen.YFacing == newScreen.YFacing)
+        //    {
+        //        if (newScreen.Width == oldScreen.Width && newScreen.Height == oldScreen.Height)
+        //            return true;
 
-                BlockFrame? oldFrame = null;
-                if (newScreen.OutputHandler.LastFrame is null)
-                    newScreen.OutputHandler.LastFrame = new HashBlockFrame(newScreen.Width, newScreen.Height, newScreen.DefaultBackgroundBlcokID);
+        //        BlockFrame? oldFrame = null;
+        //        if (newScreen.OutputHandler.LastFrame is null)
+        //            newScreen.OutputHandler.LastFrame = new HashBlockFrame(newScreen.Width, newScreen.Height, newScreen.DefaultBackgroundBlcokID);
 
-                if (newScreen.Width > oldScreen.Width)
-                {
-                    if (check)
-                    {
-                        for (int x = oldScreen.Width; x < newScreen.Width; x++)
-                            for (int y = 0; y < newScreen.Height; y++)
-                            {
-                                if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
-                                    return false;
-                            }
-                    }
+        //        if (newScreen.Width > oldScreen.Width)
+        //        {
+        //            if (check)
+        //            {
+        //                for (int x = oldScreen.Width; x < newScreen.Width; x++)
+        //                    for (int y = 0; y < newScreen.Height; y++)
+        //                    {
+        //                        if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
+        //                            return false;
+        //                    }
+        //            }
 
-                    for (int x = oldScreen.Width; x < newScreen.Width; x++)
-                        for (int y = 0; y < newScreen.Height; y++)
-                            newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
-                }
-                else if (newScreen.Width < oldScreen.Width)
-                {
-                    oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
-                    for (int x = newScreen.Width; x < oldScreen.Width; x++)
-                        for (int y = 0; y < oldScreen.Height; y++)
-                            oldFrame[x, y] = AIR_BLOCK;
-                }
+        //            for (int x = oldScreen.Width; x < newScreen.Width; x++)
+        //                for (int y = 0; y < newScreen.Height; y++)
+        //                    newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
+        //        }
+        //        else if (newScreen.Width < oldScreen.Width)
+        //        {
+        //            oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
+        //            for (int x = newScreen.Width; x < oldScreen.Width; x++)
+        //                for (int y = 0; y < oldScreen.Height; y++)
+        //                    oldFrame[x, y] = AIR_BLOCK;
+        //        }
 
-                if (newScreen.Height > oldScreen.Height)
-                {
-                    if (check)
-                    {
-                        for (int y = oldScreen.Height; y < newScreen.Height; y++)
-                            for (int x = 0; x < newScreen.Width; x++)
-                            {
+        //        if (newScreen.Height > oldScreen.Height)
+        //        {
+        //            if (check)
+        //            {
+        //                for (int y = oldScreen.Height; y < newScreen.Height; y++)
+        //                    for (int x = 0; x < newScreen.Width; x++)
+        //                    {
 
-                                if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
-                                    return false;
-                            }
-                    }
+        //                        if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
+        //                            return false;
+        //                    }
+        //            }
 
-                    for (int y = oldScreen.Height; y < newScreen.Height; y++)
-                        for (int x = 0; x < newScreen.Width; x++)
-                            newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
-                }
-                else if (newScreen.Height < oldScreen.Height)
-                {
-                    oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
-                    for (int y = newScreen.Height; y < oldScreen.Height; y++)
-                        for (int x = 0; x < oldScreen.Width; x++)
-                            oldFrame[x, y] = AIR_BLOCK;
-                }
+        //            for (int y = oldScreen.Height; y < newScreen.Height; y++)
+        //                for (int x = 0; x < newScreen.Width; x++)
+        //                    newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
+        //        }
+        //        else if (newScreen.Height < oldScreen.Height)
+        //        {
+        //            oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
+        //            for (int y = newScreen.Height; y < oldScreen.Height; y++)
+        //                for (int x = 0; x < oldScreen.Width; x++)
+        //                    oldFrame[x, y] = AIR_BLOCK;
+        //        }
 
-                newScreen.Fill();
-                if (oldFrame is not null)
-                    oldScreen.OutputHandler.HandleOutput(oldFrame);
+        //        newScreen.Fill();
+        //        if (oldFrame is not null)
+        //            oldScreen.OutputHandler.HandleOutput(oldFrame);
 
-                return true;
-            }
-            else
-            {
-                oldScreen.Clear();
-                return newScreen.Fill(check);
-            }
-        }
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        oldScreen.Clear();
+        //        return newScreen.Fill(check);
+        //    }
+        //}
     }
 }

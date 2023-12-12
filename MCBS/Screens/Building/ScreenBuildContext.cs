@@ -152,15 +152,15 @@ namespace MCBS.Screens.Building
                     if (newScreen is null)
                         goto click;
 
-                    if (Screen.Replace(Screen, newScreen, true))
-                    {
-                        if (EndPosition != targetPosition)
-                        {
-                            Screen = newScreen;
-                            EndPosition = targetPosition;
-                        }
-                    }
-                    else
+                    //if (Screen.Replace(Screen, newScreen, true))
+                    //{
+                    //    if (EndPosition != targetPosition)
+                    //    {
+                    //        Screen = newScreen;
+                    //        EndPosition = targetPosition;
+                    //    }
+                    //}
+                    //else
                     {
                         sender.ShowActionbarTitle(PlayerName, $"[屏幕构建器] 错误：所选范围内含有非空气方块", TextColor.Red);
                         Error = true;

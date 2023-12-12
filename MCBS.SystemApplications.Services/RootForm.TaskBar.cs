@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Services
 {
-    public partial class ServicesForm
+    public partial class RootForm
     {
         public class TaskBar : ContainerControl<Control>
         {
-            public TaskBar(ServicesForm owner)
+            public TaskBar(RootForm owner)
             {
                 ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
@@ -24,11 +24,6 @@ namespace MCBS.SystemApplications.Services
 
                 BorderWidth = 0;
                 Height = 18;
-                LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) =>
-                {
-                    Width = e.NewSize.Width;
-                    ClientLocation = new(0, e.NewSize.Height - Height);
-                });
                 Skin.SetAllBackgroundColor(BlockManager.Concrete.White);
 
                 StartMenu_Switch = new();
@@ -36,7 +31,7 @@ namespace MCBS.SystemApplications.Services
                 FullScreen_Button = new();
             }
 
-            private readonly ServicesForm _owner;
+            private readonly RootForm _owner;
 
             private readonly Switch StartMenu_Switch;
 
@@ -99,10 +94,10 @@ namespace MCBS.SystemApplications.Services
                 if (_owner.StartMenu_ListMenuBox.BottomToBorder < _owner.TaskBar_Control.Height)
                     _owner.StartMenu_ListMenuBox.BottomToBorder = _owner.TaskBar_Control.Height;
 
-                if (MCOS.Instance.ScreenContextOf(_owner)?.Screen.TestLight() ?? false)
-                    _owner.Light_Switch.IsSelected = false;
-                else
-                    _owner.Light_Switch.IsSelected = true;
+                //if (MCOS.Instance.ScreenContextOf(_owner)?.Screen.TestLight() ?? false)
+                //    _owner.Light_Switch.IsSelected = false;
+                //else
+                //    _owner.Light_Switch.IsSelected = true;
             }
 
             private void StartMenu_Switch_ControlDeselected(Control sender, EventArgs e)

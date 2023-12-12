@@ -254,8 +254,8 @@ namespace MCBS.Screens
 
                     int id = _id;
                     ProcessContext process = MCOS.Instance.RunServicesApp();
-                    IRootForm rootForm = ((IServicesProgram)process.Program).RootForm;
-                    ScreenContext context = new(screen, rootForm);
+                    IScreenView form = ((IServicesProgram)process.Program).ScreenView;
+                    ScreenContext context = new(screen, form);
                     context.ID = id;
                     _items.TryAdd(id, context);
                     _owner.AddedScreen.Invoke(_owner, new(context));

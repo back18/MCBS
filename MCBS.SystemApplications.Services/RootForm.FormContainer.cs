@@ -3,6 +3,7 @@ using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Forms;
 using MCBS.UI;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,37 +12,20 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Services
 {
-    public partial class ServicesForm
+    public partial class RootForm
     {
         public class FormContainer : GenericPanel<IForm>
         {
-            public FormContainer(ServicesForm owner)
+            public FormContainer(RootForm owner)
             {
                 ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
                 _owner = owner;
 
                 BorderWidth = 0;
-                LayoutSyncer = new(_owner,
-                (sender, e) => { },
-                (sender, e) =>
-                {
-                    if (_owner.ShowTaskBar)
-                    {
-                        ClientSize = new(e.NewSize.Width, e.NewSize.Height - _owner.TaskBar_Control.Height);
-                        foreach (var form in ChildControls)
-                            form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height - _owner.TaskBar_Control.Height);
-                    }
-                    else
-                    {
-                        ClientSize = new(e.NewSize.Width, e.NewSize.Height);
-                        foreach (var form in ChildControls)
-                            form.ClientSize = new(form.ClientSize.Width, form.ClientSize.Height + _owner.TaskBar_Control.Height);
-                    }
-                });
             }
 
-            private readonly ServicesForm _owner;
+            private readonly RootForm _owner;
 
             public override void Initialize()
             {
@@ -51,20 +35,23 @@ namespace MCBS.SystemApplications.Services
                     throw new InvalidOperationException();
             }
 
+            protected override void OnResize(Control sender, SizeChangedEventArgs e)
+            {
+                base.OnResize(sender, e);
+
+                Size offset = e.NewSize - e.OldSize;
+                foreach (var form in ChildControls)
+                    form.ClientSize += offset;
+            }
+
             public override void HandleCursorMove(CursorEventArgs e)
             {
                 foreach (var control in GetChildControls().ToArray())
                     control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
                 UpdateHoverState(e);
 
-                foreach (HoverControl hoverControl in e.CursorContext.HoverControls.Values)
-                {
-                    if (hoverControl.Control is IForm hoverForm)
-                    {
-                        if (MCOS.Instance.FormContextOf(hoverForm) is FormContext hoverFormContext && hoverFormContext.FormState == FormState.Dragging)
-                            return;
-                    }
-                }
+                if (CursorUtil.IsDragForming(e))
+                    return;
 
                 IForm? firstSelectedForm = ChildControls.FirstSelected;
                 if (firstSelectedForm is null)
@@ -72,8 +59,7 @@ namespace MCBS.SystemApplications.Services
 
                 if (MCOS.Instance.FormContextOf(firstSelectedForm) is FormContext formContext &&
                     formContext.FormState == FormState.Stretching &&
-                    formContext.StretchingContext is not null &&
-                    formContext.StretchingContext.CursorContext != e.CursorContext)
+                    formContext.StretchingContext?.CursorContext != e.CursorContext)
                     return;
 
                 firstSelectedForm.HandleCursorMove(e.Clone(firstSelectedForm.ParentPos2ChildPos));
@@ -108,14 +94,18 @@ namespace MCBS.SystemApplications.Services
                 if (formContext is null)
                     return firstSelectedForm.HandleRightClick(e.Clone(firstSelectedForm.ParentPos2ChildPos));
 
-                Direction borders = firstSelectedForm.GetStretchingBorders(e.Position);
+                Direction borders;
+                if (formContext.FormState == FormState.Stretching && formContext.StretchingContext?.CursorContext == e.CursorContext)
+                    borders = formContext.StretchingContext.Borders;
+                else
+                    borders = firstSelectedForm.GetStretchingBorders(e.Position);
+
                 if (borders != Direction.None)
                 {
-                    if (formContext.FormState == FormState.Stretching &&
-                        formContext.StretchingContext is not null &&
-                        formContext.StretchingContext.CursorContext == e.CursorContext)
+                    if (formContext.FormState == FormState.Stretching && formContext.StretchingContext?.CursorContext == e.CursorContext)
                     {
                         formContext.StretchDownForm();
+                        e.CursorContext.StyleType = GetCursorStyleType(firstSelectedForm.GetStretchingBorders(e.Position));
                         return true;
                     }
                     else if (formContext.FormState == FormState.Active)

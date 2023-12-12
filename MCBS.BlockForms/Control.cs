@@ -191,7 +191,7 @@ namespace MCBS.BlockForms
 
         public Size Size
         {
-            get => new(ClientSize.Width + BorderWidth * 2, ClientSize.Height * BorderWidth * 2);
+            get => new(ClientSize.Width + BorderWidth * 2, ClientSize.Height + BorderWidth * 2);
             set
             {
                 ClientSize = new(value.Width - BorderWidth * 2, value.Height - BorderWidth * 2);

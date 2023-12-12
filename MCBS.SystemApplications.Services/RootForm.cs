@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Services
 {
-    public partial class ServicesForm : Form, IRootForm
+    public partial class RootForm : Form, IRootForm
     {
-        public ServicesForm()
+        public RootForm()
         {
             AllowDrag = false;
-            AllowStretch = false;
+            IsSelected = true;
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
             BorderWidth = 0;
@@ -34,9 +34,9 @@ namespace MCBS.SystemApplications.Services
             ShowTaskBar_Button = new();
         }
 
-        private readonly FormContainer FormContainer_Control;
+        internal readonly FormContainer FormContainer_Control;
 
-        private readonly TaskBar TaskBar_Control;
+        internal readonly TaskBar TaskBar_Control;
 
         private readonly ListMenuBox<Control> StartMenu_ListMenuBox;
 
@@ -54,6 +54,8 @@ namespace MCBS.SystemApplications.Services
 
         public Size FormContainerSize => FormContainer_Control.ClientSize;
 
+        public override bool IsMaximize => false;
+
         public bool ShowTaskBar
         {
             get => ChildControls.Contains(TaskBar_Control);
@@ -61,20 +63,20 @@ namespace MCBS.SystemApplications.Services
             {
                 if (value)
                 {
-                    if (!ShowTaskBar)
+                    if (!ChildControls.Contains(TaskBar_Control))
                     {
                         ChildControls.TryAdd(TaskBar_Control);
                         ChildControls.Remove(ShowTaskBar_Button);
-                        FormContainer_Control?.LayoutSyncer?.Sync();
+                        FormContainer_Control.Size = new(Width, Height - TaskBar_Control.Height);
                     }
                 }
                 else
                 {
-                    if (ShowTaskBar)
+                    if (ChildControls.Contains(TaskBar_Control))
                     {
                         ChildControls.Remove(TaskBar_Control);
                         ChildControls.TryAdd(ShowTaskBar_Button);
-                        FormContainer_Control?.LayoutSyncer?.Sync();
+                        FormContainer_Control.Size = ClientSize;
                     }
                 }
             }
@@ -85,9 +87,11 @@ namespace MCBS.SystemApplications.Services
             base.Initialize();
 
             ChildControls.Add(TaskBar_Control);
+            TaskBar_Control.Width = ClientSize.Width;
+            TaskBar_Control.ClientLocation = new(0, ClientSize.Height - TaskBar_Control.Height);
 
             ChildControls.Add(FormContainer_Control);
-            FormContainer_Control.LayoutSyncer?.Sync();
+            FormContainer_Control.Size = new(ClientSize.Width, ClientSize.Height - TaskBar_Control.Height);
 
             StartMenu_ListMenuBox.ClientSize = new(70, 20 * 5 + 2);
             StartMenu_ListMenuBox.MaxDisplayPriority = int.MaxValue;
@@ -131,12 +135,47 @@ namespace MCBS.SystemApplications.Services
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
         }
 
+        public override void HandleCursorMove(CursorEventArgs e)
+        {
+            UpdateHoverState(e);
+
+            if (CursorIsBusy(e))
+                return;
+
+            base.HandleCursorMove(e);
+        }
+
+        public override bool HandleRightClick(CursorEventArgs e)
+        {
+            if (CursorIsBusy(e))
+                return false;
+
+            return base.HandleRightClick(e);
+        }
+
+        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        {
+            base.OnResize(sender, e);
+
+            if (ShowTaskBar)
+            {
+                FormContainer_Control.Size = new(ClientSize.Width, ClientSize.Height - TaskBar_Control.Height);
+            }
+            else
+            {
+                FormContainer_Control.Size = ClientSize;
+            }
+
+            TaskBar_Control.Width = ClientSize.Width;
+            TaskBar_Control.ClientLocation = new(0, ClientSize.Height - TaskBar_Control.Height);
+        }
+
         private void Light_Switch_RightClick(Control sender, CursorEventArgs e)
         {
             if (Light_Switch.IsSelected)
-                MCOS.Instance.ScreenContextOf(this)?.Screen.CloseLight();
+                MCOS.Instance.ScreenContextOf(this)?.ScreenOutputHandler.FillAirBlock(1);
             else
-                MCOS.Instance.ScreenContextOf(this)?.Screen.OpenLight();
+                MCOS.Instance.ScreenContextOf(this)?.ScreenOutputHandler.FillLightBlock();
         }
 
         private void CloseScreen_Button_RightClick(Control sender, CursorEventArgs e)
@@ -232,6 +271,19 @@ namespace MCBS.SystemApplications.Services
                     }
                 }
             }
+        }
+
+        internal bool CursorIsBusy(CursorEventArgs e)
+        {
+            foreach (var control in GetChildControls().ToArray())
+                control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
+
+            CursorEventArgs e2 = e.Clone(FormContainer_Control.ParentPos2ChildPos);
+            if (Array.IndexOf(FormContainer_Control.GetHoverCursors(), e.CursorContext) == -1 &&
+                (CursorUtil.IsDragForming(e2) || CursorUtil.IsStretchForming(e2, FormContainer_Control.ChildControls.FirstSelected)))
+                return true;
+
+            return false;
         }
     }
 }

@@ -25,14 +25,15 @@ namespace MCBS.Screens
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        internal ScreenContext(Screen screen, IRootForm form)
+        internal ScreenContext(Screen screen, IScreenView form)
         {
             ArgumentNullException.ThrowIfNull(screen, nameof(screen));
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
             Screen = screen;
-            RootForm = form;
+            ScreenView = form;
             ScreenInputHandler = new(this);
+            ScreenOutputHandler = new(this);
             IsRestarting = false;
 
             ID = -1;
@@ -63,9 +64,13 @@ namespace MCBS.Screens
 
         public Screen Screen { get; }
 
-        public IRootForm RootForm { get; }
+        public IScreenView ScreenView { get; }
+
+        public IRootForm RootForm => ScreenView.RootForm;
 
         public ScreenInputHandler ScreenInputHandler { get; }
+
+        public ScreenOutputHandler ScreenOutputHandler { get; }
 
         public bool IsRestarting { get; private set; }
 
@@ -80,8 +85,11 @@ namespace MCBS.Screens
             {
                 case ScreenState.NotLoaded:
                     IsRestarting = false;
-                    Screen.Start();
-                    RootForm.ClientSize = Screen.Size;
+                    Screen.LoadScreenChunks();
+                    ScreenView.ClientSize = new(Screen.Width, Screen.Height);
+                    ScreenView.HandleBeforeInitialize();
+                    ScreenView.HandleInitialize();
+                    ScreenView.HandleAfterInitialize();
                     MCOS.Instance.RunStartupChecklist(RootForm);
                     LOGGER.Info($"屏幕({Screen.StartPosition} #{ID})已加载");
                     return true;
@@ -107,7 +115,7 @@ namespace MCBS.Screens
                     forem.CloseForm();
             }
             RootForm.CloseForm();
-            Screen.Stop();
+            Screen.UnloadScreenChunks();
             LOGGER.Info($"屏幕({Screen.StartPosition} #{ID})已卸载");
             return true;
         }
@@ -139,7 +147,8 @@ namespace MCBS.Screens
             {
                 foreach (var cursorContext in _offlineCursors)
                 {
-                    RootForm.HandleCursorMove(new(new(-1024, -1024), cursorContext));
+                    if (RootForm.IsHover)
+                        RootForm.HandleCursorMove(new(new(-1024, -1024), cursorContext));
                 }
 
                 foreach (var cursorContext in _activeCursors)
@@ -152,14 +161,14 @@ namespace MCBS.Screens
 
         public async Task HandleBeforeFrameAsync()
         {
-            await Task.Run(() => RootForm.HandleBeforeFrame(EventArgs.Empty));
+            await Task.Run(() => ScreenView.HandleBeforeFrame(EventArgs.Empty));
         }
 
         public async Task HandleUIRenderingAsync()
         {
-            HashBlockFrame baseFrame = new(Screen.Width, Screen.Height, Screen.DefaultBackgroundBlcokID);
-            BlockFrame formFrame = await RootForm.GetRenderingResultAsync();
-            baseFrame.Overwrite(formFrame, RootForm.ClientSize, RootForm.ClientLocation, RootForm.OffsetPosition);
+            HashBlockFrame baseFrame = new(Screen.Width, Screen.Height, ScreenOutputHandler.ScreenDefaultBlock);
+            BlockFrame formFrame = await ScreenView.GetRenderingResultAsync();
+            baseFrame.Overwrite(formFrame, ScreenView.ClientSize, ScreenView.ClientLocation, ScreenView.OffsetPosition);
             foreach (var cursorContext in _activeCursors)
             {
                 if (cursorContext.ScreenContextOf == this)
@@ -193,12 +202,12 @@ namespace MCBS.Screens
         {
             if (_frame is null)
                 return;
-            await Screen.OutputHandler.HandleOutputAsync(_frame);
+            await ScreenOutputHandler.HandleOutputAsync(_frame);
         }
 
         public async Task HandleAfterFrameAsync()
         {
-            await Task.Run(() => RootForm.HandleAfterFrame(EventArgs.Empty));
+            await Task.Run(() => ScreenView.HandleAfterFrame(EventArgs.Empty));
         }
 
         public ScreenContext LoadScreen()
@@ -240,21 +249,21 @@ namespace MCBS.Screens
             CursorInputData oldData = cursorContext.OldInputData;
             CursorInputData newData = cursorContext.NewInputData;
             if (oldData.CursorPosition != newData.CursorPosition)
-                RootForm.HandleCursorMove(new(newData.CursorPosition, cursorContext));
+                ScreenView.HandleCursorMove(new(newData.CursorPosition, cursorContext));
             if (oldData.LeftClickTime != newData.LeftClickTime)
-                RootForm.HandleLeftClick(new(newData.CursorPosition, cursorContext));
+                ScreenView.HandleLeftClick(new(newData.CursorPosition, cursorContext));
             if (oldData.RightClickTime != newData.RightClickTime)
-                RootForm.HandleRightClick(new(newData.CursorPosition, cursorContext));
+                ScreenView.HandleRightClick(new(newData.CursorPosition, cursorContext));
             if (cursorContext.TextEditor.SynchronizeTick != MCOS.Instance.SystemTick && oldData.TextEditor != newData.TextEditor)
-                RootForm.HandleTextEditorUpdate(new(newData.CursorPosition, cursorContext));
+                ScreenView.HandleTextEditorUpdate(new(newData.CursorPosition, cursorContext));
 
             string? deputyItem = cursorContext.NewInputData.DeputyItem?.ID;
             if (deputyItem == ScreenConfig.RightClickItemID || deputyItem == ScreenConfig.TextEditorItemID)
             {
                 if (oldData.InventorySlot != newData.InventorySlot)
-                    RootForm.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));
+                    ScreenView.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));
                 if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
-                    RootForm.HandleCursorItemChanged(new(newData.CursorPosition, cursorContext));
+                    ScreenView.HandleCursorItemChanged(new(newData.CursorPosition, cursorContext));
             }
         }
     }

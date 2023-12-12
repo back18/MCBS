@@ -22,7 +22,7 @@ namespace MCBS.Screens
         private const string BARRIER_BLOCK = "minecraft:barrier";
         private const string AIR_BLOCK = "minecraft:air";
 
-        public ScreenOutputHandler(Screen owner)
+        public ScreenOutputHandler(ScreenContext owner)
         {
             ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
@@ -31,11 +31,9 @@ namespace MCBS.Screens
             ScreenDefaultBlock = "minecraft:smooth_stone";
         }
 
-        private readonly Screen _owner;
+        private readonly ScreenContext _owner;
 
         private readonly Dictionary<int, BlockFrame> _frames;
-
-        public BlockFrame? LastFrame { get; internal set; }
 
         public string ScreenDefaultBlock { get; set; }
 
@@ -70,10 +68,11 @@ namespace MCBS.Screens
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
 
             CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-            for (int y = 0; y < _owner.Height; y++)
-                for (int x = 0; x < _owner.Width; x++)
+            Screen screen = _owner.Screen;
+            for (int y = 0; y < screen.Height; y++)
+                for (int x = 0; x < screen.Width; x++)
                 {
-                    if (!sender.ConditionalBlock(_owner.ScreenPos2WorldPos(new(x, y), offset), blockId))
+                    if (!sender.ConditionalBlock(screen.ScreenPos2WorldPos(new(x, y), offset), blockId))
                         return false;
                 }
 
@@ -92,7 +91,7 @@ namespace MCBS.Screens
             if (checkAirBlock && !CheckAirBlock(offset))
                 return false;
 
-            HandleOutput(new HashBlockFrame(_owner.Width, _owner.Height, blockId), offset);
+            HandleOutput(new HashBlockFrame(_owner.Screen.Width, _owner.Screen.Height, blockId), offset);
             return true;
         }
 
@@ -119,7 +118,7 @@ namespace MCBS.Screens
         private IDictionary<Point, string> GetDifferencesPixels(BlockFrame newFrame, int offset = 0)
         {
             ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
-            if (newFrame.Width != _owner.Width || newFrame.Height != _owner.Height)
+            if (newFrame.Width != _owner.Screen.Width || newFrame.Height != _owner.Screen.Height)
                 throw new ArgumentException("帧尺寸不一致");
 
             if (_frames.TryGetValue(offset, out var blockFrame))
@@ -133,8 +132,9 @@ namespace MCBS.Screens
             ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             List<WorldBlock> result = new(pixels.Count);
+            Screen screen = _owner.Screen;
             foreach (var pixel in pixels)
-                result.Add(new(_owner.ScreenPos2WorldPos(pixel.Key, offset), pixel.Value));
+                result.Add(new(screen.ScreenPos2WorldPos(pixel.Key, offset), pixel.Value));
             return result;
         }
     }

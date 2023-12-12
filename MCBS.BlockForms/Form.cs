@@ -153,30 +153,37 @@ namespace MCBS.BlockForms
                 return;
 
             FormContext? formContext = GetFormContext();
-            if (formContext is not null)
-            {
-                if (formContext.FormState == FormState.Stretching &&
-                    formContext.StretchingContext is not null &&
-                    formContext.StretchingContext.CursorContext == e.CursorContext)
-                {
-                    Direction borders = formContext.StretchingContext.Borders;
-                    e.CursorContext.StyleType = GetCursorStyleType(borders);
+            if (formContext is null)
+                return;
 
-                    if (borders.HasFlag(Direction.Top))
-                        TopLocation = parentPos.Y;
-                    if (borders.HasFlag(Direction.Bottom))
-                        BottomLocation = parentPos.Y;
-                    if (borders.HasFlag(Direction.Left))
-                        LeftLocation = parentPos.X;
-                    if (borders.HasFlag(Direction.Right))
-                        RightLocation = parentPos.X;
-                }
-                else if (formContext.FormState == FormState.Active)
-                {
-                    Direction borders = GetStretchingBorders(parentPos);
-                    e.CursorContext.StyleType = GetCursorStyleType(borders);
-                }
+            Direction borders;
+            if (formContext.FormState == FormState.Stretching && formContext.StretchingContext?.CursorContext == e.CursorContext)
+            {
+                borders = formContext.StretchingContext.Borders;
+
+                if (borders.HasFlag(Direction.Top))
+                    TopLocation = parentPos.Y;
+                if (borders.HasFlag(Direction.Bottom))
+                    BottomLocation = parentPos.Y;
+                if (borders.HasFlag(Direction.Left))
+                    LeftLocation = parentPos.X;
+                if (borders.HasFlag(Direction.Right))
+                    RightLocation = parentPos.X;
+
+                UpdateHoverState(e);
             }
+            else if (formContext.FormState == FormState.Active)
+            {
+                borders = GetStretchingBorders(parentPos);
+                if (borders == Direction.None && GetStretchingBorders(this.ChildPos2ParentPos(e.CursorOriginalPosition)) == Direction.None)
+                    return;
+            }
+            else
+            {
+                borders = Direction.None;
+            }
+
+            e.CursorContext.StyleType = GetCursorStyleType(borders);
         }
 
         protected override void OnMove(Control sender, PositionChangedEventArgs e)

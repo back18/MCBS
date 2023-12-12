@@ -12,14 +12,16 @@ namespace MCBS.SystemApplications.Services
     {
         public ServicesApp()
         {
-            RootForm = new ServicesForm();
+            ScreenView = new ScreenView();
         }
 
         public const string ID = "System.Services";
 
         public const string Name = "系统服务";
 
-        public IRootForm RootForm { get; }
+        public IScreenView ScreenView { get; }
+
+        public IRootForm RootForm => ScreenView.RootForm;
 
         public int Main(string[] args)
         {

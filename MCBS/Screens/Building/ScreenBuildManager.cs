@@ -45,12 +45,12 @@ namespace MCBS.Screens.Building
                 switch (context.Value.BuildState)
                 {
                     case ScreenBuildState.Timedout:
-                        context.Value.Screen?.Clear();
+                        //context.Value.Screen?.Clear();
                         sender.SendChatMessage(context.Key, "[屏幕构建器] 操作超时，已取消本次屏幕创建", TextColor.Red);
                         _contexts.Remove(context.Key);
                         break;
                     case ScreenBuildState.Canceled:
-                        context.Value.Screen?.Clear();
+                        //context.Value.Screen?.Clear();
                         sender.SendChatMessage(context.Key, "[屏幕构建器] 已取消本次屏幕创建", TextColor.Red);
                         _contexts.Remove(context.Key);
                         break;
@@ -64,7 +64,7 @@ namespace MCBS.Screens.Building
                         {
                             if (MCOS.Instance.ScreenManager.Items.Count >= ScreenConfig.MaxCount)
                             {
-                                screen.Clear();
+                                //screen.Clear();
                                 sender.SendChatMessage(context.Key, $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxCount}个，无法继续创建屏幕", TextColor.Red);
                             }
                             else
