@@ -1,9 +1,12 @@
 ﻿using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
+using MCBS.Cursor;
+using MCBS.Cursor.Style;
 using MCBS.Events;
 using MCBS.Forms;
 using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +25,18 @@ namespace MCBS.SystemApplications.Services
 
                 _owner = owner;
 
+                InvokeExternalCursorMove = true;
                 BorderWidth = 0;
                 Height = 18;
                 Skin.SetAllBackgroundColor(BlockManager.Concrete.White);
 
+                _draggingCursors = new();
                 StartMenu_Switch = new();
                 FormsMenu = new();
                 FullScreen_Button = new();
             }
+
+            private readonly Dictionary<string, DragContext> _draggingCursors;
 
             private readonly RootForm _owner;
 
@@ -51,6 +58,7 @@ namespace MCBS.SystemApplications.Services
                 StartMenu_Switch.ClientLocation = new(0, 1);
                 StartMenu_Switch.ClientSize = new(16, 16);
                 StartMenu_Switch.Anchor = Direction.Bottom | Direction.Left;
+                StartMenu_Switch.FirstHandleRightClick = true;
                 StartMenu_Switch.IsRenderingTransparencyTexture = false;
                 StartMenu_Switch.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Hover);
                 StartMenu_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Orange, ControlState.Selected, ControlState.Hover | ControlState.Selected);
@@ -63,6 +71,7 @@ namespace MCBS.SystemApplications.Services
                 FullScreen_Button.ClientSize = new(16, 16);
                 FullScreen_Button.LayoutLeft(this, 1, 0);
                 FullScreen_Button.Anchor = Direction.Bottom | Direction.Right;
+                FullScreen_Button.FirstHandleRightClick = true;
                 FullScreen_Button.IsRenderingTransparencyTexture = false;
                 FullScreen_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 FullScreen_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
@@ -79,6 +88,53 @@ namespace MCBS.SystemApplications.Services
 
                 _owner.FormContainer_Control.AddedChildControl += FormContainer_AddedChildControl;
                 _owner.FormContainer_Control.RemovedChildControl += FormContainer_RemovedChildControl;
+            }
+
+            protected override void OnRightClick(Control sender, CursorEventArgs e)
+            {
+                base.OnRightClick(sender, e);
+
+                if (!_owner.AllowDrag)
+                    return;
+
+                if (FormsMenu.ChildControls.FirstHover is not null)
+                    return;
+
+                string player = e.CursorContext.PlayerName;
+                if (_draggingCursors.ContainsKey(player))
+                    _draggingCursors.Remove(player);
+                else
+                    _draggingCursors.Add(player, new(e.CursorContext, e.Position));
+            }
+
+            protected override void OnCursorMove(Control sender, CursorEventArgs e)
+            {
+                base.OnCursorMove(sender, e);
+
+                if (!_draggingCursors.TryGetValue(e.CursorContext.PlayerName, out var dragContext))
+                    return;
+
+                if (e.Position.Y < -32 ||
+                    e.Position.X < -32 ||
+                    e.Position.Y > ClientSize.Height + 32 ||
+                    e.Position.X > ClientSize.Width + 32)
+                {
+                    _draggingCursors.Remove(e.CursorContext.PlayerName);
+                    return;
+                }
+
+                Point position = _owner.ClientLocation;
+                Point offset = new(e.Position.X - dragContext.AnchorPosition.X, e.Position.Y - dragContext.AnchorPosition.Y);
+                position.Offset(offset);
+                _owner.ClientLocation = position;
+                e.CursorContext.StyleType = CursorStyleType.Default;
+            }
+
+            protected override void OnCursorLeave(Control sender, CursorEventArgs e)
+            {
+                base.OnCursorLeave(sender, e);
+
+
             }
 
             public void SwitchSelectedForm(IForm form)
@@ -157,6 +213,13 @@ namespace MCBS.SystemApplications.Services
             private void HideTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
             {
                 _owner.ShowTaskBar = false;
+            }
+
+            private class DragContext(CursorContext cursorContext, Point anchorPosition)
+            {
+                public CursorContext CursorContext { get; } = cursorContext;
+
+                public Point AnchorPosition { get; } = anchorPosition;
             }
         }
     }

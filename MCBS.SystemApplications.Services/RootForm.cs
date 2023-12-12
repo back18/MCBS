@@ -16,7 +16,6 @@ namespace MCBS.SystemApplications.Services
     {
         public RootForm()
         {
-            AllowDrag = false;
             IsSelected = true;
             DisplayPriority = int.MinValue;
             MaxDisplayPriority = int.MinValue + 1;
