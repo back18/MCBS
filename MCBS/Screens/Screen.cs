@@ -155,23 +155,20 @@ namespace MCBS.Screens
             YFacing = yFacing;
             _chunks = [];
 
-            //SizeChanged += OnSizeChanged;
-            //PositionChanged += OnPositionChanged;
-
             ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, EndPosition.Y, nameof(EndPosition) + ".Y");
         }
 
         private readonly List<ChunkPos> _chunks;
 
-        public BlockPos StartPosition { get; }
+        public BlockPos StartPosition { get; internal set; }
 
         public BlockPos EndPosition => ScreenPos2WorldPos(new(Width - 1, Height - 1));
 
         public BlockPos CenterPosition => ScreenPos2WorldPos(new(Width / 2, Height / 2));
 
-        public int Width { get; private set; }
+        public int Width { get; internal set; }
 
-        public int Height { get; private set; }
+        public int Height { get; internal set; }
 
         public Facing XFacing { get; }
 
@@ -185,27 +182,52 @@ namespace MCBS.Screens
 
         public int TotalPixels => Width * Height;
 
-        //public event EventHandler<Screen, SizeChangedEventArgs> SizeChanged;
+        internal void Translate(Point offset)
+        {
+            Translate(offset.X, offset.Y);
+        }
 
-        //public event EventHandler<Screen, PositionChangedEventArgs> PositionChanged;
+        internal void Translate(int dx, int dy)
+        {
+            BlockPos position = StartPosition;
+            position = Offset(position, XFacing, dx);
+            position = Offset(position, YFacing, dy);
+            StartPosition = position;
+        }
 
-        //protected virtual void OnSizeChanged(Screen sender, SizeChangedEventArgs e) { }
+        internal void OffsetPlaneCoordinate(int offset)
+        {
+            StartPosition = Offset(StartPosition, NormalFacing, offset);
+        }
 
-        //protected virtual void OnPositionChanged(Screen sender, PositionChangedEventArgs e) { }
+        private static BlockPos Offset(BlockPos position, Facing facing, int offset)
+        {
+            switch (facing)
+            {
+                case Facing.Xp:
+                    position.X += offset;
+                    break;
+                case Facing.Xm:
+                    position.X -= offset;
+                    break;
+                case Facing.Yp:
+                    position.Y += offset;
+                    break;
+                case Facing.Ym:
+                    position.Y -= offset;
+                    break;
+                case Facing.Zp:
+                    position.Z += offset;
+                    break;
+                case Facing.Zm:
+                    position.Z -= offset;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
 
-        //public void SetSize(Size newSize)
-        //{
-        //    ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, newSize.Width, nameof(newSize) + ".Width");
-        //    ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, newSize.Height, nameof(newSize) + ".Height");
-
-        //    Size oldSize = new(Width, Height);
-        //    if (oldSize != newSize)
-        //    {
-        //        Width = newSize.Width;
-        //        Height = newSize.Height;
-        //        SizeChanged.Invoke(this, new(oldSize, newSize));
-        //    }
-        //}
+            return position;
+        }
 
         public void LoadScreenChunks()
         {

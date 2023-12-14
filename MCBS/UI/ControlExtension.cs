@@ -48,6 +48,11 @@ namespace MCBS.UI
             }
         }
 
+        public static Rectangle GetRectangle(this IControl source)
+        {
+            return new(source.ClientLocation.X, source.ClientLocation.Y, source.ClientSize.Width + source.BorderWidth, source.ClientSize.Height + source.BorderWidth);
+        }
+
         public static Point GetRenderingLocation(this IControlRendering source)
         {
             return new(source.ClientLocation.X + source.BorderWidth, source.ClientLocation.Y + source.BorderWidth);

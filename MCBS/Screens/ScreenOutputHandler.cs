@@ -1,4 +1,5 @@
 ﻿using MCBS.Rendering;
+using MCBS.UI;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
@@ -27,13 +28,13 @@ namespace MCBS.Screens
             ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
             _owner = owner;
-            _frames = [];
+            _buffers = [];
             ScreenDefaultBlock = "minecraft:smooth_stone";
         }
 
         private readonly ScreenContext _owner;
 
-        private readonly Dictionary<int, BlockFrame> _frames;
+        private readonly Dictionary<int, BlockFrame> _buffers;
 
         public string ScreenDefaultBlock { get; set; }
 
@@ -43,7 +44,7 @@ namespace MCBS.Screens
 
             IDictionary<Point, string> pixels = GetDifferencesPixels(newFrame);
             List<WorldBlock> blocks = ToSetBlockArguments(pixels, offset);
-            _frames[offset] = newFrame;
+            _buffers[offset] = newFrame;
             if (blocks.Count > 0)
             {
                 MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
@@ -56,10 +57,30 @@ namespace MCBS.Screens
 
             IDictionary<Point, string> pixels = GetDifferencesPixels(newFrame);
             List<WorldBlock> blocks = ToSetBlockArguments(pixels, offset);
-            _frames[offset] = newFrame;
+            _buffers[offset] = newFrame;
             if (blocks.Count > 0)
             {
                 await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
+            }
+        }
+
+        public void UpdateBuffer()
+        {
+            Rectangle formRectangle = _owner.RootForm.GetRectangle();
+            Console.WriteLine(formRectangle);
+            Size screenSize = formRectangle.Size + new Size(32);
+            Point screenOffset = new(formRectangle.Location.X - 16, formRectangle.Location.Y - 16);
+
+            _owner.Screen.Width = screenSize.Width;
+            _owner.Screen.Height = screenSize.Height;
+            _owner.Screen.Translate(screenOffset);
+            _owner.ScreenView.ClientSize = screenSize;
+            _owner.RootForm.ClientLocation = new(16, 16);
+            foreach (int offset in _buffers.Keys)
+            {
+                HashBlockFrame hashBlockFrame = new(screenSize.Width, screenSize.Height, "minecraft:air");
+                hashBlockFrame.Overwrite(_buffers[offset], -screenOffset);
+                _buffers[offset] = hashBlockFrame;
             }
         }
 
@@ -121,7 +142,7 @@ namespace MCBS.Screens
             if (newFrame.Width != _owner.Screen.Width || newFrame.Height != _owner.Screen.Height)
                 throw new ArgumentException("帧尺寸不一致");
 
-            if (_frames.TryGetValue(offset, out var blockFrame))
+            if (_buffers.TryGetValue(offset, out var blockFrame))
                 return BlockFrame.GetDifferencesPixel(blockFrame, newFrame);
 
             return newFrame.GetAllPixel();

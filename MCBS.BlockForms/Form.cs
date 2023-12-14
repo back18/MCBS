@@ -27,7 +27,7 @@ namespace MCBS.BlockForms
             AllowDeselected = true;
             AllowDrag = true;
             AllowStretch = true;
-            Stretch = Direction.Bottom | Direction.Right;
+            //Stretch = Direction.Bottom | Direction.Right;
 
             ReturnValue = null;
             Text = string.Empty;

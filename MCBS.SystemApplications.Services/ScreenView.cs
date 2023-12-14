@@ -2,8 +2,10 @@
 using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Forms;
+using MCBS.Screens;
 using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,8 @@ namespace MCBS.SystemApplications.Services
             RootForm_Control = new();
         }
 
+        private Rectangle _rectangle;
+
         private readonly RootForm RootForm_Control;
 
         public IRootForm RootForm => RootForm_Control;
@@ -33,6 +37,7 @@ namespace MCBS.SystemApplications.Services
             ChildControls.Add(RootForm_Control);
             RootForm_Control.ClientSize = new(ClientSize.Width - 32, ClientSize.Height - 32);
             RootForm_Control.ClientLocation = new(16, 16);
+            _rectangle = RootForm_Control.GetRectangle();
         }
 
         public override void HandleCursorMove(CursorEventArgs e)
@@ -89,6 +94,21 @@ namespace MCBS.SystemApplications.Services
             else
             {
                 return false;
+            }
+        }
+
+        protected override void OnAfterFrame(Control sender, EventArgs e)
+        {
+            base.OnAfterFrame(sender, e);
+
+            Rectangle rectangle = RootForm_Control.GetRectangle();
+            if (rectangle != _rectangle)
+            {
+                _rectangle = rectangle;
+                if (rectangle.Location == new Point(16, 16) && rectangle.Size == _rectangle.Size)
+                    return;
+
+                MCOS.Instance.ScreenContextOf(RootForm_Control)?.ScreenOutputHandler.UpdateBuffer();
             }
         }
     }
