@@ -67,7 +67,6 @@ namespace MCBS.Screens
         public void UpdateBuffer()
         {
             Rectangle formRectangle = _owner.RootForm.GetRectangle();
-            Console.WriteLine(formRectangle);
             Size screenSize = formRectangle.Size + new Size(32);
             Point screenOffset = new(formRectangle.Location.X - 16, formRectangle.Location.Y - 16);
 
@@ -78,8 +77,19 @@ namespace MCBS.Screens
             _owner.RootForm.ClientLocation = new(16, 16);
             foreach (int offset in _buffers.Keys)
             {
-                HashBlockFrame hashBlockFrame = new(screenSize.Width, screenSize.Height, "minecraft:air");
+                HashBlockFrame hashBlockFrame = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
                 hashBlockFrame.Overwrite(_buffers[offset], -screenOffset);
+                _buffers[offset] = hashBlockFrame;
+            }
+        }
+
+        public void ResetBuffer()
+        {
+            Rectangle formRectangle = _owner.RootForm.GetRectangle();
+            Size screenSize = formRectangle.Size + new Size(32);
+            foreach (int offset in _buffers.Keys)
+            {
+                HashBlockFrame hashBlockFrame = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
                 _buffers[offset] = hashBlockFrame;
             }
         }
@@ -112,7 +122,11 @@ namespace MCBS.Screens
             if (checkAirBlock && !CheckAirBlock(offset))
                 return false;
 
-            HandleOutput(new HashBlockFrame(_owner.Screen.Width, _owner.Screen.Height, blockId), offset);
+            Rectangle formRectangle = _owner.RootForm.GetRectangle();
+            Size screenSize = formRectangle.Size + new Size(32);
+            HashBlockFrame baseFrame = new(screenSize, AIR_BLOCK);
+            baseFrame.Overwrite(new HashBlockFrame(formRectangle.Size, blockId), formRectangle.Location);
+            HandleOutput(baseFrame, offset);
             return true;
         }
 

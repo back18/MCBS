@@ -40,49 +40,37 @@ namespace MCBS.Screens
                 case "YmXm":
                 case "XmYp":
                 case "YpXp":
-                    PlaneAxis = PlaneAxis.XY;
                     NormalFacing = Facing.Zp;
-                    PlaneCoordinate = startPosition.Z;
                     break;
                 case "XmYm":
                 case "YmXp":
                 case "XpYp":
                 case "YpXm":
-                    PlaneAxis = PlaneAxis.XY;
                     NormalFacing = Facing.Zm;
-                    PlaneCoordinate = startPosition.Z;
                     break;
                 case "ZmYm":
                 case "YmZp":
                 case "ZpYp":
                 case "YpZm":
-                    PlaneAxis = PlaneAxis.ZY;
                     NormalFacing = Facing.Xp;
-                    PlaneCoordinate = startPosition.X;
                     break;
                 case "ZpYm":
                 case "YmZm":
                 case "ZmYp":
                 case "YpZp":
-                    PlaneAxis = PlaneAxis.ZY;
                     NormalFacing = Facing.Xm;
-                    PlaneCoordinate = startPosition.X;
                     break;
                 case "XpZp":
                 case "ZpXm":
                 case "XmZm":
                 case "ZmXp":
-                    PlaneAxis = PlaneAxis.XZ;
                     NormalFacing = Facing.Yp;
-                    PlaneCoordinate = startPosition.Y;
                     break;
                 case "XpZm":
                 case "ZmXm":
                 case "XmZp":
                 case "ZpXp":
-                    PlaneAxis = PlaneAxis.XZ;
                     NormalFacing = Facing.Ym;
-                    PlaneCoordinate = startPosition.Y;
                     break;
                 default:
                     throw new ArgumentException($"“{nameof(xFacing)}”与“{nameof(yFacing)}”不应该在同一轴向上");
@@ -176,18 +164,42 @@ namespace MCBS.Screens
 
         public Facing NormalFacing { get; }
 
-        public PlaneAxis PlaneAxis { get; }
+        public PlaneAxis PlaneAxis
+        {
+            get
+            {
+                return NormalFacing switch
+                {
+                    Facing.Xp or Facing.Xm => PlaneAxis.ZY,
+                    Facing.Yp or Facing.Ym => PlaneAxis.XZ,
+                    Facing.Zp or Facing.Zm => PlaneAxis.XY,
+                    _ => throw new InvalidOperationException(),
+                };
+            }
+        }
 
-        public int PlaneCoordinate { get; }
+        public int PlaneCoordinate
+        {
+            get
+            {
+                return PlaneAxis switch
+                {
+                    PlaneAxis.XY => StartPosition.Z,
+                    PlaneAxis.ZY => StartPosition.X,
+                    PlaneAxis.XZ => StartPosition.Y,
+                    _ => throw new InvalidOperationException(),
+                };
+            }
+        }
 
         public int TotalPixels => Width * Height;
 
-        internal void Translate(Point offset)
+        public void Translate(Point offset)
         {
             Translate(offset.X, offset.Y);
         }
 
-        internal void Translate(int dx, int dy)
+        public void Translate(int dx, int dy)
         {
             BlockPos position = StartPosition;
             position = Offset(position, XFacing, dx);
@@ -195,7 +207,7 @@ namespace MCBS.Screens
             StartPosition = position;
         }
 
-        internal void OffsetPlaneCoordinate(int offset)
+        public void OffsetPlaneCoordinate(int offset)
         {
             StartPosition = Offset(StartPosition, NormalFacing, offset);
         }

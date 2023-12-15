@@ -4,6 +4,7 @@ using MCBS.Cursor;
 using MCBS.Cursor.Style;
 using MCBS.Events;
 using MCBS.Forms;
+using MCBS.Screens;
 using MCBS.UI;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -32,7 +33,7 @@ namespace MCBS.SystemApplications.Services
 
                 _draggingCursors = new();
                 StartMenu_Switch = new();
-                FormsMenu = new();
+                TaskBarIconMenu_Control = new();
                 FullScreen_Button = new();
             }
 
@@ -44,7 +45,7 @@ namespace MCBS.SystemApplications.Services
 
             private readonly Button FullScreen_Button;
 
-            private readonly TaskBarIconMenu FormsMenu;
+            private readonly TaskBarIconMenu TaskBarIconMenu_Control;
 
             public override void Initialize()
             {
@@ -78,33 +79,16 @@ namespace MCBS.SystemApplications.Services
                 FullScreen_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Expand"]);
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
 
-                ChildControls.Add(FormsMenu);
-                FormsMenu.Spacing = 0;
-                FormsMenu.MinWidth = 18;
-                FormsMenu.BorderWidth = 0;
-                FormsMenu.ClientSize = new(ClientSize.Width - StartMenu_Switch.Width - FullScreen_Button.Width, ClientSize.Height);
-                FormsMenu.ClientLocation = new(StartMenu_Switch.RightLocation + 1, 0);
-                FormsMenu.Stretch = Direction.Right;
+                ChildControls.Add(TaskBarIconMenu_Control);
+                TaskBarIconMenu_Control.Spacing = 0;
+                TaskBarIconMenu_Control.MinWidth = 18;
+                TaskBarIconMenu_Control.BorderWidth = 0;
+                TaskBarIconMenu_Control.ClientSize = new(ClientSize.Width - StartMenu_Switch.Width - FullScreen_Button.Width, ClientSize.Height);
+                TaskBarIconMenu_Control.ClientLocation = new(StartMenu_Switch.RightLocation + 1, 0);
+                TaskBarIconMenu_Control.Stretch = Direction.Right;
 
                 _owner.FormContainer_Control.AddedChildControl += FormContainer_AddedChildControl;
                 _owner.FormContainer_Control.RemovedChildControl += FormContainer_RemovedChildControl;
-            }
-
-            protected override void OnRightClick(Control sender, CursorEventArgs e)
-            {
-                base.OnRightClick(sender, e);
-
-                if (!_owner.AllowDrag)
-                    return;
-
-                if (FormsMenu.ChildControls.FirstHover is not null)
-                    return;
-
-                string player = e.CursorContext.PlayerName;
-                if (_draggingCursors.ContainsKey(player))
-                    _draggingCursors.Remove(player);
-                else
-                    _draggingCursors.Add(player, new(e.CursorContext, e.Position));
             }
 
             protected override void OnCursorMove(Control sender, CursorEventArgs e)
@@ -120,6 +104,8 @@ namespace MCBS.SystemApplications.Services
                     e.Position.X > ClientSize.Width + 32)
                 {
                     _draggingCursors.Remove(e.CursorContext.PlayerName);
+                    if (_draggingCursors.Count == 0)
+                        TaskBarIconMenu_Control.FirstHandleCursorSlotChanged = true;
                     return;
                 }
 
@@ -130,9 +116,47 @@ namespace MCBS.SystemApplications.Services
                 e.CursorContext.StyleType = CursorStyleType.Default;
             }
 
+            protected override void OnRightClick(Control sender, CursorEventArgs e)
+            {
+                base.OnRightClick(sender, e);
+
+                if (!_owner.AllowDrag)
+                    return;
+
+                if (TaskBarIconMenu_Control.ChildControls.FirstHover is not null)
+                    return;
+
+                string player = e.CursorContext.PlayerName;
+                if (_draggingCursors.ContainsKey(player))
+                    _draggingCursors.Remove(player);
+                else
+                    _draggingCursors.Add(player, new(e.CursorContext, e.Position));
+
+                if (_draggingCursors.Count > 0)
+                    TaskBarIconMenu_Control.FirstHandleCursorSlotChanged = false;
+                else
+                    TaskBarIconMenu_Control.FirstHandleCursorSlotChanged = true;
+            }
+
+            protected override void OnCursorSlotChanged(Control sender, CursorEventArgs e)
+            {
+                base.OnCursorSlotChanged(sender, e);
+
+                if (!_draggingCursors.ContainsKey(e.CursorContext.PlayerName))
+                    return;
+
+                ScreenContext? screenContext = MCOS.Instance.ScreenContextOf(_owner);
+                if (screenContext is null)
+                    return;
+
+                screenContext.ScreenOutputHandler.FillAirBlock();
+                screenContext.Screen.OffsetPlaneCoordinate(e.InventorySlotDelta);
+                screenContext.ScreenOutputHandler.ResetBuffer();
+            }
+
             public void SwitchSelectedForm(IForm form)
             {
-                FormsMenu.SwitchSelectedForm(form);
+                TaskBarIconMenu_Control.SwitchSelectedForm(form);
             }
 
             private void StartMenu_Switch_ControlSelected(Control sender, EventArgs e)
@@ -171,10 +195,10 @@ namespace MCBS.SystemApplications.Services
                 {
                     case FormState.NotLoaded:
                     case FormState.Dragging:
-                        FormsMenu.AddedChildControlAndLayout(new TaskBarIcon(form));
+                        TaskBarIconMenu_Control.AddedChildControlAndLayout(new TaskBarIcon(form));
                         break;
                     case FormState.Minimize:
-                        var icon = FormsMenu.TaskBarIconOf(form);
+                        var icon = TaskBarIconMenu_Control.TaskBarIconOf(form);
                         if (icon is not null)
                             icon.IsSelected = true;
                         break;
@@ -187,7 +211,7 @@ namespace MCBS.SystemApplications.Services
                     return;
 
                 var context = MCOS.Instance.FormContextOf(form);
-                var icon = FormsMenu.TaskBarIconOf(form);
+                var icon = TaskBarIconMenu_Control.TaskBarIconOf(form);
                 if (context is null || icon is null)
                     return;
 
@@ -198,7 +222,7 @@ namespace MCBS.SystemApplications.Services
                         break;
                     case FormState.Dragging:
                     case FormState.Closed:
-                        FormsMenu.RemoveChildControlAndLayout(icon);
+                        TaskBarIconMenu_Control.RemoveChildControlAndLayout(icon);
                         break;
                 }
             }
