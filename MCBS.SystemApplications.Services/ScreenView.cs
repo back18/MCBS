@@ -102,14 +102,14 @@ namespace MCBS.SystemApplications.Services
             base.OnAfterFrame(sender, e);
 
             Rectangle rectangle = RootForm_Control.GetRectangle();
-            if (rectangle != _rectangle)
-            {
-                _rectangle = rectangle;
-                if (rectangle.Location == new Point(16, 16) && rectangle.Size == _rectangle.Size)
-                    return;
+            if (rectangle == _rectangle)
+                return;
 
-                MCOS.Instance.ScreenContextOf(RootForm_Control)?.ScreenOutputHandler.UpdateBuffer();
-            }
+            if (rectangle.Location == new Point(16, 16) && rectangle.Size == _rectangle.Size)
+                return;
+
+            _rectangle = rectangle;
+            MCOS.Instance.ScreenContextOf(RootForm_Control)?.ScreenOutputHandler.UpdateBuffer();
         }
     }
 }
