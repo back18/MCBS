@@ -33,109 +33,6 @@ namespace MCBS.Screens
             ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, width, nameof(width));
             ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, height, nameof(height));
 
-            string xyFacing = xFacing.ToString() + yFacing.ToString();
-            switch (xyFacing)
-            {
-                case "XpYm":
-                case "YmXm":
-                case "XmYp":
-                case "YpXp":
-                    NormalFacing = Facing.Zp;
-                    break;
-                case "XmYm":
-                case "YmXp":
-                case "XpYp":
-                case "YpXm":
-                    NormalFacing = Facing.Zm;
-                    break;
-                case "ZmYm":
-                case "YmZp":
-                case "ZpYp":
-                case "YpZm":
-                    NormalFacing = Facing.Xp;
-                    break;
-                case "ZpYm":
-                case "YmZm":
-                case "ZmYp":
-                case "YpZp":
-                    NormalFacing = Facing.Xm;
-                    break;
-                case "XpZp":
-                case "ZpXm":
-                case "XmZm":
-                case "ZmXp":
-                    NormalFacing = Facing.Yp;
-                    break;
-                case "XpZm":
-                case "ZmXm":
-                case "XmZp":
-                case "ZpXp":
-                    NormalFacing = Facing.Ym;
-                    break;
-                default:
-                    throw new ArgumentException($"“{nameof(xFacing)}”与“{nameof(yFacing)}”不应该在同一轴向上");
-            }
-
-            int top, bottom, left, right;
-            switch (yFacing)
-            {
-                case Facing.Xp:
-                    top = startPosition.X;
-                    bottom = startPosition.X + height - 1;
-                    break;
-                case Facing.Xm:
-                    top = startPosition.X;
-                    bottom = startPosition.X - height - 1;
-                    break;
-                case Facing.Yp:
-                    top = startPosition.Y;
-                    bottom = startPosition.Y + height - 1;
-                    break;
-                case Facing.Ym:
-                    top = startPosition.Y;
-                    bottom = startPosition.Y - height - 1;
-                    break;
-                case Facing.Zp:
-                    top = startPosition.Z;
-                    bottom = startPosition.Z + height - 1;
-                    break;
-                case Facing.Zm:
-                    top = startPosition.Z;
-                    bottom = startPosition.Z - height - 1;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-            switch (xFacing)
-            {
-                case Facing.Xp:
-                    left = startPosition.X;
-                    right = startPosition.X + height - 1;
-                    break;
-                case Facing.Xm:
-                    left = startPosition.X;
-                    right = startPosition.X - height - 1;
-                    break;
-                case Facing.Yp:
-                    left = startPosition.Y;
-                    right = startPosition.Y + height - 1;
-                    break;
-                case Facing.Ym:
-                    left = startPosition.Y;
-                    right = startPosition.Y - height - 1;
-                    break;
-                case Facing.Zp:
-                    left = startPosition.Z;
-                    right = startPosition.Z + height - 1;
-                    break;
-                case Facing.Zm:
-                    left = startPosition.Z;
-                    right = startPosition.Z - height - 1;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
             StartPosition = startPosition;
             Width = width;
             Height = height;
@@ -158,11 +55,11 @@ namespace MCBS.Screens
 
         public int Height { get; internal set; }
 
-        public Facing XFacing { get; }
+        public Facing XFacing { get; internal set; }
 
-        public Facing YFacing { get; }
+        public Facing YFacing { get; internal set; }
 
-        public Facing NormalFacing { get; }
+        public Facing NormalFacing => new PlaneFacing(XFacing, YFacing).NormalFacing;
 
         public PlaneAxis PlaneAxis
         {
