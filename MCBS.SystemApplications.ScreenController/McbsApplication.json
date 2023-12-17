@@ -1,0 +1,17 @@
+{
+  "MainClass": "MCBS.SystemApplications.ScreenController.ScreenControllerApp",
+  "ID": "System.ScreenController",
+  "Name": "屏幕控制器",
+  "Version": "1.0.0",
+  "IsBackground": false,
+  "Icon": "MCBS.SystemApplications.ScreenController.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
+}

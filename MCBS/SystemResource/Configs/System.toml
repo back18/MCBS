@@ -18,7 +18,7 @@ SystemAppComponents = [
     "MCBS.SystemApplications.TaskManager",
     "MCBS.SystemApplications.FileExplorer",
     "MCBS.SystemApplications.ScreenManager",
-    "MCBS.SystemApplications.ScreenAdjuster",
+    "MCBS.SystemApplications.ScreenController",
     "MCBS.SystemApplications.VideoPlayer",
     "MCBS.SystemApplications.Album",
     "MCBS.SystemApplications.Drawing",

@@ -5,17 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using MCBS.Application;
 
-namespace MCBS.SystemApplications.ScreenAdjuster
+namespace MCBS.SystemApplications.ScreenController
 {
-    public class ScreenAdjusterApp : IProgram
+    public class ScreenControllerApp : IProgram
     {
-        public const string ID = "System.ScreenAdjuster";
+        public const string ID = "System.ScreenController";
 
-        public const string Name = "屏幕调节器";
+        public const string Name = "屏幕控制器";
 
         public int Main(string[] args)
         {
-            this.RunForm(new ScreenAdjusterForm());
+            this.RunForm(new ScreenControllerForm());
             return 0;
         }
 

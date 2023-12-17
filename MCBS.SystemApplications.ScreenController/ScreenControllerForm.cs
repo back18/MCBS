@@ -7,29 +7,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.SystemApplications.ScreenAdjuster
+namespace MCBS.SystemApplications.ScreenController
 {
-    public class ScreenAdjusterForm : WindowForm
+    public class ScreenControllerForm : WindowForm
     {
-        public ScreenAdjusterForm()
+        public ScreenControllerForm()
         {
-            AdjusterPanel_Control = new();
+            ControllerPanel_Control = new();
         }
 
-        private readonly AdjusterPanel AdjusterPanel_Control;
+        private readonly ControllerPanel ControllerPanel_Control;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            Home_PagePanel.ChildControls.Add(AdjusterPanel_Control);
-            AdjusterPanel_Control.Size = Home_PagePanel.ClientSize;
-            AdjusterPanel_Control.Stretch = Direction.Bottom | Direction.Right;
-            AdjusterPanel_Control.Up_Button.RightClick += Up_Button_RightClick;
-            AdjusterPanel_Control.Down_Button.RightClick += Down_Button_RightClick;
-            AdjusterPanel_Control.Left_Button.RightClick += Left_Button_RightClick;
-            AdjusterPanel_Control.Right_Button.RightClick += Right_Button_RightClick;
-            AdjusterPanel_Control.Center_Button.RightClick += Center_Button_RightClick;
+            Home_PagePanel.ChildControls.Add(ControllerPanel_Control);
+            ControllerPanel_Control.Size = Home_PagePanel.ClientSize;
+            ControllerPanel_Control.Stretch = Direction.Bottom | Direction.Right;
+            ControllerPanel_Control.Up_Button.RightClick += Up_Button_RightClick;
+            ControllerPanel_Control.Down_Button.RightClick += Down_Button_RightClick;
+            ControllerPanel_Control.Left_Button.RightClick += Left_Button_RightClick;
+            ControllerPanel_Control.Right_Button.RightClick += Right_Button_RightClick;
+            ControllerPanel_Control.Center_Button.RightClick += Center_Button_RightClick;
         }
 
         private void Up_Button_RightClick(Control sender, CursorEventArgs e)

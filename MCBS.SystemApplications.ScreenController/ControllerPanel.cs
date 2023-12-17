@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.SystemApplications.ScreenAdjuster
+namespace MCBS.SystemApplications.ScreenController
 {
-    public class AdjusterPanel : Panel<Button>
+    public class ControllerPanel : Panel<Button>
     {
-        public AdjusterPanel()
+        public ControllerPanel()
         {
             BorderWidth = 0;
 
