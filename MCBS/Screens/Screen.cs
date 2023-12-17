@@ -91,6 +91,47 @@ namespace MCBS.Screens
 
         public int TotalPixels => Width * Height;
 
+        public void UpRotate()
+        {
+            ApplyRotate(new PlaneFacing(XFacing, YFacing).UpRotate());
+        }
+
+        public void DownRotate()
+        {
+            ApplyRotate(new PlaneFacing(XFacing, YFacing).DownRotate());
+        }
+
+        public void LeftRotate()
+        {
+            ApplyRotate(new PlaneFacing(XFacing, YFacing).LeftRotate());
+        }
+
+        public void RightRotate()
+        {
+            ApplyRotate(new PlaneFacing(XFacing, YFacing).RightRotate());
+        }
+
+        public void ClockwiseRotate()
+        {
+            ApplyRotate(new PlaneFacing(XFacing, YFacing).ClockwiseRotate());
+        }
+
+        public void CounterclockwiseRotate()
+        {
+            ApplyRotate(new PlaneFacing(XFacing, YFacing).CounterclockwiseRotate());
+        }
+
+        private void ApplyRotate(PlaneFacing planeFacing)
+        {
+            BlockPos oldPos = CenterPosition;
+            XFacing = planeFacing.XFacing;
+            YFacing = planeFacing.YFacing;
+            BlockPos newPos = CenterPosition;
+
+            BlockPos offset = newPos - oldPos;
+            StartPosition -= offset;
+        }
+
         public void Translate(Point offset)
         {
             Translate(offset.X, offset.Y);

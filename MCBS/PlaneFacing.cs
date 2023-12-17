@@ -98,6 +98,44 @@ namespace MCBS
             }
         }
 
+        public PlaneFacing UpRotate()
+        {
+            Facing yFacing = YFacing.LeftRotate(XFacing);
+            return new(XFacing, yFacing);
+        }
+
+        public PlaneFacing DownRotate()
+        {
+            Facing yFacing = YFacing.RightRotate(XFacing);
+            return new(XFacing, yFacing);
+        }
+
+        public PlaneFacing LeftRotate()
+        {
+            Facing xFacing = XFacing.RightRotate(YFacing);
+            return new(xFacing, YFacing);
+        }
+
+        public PlaneFacing RightRotate()
+        {
+            Facing xFacing = XFacing.LeftRotate(YFacing);
+            return new(xFacing, YFacing);
+        }
+
+        public PlaneFacing ClockwiseRotate()
+        {
+            Facing xFacing = XFacing.LeftRotate(NormalFacing);
+            Facing yFacing = YFacing.LeftRotate(NormalFacing);
+            return new(xFacing, yFacing);
+        }
+
+        public PlaneFacing CounterclockwiseRotate()
+        {
+            Facing xFacing = XFacing.RightRotate(NormalFacing);
+            Facing yFacing = YFacing.RightRotate(NormalFacing);
+            return new(xFacing, yFacing);
+        }
+
         public override int GetHashCode()
         {
             return HashCode.Combine(XFacing, YFacing);
