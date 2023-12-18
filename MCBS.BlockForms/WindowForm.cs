@@ -19,7 +19,9 @@ namespace MCBS.BlockForms
             TitleBar_Control = new(this);
             WindowPanel_Control = new(this);
             Home_PagePanel = new("Home");
+            Menu_PagePanel = new("Menu");
             WindowPanel_Control.PagePanels.Add(Home_PagePanel.PageKey, Home_PagePanel);
+            WindowPanel_Control.PagePanels.Add(Menu_PagePanel.PageKey, Menu_PagePanel);
             WindowPanel_Control.ActivePageKey = Home_PagePanel.PageKey;
             ShowTitleBar_Button = new();
         }
@@ -29,6 +31,8 @@ namespace MCBS.BlockForms
         public readonly WindowPanel WindowPanel_Control;
 
         public readonly PagePanel Home_PagePanel;
+
+        public readonly PagePanel Menu_PagePanel;
 
         public readonly Button ShowTitleBar_Button;
 

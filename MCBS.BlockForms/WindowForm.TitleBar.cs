@@ -148,6 +148,7 @@ namespace MCBS.BlockForms
                 Menu_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 Menu_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 Menu_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Menu"]);
+                Menu_Button.RightClick += Menu_Button_RightClick;
 
                 Home_Button.BorderWidth = 0;
                 Home_Button.ClientSize = new(16, 16);
@@ -157,6 +158,7 @@ namespace MCBS.BlockForms
                 Home_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 Home_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 Home_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Home"]);
+                Home_Button.RightClick += Home_Button_RightClick;
 
                 Back_Button.BorderWidth = 0;
                 Back_Button.ClientSize = new(16, 16);
@@ -218,6 +220,16 @@ namespace MCBS.BlockForms
             private void HideTitleBar_Button_RightClick(Control sender, CursorEventArgs e)
             {
                 _owner.ShowTitleBar = false;
+            }
+
+            private void Menu_Button_RightClick(Control sender, CursorEventArgs e)
+            {
+                _owner.WindowPanel_Control.ActivePageKey = _owner.Menu_PagePanel.PageKey;
+            }
+
+            private void Home_Button_RightClick(Control sender, CursorEventArgs e)
+            {
+                _owner.WindowPanel_Control.ActivePageKey = _owner.Home_PagePanel.PageKey;
             }
 
             public void UpdateMaximizeOrRestore()
