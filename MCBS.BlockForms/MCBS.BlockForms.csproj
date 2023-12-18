@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="SystemResource\TextureIndex.json" />
     <None Remove="SystemResource\Textures\Back.png" />
     <None Remove="SystemResource\Textures\Close.png" />
     <None Remove="SystemResource\Textures\Expand.png" />
@@ -29,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="SystemResource\TextureIndex.json" />
     <EmbeddedResource Include="SystemResource\Textures\Back.png" />
     <EmbeddedResource Include="SystemResource\Textures\Close.png" />
     <EmbeddedResource Include="SystemResource\Textures\Expand.png" />

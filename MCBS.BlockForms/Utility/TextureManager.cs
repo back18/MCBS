@@ -16,7 +16,6 @@ namespace MCBS.BlockForms.Utility
 {
     public class TextureManager : IReadOnlyDictionary<string, Image<Rgba32>>
     {
-        private const string TEXTURE_INDEX_NAME = "MCBS.BlockForms.SystemResource.TextureIndex.json";
         private const string TEXTURES_NAMESPACE = "MCBS.BlockForms.SystemResource.Textures";
 
         static TextureManager()
@@ -73,16 +72,21 @@ namespace MCBS.BlockForms.Utility
 
         private static Dictionary<string, Image<Rgba32>> Load()
         {
+            Dictionary<string, Image<Rgba32>> result = [];
             Assembly assembly = Assembly.GetExecutingAssembly();
-            using Stream indexsStream = assembly.GetManifestResourceStream(TEXTURE_INDEX_NAME) ?? throw new InvalidOperationException();
-            string indexsJson = indexsStream.ToUtf8Text();
-            Dictionary<string, string> indexs = JsonConvert.DeserializeObject<Dictionary<string, string>>(indexsJson) ?? throw new InvalidOperationException();
-
-            Dictionary<string, Image<Rgba32>> result = new();
-            foreach (var index in indexs)
+            string[] resourceNames = assembly.GetManifestResourceNames();
+            foreach (string resourceName in resourceNames)
             {
-                using Stream stream = assembly.GetManifestResourceStream($"{TEXTURES_NAMESPACE}.{index.Key}") ?? throw new InvalidOperationException();
-                result.Add(Path.GetFileNameWithoutExtension(index.Key), Image.Load<Rgba32>(stream));
+                if (!resourceName.StartsWith(TEXTURES_NAMESPACE))
+                    continue;
+
+                using Stream? stream = assembly.GetManifestResourceStream(resourceName);
+                if (stream is null)
+                    continue;
+
+                string name = resourceName.Split('.')[^2];
+                Image<Rgba32> image = Image.Load<Rgba32>(stream);
+                result.Add(name, image);
             }
 
             return result;
