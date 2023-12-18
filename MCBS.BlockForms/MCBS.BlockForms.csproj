@@ -8,10 +8,13 @@
 
   <ItemGroup>
     <None Remove="SystemResource\TextureIndex.json" />
+    <None Remove="SystemResource\Textures\Back.png" />
     <None Remove="SystemResource\Textures\Close.png" />
     <None Remove="SystemResource\Textures\Expand.png" />
+    <None Remove="SystemResource\Textures\Home.png" />
     <None Remove="SystemResource\Textures\Logo.png" />
     <None Remove="SystemResource\Textures\Maximize.png" />
+    <None Remove="SystemResource\Textures\Menu.png" />
     <None Remove="SystemResource\Textures\Minimize.png" />
     <None Remove="SystemResource\Textures\OFF.png" />
     <None Remove="SystemResource\Textures\OFF_Excessive.png" />
@@ -27,10 +30,13 @@
 
   <ItemGroup>
     <EmbeddedResource Include="SystemResource\TextureIndex.json" />
+    <EmbeddedResource Include="SystemResource\Textures\Back.png" />
     <EmbeddedResource Include="SystemResource\Textures\Close.png" />
     <EmbeddedResource Include="SystemResource\Textures\Expand.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Home.png" />
     <EmbeddedResource Include="SystemResource\Textures\Logo.png" />
     <EmbeddedResource Include="SystemResource\Textures\Maximize.png" />
+    <EmbeddedResource Include="SystemResource\Textures\Menu.png" />
     <EmbeddedResource Include="SystemResource\Textures\Minimize.png" />
     <EmbeddedResource Include="SystemResource\Textures\OFF.png" />
   </ItemGroup>
