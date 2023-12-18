@@ -28,13 +28,16 @@ namespace MCBS.BlockForms
                 _owner.TextChanged += Owner_TextChanged;
                 _owner.InitializeCompleted += Owner_InitializeCompleted;
 
-                _ButtonsToShow = FormButtons.Close | FormButtons.MaximizeOrRestore | FormButtons.Minimize | FormButtons.FullScreen;
+                _ButtonsToShow = FormButtons.Close | FormButtons.MaximizeOrRestore | FormButtons.Minimize | FormButtons.FullScreen | FormButtons.Menu | FormButtons.Home | FormButtons.Back;
 
                 Title_IconTextBox = new();
                 Close_Button = new();
                 MaximizeOrRestore_Switch = new();
                 Minimize_Button = new();
                 FullScreen_Button = new();
+                Menu_Button = new();
+                Home_Button = new();
+                Back_Button = new();
 
                 BorderWidth = 0;
                 InvokeExternalCursorMove = true;
@@ -51,6 +54,12 @@ namespace MCBS.BlockForms
             private readonly Button Minimize_Button;
 
             private readonly Button FullScreen_Button;
+
+            private readonly Button Menu_Button;
+
+            private readonly Button Home_Button;
+
+            private readonly Button Back_Button;
 
             public override string Text
             {
@@ -109,7 +118,7 @@ namespace MCBS.BlockForms
                 MaximizeOrRestore_Switch.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 MaximizeOrRestore_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 MaximizeOrRestore_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Maximize"], new ControlState[] { ControlState.None, ControlState.Hover });
-                MaximizeOrRestore_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Restore"], new ControlState[] { ControlState.Selected, ControlState.Hover | ControlState.Selected });
+                MaximizeOrRestore_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Restore"], [ControlState.Selected, ControlState.Hover | ControlState.Selected]);
 
                 Minimize_Button.BorderWidth = 0;
                 Minimize_Button.ClientSize = new(16, 16);
@@ -130,6 +139,33 @@ namespace MCBS.BlockForms
                 FullScreen_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 FullScreen_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Expand"]);
                 FullScreen_Button.RightClick += HideTitleBar_Button_RightClick;
+
+                Menu_Button.BorderWidth = 0;
+                Menu_Button.ClientSize = new(16, 16);
+                Menu_Button.Anchor = Direction.Top | Direction.Right;
+                Menu_Button.FirstHandleRightClick = true;
+                Menu_Button.IsRenderingTransparencyTexture = false;
+                Menu_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                Menu_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                Menu_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Menu"]);
+
+                Home_Button.BorderWidth = 0;
+                Home_Button.ClientSize = new(16, 16);
+                Home_Button.Anchor = Direction.Top | Direction.Right;
+                Home_Button.FirstHandleRightClick = true;
+                Home_Button.IsRenderingTransparencyTexture = false;
+                Home_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                Home_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                Home_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Home"]);
+
+                Back_Button.BorderWidth = 0;
+                Back_Button.ClientSize = new(16, 16);
+                Back_Button.Anchor = Direction.Top | Direction.Right;
+                Back_Button.FirstHandleRightClick = true;
+                Back_Button.IsRenderingTransparencyTexture = false;
+                Back_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
+                Back_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
+                Back_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Back"]);
             }
 
             public override void AfterInitialize()
@@ -208,42 +244,45 @@ namespace MCBS.BlockForms
             public override void ActiveLayoutAll()
             {
                 ChildControls.Clear();
-                if (ButtonsToShow.HasFlag(FormButtons.Close))
+
+                AddButtonIfHas(FormButtons.Close);
+                AddButtonIfHas(FormButtons.MaximizeOrRestore);
+                AddButtonIfHas(FormButtons.Minimize);
+                AddButtonIfHas(FormButtons.FullScreen);
+                AddButtonIfHas(FormButtons.Menu);
+                AddButtonIfHas(FormButtons.Home);
+                AddButtonIfHas(FormButtons.Back);
+            }
+
+            private void AddButtonIfHas(FormButtons formButtons)
+            {
+                if (!ButtonsToShow.HasFlag(formButtons))
+                    return;
+
+                Control button = GetButton(formButtons);
+                Control? control = ChildControls.RecentlyAddedControl;
+
+                if (control is null)
+                    button.LayoutLeft(this, 0, 0);
+                else
+                    button.LayoutLeft(this, control, 0);
+
+                ChildControls.Add(button);
+            }
+
+            private Control GetButton(FormButtons formButtons)
+            {
+                return formButtons switch
                 {
-                    Control? control = ChildControls.RecentlyAddedControl;
-                    if (control is null)
-                        Close_Button.LayoutLeft(this, 0, 0);
-                    else
-                        Close_Button.LayoutLeft(this, control, 0);
-                    ChildControls.Add(Close_Button);
-                }
-                if (ButtonsToShow.HasFlag(FormButtons.MaximizeOrRestore))
-                {
-                    Control? control = ChildControls.RecentlyAddedControl;
-                    if (control is null)
-                        MaximizeOrRestore_Switch.LayoutLeft(this, 0, 0);
-                    else
-                        MaximizeOrRestore_Switch.LayoutLeft(this, control, 0);
-                    ChildControls.Add(MaximizeOrRestore_Switch);
-                }
-                if (ButtonsToShow.HasFlag(FormButtons.Minimize))
-                {
-                    Control? control = ChildControls.RecentlyAddedControl;
-                    if (control is null)
-                        Minimize_Button.LayoutLeft(this, 0, 0);
-                    else
-                        Minimize_Button.LayoutLeft(this, control, 0);
-                    ChildControls.Add(Minimize_Button);
-                }
-                if (ButtonsToShow.HasFlag(FormButtons.FullScreen))
-                {
-                    Control? control = ChildControls.RecentlyAddedControl;
-                    if (control is null)
-                        FullScreen_Button.LayoutLeft(this, 0, 0);
-                    else
-                        FullScreen_Button.LayoutLeft(this, control, 0);
-                    ChildControls.Add(FullScreen_Button);
-                }
+                    FormButtons.Close => Close_Button,
+                    FormButtons.MaximizeOrRestore => MaximizeOrRestore_Switch,
+                    FormButtons.Minimize => Minimize_Button,
+                    FormButtons.FullScreen => FullScreen_Button,
+                    FormButtons.Menu => Menu_Button,
+                    FormButtons.Home => Home_Button,
+                    FormButtons.Back => Back_Button,
+                    _ => throw new InvalidOperationException(),
+                };
             }
         }
     }

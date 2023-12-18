@@ -17,6 +17,12 @@ namespace MCBS.BlockForms.Utility
 
         Minimize = 4,
 
-        FullScreen = 8
+        FullScreen = 8,
+
+        Menu = 16,
+
+        Home = 32,
+
+        Back = 64
     }
 }
