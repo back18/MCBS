@@ -28,7 +28,6 @@ namespace MCBS.BlockForms
                 _owner.TextChanged += Owner_TextChanged;
                 _owner.InitializeCompleted += Owner_InitializeCompleted;
 
-                MoveAnchorPoint = new(0, 0);
                 _ButtonsToShow = FormButtons.Close | FormButtons.MaximizeOrRestore | FormButtons.Minimize | FormButtons.FullScreen;
 
                 Title_IconTextBox = new();
@@ -77,8 +76,6 @@ namespace MCBS.BlockForms
                 }
             }
             private FormButtons _ButtonsToShow;
-
-            public Point MoveAnchorPoint { get; set; }
 
             public override void Initialize()
             {
