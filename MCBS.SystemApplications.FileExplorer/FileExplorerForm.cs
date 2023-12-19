@@ -1,4 +1,4 @@
-﻿using QuanLib.Core.IO;
+﻿using QuanLib.IO;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

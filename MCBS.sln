@@ -57,6 +57,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Downloader", "..\Qu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.ScreenController", "MCBS.SystemApplications.ScreenController\MCBS.SystemApplications.ScreenController.csproj", "{5C440A12-BCA0-490B-A07E-C8302EB151C5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.IO", "..\QuanLib\QuanLib.IO\QuanLib.IO.csproj", "{9CA54CC6-E3E1-442B-A350-A1E88237F1B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,10 @@ Global
 		{5C440A12-BCA0-490B-A07E-C8302EB151C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C440A12-BCA0-490B-A07E-C8302EB151C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C440A12-BCA0-490B-A07E-C8302EB151C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CA54CC6-E3E1-442B-A350-A1E88237F1B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA54CC6-E3E1-442B-A350-A1E88237F1B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CA54CC6-E3E1-442B-A350-A1E88237F1B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CA54CC6-E3E1-442B-A350-A1E88237F1B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

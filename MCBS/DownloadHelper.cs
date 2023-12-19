@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using log4net.Core;
 using MCBS.Logging;
 using Downloader;
-using QuanLib.Core.IO;
+using QuanLib.IO;
 using QuanLib.Minecraft.GameResource;
 using System.Diagnostics.CodeAnalysis;
 

@@ -3,7 +3,7 @@ using MCBS.Logging;
 using MCBS.Rendering;
 using Newtonsoft.Json;
 using QuanLib.Core;
-using QuanLib.Core.IO;
+using QuanLib.IO;
 using QuanLib.Downloader;
 using QuanLib.Minecraft;
 using SixLabors.ImageSharp.PixelFormats;
