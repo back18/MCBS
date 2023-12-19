@@ -10,7 +10,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
 {
     public class DriveItem : FileSystemItem
     {
-        public DriveItem(DriveInfo driveInfo) : base(QuanLib.Core.IO.PathType.Drive)
+        public DriveItem(DriveInfo driveInfo) : base(QuanLib.Core.PathType.Drive)
         {
             ArgumentNullException.ThrowIfNull(driveInfo, nameof(driveInfo));
 

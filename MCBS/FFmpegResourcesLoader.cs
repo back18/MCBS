@@ -3,6 +3,7 @@ using log4net.Core;
 using MCBS.Directorys;
 using MCBS.Logging;
 using Newtonsoft.Json;
+using QuanLib.Core;
 using QuanLib.Core.Extensions;
 using QuanLib.Core.IO;
 using System;

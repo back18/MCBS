@@ -10,7 +10,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
 {
     public class DirectoryItem : FileSystemItem
     {
-        public DirectoryItem(DirectoryInfo directoryInfo) : base(QuanLib.Core.IO.PathType.Directory)
+        public DirectoryItem(DirectoryInfo directoryInfo) : base(QuanLib.Core.PathType.Directory)
         {
             ArgumentNullException.ThrowIfNull(directoryInfo, nameof(directoryInfo));
 

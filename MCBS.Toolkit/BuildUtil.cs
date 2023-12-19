@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using QuanLib.Core;
 using QuanLib.Core.IO;
 using System;
 using System.Collections.Generic;

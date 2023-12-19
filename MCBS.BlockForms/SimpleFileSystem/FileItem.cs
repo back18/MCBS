@@ -10,7 +10,7 @@ namespace MCBS.BlockForms.SimpleFileSystem
 {
     public class FileItem : FileSystemItem
     {
-        public FileItem(FileInfo fileInfo) : base(QuanLib.Core.IO.PathType.File)
+        public FileItem(FileInfo fileInfo) : base(QuanLib.Core.PathType.File)
         {
             FileInfo = fileInfo;
 

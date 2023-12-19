@@ -4,7 +4,6 @@ using log4net.Repository.Hierarchy;
 using MCBS.Directorys;
 using MCBS.Logging;
 using Newtonsoft.Json.Linq;
-using QuanLib.Core.IO;
 using QuanLib.Minecraft.GameResource;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,7 @@ using Newtonsoft.Json;
 using QuanLib.Minecraft.ResourcePack;
 using QuanLib.Downloader;
 using QuanLib.Core.Extensions;
+using QuanLib.Core;
 
 namespace MCBS
 {
