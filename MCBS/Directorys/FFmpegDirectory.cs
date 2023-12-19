@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class FFmpegDirectory : DirectoryManager
+    public class FFmpegDirectory : DirectoryBase
     {
         public FFmpegDirectory(string directory) : base(directory)
         {
@@ -22,7 +22,7 @@ namespace MCBS.Directorys
 
         public string FFmpegWin64IndexFile { get; }
 
-        public class BinDirectory : DirectoryManager
+        public class BinDirectory : DirectoryBase
         {
             public BinDirectory(string directory) : base(directory)
             {

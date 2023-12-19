@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class ColorMappingDirectory : DirectoryManager
+    public class ColorMappingDirectory : DirectoryBase
     {
         public ColorMappingDirectory(string directory) : base(directory)
         {

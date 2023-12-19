@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Namespaces
 {
-    public class ConfigsNamespace : NamespaceManager
+    public class ConfigsNamespace : NamespaceBase
     {
         public ConfigsNamespace(string @namespace) : base(@namespace)
         {

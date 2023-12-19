@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class ResourcePacksDirectory : DirectoryManager
+    public class ResourcePacksDirectory : DirectoryBase
     {
         public ResourcePacksDirectory(string directory) : base(directory)
         {

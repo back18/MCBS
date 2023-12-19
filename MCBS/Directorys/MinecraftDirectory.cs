@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class MinecraftDirectory : DirectoryManager
+    public class MinecraftDirectory : DirectoryBase
     {
         public MinecraftDirectory(string directory) : base(directory)
         {

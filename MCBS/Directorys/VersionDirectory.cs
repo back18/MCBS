@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public class VersionDirectory : DirectoryManager
+    public class VersionDirectory : DirectoryBase
     {
         public VersionDirectory(string directory) : base(directory)
         {

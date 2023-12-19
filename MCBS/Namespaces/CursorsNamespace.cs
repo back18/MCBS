@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Namespaces
 {
-    public class CursorsNamespace : NamespaceManager
+    public class CursorsNamespace : NamespaceBase
     {
         public CursorsNamespace(string @namespace) : base(@namespace)
         {
