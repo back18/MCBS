@@ -21,7 +21,7 @@ namespace MCBS.Toolkit
 
         private static void RegisterCommands()
         {
-            CommandSystem.Pool.AddCommand(new(new("build TextureIndex"), CommandFunc.GetFunc(BuildUtil.BuildTextureIndex)));
+            CommandSystem.CommandPool.AddCommand(new(new("build TextureIndex"), CommandFunc.GetFunc(BuildUtil.BuildTextureIndex)));
         }
     }
 }

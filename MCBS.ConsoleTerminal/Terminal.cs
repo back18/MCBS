@@ -73,6 +73,7 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】已进入可视化命令系统");
                         LogUtil.DisableConsoleOutput();
                         CommandSystem.Start();
+                        CommandSystem.WaitForStop();
                         LogUtil.EnableConsoleOutput();
                         Console.WriteLine("【MCBS控制台】已退出可视化命令系统");
                         break;
@@ -142,13 +143,13 @@ namespace MCBS.ConsoleTerminal
 
         private void RegistrationCommands()
         {
-            CommandSystem.Pool.AddCommand(new(new("application list"), CommandFunc.GetFunc(GetApplicationList)));
-            CommandSystem.Pool.AddCommand(new(new("screen list"), CommandFunc.GetFunc(GetScreenList)));
-            CommandSystem.Pool.AddCommand(new(new("screen close"), CommandFunc.GetFunc(CloseScreen)));
-            CommandSystem.Pool.AddCommand(new(new("screen builder"), CommandFunc.GetFunc(SetScreenBuilderEnable)));
-            CommandSystem.Pool.AddCommand(new(new("process list"), CommandFunc.GetFunc(GetProcessList)));
-            CommandSystem.Pool.AddCommand(new(new("form list"), CommandFunc.GetFunc(GetFormList)));
-            CommandSystem.Pool.AddCommand(new(new("frame count"), CommandFunc.GetFunc(GetFrameCount)));
+            CommandSystem.CommandPool.AddCommand(new(new("application list"), CommandFunc.GetFunc(GetApplicationList)));
+            CommandSystem.CommandPool.AddCommand(new(new("screen list"), CommandFunc.GetFunc(GetScreenList)));
+            CommandSystem.CommandPool.AddCommand(new(new("screen close"), CommandFunc.GetFunc(CloseScreen)));
+            CommandSystem.CommandPool.AddCommand(new(new("screen builder"), CommandFunc.GetFunc(SetScreenBuilderEnable)));
+            CommandSystem.CommandPool.AddCommand(new(new("process list"), CommandFunc.GetFunc(GetProcessList)));
+            CommandSystem.CommandPool.AddCommand(new(new("form list"), CommandFunc.GetFunc(GetFormList)));
+            CommandSystem.CommandPool.AddCommand(new(new("frame count"), CommandFunc.GetFunc(GetFrameCount)));
         }
 
         #region commands
