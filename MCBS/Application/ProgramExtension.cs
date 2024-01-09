@@ -14,7 +14,7 @@ namespace MCBS.Application
         {
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            FormContext formContext = MCOS.Instance.FormManager.LoadForm(source, form);
+            FormContext formContext = MinecraftBlockScreen.Instance.FormManager.LoadForm(source, form);
             formContext.WaitForClose();
             return form.ReturnValue;
         }
@@ -23,7 +23,7 @@ namespace MCBS.Application
         {
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            FormContext formContext = MCOS.Instance.FormManager.LoadForm(source, form);
+            FormContext formContext = MinecraftBlockScreen.Instance.FormManager.LoadForm(source, form);
             await formContext.WaitForCloseAsync();
             return form.ReturnValue;
         }
@@ -31,7 +31,7 @@ namespace MCBS.Application
         public static FormContext[] GetForms(this IProgram source)
         {
             List<FormContext> result = new();
-            foreach (var context in MCOS.Instance.FormManager.Items.Values)
+            foreach (var context in MinecraftBlockScreen.Instance.FormManager.Items.Values)
                 if (context.Program == source)
                     result.Add(context);
 
@@ -40,7 +40,7 @@ namespace MCBS.Application
 
         public static ApplicationManifest? GetApplicationManifest(this IProgram source)
         {
-            return MCOS.Instance.ProcessContextOf(source)?.Application;
+            return MinecraftBlockScreen.Instance.ProcessContextOf(source)?.Application;
         }
 
         public static string? GetApplicationDirectory(this IProgram source)

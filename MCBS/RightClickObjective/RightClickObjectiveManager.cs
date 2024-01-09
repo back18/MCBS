@@ -23,14 +23,14 @@ namespace MCBS.RightClickObjective
 
         public void Initialize()
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             sender.SendCommand($"scoreboard objectives remove {ConfigManager.ScreenConfig.RightClickObjective}");
             sender.SendCommand($"scoreboard objectives add {ConfigManager.ScreenConfig.RightClickObjective} {ConfigManager.ScreenConfig.RightClickCriterion}");
         }
 
         public void OnTick()
         {
-            PlayerList playerList = MCOS.Instance.MinecraftInstance.CommandSender.GetPlayerList();
+            PlayerList playerList = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.GetPlayerList();
             _items.Clear();
             foreach (var player in playerList.List)
             {

@@ -37,7 +37,7 @@ namespace MCBS.Cursor
         {
             ArgumentNullException.ThrowIfNull(item, nameof(item));
 
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
 
             if (!IsSynchronized)
             {
@@ -47,7 +47,7 @@ namespace MCBS.Cursor
                     sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemID}{{pages:[\"{InitialText}\"]}}");
                 CurrentText = InitialText;
                 IsSynchronized = true;
-                SynchronizeTick = MCOS.Instance.SystemTick;
+                SynchronizeTick = MinecraftBlockScreen.Instance.SystemTick;
                 return false;
             }
             else if (

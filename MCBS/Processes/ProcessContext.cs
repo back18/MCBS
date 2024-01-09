@@ -104,7 +104,7 @@ namespace MCBS.Processes
         protected override void Run()
         {
             string args = _args.Length == 0 ? "empty" : string.Join(", ", _args.Select(arg => $"\"{arg}\""));
-            FormContext ? formContext = Initiator is null ? null : MCOS.Instance.FormContextOf(Initiator);
+            FormContext ? formContext = Initiator is null ? null : MinecraftBlockScreen.Instance.FormContextOf(Initiator);
             if (formContext is null)
                 LOGGER.Info($"进程({Application.ID})已启动，启动参数为 {args}");
             else

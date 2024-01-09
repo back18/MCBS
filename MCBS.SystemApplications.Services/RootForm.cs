@@ -180,12 +180,12 @@ namespace MCBS.SystemApplications.Services
 
         private void CloseScreen_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            MCOS.Instance.ScreenContextOf(this)?.UnloadScreen();
+            MinecraftBlockScreen.Instance.ScreenContextOf(this)?.UnloadScreen();
         }
 
         private void RestartScreen_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            MCOS.Instance.ScreenContextOf(this)?.RestartScreen();
+            MinecraftBlockScreen.Instance.ScreenContextOf(this)?.RestartScreen();
         }
 
         private void ShowTaskBar_Button_CursorEnter(Control sender, CursorEventArgs e)

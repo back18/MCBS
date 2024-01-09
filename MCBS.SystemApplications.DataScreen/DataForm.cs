@@ -59,7 +59,7 @@ namespace MCBS.SystemApplications.DataScreen
             DayTimeSyncCountdown--;
             if (DayTimeSyncCountdown <= 0)
             {
-                CommandSender commandSender = MCOS.Instance.MinecraftInstance.CommandSender;
+                CommandSender commandSender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
                 int gameDays = commandSender.GetGameDays();
                 TimeSpan dayTime = MinecraftUtil.DayTimeToTimeSpan(commandSender.GetDayTime());
                 DayTime_Label.Text = $"游戏时间：{gameDays}日{(int)dayTime.TotalHours}时{dayTime.Minutes}分";
@@ -69,7 +69,7 @@ namespace MCBS.SystemApplications.DataScreen
             GameTimeSyncCountdown--;
             if (GameTimeSyncCountdown <= 0)
             {
-                TimeSpan gameTime = MinecraftUtil.GameTicksToTimeSpan(MCOS.Instance.MinecraftInstance.CommandSender.GetGameTime());
+                TimeSpan gameTime = MinecraftUtil.GameTicksToTimeSpan(MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.GetGameTime());
                 GameTime_Label.Text = $"开服时长：{gameTime.Days}天{gameTime.Hours}小时{gameTime.Minutes}分钟";
                 GameTimeSyncCountdown = GameTimeSyncTime;
             }

@@ -259,17 +259,17 @@ namespace MCBS.SystemApplications.Drawing
 
         private void Open_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? dir = MCOS.Instance.ProcessContextOf(this)?.Program.GetApplicationDirectory();
+            string? dir = MinecraftBlockScreen.Instance.ProcessContextOf(this)?.Program.GetApplicationDirectory();
             if (string.IsNullOrEmpty(dir))
                 return;
             dir = Path.Combine(dir, "Saves");
 
-            MCOS.Instance.ProcessManager.StartProcess("System.FileExplorer", [dir], this);
+            MinecraftBlockScreen.Instance.ProcessManager.StartProcess("System.FileExplorer", [dir], this);
         }
 
         private void Save_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string? dir = MCOS.Instance.ProcessContextOf(this)?.Program.GetApplicationDirectory();
+            string? dir = MinecraftBlockScreen.Instance.ProcessContextOf(this)?.Program.GetApplicationDirectory();
             if (string.IsNullOrEmpty(dir))
                 return;
             dir = Path.Combine(dir, "Saves");

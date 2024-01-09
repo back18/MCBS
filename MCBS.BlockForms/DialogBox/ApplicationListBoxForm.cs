@@ -44,7 +44,7 @@ namespace MCBS.BlockForms.DialogBox
             ApplicationList_ListMenuBox.ClientSize = new(107, 60);
             ApplicationList_ListMenuBox.RightClick += ApplicationList_ListMenuBox_RightClick;
 
-            foreach (var appInfo in MCOS.Instance.AppComponents.Values)
+            foreach (var appInfo in MinecraftBlockScreen.Instance.AppComponents.Values)
             {
                 ApplicationItem item = new(appInfo);
                 item.ClientSize = new(96, 16);

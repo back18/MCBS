@@ -92,7 +92,7 @@ namespace MCBS.Screens
                     ScreenView.HandleInitialize();
                     ScreenView.HandleAfterInitialize();
                     foreach (var appId in SystemConfig.StartupChecklist)
-                        MCOS.Instance.ProcessManager.StartProcess(appId, RootForm);
+                        MinecraftBlockScreen.Instance.ProcessManager.StartProcess(appId, RootForm);
                     SaveJson();
                     LOGGER.Info($"屏幕({Screen.StartPosition})已加载");
                     return true;
@@ -112,7 +112,7 @@ namespace MCBS.Screens
 
         protected virtual bool HandleUnloadState(ScreenState current, ScreenState next)
         {
-            foreach (var forem in MCOS.Instance.FormManager.Items.Values)
+            foreach (var forem in MinecraftBlockScreen.Instance.FormManager.Items.Values)
             {
                 if (forem.RootForm == RootForm)
                     forem.CloseForm();
@@ -263,7 +263,7 @@ namespace MCBS.Screens
                 ScreenView.HandleLeftClick(new(newData.CursorPosition, cursorContext));
             if (oldData.RightClickTime != newData.RightClickTime)
                 ScreenView.HandleRightClick(new(newData.CursorPosition, cursorContext));
-            if (cursorContext.TextEditor.SynchronizeTick != MCOS.Instance.SystemTick && oldData.TextEditor != newData.TextEditor)
+            if (cursorContext.TextEditor.SynchronizeTick != MinecraftBlockScreen.Instance.SystemTick && oldData.TextEditor != newData.TextEditor)
                 ScreenView.HandleTextEditorUpdate(new(newData.CursorPosition, cursorContext));
 
             string? deputyItem = cursorContext.NewInputData.DeputyItem?.ID;
@@ -278,7 +278,7 @@ namespace MCBS.Screens
 
         private void SaveJson()
         {
-            MCOS.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
+            MinecraftBlockScreen.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
         }
 
         private void DeleteJson()
@@ -297,7 +297,7 @@ namespace MCBS.Screens
 
         private string GetSavePath()
         {
-            return MCOS.Instance.WorldDirectory.GetMcbsDataDirectory().ScreensDir.Combine(GUID + ".json");
+            return MinecraftBlockScreen.Instance.WorldDirectory.GetMcbsDataDirectory().ScreensDir.Combine(GUID + ".json");
         }
     }
 }

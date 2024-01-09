@@ -18,7 +18,7 @@ namespace MCBS.SystemApplications.Services
             {
                 if (hoverControl.Control is IForm hoverForm)
                 {
-                    if (MCOS.Instance.FormContextOf(hoverForm) is FormContext hoverFormContext && hoverFormContext.FormState == FormState.Dragging)
+                    if (MinecraftBlockScreen.Instance.FormContextOf(hoverForm) is FormContext hoverFormContext && hoverFormContext.FormState == FormState.Dragging)
                         return true;
                 }
             }
@@ -31,7 +31,7 @@ namespace MCBS.SystemApplications.Services
             if (form is null)
                 return false;
 
-            if (MCOS.Instance.FormContextOf(form) is FormContext formContext &&
+            if (MinecraftBlockScreen.Instance.FormContextOf(form) is FormContext formContext &&
                 formContext.FormState == FormState.Stretching &&
                 formContext.StretchingContext?.CursorContext == e.CursorContext)
                 return true;

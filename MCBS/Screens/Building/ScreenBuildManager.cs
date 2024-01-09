@@ -30,7 +30,7 @@ namespace MCBS.Screens.Building
 
         public void OnTick()
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             foreach (var context in _contexts.ToArray())
             {
                 switch (context.Value.BuildState)
@@ -42,14 +42,14 @@ namespace MCBS.Screens.Building
                     case ScreenBuildState.Completed:
                         _contexts.Remove(context.Key);
                         Screen screen = context.Value.Screen;
-                        if (MCOS.Instance.ScreenManager.Items.Count >= ScreenConfig.MaxCount)
+                        if (MinecraftBlockScreen.Instance.ScreenManager.Items.Count >= ScreenConfig.MaxCount)
                         {
                             sender.SendChatMessage(context.Key, $"[屏幕构建器] 当前屏幕数量达到最大数量限制{ScreenConfig.MaxCount}个，无法继续创建屏幕", TextColor.Red);
                             break;
                         }
                         try
                         {
-                            MCOS.Instance.BuildScreen(screen);
+                            MinecraftBlockScreen.Instance.BuildScreen(screen);
                             sender.SendChatMessage(context.Key, $"[屏幕构建器] 屏幕构建成功，位于: {screen.StartPosition}");
                         }
                         catch (Exception ex)
@@ -61,7 +61,7 @@ namespace MCBS.Screens.Building
                 }
             }
 
-            if (!Enable || MCOS.Instance.ScreenManager.Items.Count >= ScreenConfig.MaxCount)
+            if (!Enable || MinecraftBlockScreen.Instance.ScreenManager.Items.Count >= ScreenConfig.MaxCount)
                 return;
 
             Dictionary<string, Item> items = sender.GetAllPlayerSelectedItem();

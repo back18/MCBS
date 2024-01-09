@@ -39,7 +39,7 @@ namespace MCBS.SystemApplications.Services
             }
             else
             {
-                IRootForm? rootForm = MCOS.Instance?.FormContextOf(Form)?.RootForm;
+                IRootForm? rootForm = MinecraftBlockScreen.Instance?.FormContextOf(Form)?.RootForm;
                 if (rootForm is null)
                     return;
                 if (rootForm.ContainsForm(Form))

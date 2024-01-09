@@ -3,15 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
-using QuanLib.BDF;
-using SixLabors.ImageSharp;
-using FFMediaToolkit;
 using System.Collections.Concurrent;
 using log4net.Core;
-using System.Runtime.CompilerServices;
 using QuanLib.Core;
 using QuanLib.Minecraft.Instance;
 using MCBS.Screens;
@@ -32,17 +27,17 @@ using QuanLib.Minecraft.Directorys;
 
 namespace MCBS
 {
-    public class MCOS : UnmanagedRunnable
+    public class MinecraftBlockScreen : UnmanagedRunnable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        static MCOS()
+        static MinecraftBlockScreen()
         {
             _slock = new();
             IsLoaded = false;
         }
 
-        private MCOS(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(Logbuilder.Default)
+        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(Logbuilder.Default)
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
@@ -79,7 +74,7 @@ namespace MCBS
 
         public static bool IsLoaded { get; private set; }
 
-        public static MCOS Instance
+        public static MinecraftBlockScreen Instance
         {
             get
             {
@@ -88,7 +83,7 @@ namespace MCBS
                 return _Instance;
             }
         }
-        private static MCOS? _Instance;
+        private static MinecraftBlockScreen? _Instance;
 
         private readonly Stopwatch _syatemStopwatch;
 
@@ -141,7 +136,7 @@ namespace MCBS
 
         public ReadOnlyDictionary<string, ApplicationManifest> AppComponents { get; }
 
-        public static MCOS LoadInstance(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents)
+        public static MinecraftBlockScreen LoadInstance(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents)
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));

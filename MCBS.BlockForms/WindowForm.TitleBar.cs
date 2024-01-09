@@ -194,7 +194,7 @@ namespace MCBS.BlockForms
                 base.OnRightClick(sender, e);
 
                 if (_owner.IsSelected && _owner.AllowDrag)
-                    MCOS.Instance.FormContextOf(_owner)?.DragUpForm(e.CursorContext, e.Position);
+                    MinecraftBlockScreen.Instance.FormContextOf(_owner)?.DragUpForm(e.CursorContext, e.Position);
             }
 
             private void Close_Button_RightClick(Control sender, CursorEventArgs e)

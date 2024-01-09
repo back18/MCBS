@@ -42,7 +42,7 @@ namespace MCBS.Screens
         {
             List<CursorContext> cursors = new();
             Screen screen = _owner.Screen;
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             Dictionary<string, EntityPos> playerPositions = sender.GetAllPlayerPosition();
             int length = screen.Width > screen.Height ? screen.Width : screen.Height;
             BlockPos center = screen.CenterPosition;
@@ -70,7 +70,7 @@ namespace MCBS.Screens
             var order = playerDistances.OrderBy(item => item.distance);
             foreach (var (player, distance) in order)
             {
-                CursorContext cursorContext = MCOS.Instance.CursorManager.GetOrCreate(player);
+                CursorContext cursorContext = MinecraftBlockScreen.Instance.CursorManager.GetOrCreate(player);
 
                 lock (cursorContext)
                 {
@@ -101,7 +101,7 @@ namespace MCBS.Screens
         private bool HandleInput(CursorContext cursorContext, [MaybeNullWhen(false)] out CursorInputData result)
         {
             Screen screen = _owner.Screen;
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             CursorInputData oldData = cursorContext.NewInputData.Clone();
             CursorMode cursorMode = oldData.CursorMode;
             Point cursorPosition = oldData.CursorPosition;

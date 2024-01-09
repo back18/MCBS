@@ -36,7 +36,7 @@ namespace MCBS.ConsoleTerminal
                 {
                     break;
                 }
-                if (!MCOS.IsLoaded)
+                if (!MinecraftBlockScreen.IsLoaded)
                 {
                     Console.WriteLine("【MCBS控制台】系统未加载，控制台输入已被禁用");
                     continue;
@@ -85,7 +85,7 @@ namespace MCBS.ConsoleTerminal
                         Task.Run(() =>
                         {
                             string empty = new(' ', 32);
-                            int lines = MCOS.Instance.TimeAnalysisManager.Count + 1;
+                            int lines = MinecraftBlockScreen.Instance.TimeAnalysisManager.Count + 1;
                             for (int i = 0; i < lines; i++)
                                 Console.WriteLine(empty);
                             while (run)
@@ -94,7 +94,7 @@ namespace MCBS.ConsoleTerminal
                                 for (int i = 0; i < lines; i++)
                                     Console.WriteLine(empty);
                                 Console.CursorTop -= lines;
-                                Console.WriteLine(MCOS.Instance.TimeAnalysisManager.ToString());
+                                Console.WriteLine(MinecraftBlockScreen.Instance.TimeAnalysisManager.ToString());
                                 Thread.Sleep(50);
                             }
                         });
@@ -105,9 +105,9 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
                         break;
                     case "stop":
-                        if (!MCOS.IsLoaded || !MCOS.Instance.IsRunning)
+                        if (!MinecraftBlockScreen.IsLoaded || !MinecraftBlockScreen.Instance.IsRunning)
                             Console.WriteLine("【MCBS控制台】系统未开始运行，因此无法关闭");
-                        MCOS.Instance.Stop();
+                        MinecraftBlockScreen.Instance.Stop();
                         break;
                     default:
                         Console.WriteLine("【MCBS控制台】未知或不完整命令，输入“help”可查看可用命令列表");
@@ -155,7 +155,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetApplicationList()
         {
-            var list = MCOS.Instance.AppComponents;
+            var list = MinecraftBlockScreen.Instance.AppComponents;
             StringBuilder sb = new();
             sb.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
             foreach (var applicationManifest in list.Values)
@@ -166,7 +166,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetScreenList()
         {
-            var list = MCOS.Instance.ScreenManager.Items;
+            var list = MinecraftBlockScreen.Instance.ScreenManager.Items;
             StringBuilder sb = new();
             sb.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
             foreach (var context in list.Values)
@@ -177,7 +177,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string SetScreenBuilderEnable(bool enable)
         {
-            MCOS.Instance.ScreenBuildManager.Enable = enable;
+            MinecraftBlockScreen.Instance.ScreenBuildManager.Enable = enable;
 
             if (enable)
                 return "屏幕构造器已启用";
@@ -187,7 +187,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetProcessList()
         {
-            var list = MCOS.Instance.ProcessManager.Items;
+            var list = MinecraftBlockScreen.Instance.ProcessManager.Items;
             StringBuilder sb = new();
             sb.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
             foreach (var context in list.Values)
@@ -198,7 +198,7 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetFormList()
         {
-            var list = MCOS.Instance.FormManager.Items;
+            var list = MinecraftBlockScreen.Instance.FormManager.Items;
             StringBuilder sb = new();
             sb.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
             foreach (var context in list.Values)
@@ -209,7 +209,7 @@ namespace MCBS.ConsoleTerminal
 
         private static int GetFrameCount()
         {
-            return MCOS.Instance.SystemTick;
+            return MinecraftBlockScreen.Instance.SystemTick;
         }
 
         #endregion

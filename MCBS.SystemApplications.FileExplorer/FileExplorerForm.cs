@@ -201,9 +201,9 @@ namespace MCBS.SystemApplications.FileExplorer
         {
             FileInfo fileInfo = e.FileInfo;
             string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
-            if (ConfigManager.Registry.TryGetValue(extension, out var appID) && MCOS.Instance.AppComponents.TryGetValue(appID, out var applicationManifest))
+            if (ConfigManager.Registry.TryGetValue(extension, out var appID) && MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appID, out var applicationManifest))
             {
-                MCOS.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], this);
+                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], this);
             }
             else
             {
@@ -224,7 +224,7 @@ namespace MCBS.SystemApplications.FileExplorer
             {
                 if (appInfo is not null)
                 {
-                    MCOS.Instance.ProcessManager.StartProcess(appInfo, args, this);
+                    MinecraftBlockScreen.Instance.ProcessManager.StartProcess(appInfo, args, this);
                 }
             });
         }

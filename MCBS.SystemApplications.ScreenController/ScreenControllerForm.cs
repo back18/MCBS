@@ -34,7 +34,7 @@ namespace MCBS.SystemApplications.ScreenController
 
         private void Up_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            ScreenContext? screenContext = MCOS.Instance.ScreenContextOf(this);
+            ScreenContext? screenContext = MinecraftBlockScreen.Instance.ScreenContextOf(this);
             if (screenContext is null)
                 return;
 
@@ -45,7 +45,7 @@ namespace MCBS.SystemApplications.ScreenController
 
         private void Down_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            ScreenContext? screenContext = MCOS.Instance.ScreenContextOf(this);
+            ScreenContext? screenContext = MinecraftBlockScreen.Instance.ScreenContextOf(this);
             if (screenContext is null)
                 return;
 
@@ -56,7 +56,7 @@ namespace MCBS.SystemApplications.ScreenController
 
         private void Left_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            ScreenContext? screenContext = MCOS.Instance.ScreenContextOf(this);
+            ScreenContext? screenContext = MinecraftBlockScreen.Instance.ScreenContextOf(this);
             if (screenContext is null)
                 return;
 
@@ -67,7 +67,7 @@ namespace MCBS.SystemApplications.ScreenController
 
         private void Right_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            ScreenContext? screenContext = MCOS.Instance.ScreenContextOf(this);
+            ScreenContext? screenContext = MinecraftBlockScreen.Instance.ScreenContextOf(this);
             if (screenContext is null)
                 return;
 
@@ -78,7 +78,7 @@ namespace MCBS.SystemApplications.ScreenController
 
         private void Center_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            ScreenContext? screenContext = MCOS.Instance.ScreenContextOf(this);
+            ScreenContext? screenContext = MinecraftBlockScreen.Instance.ScreenContextOf(this);
             if (screenContext is null)
                 return;
 

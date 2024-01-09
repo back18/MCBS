@@ -17,7 +17,7 @@ namespace MCBS.BlockForms.DialogBox
             ArgumentNullException.ThrowIfNull(dialogBox, nameof(dialogBox));
             ArgumentNullException.ThrowIfNull(initiator, nameof(initiator));
 
-            MCOS os = MCOS.Instance;
+            MinecraftBlockScreen os = MinecraftBlockScreen.Instance;
             ProcessContext? process = os.ProcessContextOf(initiator);
             FormContext? context = os.FormContextOf(initiator);
             if (process is null || process.ProcessState == ProcessState.Stopped ||
@@ -38,7 +38,7 @@ namespace MCBS.BlockForms.DialogBox
             ArgumentNullException.ThrowIfNull(dialogBox, nameof(dialogBox));
             ArgumentNullException.ThrowIfNull(initiator, nameof(initiator));
 
-            MCOS os = MCOS.Instance;
+            MinecraftBlockScreen os = MinecraftBlockScreen.Instance;
             ProcessContext? process = os.ProcessContextOf(initiator);
             FormContext? context = os.FormContextOf(initiator);
             if (process is null || process.ProcessState == ProcessState.Stopped ||

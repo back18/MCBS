@@ -145,7 +145,7 @@ namespace MCBS.SystemApplications.Services
                 if (!_draggingCursors.ContainsKey(e.CursorContext.PlayerName))
                     return;
 
-                ScreenContext? screenContext = MCOS.Instance.ScreenContextOf(_owner);
+                ScreenContext? screenContext = MinecraftBlockScreen.Instance.ScreenContextOf(_owner);
                 if (screenContext is null)
                     return;
 
@@ -183,11 +183,11 @@ namespace MCBS.SystemApplications.Services
                 if (e.Control is not IForm form)
                     return;
 
-                var applicationManifest = MCOS.Instance.ProcessContextOf(form)?.Application;
+                var applicationManifest = MinecraftBlockScreen.Instance.ProcessContextOf(form)?.Application;
                 if (applicationManifest is null || applicationManifest.IsBackground)
                     return;
 
-                var context = MCOS.Instance.FormContextOf(form);
+                var context = MinecraftBlockScreen.Instance.FormContextOf(form);
                 if (context is null)
                     return;
 
@@ -210,7 +210,7 @@ namespace MCBS.SystemApplications.Services
                 if (e.Control is not IForm form)
                     return;
 
-                var context = MCOS.Instance.FormContextOf(form);
+                var context = MinecraftBlockScreen.Instance.FormContextOf(form);
                 var icon = TaskBarIconMenu_Control.TaskBarIconOf(form);
                 if (context is null || icon is null)
                     return;

@@ -24,7 +24,7 @@ namespace MCBS.SystemApplications.VideoPlayer
             }
             catch (Exception ex)
             {
-                IForm? initiator = MCOS.Instance.ProcessContextOf(this)?.Initiator;
+                IForm? initiator = MinecraftBlockScreen.Instance.ProcessContextOf(this)?.Initiator;
                 if (initiator is not null)
                     DialogBoxHelper.OpenMessageBox(initiator, "警告", $"由于FFmpeg加载失败，因此视频播放器无法使用，错误信息：\n{ex.GetType()}: {ex.Message}", MessageBoxButtons.OK);
                 return -1;

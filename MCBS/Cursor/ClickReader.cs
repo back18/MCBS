@@ -30,7 +30,7 @@ namespace MCBS.Cursor
             bool isLeftClick = false;
             bool isRightClick = false;
             DateTime now = DateTime.Now;
-            if ( MCOS.Instance.InteractionManager.Items.TryGetValue(PlayerName, out var interaction))
+            if ( MinecraftBlockScreen.Instance.InteractionManager.Items.TryGetValue(PlayerName, out var interaction))
             {
                 if (interaction.IsLeftClick)
                 {
@@ -45,7 +45,7 @@ namespace MCBS.Cursor
             }
             else
             {
-                if (MCOS.Instance.RightClickObjectiveManager.Query(PlayerName))
+                if (MinecraftBlockScreen.Instance.RightClickObjectiveManager.Query(PlayerName))
                 {
                     isRightClick = true;
                     RightClickTime = now;

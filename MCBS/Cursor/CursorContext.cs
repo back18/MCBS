@@ -34,7 +34,7 @@ namespace MCBS.Cursor
 
         public int LastActiveTick { get; private set; }
 
-        public bool Active => LastActiveTick == MCOS.Instance.SystemTick;
+        public bool Active => LastActiveTick == MinecraftBlockScreen.Instance.SystemTick;
 
         public bool Visible { get; set; }
 
@@ -57,9 +57,9 @@ namespace MCBS.Cursor
             ArgumentNullException.ThrowIfNull(screenContext, nameof(screenContext));
             ArgumentNullException.ThrowIfNull(inputData, nameof(inputData));
 
-            if (LastActiveTick != MCOS.Instance.SystemTick)
+            if (LastActiveTick != MinecraftBlockScreen.Instance.SystemTick)
             {
-                LastActiveTick = MCOS.Instance.SystemTick;
+                LastActiveTick = MinecraftBlockScreen.Instance.SystemTick;
                 OldInputData = NewInputData;
             }
 

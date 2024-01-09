@@ -61,19 +61,19 @@ namespace MCBS.Processes
 
         public ProcessContext StartProcess(string appId, IForm? initiator = null)
         {
-            ApplicationManifest applicationManifest = MCOS.Instance.AppComponents[appId];
+            ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents[appId];
             return StartProcess(applicationManifest, Array.Empty<string>(), initiator);
         }
 
         public ProcessContext StartProcess(string appId, string[] args, IForm? initiator = null)
         {
-            ApplicationManifest applicationManifest = MCOS.Instance.AppComponents[appId];
+            ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents[appId];
             return StartProcess(applicationManifest, args, initiator);
         }
 
         public ProcessContext StartServicesProcess(string[] args)
         {
-            ApplicationManifest applicationManifest = MCOS.Instance.AppComponents[ConfigManager.SystemConfig.ServicesAppID];
+            ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents[ConfigManager.SystemConfig.ServicesAppID];
             if (!typeof(IProgram).IsAssignableFrom(applicationManifest.MainClass))
                 throw new InvalidOperationException("无效的 IServicesProgram");
 

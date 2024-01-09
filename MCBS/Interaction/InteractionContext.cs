@@ -82,7 +82,7 @@ namespace MCBS.Interaction
 
         protected virtual bool HandleActiveState(InteractionState current, InteractionState next)
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
 
             if (!sender.TryGetEntityUuid(PlayerName, out var playerUUID))
                 return false;
@@ -143,13 +143,13 @@ namespace MCBS.Interaction
 
         public bool ConditionalEntity()
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             return sender.ConditionalEntity(PlayerUUID.ToString()) && sender.ConditionalEntity(EntityUUID.ToString());
         }
 
         public bool SyncPosition()
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             if (!sender.TryGetEntityPosition(PlayerUUID.ToString(), out var position))
                 return false;
 
@@ -161,7 +161,7 @@ namespace MCBS.Interaction
         {
             IsLeftClick = false;
             IsRightClick = false;
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             LeftRightKeys keys = sender.GetInteractionData(EntityUUID.ToString());
 
             if (keys.LeftClick.Timestamp > LeftClickTimestamp)
@@ -180,7 +180,7 @@ namespace MCBS.Interaction
 
         private void SaveJson()
         {
-            MCOS.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
+            MinecraftBlockScreen.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
         }
 
         private void DeleteJson()
@@ -202,12 +202,12 @@ namespace MCBS.Interaction
 
         private string GetSavePath()
         {
-            return MCOS.Instance.WorldDirectory.GetMcbsDataDirectory().InteractionsDir.Combine(PlayerName + ".json");
+            return MinecraftBlockScreen.Instance.WorldDirectory.GetMcbsDataDirectory().InteractionsDir.Combine(PlayerName + ".json");
         }
 
         protected override void DisposeUnmanaged()
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             BlockPos blockPos = Position.ToBlockPos();
             sender.AddForceloadChunk(blockPos);
             sender.KillEntity(EntityUUID.ToString());

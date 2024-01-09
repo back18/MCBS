@@ -925,7 +925,7 @@ namespace MCBS.BlockForms
             if (form is null)
                 return null;
 
-            return MCOS.Instance.ProcessContextOf(form);
+            return MinecraftBlockScreen.Instance.ProcessContextOf(form);
         }
 
         public ScreenContext? GetScreenContext()
@@ -934,7 +934,7 @@ namespace MCBS.BlockForms
             if (form is null)
                 return null;
 
-            return MCOS.Instance.ScreenContextOf(form);
+            return MinecraftBlockScreen.Instance.ScreenContextOf(form);
         }
 
         public Size GetFormContainerSize()
@@ -946,7 +946,7 @@ namespace MCBS.BlockForms
             Form? form = GetForm();
             if (form is not null)
             {
-                IForm? initiator = MCOS.Instance.ProcessContextOf(form)?.Initiator;
+                IForm? initiator = MinecraftBlockScreen.Instance.ProcessContextOf(form)?.Initiator;
                 if (initiator is not null)
                 {
                     if (initiator is IRootForm rootForm2)
@@ -966,14 +966,14 @@ namespace MCBS.BlockForms
             Form? form = GetForm();
             if (form is not null)
             {
-                Screen? screen = MCOS.Instance.ScreenContextOf(form)?.Screen;
+                Screen? screen = MinecraftBlockScreen.Instance.ScreenContextOf(form)?.Screen;
                 if (screen is not null)
                     return screen;
 
-                IForm? initiator = MCOS.Instance.ProcessContextOf(form)?.Initiator;
+                IForm? initiator = MinecraftBlockScreen.Instance.ProcessContextOf(form)?.Initiator;
                 if (initiator is not null)
                 {
-                    screen = MCOS.Instance.ScreenContextOf(initiator)?.Screen;
+                    screen = MinecraftBlockScreen.Instance.ScreenContextOf(initiator)?.Screen;
                     if (screen is not null)
                         return screen;
                 }

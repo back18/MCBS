@@ -26,7 +26,7 @@ namespace MCBS.RightClickObjective
 
         public void OnTick()
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             int score = sender.GetPlayerScoreboard(PlayerName, ConfigManager.ScreenConfig.RightClickObjective);
             if (score > 0)
             {

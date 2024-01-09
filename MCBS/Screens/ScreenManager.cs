@@ -40,7 +40,7 @@ namespace MCBS.Screens
 
         public void Initialize()
         {
-            ScreensDirectory directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.ScreensDir ?? throw new InvalidOperationException("无法定位游戏存档文件夹");
+            ScreensDirectory directory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.ScreensDir ?? throw new InvalidOperationException("无法定位游戏存档文件夹");
             if (!directory.Exists())
                 return;
 
@@ -58,7 +58,7 @@ namespace MCBS.Screens
                     string name = Path.GetFileNameWithoutExtension(file);
                     Guid guid = Guid.Parse(name);
 
-                    MCOS.Instance.BuildScreen(screen, guid);
+                    MinecraftBlockScreen.Instance.BuildScreen(screen, guid);
                 }
                 catch (Exception ex)
                 {
@@ -88,7 +88,7 @@ namespace MCBS.Screens
                 {
                     Items.TryRemove(item.Key, out _);
                     if (item.Value.IsRestarting)
-                        MCOS.Instance.BuildScreen(item.Value.GetSubScreen(), item.Key);
+                        MinecraftBlockScreen.Instance.BuildScreen(item.Value.GetSubScreen(), item.Key);
                 }
             }
         }

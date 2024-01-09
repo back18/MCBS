@@ -29,7 +29,7 @@ namespace MCBS.Screens.Building
 
         public void OnTick()
         {
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
 
             if (BuildState != ScreenBuildState.Active)
             {
@@ -88,7 +88,7 @@ namespace MCBS.Screens.Building
             sender.ShowTitle(PlayerName, 0, 10, 10, "屏幕构建器");
             sender.ShowSubTitle(PlayerName, 0, 10, 10, $"方向:{playerFacing.ToChineseString()} 位置:{anchorPosition} 尺寸:[{ScreenConfig.InitialWidth}, {ScreenConfig.InitialHeight}]");
 
-            if (MCOS.Instance.CursorManager.GetOrCreate(PlayerName).ClickReader.ReadClick().IsRightClick)
+            if (MinecraftBlockScreen.Instance.CursorManager.GetOrCreate(PlayerName).ClickReader.ReadClick().IsRightClick)
             {
                 BuildState = ScreenBuildState.Completed;
                 return;

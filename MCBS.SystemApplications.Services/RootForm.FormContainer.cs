@@ -57,7 +57,7 @@ namespace MCBS.SystemApplications.Services
                 if (firstSelectedForm is null)
                     return;
 
-                if (MCOS.Instance.FormContextOf(firstSelectedForm) is FormContext formContext &&
+                if (MinecraftBlockScreen.Instance.FormContextOf(firstSelectedForm) is FormContext formContext &&
                     formContext.FormState == FormState.Stretching &&
                     formContext.StretchingContext?.CursorContext != e.CursorContext)
                     return;
@@ -71,7 +71,7 @@ namespace MCBS.SystemApplications.Services
                 {
                     if (hoverControl.Control is IForm hoverForm)
                     {
-                        FormContext? hoverFormContext = MCOS.Instance.FormContextOf(hoverForm);
+                        FormContext? hoverFormContext = MinecraftBlockScreen.Instance.FormContextOf(hoverForm);
                         if (hoverFormContext is not null && hoverFormContext.FormState == FormState.Dragging)
                         {
                             hoverFormContext.DragDownForm(_owner);
@@ -90,7 +90,7 @@ namespace MCBS.SystemApplications.Services
                     return _owner.TrySwitchSelectedForm(firstHoverForm);
                 }
 
-                FormContext? formContext = MCOS.Instance.FormContextOf(firstSelectedForm);
+                FormContext? formContext = MinecraftBlockScreen.Instance.FormContextOf(firstSelectedForm);
                 if (formContext is null)
                     return firstSelectedForm.HandleRightClick(e.Clone(firstSelectedForm.ParentPos2ChildPos));
 

@@ -43,7 +43,7 @@ namespace MCBS.Interaction
 
         public void Initialize()
         {
-            InteractionsDirectory? directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.InteractionsDir;
+            InteractionsDirectory? directory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.InteractionsDir;
             if (directory is null)
                 return;
             directory.CreateIfNotExists();
@@ -56,7 +56,7 @@ namespace MCBS.Interaction
                     InteractionContext.Model model = JsonConvert.DeserializeObject<InteractionContext.Model>(File.ReadAllText(file)) ?? throw new FormatException();
                     EntityPos position = new(model.Position[0], model.Position[1], model.Position[2]);
                     BlockPos blockPos = position.ToBlockPos();
-                    CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+                    CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
                     sender.AddForceloadChunk(blockPos);
                     sender.KillEntity(model.EntityUUID);
                     sender.RemoveForceloadChunk(blockPos);

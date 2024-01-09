@@ -326,7 +326,7 @@ namespace MCBS.SystemApplications.Album
 
         private void SetAsWallpaper_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            foreach (var context in MCOS.Instance.FormManager.Items.Values)
+            foreach (var context in MinecraftBlockScreen.Instance.FormManager.Items.Values)
             {
                 //if (context.Form is DesktopForm desktop)
                 //    desktop.SetAsWallpaper(ScalablePictureBox.ImageFrame.Image);

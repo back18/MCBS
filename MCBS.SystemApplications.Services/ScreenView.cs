@@ -49,7 +49,7 @@ namespace MCBS.SystemApplications.Services
             if (CursorUtil.IsDragForming(e))
                 return;
 
-            if (MCOS.Instance.FormContextOf(RootForm_Control) is FormContext formContext &&
+            if (MinecraftBlockScreen.Instance.FormContextOf(RootForm_Control) is FormContext formContext &&
                 formContext.FormState == FormState.Stretching &&
                 formContext.StretchingContext?.CursorContext != e.CursorContext)
                 return;
@@ -59,7 +59,7 @@ namespace MCBS.SystemApplications.Services
 
         public override bool HandleRightClick(CursorEventArgs e)
         {
-            FormContext? formContext = MCOS.Instance.FormContextOf(RootForm_Control);
+            FormContext? formContext = MinecraftBlockScreen.Instance.FormContextOf(RootForm_Control);
             if (formContext is null)
                 return false;
 
@@ -112,7 +112,7 @@ namespace MCBS.SystemApplications.Services
                 return;
 
             _rectangle = rectangle;
-            MCOS.Instance.ScreenContextOf(RootForm_Control)?.ScreenOutputHandler.UpdateBuffer();
+            MinecraftBlockScreen.Instance.ScreenContextOf(RootForm_Control)?.ScreenOutputHandler.UpdateBuffer();
         }
     }
 }

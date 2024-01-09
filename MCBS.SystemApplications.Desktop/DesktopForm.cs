@@ -55,7 +55,7 @@ namespace MCBS.SystemApplications.Desktop
         public override void ActiveLayoutAll()
         {
             Icons_ScrollablePanel.ChildControls.Clear();
-            foreach (var applicationManifest in MCOS.Instance.AppComponents.Values)
+            foreach (var applicationManifest in MinecraftBlockScreen.Instance.AppComponents.Values)
             {
                 if (!applicationManifest.IsBackground)
                     Icons_ScrollablePanel.ChildControls.Add(new DesktopIcon(applicationManifest));

@@ -47,7 +47,7 @@ namespace MCBS.Screens
             _buffers[offset] = newFrame;
             if (blocks.Count > 0)
             {
-                MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
+                MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
             }
         }
 
@@ -60,7 +60,7 @@ namespace MCBS.Screens
             _buffers[offset] = newFrame;
             if (blocks.Count > 0)
             {
-                await MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
+                await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
             }
         }
 
@@ -98,7 +98,7 @@ namespace MCBS.Screens
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
 
-            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             Screen screen = _owner.Screen;
             for (int y = 0; y < screen.Height; y++)
                 for (int x = 0; x < screen.Width; x++)

@@ -117,7 +117,7 @@ namespace MCBS.BlockForms
             Height = maximizeSize.Height;
             InvokeExternalCursorMove = true;
 
-            ApplicationManifest? applicationManifest = MCOS.Instance.ProcessContextOf(this)?.Application;
+            ApplicationManifest? applicationManifest = MinecraftBlockScreen.Instance.ProcessContextOf(this)?.Application;
             if (applicationManifest is not null)
                 Text = applicationManifest.Name;
         }
@@ -219,7 +219,7 @@ namespace MCBS.BlockForms
 
         public virtual Image<Rgba32> GetIcon()
         {
-            ApplicationManifest? applicationManifest = MCOS.Instance.ProcessContextOf(this)?.Application;
+            ApplicationManifest? applicationManifest = MinecraftBlockScreen.Instance.ProcessContextOf(this)?.Application;
             if (applicationManifest is not null)
                 return applicationManifest.GetIcon();
             else
@@ -283,7 +283,7 @@ namespace MCBS.BlockForms
 
         public FormContext? GetFormContext()
         {
-            return MCOS.Instance.FormContextOf(this);
+            return MinecraftBlockScreen.Instance.FormContextOf(this);
         }
 
         public static string GetCursorStyleType(Direction borders)
