@@ -8,11 +8,7 @@ namespace MCBS.Screens.Building
 {
     public enum ScreenBuildState
     {
-        ReadStartPosition,
-
-        ReadEndPosition,
-
-        Timedout,
+        Active,
 
         Canceled,
 

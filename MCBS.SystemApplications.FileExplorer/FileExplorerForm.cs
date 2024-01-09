@@ -203,11 +203,11 @@ namespace MCBS.SystemApplications.FileExplorer
             string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
             if (ConfigManager.Registry.TryGetValue(extension, out var appID) && MCOS.Instance.AppComponents.TryGetValue(appID, out var applicationManifest))
             {
-                MCOS.Instance.RunApplication(applicationManifest, new string[] { fileInfo.FullName }, this);
+                MCOS.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], this);
             }
             else
             {
-                SelectApplication(new string[] { fileInfo.FullName });
+                SelectApplication([fileInfo.FullName]);
             }
         }
 
@@ -224,7 +224,7 @@ namespace MCBS.SystemApplications.FileExplorer
             {
                 if (appInfo is not null)
                 {
-                    MCOS.Instance.RunApplication(appInfo, args, this);
+                    MCOS.Instance.ProcessManager.StartProcess(appInfo, args, this);
                 }
             });
         }

@@ -1,4 +1,5 @@
-﻿using log4net.Core;
+﻿using FFmpeg.AutoGen;
+using log4net.Core;
 using MCBS.Application;
 using MCBS.Forms;
 using MCBS.Logging;
@@ -27,7 +28,8 @@ namespace MCBS.Processes
             Application = applicationManifest;
             Program = Application.CreateApplicationInstance();
             Initiator = initiator;
-            ID = -1;
+
+            GUID = Guid.NewGuid();
             StateManager = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
             {
                 new(ProcessState.Unstarted, Array.Empty<ProcessState>(), HandleUnstartedState),
@@ -38,7 +40,7 @@ namespace MCBS.Processes
 
         private readonly string[] _args;
 
-        public int ID { get; internal set; }
+        public Guid GUID { get; }
 
         public StateManager<ProcessState> StateManager { get; }
 
@@ -73,7 +75,7 @@ namespace MCBS.Processes
 
         protected virtual bool HandleActiveState(ProcessState current, ProcessState next)
         {
-            Start($"{Application.ID} AppThread #{ID}");
+            Start($"{Application.ID} AppThread");
             return true;
         }
 
@@ -104,11 +106,11 @@ namespace MCBS.Processes
             string args = _args.Length == 0 ? "empty" : string.Join(", ", _args.Select(arg => $"\"{arg}\""));
             FormContext ? formContext = Initiator is null ? null : MCOS.Instance.FormContextOf(Initiator);
             if (formContext is null)
-                LOGGER.Info($"进程({Application.ID} #{ID})已启动，启动参数为 {args}");
+                LOGGER.Info($"进程({Application.ID})已启动，启动参数为 {args}");
             else
-                LOGGER.Info($"进程({Application.ID} #{ID})已被窗体({formContext.Form.Text} #{formContext.ID})启动，启动参数为 {args}");
+                LOGGER.Info($"进程({Application.ID})已被窗体({formContext.Form.Text})启动，启动参数为 {args}");
             object? result = Program.Main(_args);
-            LOGGER.Info($"进程({Application.ID} #{ID})已停止，返回值为 {result ?? "null"}");
+            LOGGER.Info($"进程({Application.ID})已停止，返回值为 {result ?? "null"}");
         }
 
         public ProcessContext StartProcess()
@@ -120,11 +122,6 @@ namespace MCBS.Processes
         public void StopProcess()
         {
             StateManager.AddNextState(ProcessState.Stopped);
-        }
-
-        public override string ToString()
-        {
-            return $"State={ProcessState}, PID={ID}, AppID={Application.ID}";
         }
     }
 }

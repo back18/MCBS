@@ -15,35 +15,34 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using MCBS.Events;
+using System.ComponentModel.DataAnnotations;
 
 namespace MCBS.Screens
 {
     /// <summary>
     /// 屏幕
     /// </summary>
-    public class Screen : IPlane, IScreenOptions
+    public class Screen : IPlane, IDataModelOwner<Screen, Screen.DataModel>
     {
-        public Screen(IScreenOptions options) : this(options.StartPosition, options.Width, options.Height, options.XFacing, options.YFacing)
+        public Screen(DataModel model)
         {
+            NullValidator.ValidateObject(model, nameof(model));
+
+            StartPosition = new(model.StartPosition[0], model.StartPosition[1], model.StartPosition[2]);
+            Width = model.Width;
+            Height = model.Height;
+            XFacing = (Facing)model.XFacing;
+            YFacing = (Facing)model.YFacing;
         }
 
         public Screen(BlockPos startPosition, int width, int height, Facing xFacing, Facing yFacing)
         {
-            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, startPosition.Y, nameof(startPosition) + ".Y");
-            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, width, nameof(width));
-            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinLength, ScreenConfig.MaxLength, height, nameof(height));
-
             StartPosition = startPosition;
             Width = width;
             Height = height;
             XFacing = xFacing;
             YFacing = yFacing;
-            _chunks = [];
-
-            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, EndPosition.Y, nameof(EndPosition) + ".Y");
         }
-
-        private readonly List<ChunkPos> _chunks;
 
         public BlockPos StartPosition { get; internal set; }
 
@@ -140,66 +139,37 @@ namespace MCBS.Screens
         public void Translate(int dx, int dy)
         {
             BlockPos position = StartPosition;
-            position = Offset(position, XFacing, dx);
-            position = Offset(position, YFacing, dy);
+            position = position.OffsetPosition(XFacing, dx);
+            position = position.OffsetPosition(YFacing, dy);
             StartPosition = position;
         }
 
         public void OffsetPlaneCoordinate(int offset)
         {
-            StartPosition = Offset(StartPosition, NormalFacing, offset);
+            StartPosition = StartPosition.OffsetPosition(NormalFacing, offset);
         }
 
-        private static BlockPos Offset(BlockPos position, Facing facing, int offset)
+        public bool InAltitudeRange(int min, int max)
         {
-            switch (facing)
-            {
-                case Facing.Xp:
-                    position.X += offset;
-                    break;
-                case Facing.Xm:
-                    position.X -= offset;
-                    break;
-                case Facing.Yp:
-                    position.Y += offset;
-                    break;
-                case Facing.Ym:
-                    position.Y -= offset;
-                    break;
-                case Facing.Zp:
-                    position.Z += offset;
-                    break;
-                case Facing.Zm:
-                    position.Z -= offset;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
+            BlockPos position1 = ScreenPos2WorldPos(new(0, 0));
+            BlockPos position2 = ScreenPos2WorldPos(new(Width - 1, 0));
+            BlockPos position3 = ScreenPos2WorldPos(new(0, Height - 1));
+            BlockPos position4 = ScreenPos2WorldPos(new(Width - 1, Height - 1));
 
-            return position;
+            return
+                CheckHelper.Range(min, max, position1.Y) &&
+                CheckHelper.Range(min, max, position2.Y) &&
+                CheckHelper.Range(min, max, position3.Y) &&
+                CheckHelper.Range(min, max, position4.Y);
         }
 
-        public void LoadScreenChunks()
+        public Screen SubScreen(Rectangle rectangle) => SubScreen(rectangle.Location, rectangle.Size);
+
+        public Screen SubScreen(Point startPosition, Size size) => SubScreen(startPosition, size.Width, size.Height);
+
+        public Screen SubScreen(Point startPosition, int width, int height)
         {
-            for (int x = 0; x < Width; x++)
-                for (int y = 0; y < Height; y++)
-                {
-                    var blockPos = ScreenPos2WorldPos(new(x, y));
-                    ChunkPos chunkPos = MinecraftUtil.BlockPos2ChunkPos(blockPos);
-                    if (!_chunks.Contains(chunkPos))
-                        _chunks.Add(chunkPos);
-                }
-
-            foreach (var chunk in _chunks)
-                MCOS.Instance.MinecraftInstance.CommandSender.AddForceloadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
-        }
-
-        public void UnloadScreenChunks()
-        {
-            foreach (var chunk in _chunks)
-                MCOS.Instance.MinecraftInstance.CommandSender.RemoveForceloadChunk(MinecraftUtil.ChunkPos2BlockPos(chunk));
-
-            _chunks.Clear();
+            return new(ScreenPos2WorldPos(startPosition), width, height, XFacing, YFacing);
         }
 
         public BlockPos ScreenPos2WorldPos(Point position, int offset = 0)
@@ -347,11 +317,25 @@ namespace MCBS.Screens
             return $"StartPosition={StartPosition}, Width={Width}, Height={Height}, XFacing={XFacing}, YFacing={YFacing}";
         }
 
+        public DataModel ToDataModel()
+        {
+            return new()
+            {
+                StartPosition = [StartPosition.X, StartPosition.Y, StartPosition.Z],
+                Width = Width,
+                Height = Height,
+                XFacing = (int)XFacing,
+                YFacing = (int)YFacing
+            };
+        }
+
+        public static Screen FromDataModel(DataModel model)
+        {
+            return new(model);
+        }
+
         public static Screen CreateScreen(BlockPos startPosition, BlockPos endPosition, Facing normalFacing)
         {
-            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, startPosition.Y, nameof(startPosition) + ".Y");
-            ThrowHelper.ArgumentOutOfRange(ScreenConfig.MinY, ScreenConfig.MaxY, endPosition.Y, nameof(endPosition) + ".Y");
-
             Facing xFacing, yFacing;
             int width, height;
             if (startPosition.X == endPosition.X && (normalFacing == Facing.Xp || normalFacing == Facing.Xm))
@@ -590,97 +574,63 @@ namespace MCBS.Screens
             return new(startPosition, width, height, xFacing, yFacing);
         }
 
-        //public static bool Replace(Screen? oldScreen, Screen newScreen, bool check = false)
-        //{
-        //    ArgumentNullException.ThrowIfNull(newScreen, nameof(newScreen));
+        public class DataModel : IDataModel<DataModel>
+        {
+            public DataModel()
+            {
+                StartPosition = [0, 143, 0];
+                Width = 256;
+                Height = 144;
+                XFacing = -1;
+                YFacing = -2;
+            }
 
-        //    if (oldScreen is null || oldScreen.OutputHandler.LastFrame is null)
-        //    {
-        //        return newScreen.Fill(check);
-        //    }
+            [Required(ErrorMessage = "配置项缺失")]
+            [Length(3, 3, ErrorMessage = "数组的长度应该为3")]
+            public int[] StartPosition { get; set; }
 
-        //    if (oldScreen.PlaneAxis != newScreen.PlaneAxis || oldScreen.PlaneCoordinate != newScreen.PlaneCoordinate)
-        //    {
-        //        if (!newScreen.Fill(check))
-        //            return false;
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            public int Width { get; set; }
 
-        //        oldScreen.Clear();
-        //        return true;
-        //    }
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            public int Height { get; set; }
 
-        //    CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-        //    if (oldScreen.DefaultBackgroundBlcokID == newScreen.DefaultBackgroundBlcokID &&
-        //        oldScreen.StartPosition == oldScreen.StartPosition &&
-        //        oldScreen.XFacing == newScreen.XFacing &&
-        //        oldScreen.YFacing == newScreen.YFacing)
-        //    {
-        //        if (newScreen.Width == oldScreen.Width && newScreen.Height == oldScreen.Height)
-        //            return true;
+            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = "值只能为 1, -1, 2, -2, 3, -3")]
+            public int XFacing { get; set; }
 
-        //        BlockFrame? oldFrame = null;
-        //        if (newScreen.OutputHandler.LastFrame is null)
-        //            newScreen.OutputHandler.LastFrame = new HashBlockFrame(newScreen.Width, newScreen.Height, newScreen.DefaultBackgroundBlcokID);
+            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = "值只能为 1, -1, 2, -2, 3, -3")]
+            public int YFacing { get; set; }
 
-        //        if (newScreen.Width > oldScreen.Width)
-        //        {
-        //            if (check)
-        //            {
-        //                for (int x = oldScreen.Width; x < newScreen.Width; x++)
-        //                    for (int y = 0; y < newScreen.Height; y++)
-        //                    {
-        //                        if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
-        //                            return false;
-        //                    }
-        //            }
+            public static DataModel CreateDefault()
+            {
+                return new();
+            }
 
-        //            for (int x = oldScreen.Width; x < newScreen.Width; x++)
-        //                for (int y = 0; y < newScreen.Height; y++)
-        //                    newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
-        //        }
-        //        else if (newScreen.Width < oldScreen.Width)
-        //        {
-        //            oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
-        //            for (int x = newScreen.Width; x < oldScreen.Width; x++)
-        //                for (int y = 0; y < oldScreen.Height; y++)
-        //                    oldFrame[x, y] = AIR_BLOCK;
-        //        }
+            public static void Validate(DataModel model, string name)
+            {
+                ArgumentNullException.ThrowIfNull(model, nameof(model));
+                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
-        //        if (newScreen.Height > oldScreen.Height)
-        //        {
-        //            if (check)
-        //            {
-        //                for (int y = oldScreen.Height; y < newScreen.Height; y++)
-        //                    for (int x = 0; x < newScreen.Width; x++)
-        //                    {
+                List<ValidationResult> results = new();
+                if (!Validator.TryValidateObject(model, new(model), results, true))
+                {
+                    StringBuilder message = new();
+                    message.AppendLine();
+                    int count = 0;
+                    foreach (var result in results)
+                    {
+                        string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                        message.AppendLine($"[{memberName}]: {result.ErrorMessage}");
+                        count++;
+                    }
 
-        //                        if (!sender.ConditionalBlock(newScreen.ScreenPos2WorldPos(new(x, y)), AIR_BLOCK))
-        //                            return false;
-        //                    }
-        //            }
-
-        //            for (int y = oldScreen.Height; y < newScreen.Height; y++)
-        //                for (int x = 0; x < newScreen.Width; x++)
-        //                    newScreen.OutputHandler.LastFrame[x, y] = AIR_BLOCK;
-        //        }
-        //        else if (newScreen.Height < oldScreen.Height)
-        //        {
-        //            oldFrame ??= oldScreen.OutputHandler.LastFrame.Clone();
-        //            for (int y = newScreen.Height; y < oldScreen.Height; y++)
-        //                for (int x = 0; x < oldScreen.Width; x++)
-        //                    oldFrame[x, y] = AIR_BLOCK;
-        //        }
-
-        //        newScreen.Fill();
-        //        if (oldFrame is not null)
-        //            oldScreen.OutputHandler.HandleOutput(oldFrame);
-
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        oldScreen.Clear();
-        //        return newScreen.Fill(check);
-        //    }
-        //}
+                    if (count > 0)
+                    {
+                        message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
+                        throw new ValidationException(message.ToString().TrimEnd());
+                    }
+                }
+            }
+        }
     }
 }

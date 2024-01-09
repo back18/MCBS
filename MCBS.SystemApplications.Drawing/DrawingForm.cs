@@ -264,7 +264,7 @@ namespace MCBS.SystemApplications.Drawing
                 return;
             dir = Path.Combine(dir, "Saves");
 
-            MCOS.Instance.RunApplication("FileExplorer", new string[] { dir }, this);
+            MCOS.Instance.ProcessManager.StartProcess("System.FileExplorer", [dir], this);
         }
 
         private void Save_Button_RightClick(Control sender, CursorEventArgs e)

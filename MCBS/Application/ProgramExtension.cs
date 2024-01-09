@@ -14,8 +14,8 @@ namespace MCBS.Application
         {
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            FormContext context = MCOS.Instance.FormManager.Items.Add(source, form).LoadForm();
-            context.WaitForClose();
+            FormContext formContext = MCOS.Instance.FormManager.LoadForm(source, form);
+            formContext.WaitForClose();
             return form.ReturnValue;
         }
 
@@ -23,8 +23,8 @@ namespace MCBS.Application
         {
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            FormContext context = MCOS.Instance.FormManager.Items.Add(source, form).LoadForm();
-            await context.WaitForCloseAsync();
+            FormContext formContext = MCOS.Instance.FormManager.LoadForm(source, form);
+            await formContext.WaitForCloseAsync();
             return form.ReturnValue;
         }
 

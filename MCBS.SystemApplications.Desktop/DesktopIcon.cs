@@ -105,7 +105,7 @@ namespace MCBS.SystemApplications.Desktop
         {
             base.OnDoubleRightClick(sender, e);
 
-            MCOS.Instance.RunApplication(_applicationManifest, GetForm());
+            MCOS.Instance.ProcessManager.StartProcess(_applicationManifest, GetForm());
             ParentContainer?.AsControlCollection<Control>()?.ClearSelecteds();
         }
     }

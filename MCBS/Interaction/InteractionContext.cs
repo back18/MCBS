@@ -1,8 +1,11 @@
-﻿using log4net.Core;
+﻿using FFmpeg.AutoGen;
+using log4net.Core;
 using MCBS.Directorys;
 using MCBS.Logging;
 using MCBS.State;
 using Newtonsoft.Json;
+using QuanLib.Core;
+using QuanLib.IO;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
@@ -17,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Interaction
 {
-    public class InteractionContext : ITickable, IDisposable
+    public class InteractionContext : UnmanagedBase, ITickable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
         private const string INTERACTION_ID = "minecraft:interaction";
@@ -44,22 +47,8 @@ namespace MCBS.Interaction
                 new(InteractionState.Closed, new InteractionState[] { InteractionState.Active, InteractionState.Offline }, HandleClosedState)
             });
 
-            _lock = new();
-            isDisposed = false;
-            _directory = MCOS.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.InteractionsDir ?? throw new InvalidOperationException("找不到交互实体数据文件夹");
-            _file = _directory.Combine(PlayerName + ".json");
-            _task = SaveJsonAsync();
+            SaveJson();
         }
-
-        private readonly object _lock;
-
-        private bool isDisposed;
-
-        private readonly InteractionsDirectory _directory;
-
-        private readonly string _file;
-
-        private Task _task;
 
         public StateManager<InteractionState> StateManager { get; }
 
@@ -139,7 +128,7 @@ namespace MCBS.Interaction
 
             ReadLeftRightKeys();
             SyncPosition();
-            _task = SaveJsonAsync();
+            SaveJson();
         }
 
         public void CreateInteraction()
@@ -189,56 +178,47 @@ namespace MCBS.Interaction
             }
         }
 
-        private async Task SaveJsonAsync()
+        private void SaveJson()
         {
-            _task?.Wait();
-            _directory.CreateIfNotExists();
-            await File.WriteAllTextAsync(_file, JsonConvert.SerializeObject(ToJson()));
+            MCOS.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
         }
 
-        private void DaleteJson()
+        private void DeleteJson()
         {
-            if (File.Exists(_file))
-                File.Delete(_file);
+            string savePath = GetSavePath();
+            if (File.Exists(savePath))
+                File.Delete(savePath);
         }
 
-        private Json ToJson()
+        private string ToJson()
         {
-            return new(PlayerUUID.ToString(), EntityUUID.ToString(), new double[] { Position.X, Position.Y, Position.Z });
+            return JsonConvert.SerializeObject(ToModel());
         }
 
-        protected void Dispose(bool disposing)
+        private Model ToModel()
         {
-            lock (_lock)
-            {
-                if (isDisposed || !disposing)
-                    return;
-
-                CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
-                BlockPos blockPos = Position.ToBlockPos();
-                sender.AddForceloadChunk(blockPos);
-                sender.KillEntity(EntityUUID.ToString());
-                sender.RemoveForceloadChunk(blockPos);
-                DaleteJson();
-                isDisposed = true;
-                LOGGER.Info($"交互实体({EntityUUID})已和玩家({PlayerUUID})解绑");
-            }
+            return new(PlayerUUID.ToString(), EntityUUID.ToString(), [Position.X, Position.Y, Position.Z]);
         }
 
-        public void Dispose()
+        private string GetSavePath()
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            return MCOS.Instance.WorldDirectory.GetMcbsDataDirectory().InteractionsDir.Combine(PlayerName + ".json");
         }
 
-        ~InteractionContext()
+        protected override void DisposeUnmanaged()
         {
-            Dispose(disposing: false);
+            CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
+            BlockPos blockPos = Position.ToBlockPos();
+            sender.AddForceloadChunk(blockPos);
+            sender.KillEntity(EntityUUID.ToString());
+            sender.RemoveForceloadChunk(blockPos);
+            DeleteJson();
+            LOGGER.Info($"交互实体({EntityUUID})已和玩家({PlayerUUID})解绑");
         }
 
-        public class Json
+        public class Model
         {
-            public Json(string playerUUID, string entityUUID, double[] position)
+            public Model(string playerUUID, string entityUUID, double[] position)
             {
                 ArgumentException.ThrowIfNullOrEmpty(playerUUID, nameof(playerUUID));
                 ArgumentException.ThrowIfNullOrEmpty(entityUUID, nameof(entityUUID));

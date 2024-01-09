@@ -60,7 +60,7 @@ namespace MCBS.Forms
                 }
             }
 
-            ID = -1;
+            GUID = Guid.NewGuid();
             StateManager = new(FormState.NotLoaded, new StateContext<FormState>[]
             {
                 new(FormState.NotLoaded, Array.Empty<FormState>(), HandleNotLoadedState),
@@ -79,7 +79,7 @@ namespace MCBS.Forms
 
         private readonly Task _closeTask;
 
-        public int ID { get; internal set; }
+        public Guid GUID { get; }
 
         public StateManager<FormState> StateManager { get; }
 
@@ -110,9 +110,9 @@ namespace MCBS.Forms
                     Form.HandleFormLoad(EventArgs.Empty);
                     ProcessContext? processContext = MCOS.Instance.ProcessContextOf(Program);
                     if (processContext is null)
-                        LOGGER.Info($"窗体({Form.Text} #{ID})已打开");
+                        LOGGER.Info($"窗体({Form.Text})已打开");
                     else
-                        LOGGER.Info($"窗体({Form.Text} #{ID})已被进程({processContext.Application.ID} #{processContext.ID})打开，位于{MCOS.Instance.ScreenContextOf(Form)?.ID ?? -1}号屏幕");
+                        LOGGER.Info($"窗体({Form.Text})已被进程({processContext.Application.ID})打开，位于屏幕({MCOS.Instance.ScreenContextOf(Form)?.Screen.StartPosition})");
                     return true;
                 case FormState.Minimize:
                     if (Form is IRootForm)
@@ -120,7 +120,7 @@ namespace MCBS.Forms
                     if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormUnminimize(EventArgs.Empty);
-                    LOGGER.Info($"窗体({Form.Text} #{ID})已取消最小化");
+                    LOGGER.Info($"窗体({Form.Text})已取消最小化");
                     return true;
                 case FormState.Dragging:
                     if (DraggingContext is null)
@@ -135,7 +135,7 @@ namespace MCBS.Forms
                         position.X - offset.X - RootForm.ClientLocation.X - RootForm.BorderWidth - Form.BorderWidth,
                         position.Y - offset.Y - RootForm.ClientLocation.Y - RootForm.BorderWidth - Form.BorderWidth);
                     DraggingContext = null;
-                    LOGGER.Info($"窗体({Form.Text} #{ID})已被拖动到{MCOS.Instance.ScreenContextOf(RootForm)?.ID ?? -1}号屏幕");
+                    LOGGER.Info($"窗体({Form.Text})已被拖动到屏幕({MCOS.Instance.ScreenContextOf(RootForm)?.Screen.StartPosition})");
                     return true;
                 case FormState.Stretching:
                     if (StretchingContext is null)
@@ -154,7 +154,7 @@ namespace MCBS.Forms
             if (RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
             Form.HandleFormMinimize(EventArgs.Empty);
-            LOGGER.Info($"窗体({Form.Text} #{ID})已最小化");
+            LOGGER.Info($"窗体({Form.Text})已最小化");
             return true;
         }
         protected virtual bool HandleDraggingState(FormState current, FormState next)
@@ -167,7 +167,7 @@ namespace MCBS.Forms
                 return false;
             if (RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
-            LOGGER.Info($"窗体({Form.Text} #{ID})已从{MCOS.Instance.ScreenContextOf(RootForm)?.ID ?? -1}号屏幕脱离，开始拖动");
+            LOGGER.Info($"窗体({Form.Text})已从屏幕({MCOS.Instance.ScreenContextOf(RootForm)?.Screen.StartPosition})脱离，开始拖动");
             return true;
         }
 
@@ -186,7 +186,7 @@ namespace MCBS.Forms
             if (Form is not IRootForm && RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
             Form.HandleFormClose(EventArgs.Empty);
-            LOGGER.Info($"窗体({Form.Text} #{ID})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
+            LOGGER.Info($"窗体({Form.Text})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
             _closeSemaphore.Release();
             return true;
         }
@@ -274,11 +274,6 @@ namespace MCBS.Forms
         private async Task GetCloseTask()
         {
             await _closeSemaphore.WaitAsync();
-        }
-
-        public override string ToString()
-        {
-            return $"State={FormState} FID={ID}, PID={MCOS.Instance.ProcessContextOf(Form)?.ID}, SID = {MCOS.Instance.ScreenContextOf(Form)?.ID}, Form=[{Form}]";
         }
     }
 }

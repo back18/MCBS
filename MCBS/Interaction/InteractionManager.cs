@@ -53,15 +53,15 @@ namespace MCBS.Interaction
             {
                 try
                 {
-                    InteractionContext.Json json = JsonConvert.DeserializeObject<InteractionContext.Json>(File.ReadAllText(file)) ?? throw new FormatException();
-                    EntityPos position = new(json.Position[0], json.Position[1], json.Position[2]);
+                    InteractionContext.Model model = JsonConvert.DeserializeObject<InteractionContext.Model>(File.ReadAllText(file)) ?? throw new FormatException();
+                    EntityPos position = new(model.Position[0], model.Position[1], model.Position[2]);
                     BlockPos blockPos = position.ToBlockPos();
                     CommandSender sender = MCOS.Instance.MinecraftInstance.CommandSender;
                     sender.AddForceloadChunk(blockPos);
-                    sender.KillEntity(json.EntityUUID);
+                    sender.KillEntity(model.EntityUUID);
                     sender.RemoveForceloadChunk(blockPos);
                     File.Delete(file);
-                    LOGGER.Info($"玩家({json.PlayerUUID})的交互实体({json.EntityUUID})已回收");
+                    LOGGER.Info($"玩家({model.PlayerUUID})的交互实体({model.EntityUUID})已回收");
                 }
                 catch (Exception ex)
                 {

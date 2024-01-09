@@ -1,6 +1,4 @@
-﻿//#define TryCatch
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +27,8 @@ using MCBS.RightClickObjective;
 using MCBS.Screens.Building;
 using System.Collections.ObjectModel;
 using QuanLib.Minecraft.Command;
+using QuanLib.IO;
+using QuanLib.Minecraft.Directorys;
 
 namespace MCBS
 {
@@ -48,6 +48,7 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
 
             MinecraftInstance = minecraftInstance;
+            FileWriteQueue = new();
             TimeAnalysisManager = new();
             TaskManager = new();
             ScreenManager = new();
@@ -115,6 +116,11 @@ namespace MCBS
 
         public MinecraftInstance MinecraftInstance { get; }
 
+        public WorldDirectory WorldDirectory => _WorldDirectory ?? throw new InvalidOperationException("当前状态无法定位世界文件夹");
+        private WorldDirectory? _WorldDirectory;
+
+        public FileWriteQueue FileWriteQueue { get; }
+
         public TimeAnalysisManager TimeAnalysisManager { get; }
 
         public TaskManager TaskManager { get; }
@@ -154,15 +160,27 @@ namespace MCBS
         private void Initialize()
         {
             LOGGER.Info("正在等待Minecraft实例启动...");
+
+            while (true)
+            {
+                _WorldDirectory = MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory();
+                if (_WorldDirectory is not null)
+                    break;
+
+                Thread.Sleep(1000);
+            }
+
             MinecraftInstance.WaitForConnection();
             MinecraftInstance.Start("MinecraftInstance Thread");
             Thread.Sleep(1000);
+
             LOGGER.Info("成功连接到Minecraft实例");
 
             LOGGER.Info("开始初始化");
 
             _query = MinecraftInstance.GetGameTickAsync();
             GameTick = _query.Result;
+            FileWriteQueue.Start("FileWrite Thread");
             TaskManager.Initialize();
             ScreenManager.Initialize();
             InteractionManager.Initialize();
@@ -179,10 +197,8 @@ namespace MCBS
 
             run:
 
-#if TryCatch
             try
             {
-#endif
                 while (IsRunning)
                 {
                     _tickStopwatch.Restart();
@@ -225,10 +241,11 @@ namespace MCBS
                     _tickStopwatch.Stop();
                     TimeAnalysisManager.Submit(_times, _tickStopwatch.Elapsed);
                 }
-#if TryCatch
             }
             catch (Exception ex)
             {
+                //throw;
+
                 bool connection = MinecraftInstance.TestConnectivity();
 
                 if (!connection)
@@ -256,7 +273,6 @@ namespace MCBS
                     LOGGER.Fatal("系统运行时引发了异常，并且未启用自动重启，系统即将终止", ex);
                 }
             }
-#endif
 
             _syatemStopwatch.Stop();
             LOGGER.Info("系统已终止");
@@ -310,6 +326,7 @@ namespace MCBS
             }
 
             end:
+            FileWriteQueue.Stop();
             MinecraftInstance.Stop();
             LOGGER.Info("已和Minecraft实例断开连接");
         }
@@ -456,54 +473,13 @@ namespace MCBS
             return null;
         }
 
-        public ProcessContext RunApplication(ApplicationManifest applicationManifest, IForm? initiator = null)
-        {
-            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
-
-            return ProcessManager.Items.Add(applicationManifest, initiator).StartProcess();
-        }
-
-        public ProcessContext RunApplication(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null)
-        {
-            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
-            ArgumentNullException.ThrowIfNull(args, nameof(args));
-
-            return ProcessManager.Items.Add(applicationManifest, args, initiator).StartProcess();
-        }
-
-        public ProcessContext RunApplication(string appID, string[] args, IForm? initiator = null)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(appID, nameof(appID));
-
-            return ProcessManager.Items.Add(AppComponents[appID], args, initiator).StartProcess();
-        }
-
-        public ProcessContext RunApplication(string appID, IForm? initiator = null)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(appID, nameof(appID));
-
-            return ProcessManager.Items.Add(AppComponents[appID], initiator).StartProcess();
-        }
-
-        public ScreenContext LoadScreen(Screen screen)
+        public ScreenContext BuildScreen(Screen screen, Guid guid = default)
         {
             ArgumentNullException.ThrowIfNull(screen, nameof(screen));
 
-            return ScreenManager.Items.Add(screen).LoadScreen();
-        }
-
-        internal ProcessContext RunServicesApp()
-        {
-            if (!typeof(IProgram).IsAssignableFrom(AppComponents[ConfigManager.SystemConfig.ServicesAppID].MainClass))
-                throw new InvalidOperationException("无效的IServicesProgram");
-
-            return RunApplication(ConfigManager.SystemConfig.ServicesAppID);
-        }
-
-        internal void RunStartupChecklist(IRootForm rootForm)
-        {
-            foreach (var appID in ConfigManager.SystemConfig.StartupChecklist)
-                RunApplication(AppComponents[appID], rootForm);
+            ProcessContext processContext = ProcessManager.StartServicesProcess();
+            IScreenView screenView = ((IServicesProgram)processContext.Program).ScreenView;
+            return ScreenManager.LoadScreen(screen, screenView, guid);
         }
 
         private void CreateAppComponentsDirectory()

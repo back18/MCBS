@@ -1,6 +1,4 @@
-﻿#define TryCatch
-
-using FFMediaToolkit;
+﻿using FFMediaToolkit;
 using log4net.Core;
 using MCBS.Application;
 using MCBS.BlockForms.Utility;
@@ -50,10 +48,8 @@ namespace MCBS.ConsoleTerminal
             Terminal.Start("Terminal Thread");
             CommandLogger.Start("CommandLogger Thread");
 
-#if TryCatch
             try
             {
-#endif
                 ConfigManager.LoadAll();
                 FFmpegResourcesLoader.LoadAll();
                 ResourceEntryManager resources = MinecraftResourcesLoader.LoadAll();
@@ -62,7 +58,6 @@ namespace MCBS.ConsoleTerminal
 
                 resources.Dispose();
                 LOGGER.Info("资源包内所有资源均已加载完成，资源包缓存已释放");
-#if TryCatch
             }
             catch (Exception ex)
             {
@@ -70,14 +65,11 @@ namespace MCBS.ConsoleTerminal
                 Exit();
                 return;
             }
-#endif
 
             MinecraftInstance minecraftInstance;
 
-#if TryCatch
             try
             {
-#endif
                 MinecraftConfig config = ConfigManager.MinecraftConfig;
                 switch (config.InstanceType)
                 {
@@ -100,7 +92,6 @@ namespace MCBS.ConsoleTerminal
                     default:
                         throw new InvalidOperationException();
                 }
-#if TryCatch
             }
             catch (Exception ex)
             {
@@ -108,7 +99,6 @@ namespace MCBS.ConsoleTerminal
                 Exit();
                 return;
             }
-#endif
 
             ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
             MCOS mcos = MCOS.LoadInstance(minecraftInstance, appComponents);

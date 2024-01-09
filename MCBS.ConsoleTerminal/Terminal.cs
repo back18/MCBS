@@ -145,7 +145,6 @@ namespace MCBS.ConsoleTerminal
         {
             CommandSystem.CommandPool.AddCommand(new(new("application list"), CommandFunc.GetFunc(GetApplicationList)));
             CommandSystem.CommandPool.AddCommand(new(new("screen list"), CommandFunc.GetFunc(GetScreenList)));
-            CommandSystem.CommandPool.AddCommand(new(new("screen close"), CommandFunc.GetFunc(CloseScreen)));
             CommandSystem.CommandPool.AddCommand(new(new("screen builder"), CommandFunc.GetFunc(SetScreenBuilderEnable)));
             CommandSystem.CommandPool.AddCommand(new(new("process list"), CommandFunc.GetFunc(GetProcessList)));
             CommandSystem.CommandPool.AddCommand(new(new("form list"), CommandFunc.GetFunc(GetFormList)));
@@ -174,19 +173,6 @@ namespace MCBS.ConsoleTerminal
                 sb.AppendLine(context.ToString());
 
             return sb.ToString().TrimEnd();
-        }
-
-        private static string CloseScreen(int id)
-        {
-            if (MCOS.Instance.ScreenManager.Items.TryGetValue(id, out var context))
-            {
-                context.UnloadScreen();
-                return $"屏幕“{context}”已关闭";
-            }
-            else
-            {
-                return "未知的屏幕ID";
-            }
         }
 
         private static string SetScreenBuilderEnable(bool enable)

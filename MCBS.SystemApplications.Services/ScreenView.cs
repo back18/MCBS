@@ -22,6 +22,8 @@ namespace MCBS.SystemApplications.Services
             Skin.SetAllBackgroundColor("minecraft:air");
 
             RootForm_Control = new();
+
+            _rectangle = Rectangle.Empty;
         }
 
         private Rectangle _rectangle;
@@ -35,9 +37,7 @@ namespace MCBS.SystemApplications.Services
             base.Initialize();
 
             ChildControls.Add(RootForm_Control);
-            RootForm_Control.ClientSize = new(ClientSize.Width - 32, ClientSize.Height - 32);
-            RootForm_Control.ClientLocation = new(16, 16);
-            _rectangle = RootForm_Control.GetRectangle();
+            RootForm_Control.ClientSize = ClientSize;
         }
 
         public override void HandleCursorMove(CursorEventArgs e)
@@ -100,6 +100,9 @@ namespace MCBS.SystemApplications.Services
         protected override void OnAfterFrame(Control sender, EventArgs e)
         {
             base.OnAfterFrame(sender, e);
+
+            if (!IsInitCompleted)
+                return;
 
             Rectangle rectangle = RootForm_Control.GetRectangle();
             if (rectangle == _rectangle)

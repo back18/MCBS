@@ -1,25 +1,22 @@
 ﻿using MCBS.Application;
+using MCBS.Config;
 using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MCBS.Processes
 {
-    public class ProcessManager : ITickable
+    public partial class ProcessManager
     {
         public ProcessManager()
         {
             Items = new(this);
+
             AddedProcess += OnAddedProcess;
             RemovedProcess += OnRemovedProcess;
         }
@@ -36,128 +33,56 @@ namespace MCBS.Processes
 
         public void OnTick()
         {
-            foreach (var process in Items)
+            foreach (var items in Items)
             {
-                process.Value.OnTick();
-                if (process.Value.ProcessState == ProcessState.Stopped)
-                    Items.Remove(process.Key);
+                items.Value.OnTick();
+                if (items.Value.ProcessState == ProcessState.Stopped)
+                    Items.TryRemove(items.Key, out _);
             }
         }
 
-        public class ProcessCollection : IDictionary<int, ProcessContext>
+        public ProcessContext StartProcess(ApplicationManifest applicationManifest, IForm? initiator = null)
         {
-            public ProcessCollection(ProcessManager owner)
-            {
-                ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+            return StartProcess(applicationManifest, Array.Empty<string>(), initiator);
+        }
 
-                _owner = owner;
-                _items = new();
-                _id = 0;
-            }
+        public ProcessContext StartProcess(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null)
+        {
+            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
+            ArgumentNullException.ThrowIfNull(args, nameof(args));
 
-            private readonly ProcessManager _owner;
+            ProcessContext processContext = new(applicationManifest, args, initiator);
+            if (!Items.TryAdd(processContext.GUID, processContext))
+                throw new InvalidOperationException();
 
-            private readonly ConcurrentDictionary<int, ProcessContext> _items;
+            processContext.StartProcess();
+            return processContext;
+        }
 
-            private int _id;
+        public ProcessContext StartProcess(string appId, IForm? initiator = null)
+        {
+            ApplicationManifest applicationManifest = MCOS.Instance.AppComponents[appId];
+            return StartProcess(applicationManifest, Array.Empty<string>(), initiator);
+        }
 
-            public ProcessContext this[int id] => _items[id];
+        public ProcessContext StartProcess(string appId, string[] args, IForm? initiator = null)
+        {
+            ApplicationManifest applicationManifest = MCOS.Instance.AppComponents[appId];
+            return StartProcess(applicationManifest, args, initiator);
+        }
 
-            ProcessContext IDictionary<int, ProcessContext>.this[int key] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public ProcessContext StartServicesProcess(string[] args)
+        {
+            ApplicationManifest applicationManifest = MCOS.Instance.AppComponents[ConfigManager.SystemConfig.ServicesAppID];
+            if (!typeof(IProgram).IsAssignableFrom(applicationManifest.MainClass))
+                throw new InvalidOperationException("无效的 IServicesProgram");
 
-            public ICollection<int> Keys => _items.Keys;
+            return StartProcess(applicationManifest, args);
+        }
 
-            public ICollection<ProcessContext> Values => _items.Values;
-
-            public int Count => _items.Count;
-
-            public bool IsReadOnly => false;
-
-            public ProcessContext Add(ApplicationManifest applicationManifest, IForm? initiator = null)
-            {
-                return Add(applicationManifest, Array.Empty<string>(), initiator);
-            }
-
-            public ProcessContext Add(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null)
-            {
-                ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
-                ArgumentNullException.ThrowIfNull(args, nameof(args));
-
-                lock (_items)
-                {
-                    int id = _id;
-                    ProcessContext process = new(applicationManifest, args, initiator);
-                    process.ID = id;
-                    _items.TryAdd(id, process);
-                    _owner.AddedProcess.Invoke(_owner, new(process));
-                    _id++;
-                    return process;
-                }
-            }
-
-            public bool Remove(int id)
-            {
-                lock (_items)
-                {
-                    if (!_items.TryGetValue(id, out var process) || !_items.TryRemove(id, out _))
-                        return false;
-
-                    process.ID = -1;
-                    _owner.RemovedProcess.Invoke(_owner, new(process));
-                    return true;
-                }
-            }
-
-            public void Clear()
-            {
-                foreach (var id in _items.Keys)
-                    Remove(id);
-            }
-
-            public bool ContainsKey(int id)
-            {
-                return _items.ContainsKey(id);
-            }
-
-            public bool TryGetValue(int id, [MaybeNullWhen(false)] out ProcessContext process)
-            {
-                return _items.TryGetValue(id, out process);
-            }
-
-            public IEnumerator<KeyValuePair<int, ProcessContext>> GetEnumerator()
-            {
-                return _items.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable)_items).GetEnumerator();
-            }
-
-            void ICollection<KeyValuePair<int, ProcessContext>>.Add(KeyValuePair<int, ProcessContext> item)
-            {
-                throw new NotSupportedException();
-            }
-
-            bool ICollection<KeyValuePair<int, ProcessContext>>.Remove(KeyValuePair<int, ProcessContext> item)
-            {
-                throw new NotSupportedException();
-            }
-
-            bool ICollection<KeyValuePair<int, ProcessContext>>.Contains(KeyValuePair<int, ProcessContext> item)
-            {
-                throw new NotSupportedException();
-            }
-
-            void ICollection<KeyValuePair<int, ProcessContext>>.CopyTo(KeyValuePair<int, ProcessContext>[] array, int arrayIndex)
-            {
-                throw new NotSupportedException();
-            }
-
-            void IDictionary<int, ProcessContext>.Add(int key, ProcessContext value)
-            {
-                throw new NotSupportedException();
-            }
+        public ProcessContext StartServicesProcess()
+        {
+            return StartServicesProcess(Array.Empty<string>());
         }
     }
 }

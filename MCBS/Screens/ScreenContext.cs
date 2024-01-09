@@ -1,6 +1,5 @@
 ﻿using static MCBS.Config.ConfigManager;
 using log4net.Core;
-using NAudio.Codecs;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,9 @@ using MCBS.Cursor.Style;
 using MCBS.Cursor;
 using QuanLib.Minecraft.Snbt.Models;
 using MCBS.Rendering;
+using MCBS.Directorys;
+using QuanLib.IO;
+using Newtonsoft.Json;
 
 namespace MCBS.Screens
 {
@@ -25,7 +27,7 @@ namespace MCBS.Screens
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        internal ScreenContext(Screen screen, IScreenView form)
+        internal ScreenContext(Screen screen, IScreenView form, Guid guid = default)
         {
             ArgumentNullException.ThrowIfNull(screen, nameof(screen));
             ArgumentNullException.ThrowIfNull(form, nameof(form));
@@ -36,11 +38,11 @@ namespace MCBS.Screens
             ScreenOutputHandler = new(this);
             IsRestarting = false;
 
-            ID = -1;
+            GUID = guid != default ? guid : Guid.NewGuid();
             StateManager = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
             {
                 new(ScreenState.NotLoaded, Array.Empty<ScreenState>(), HandleNotLoadedState),
-                new(ScreenState.Active, new ScreenState[] { ScreenState.NotLoaded }, HandleActiveState),
+                new(ScreenState.Active, new ScreenState[] { ScreenState.NotLoaded }, HandleActiveState, OnActiveState),
                 new(ScreenState.Sleep, new ScreenState[] { ScreenState.Active }, HandleSleepState),
                 new(ScreenState.Unload, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, HandleUnloadState)
             });
@@ -56,7 +58,7 @@ namespace MCBS.Screens
 
         private readonly List<CursorContext> _offlineCursors;
 
-        public int ID { get; internal set; }
+        public Guid GUID { get; }
 
         public StateManager<ScreenState> StateManager { get; }
 
@@ -85,13 +87,14 @@ namespace MCBS.Screens
             {
                 case ScreenState.NotLoaded:
                     IsRestarting = false;
-                    Screen.LoadScreenChunks();
                     ScreenView.ClientSize = new(Screen.Width, Screen.Height);
                     ScreenView.HandleBeforeInitialize();
                     ScreenView.HandleInitialize();
                     ScreenView.HandleAfterInitialize();
-                    MCOS.Instance.RunStartupChecklist(RootForm);
-                    LOGGER.Info($"屏幕({Screen.StartPosition} #{ID})已加载");
+                    foreach (var appId in SystemConfig.StartupChecklist)
+                        MCOS.Instance.ProcessManager.StartProcess(appId, RootForm);
+                    SaveJson();
+                    LOGGER.Info($"屏幕({Screen.StartPosition})已加载");
                     return true;
                 case ScreenState.Sleep:
                     //TODO
@@ -115,9 +118,15 @@ namespace MCBS.Screens
                     forem.CloseForm();
             }
             RootForm.CloseForm();
-            Screen.UnloadScreenChunks();
-            LOGGER.Info($"屏幕({Screen.StartPosition} #{ID})已卸载");
+            ScreenOutputHandler.FillAirBlock();
+            DeleteJson();
+            LOGGER.Info($"屏幕({Screen.StartPosition})已卸载");
             return true;
+        }
+
+        protected virtual void OnActiveState()
+        {
+            SaveJson();
         }
 
         public void OnTick()
@@ -237,9 +246,9 @@ namespace MCBS.Screens
             StateManager.AddNextState(ScreenState.Active);
         }
 
-        public override string ToString()
+        public Screen GetSubScreen()
         {
-            return $"State={ScreenState}, SID={ID}, Screen=[{Screen}]";
+            return Screen.SubScreen(RootForm.GetRectangle());
         }
 
         private void InvokeScreenEvent(CursorContext cursorContext)
@@ -265,6 +274,30 @@ namespace MCBS.Screens
                 if (!Item.EqualsID(oldData.DeputyItem, newData.DeputyItem))
                     ScreenView.HandleCursorItemChanged(new(newData.CursorPosition, cursorContext));
             }
+        }
+
+        private void SaveJson()
+        {
+            MCOS.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
+        }
+
+        private void DeleteJson()
+        {
+            string savePath = GetSavePath();
+            if (File.Exists(savePath))
+                File.Delete(savePath);
+        }
+
+        private string ToJson()
+        {
+            Screen screen = GetSubScreen();
+            Screen.DataModel model = screen.ToDataModel();
+            return JsonConvert.SerializeObject(model);
+        }
+
+        private string GetSavePath()
+        {
+            return MCOS.Instance.WorldDirectory.GetMcbsDataDirectory().ScreensDir.Combine(GUID + ".json");
         }
     }
 }

@@ -21,11 +21,10 @@ namespace MCBS.Config
             MaxCount = model.MaxCount;
             MinLength = model.MinLength;
             MaxLength = model.MaxLength;
-            MinPixels = model.MinPixels;
-            MaxPixels = model.MaxPixels;
-            MinY = model.MinY;
-            MaxY = model.MaxY;
-            ScreenBuildTimeout = model.ScreenBuildTimeout;
+            MinAltitude = model.MinAltitude;
+            MaxAltitude = model.MaxAltitude;
+            InitialWidth = model.InitialWidth;
+            InitialHeight = model.InitialHeight;
             ScreenIdleTimeout = model.ScreenIdleTimeout;
             RightClickObjective = model.RightClickObjective;
             RightClickCriterion = model.RightClickCriterion;
@@ -34,13 +33,6 @@ namespace MCBS.Config
             ScreenBuilderItemName = model.ScreenBuilderItemName;
             ScreenOperatorList = new(model.ScreenOperatorList);
             ScreenBuildOperatorList = new(model.ScreenBuildOperatorList);
-
-            List<ScreenOptions> list = new();
-            foreach (var item in model.ResidentScreenList)
-            {
-                list.Add(new(item));
-            }
-            ResidentScreenList = list.AsReadOnly();
         }
 
         public int MaxCount { get; }
@@ -49,15 +41,13 @@ namespace MCBS.Config
 
         public int MaxLength { get; }
 
-        public int MinPixels { get; }
+        public int MinAltitude { get; }
 
-        public int MaxPixels { get; }
+        public int MaxAltitude { get; }
 
-        public int MinY { get; }
+        public int InitialWidth { get; }
 
-        public int MaxY { get; }
-
-        public int ScreenBuildTimeout { get; }
+        public int InitialHeight { get; }
 
         public int ScreenIdleTimeout { get; }
 
@@ -74,8 +64,6 @@ namespace MCBS.Config
         public ReadOnlyCollection<string> ScreenOperatorList { get; }
 
         public ReadOnlyCollection<string> ScreenBuildOperatorList { get; }
-
-        public ReadOnlyCollection<ScreenOptions> ResidentScreenList { get; }
 
         public static ScreenConfig Load(string path)
         {
@@ -109,19 +97,13 @@ namespace MCBS.Config
 
             if (model.MinLength > model.MaxLength)
             {
-                message.AppendLine($"[MinLength]: MinLength 不能大于 MaxLength");
+                message.AppendLine($"[{nameof(MinLength)}]: {nameof(MinLength)} 不能大于 {nameof(MaxLength)}");
                 count++;
             }
 
-            if (model.MinPixels > model.MaxPixels)
+            if (model.MinAltitude > model.MaxAltitude)
             {
-                message.AppendLine($"[MinPixels]: MinPixels 不能大于 MaxPixels");
-                count++;
-            }
-
-            if (model.MinY > model.MaxY)
-            {
-                message.AppendLine($"[MinY]: MinY 不能大于 MaxY");
+                message.AppendLine($"[{nameof(MinAltitude)}]: {nameof(MinAltitude)} 不能大于 {nameof(MaxAltitude)}");
                 count++;
             }
 
@@ -129,11 +111,6 @@ namespace MCBS.Config
             {
                 message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
                 throw new ValidationException(message.ToString().TrimEnd());
-            }
-
-            for (int i = 0; i < model.ResidentScreenList.Length; i++)
-            {
-                ScreenOptions.Validate($"{name}->ResidentScreenList[{i}]", model.ResidentScreenList[i]);
             }
         }
 
@@ -150,18 +127,17 @@ namespace MCBS.Config
             [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
             public int MaxLength { get; set; }
 
-            [Range(1, 262144, ErrorMessage = "值的范围应该为1~262144")]
-            public int MinPixels { get; set; }
+            [Range(-64, 319, ErrorMessage = "值的范围应该为-64~319")]
+            public int MinAltitude { get; set; }
 
-            [Range(1, 262144, ErrorMessage = "值的范围应该为1~262144")]
-            public int MaxPixels { get; set; }
+            [Range(-64, 319, ErrorMessage = "值的范围应该为-64~319")]
+            public int MaxAltitude { get; set; }
 
-            public int MinY { get; set; }
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            public int InitialWidth { get; set; }
 
-            public int MaxY { get; set; }
-
-            [Range(-1, int.MaxValue, ErrorMessage = "值的范围应该为-1~214748367")]
-            public int ScreenBuildTimeout { get; set; }
+            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            public int InitialHeight { get; set; }
 
             [Range(-1, int.MaxValue, ErrorMessage = "值的范围应该为-1~214748367")]
             public int ScreenIdleTimeout { get; set; }
@@ -186,9 +162,6 @@ namespace MCBS.Config
 
             [Required(ErrorMessage = "配置项缺失")]
             public string[] ScreenBuildOperatorList { get; set; }
-
-            [Required(ErrorMessage = "配置项缺失")]
-            public ScreenOptions.Model[] ResidentScreenList { get; set; }
 
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         }

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MCBS.Directorys
 {
-    public static class MinecraftExtension
+    public static class WorldDirectoryExtension
     {
         public static McbsDataDirectory GetMcbsDataDirectory(this WorldDirectory source)
         {
-            return new(source.Combine("McbsData"));
+            return new(source.Combine("mcbsdata"));
         }
     }
 }

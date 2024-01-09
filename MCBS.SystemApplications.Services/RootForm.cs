@@ -105,6 +105,7 @@ namespace MCBS.SystemApplications.Services
             Light_Switch.OnText = "点亮屏幕";
             Light_Switch.OffText = "熄灭屏幕";
             Light_Switch.ClientSize = new(64, 16);
+            Light_Switch.IsSelected = true;
             Light_Switch.RightClick += Light_Switch_RightClick;
             StartMenu_ListMenuBox.AddedChildControlAndLayout(Light_Switch);
 
@@ -171,10 +172,10 @@ namespace MCBS.SystemApplications.Services
 
         private void Light_Switch_RightClick(Control sender, CursorEventArgs e)
         {
-            if (Light_Switch.IsSelected)
-                MCOS.Instance.ScreenContextOf(this)?.ScreenOutputHandler.FillAirBlock(1);
-            else
-                MCOS.Instance.ScreenContextOf(this)?.ScreenOutputHandler.FillLightBlock();
+            //if (Light_Switch.IsSelected)
+            //    MCOS.Instance.ScreenContextOf(this)?.ScreenOutputHandler.FillAirBlock(1);
+            //else
+            //    MCOS.Instance.ScreenContextOf(this)?.ScreenOutputHandler.FillLightBlock(1);
         }
 
         private void CloseScreen_Button_RightClick(Control sender, CursorEventArgs e)

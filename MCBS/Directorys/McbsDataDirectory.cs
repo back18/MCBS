@@ -11,11 +11,14 @@ namespace MCBS.Directorys
     {
         public McbsDataDirectory(string directory) : base(directory)
         {
-            InteractionsDir = AddDirectory<InteractionsDirectory>("Interactions");
+            InteractionsDir = AddDirectory<InteractionsDirectory>("interactions");
+            ScreensDir = AddDirectory<ScreensDirectory>("screens");
             ScreenDataFile = Combine("ScreenData.json");
         }
 
         public InteractionsDirectory InteractionsDir { get; }
+
+        public ScreensDirectory ScreensDir { get; }
 
         public string ScreenDataFile { get; }
     }
