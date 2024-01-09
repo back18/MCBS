@@ -1,4 +1,4 @@
-﻿using QuanLib.Core.Format;
+﻿using QuanLib.TextFormat;
 using QuanLib.Core;
 using QuanLib.Downloader;
 using System;

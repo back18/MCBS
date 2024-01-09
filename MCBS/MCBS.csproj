@@ -45,6 +45,7 @@
     <ProjectReference Include="..\..\QuanLib.Minecraft\QuanLib.Minecraft.API\QuanLib.Minecraft.API.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.BDF\QuanLib.BDF.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.Downloader\QuanLib.Downloader.csproj" />
+    <ProjectReference Include="..\..\QuanLib\QuanLib.TextFormat\QuanLib.TextFormat.csproj" />
   </ItemGroup>
 
 </Project>
