@@ -101,7 +101,7 @@ namespace MCBS.ConsoleTerminal
             }
 
             ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
-            MinecraftBlockScreen.LoadInstance(minecraftInstance, appComponents);
+            MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
             MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
             MinecraftBlockScreen.Instance.Start("System Thread");
             MinecraftBlockScreen.Instance.WaitForStop();

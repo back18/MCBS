@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
 using log4net.Core;
 using QuanLib.Core;
 using QuanLib.Minecraft.Instance;
@@ -20,22 +19,15 @@ using MCBS.Interaction;
 using MCBS.Cursor;
 using MCBS.RightClickObjective;
 using MCBS.Screens.Building;
-using System.Collections.ObjectModel;
 using QuanLib.Minecraft.Command;
 using QuanLib.IO;
 using QuanLib.Minecraft.Directorys;
 
 namespace MCBS
 {
-    public class MinecraftBlockScreen : UnmanagedRunnable
+    public class MinecraftBlockScreen : UnmanagedRunnable, ISingleton<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
-
-        static MinecraftBlockScreen()
-        {
-            _slock = new();
-            IsLoaded = false;
-        }
 
         private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(Logbuilder.Default)
         {
@@ -70,19 +62,13 @@ namespace MCBS
             CreateAppComponentsDirectory();
         }
 
-        private static readonly object _slock;
+        private static readonly object _slock = new();
 
         public static bool IsLoaded { get; private set; }
 
-        public static MinecraftBlockScreen Instance
-        {
-            get
-            {
-                if (_Instance is null)
-                    throw new InvalidOperationException("实例未加载");
-                return _Instance;
-            }
-        }
+        public static bool IsInstanceLoaded => _Instance is not null;
+
+        public static MinecraftBlockScreen Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static MinecraftBlockScreen? _Instance;
 
         private readonly Stopwatch _syatemStopwatch;
@@ -136,18 +122,16 @@ namespace MCBS
 
         public ReadOnlyDictionary<string, ApplicationManifest> AppComponents { get; }
 
-        public static MinecraftBlockScreen LoadInstance(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents)
+        public static MinecraftBlockScreen LoadInstance(InstantiateArgs instantiateArgs)
         {
-            ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
-            ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
+            ArgumentNullException.ThrowIfNull(instantiateArgs, nameof(instantiateArgs));
 
             lock (_slock)
             {
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
-                _Instance ??= new(minecraftInstance, appComponents);
-                IsLoaded = true;
+                _Instance = new(instantiateArgs.MinecraftInstance, instantiateArgs.AppComponents);
                 return _Instance;
             }
         }
@@ -485,6 +469,22 @@ namespace MCBS
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
             }
+        }
+
+        public class InstantiateArgs : QuanLib.Core.InstantiateArgs
+        {
+            public InstantiateArgs(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents)
+            {
+                ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
+                ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
+
+                MinecraftInstance = minecraftInstance;
+                AppComponents = appComponents;
+            }
+
+            public MinecraftInstance MinecraftInstance { get; }
+
+            public ApplicationManifest[] AppComponents { get; }
         }
     }
 }

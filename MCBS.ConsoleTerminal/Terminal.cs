@@ -36,7 +36,7 @@ namespace MCBS.ConsoleTerminal
                 {
                     break;
                 }
-                if (!MinecraftBlockScreen.IsLoaded)
+                if (!MinecraftBlockScreen.IsInstanceLoaded)
                 {
                     Console.WriteLine("【MCBS控制台】系统未加载，控制台输入已被禁用");
                     continue;
@@ -105,7 +105,7 @@ namespace MCBS.ConsoleTerminal
                         Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
                         break;
                     case "stop":
-                        if (!MinecraftBlockScreen.IsLoaded || !MinecraftBlockScreen.Instance.IsRunning)
+                        if (!MinecraftBlockScreen.IsInstanceLoaded || !MinecraftBlockScreen.Instance.IsRunning)
                             Console.WriteLine("【MCBS控制台】系统未开始运行，因此无法关闭");
                         MinecraftBlockScreen.Instance.Stop();
                         break;
