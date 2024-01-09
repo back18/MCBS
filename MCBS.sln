@@ -67,6 +67,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.SNBT", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.ResourcePack", "..\QuanLib.Minecraft\QuanLib.Minecraft.ResourcePack\QuanLib.Minecraft.ResourcePack.csproj", "{F37FDCEE-F431-4739-A8C0-D22B58C23C98}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Logging", "..\QuanLib.Minecraft\QuanLib.Minecraft.Logging\QuanLib.Minecraft.Logging.csproj", "{8C546A56-C49B-4DD0-837C-055B648FD984}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -201,6 +203,10 @@ Global
 		{F37FDCEE-F431-4739-A8C0-D22B58C23C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F37FDCEE-F431-4739-A8C0-D22B58C23C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F37FDCEE-F431-4739-A8C0-D22B58C23C98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C546A56-C49B-4DD0-837C-055B648FD984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C546A56-C49B-4DD0-837C-055B648FD984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C546A56-C49B-4DD0-837C-055B648FD984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C546A56-C49B-4DD0-837C-055B648FD984}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
