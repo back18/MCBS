@@ -64,8 +64,6 @@ namespace MCBS
 
         private static readonly object _slock = new();
 
-        public static bool IsLoaded { get; private set; }
-
         public static bool IsInstanceLoaded => _Instance is not null;
 
         public static MinecraftBlockScreen Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
