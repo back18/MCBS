@@ -4,7 +4,7 @@ using log4net.Repository.Hierarchy;
 using MCBS.Directorys;
 using MCBS.Logging;
 using Newtonsoft.Json.Linq;
-using QuanLib.Minecraft.GameResource;
+using QuanLib.Minecraft.Downloading;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -10,7 +10,6 @@ using log4net.Core;
 using MCBS.Logging;
 using Downloader;
 using QuanLib.IO;
-using QuanLib.Minecraft.GameResource;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MCBS

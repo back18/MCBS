@@ -37,11 +37,13 @@
     <PackageReference Include="FFMediaToolkit" Version="4.5.1" />
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="Nett" Version="0.15.0" />
     <PackageReference Include="QRCoder" Version="1.4.3" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\QuanLib.Minecraft\QuanLib.Minecraft.Downloading\QuanLib.Minecraft.Downloading.csproj" />
     <ProjectReference Include="..\..\QuanLib.Minecraft\QuanLib.Minecraft.Instance\QuanLib.Minecraft.Instance.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.BDF\QuanLib.BDF.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.Downloader\QuanLib.Downloader.csproj" />
