@@ -1,5 +1,4 @@
-﻿using QuanLib.Minecraft.API.Instance;
-using QuanLib.Minecraft.Instance;
+﻿using QuanLib.Minecraft.Instance;
 using System;
 using System.Collections.Generic;
 using System.Linq;
