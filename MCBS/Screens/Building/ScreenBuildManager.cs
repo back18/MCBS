@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using QuanLib.Minecraft.Snbt.Models;
+using QuanLib.Minecraft.SNBT.Models;
 
 namespace MCBS.Screens.Building
 {
@@ -70,7 +70,7 @@ namespace MCBS.Screens.Building
                 if (_contexts.ContainsKey(item.Key))
                     continue;
 
-                if (MinecraftUtil.GetItemName(item.Value) != ScreenConfig.ScreenBuilderItemName)
+                if (item.Value.GetItemName() != ScreenConfig.ScreenBuilderItemName)
                     return;
 
                 if (ScreenConfig.ScreenBuildOperatorList.Count != 0 && !ScreenConfig.ScreenBuildOperatorList.Contains(item.Key))

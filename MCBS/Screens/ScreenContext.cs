@@ -12,7 +12,7 @@ using MCBS.State;
 using MCBS.Events;
 using MCBS.Cursor.Style;
 using MCBS.Cursor;
-using QuanLib.Minecraft.Snbt.Models;
+using QuanLib.Minecraft.SNBT.Models;
 using MCBS.Rendering;
 using MCBS.Directorys;
 using QuanLib.IO;

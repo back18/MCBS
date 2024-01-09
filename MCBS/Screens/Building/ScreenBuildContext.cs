@@ -40,7 +40,7 @@ namespace MCBS.Screens.Building
                 !sender.TryGetEntityRotation(PlayerName, out var rotation) ||
                 !sender.TryGetPlayerSelectedItem(PlayerName, out var item) ||
                 item.ID != ScreenConfig.RightClickItemID ||
-                MinecraftUtil.GetItemName(item) != ScreenConfig.ScreenBuilderItemName)
+                item.GetItemName() != ScreenConfig.ScreenBuilderItemName)
             {
                 BuildState = ScreenBuildState.Canceled;
                 return;

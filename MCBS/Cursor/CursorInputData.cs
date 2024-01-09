@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft.Snbt.Models;
+﻿using QuanLib.Minecraft.SNBT.Models;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
