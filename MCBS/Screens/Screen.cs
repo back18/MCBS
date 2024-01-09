@@ -1,5 +1,4 @@
-﻿using static MCBS.Config.ConfigManager;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;

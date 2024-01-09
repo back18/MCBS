@@ -9,7 +9,6 @@ using QuanLib.IO;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
-using QuanLib.Minecraft.Selectors;
 using QuanLib.Minecraft.Vector;
 using System;
 using System.Collections.Generic;

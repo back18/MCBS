@@ -45,8 +45,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.Tas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.VideoPlayer", "MCBS.SystemApplications.VideoPlayer\MCBS.SystemApplications.VideoPlayer.csproj", "{12C3BFDE-A27A-4C71-B45D-D71DD0AFBE76}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.RCON", "..\QuanLib.Minecraft\QuanLib.Minecraft.RCON\QuanLib.Minecraft.RCON.csproj", "{CD8E71C9-7051-4410-BBFA-89FEBAAC7534}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.Console", "MCBS.SystemApplications.Console\MCBS.SystemApplications.Console.csproj", "{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.QRCodeGenerator", "MCBS.SystemApplications.QRCodeGenerator\MCBS.SystemApplications.QRCodeGenerator.csproj", "{1D8D9021-C1DF-4363-8EFB-01F8E41A37C8}"
@@ -60,6 +58,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.IO", "..\QuanLib\QuanLib.IO\QuanLib.IO.csproj", "{9CA54CC6-E3E1-442B-A350-A1E88237F1B7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.TextFormat", "..\QuanLib\QuanLib.TextFormat\QuanLib.TextFormat.csproj", "{14AE99C4-AD43-4A79-8A5A-4D0752E129C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Instance", "..\QuanLib.Minecraft\QuanLib.Minecraft.Instance\QuanLib.Minecraft.Instance.csproj", "{972756CD-4BAB-4781-A99E-18E855F0138B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Command", "..\QuanLib.Minecraft\QuanLib.Minecraft.Command\QuanLib.Minecraft.Command.csproj", "{9DCBC853-61D5-483F-9329-266FC8A6BF74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -151,10 +153,6 @@ Global
 		{12C3BFDE-A27A-4C71-B45D-D71DD0AFBE76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12C3BFDE-A27A-4C71-B45D-D71DD0AFBE76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12C3BFDE-A27A-4C71-B45D-D71DD0AFBE76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD8E71C9-7051-4410-BBFA-89FEBAAC7534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD8E71C9-7051-4410-BBFA-89FEBAAC7534}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD8E71C9-7051-4410-BBFA-89FEBAAC7534}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD8E71C9-7051-4410-BBFA-89FEBAAC7534}.Release|Any CPU.Build.0 = Release|Any CPU
 		{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48C6BFC2-C21B-4A09-8140-2FAE974B1C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -183,6 +181,14 @@ Global
 		{14AE99C4-AD43-4A79-8A5A-4D0752E129C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14AE99C4-AD43-4A79-8A5A-4D0752E129C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14AE99C4-AD43-4A79-8A5A-4D0752E129C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{972756CD-4BAB-4781-A99E-18E855F0138B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{972756CD-4BAB-4781-A99E-18E855F0138B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{972756CD-4BAB-4781-A99E-18E855F0138B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{972756CD-4BAB-4781-A99E-18E855F0138B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DCBC853-61D5-483F-9329-266FC8A6BF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DCBC853-61D5-483F-9329-266FC8A6BF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DCBC853-61D5-483F-9329-266FC8A6BF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DCBC853-61D5-483F-9329-266FC8A6BF74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

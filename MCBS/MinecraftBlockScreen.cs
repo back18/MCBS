@@ -22,6 +22,7 @@ using MCBS.Screens.Building;
 using QuanLib.Minecraft.Command;
 using QuanLib.IO;
 using QuanLib.Minecraft.Directorys;
+using QuanLib.Minecraft.Command.Models;
 
 namespace MCBS
 {
@@ -155,7 +156,7 @@ namespace MCBS
 
             LOGGER.Info("开始初始化");
 
-            _query = MinecraftInstance.GetGameTickAsync();
+            _query = GetGameTickAsync();
             GameTick = _query.Result;
             FileWriteQueue.Start("FileWrite Thread");
             TaskManager.Initialize();
@@ -383,7 +384,7 @@ namespace MCBS
                 TaskManager.SetCurrentMainTask(task);
                 TaskManager.WaitForPreviousMainTask();
                 GameTick = _query.Result;
-                _query = MinecraftInstance.GetGameTickAsync();
+                _query = GetGameTickAsync();
             },
             SystemStage.HandleScreenOutput);
         }
@@ -467,6 +468,24 @@ namespace MCBS
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
             }
+        }
+
+        public async Task<int> GetGameTickAsync()
+        {
+            TimeQueryGametimeCommand command = CommandManager.TimeQueryGametimeCommand;
+
+            if (!command.Input.TryFormat([], out var input))
+                return 0;
+
+            string output = await MinecraftInstance.CommandSender.SendCommandAsync(input);
+
+            if (!command.Output.TryMatch(output, out var outargs))
+                return 0;
+
+            if (outargs is null || outargs.Length != 1 || !int.TryParse(outargs[0], out var result))
+                return 0;
+
+            return result;
         }
 
         public class InstantiateArgs : QuanLib.Core.InstantiateArgs
