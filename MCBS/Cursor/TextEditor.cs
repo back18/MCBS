@@ -1,7 +1,7 @@
 ﻿using MCBS.Config;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
-using QuanLib.Minecraft.SNBT.Models;
+using QuanLib.Minecraft.NBT.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

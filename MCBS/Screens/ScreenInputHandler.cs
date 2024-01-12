@@ -15,7 +15,7 @@ using QuanLib.Minecraft;
 using MCBS.Events;
 using MCBS.Cursor;
 using QuanLib.Minecraft.Command.Senders;
-using QuanLib.Minecraft.SNBT.Models;
+using QuanLib.Minecraft.NBT.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MCBS.Screens

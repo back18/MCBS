@@ -173,6 +173,8 @@ namespace MCBS
             Initialize();
             _syatemStopwatch.Start();
 
+            MinecraftInstance.CommandSender.TryGetEntitySnbt("ORCEHK", out var result);
+
             run:
 
             try
