@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Core.Extensions;
 using QuanLib.IO;
+using QuanLib.IO.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,7 +56,7 @@ namespace MCBS
                     string file = Path.Combine(FFmpegLoader.FFmpegPath, index.Key);
                     if (!File.Exists(file) || HashUtil.GetHashString(file, HashType.SHA1) != index.Value)
                     {
-                        using Stream stream = zipPack[FFMPEG_BIN_DIR + index.Key].Open();
+                        using Stream stream = zipPack.GetFile(FFMPEG_BIN_DIR + index.Key).OpenStream();
                         using FileStream fileStream = new(file, FileMode.Create);
                         stream.CopyTo(fileStream);
                         LOGGER.Info("已还原: " + file);
@@ -89,13 +90,14 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(zipPack, nameof(zipPack));
             ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 
-            ZipArchiveEntry[] entries = zipPack.GetFiles(FFMPEG_BIN_DIR);
+            string[] files = zipPack.GetFilePaths(FFMPEG_BIN_DIR);
             Dictionary<string, string> indexs = new();
-            foreach (var entry in entries)
+            foreach (var file in files)
             {
-                using Stream stream = entry.Open();
+                ZipItem zipItem = zipPack.GetFile(file);
+                using Stream stream = zipItem.OpenStream();
                 string sha1 = HashUtil.GetHashString(stream, HashType.SHA1);
-                indexs.Add(entry.Name, sha1);
+                indexs.Add(zipItem.Name, sha1);
             }
 
             string json = JsonConvert.SerializeObject(indexs);
