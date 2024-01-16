@@ -36,7 +36,7 @@ namespace MCBS.ConsoleTerminal
 
             Initialize();
 
-            LOGGER.Info($"将以 {ConfigManager.MinecraftConfig.CommunicationMode} 模式绑定到位于“{ConfigManager.MinecraftConfig.MinecraftPath}”Minecraft实例");
+            LOGGER.Info($"将以 {ConfigManager.MinecraftConfig.CommunicationMode} 模式绑定到位于“{ConfigManager.MinecraftConfig.MinecraftPath}”的Minecraft实例");
 
             MinecraftInstance minecraftInstance = BindingMinecraft();
 
@@ -51,6 +51,8 @@ namespace MCBS.ConsoleTerminal
                 LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} Java路径:{consoleMinecraftServer.ServerProcess.LaunchArguments.JavaPath} 启动参数:{consoleMinecraftServer.ServerProcess.LaunchArguments.GetArguments()}");
             else if (minecraftInstance is HybridMinecraftServer hybridMinecraftServer)
                 LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{hybridMinecraftServer.ServerAddress} 端口:{hybridMinecraftServer.RconPort} Java路径:{hybridMinecraftServer.ServerProcess.LaunchArguments.JavaPath} 启动参数:{hybridMinecraftServer.ServerProcess.LaunchArguments.GetArguments()}");
+            else
+                throw new InvalidOperationException();
 
             ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
             MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));

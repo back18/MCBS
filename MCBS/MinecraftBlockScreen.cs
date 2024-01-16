@@ -265,7 +265,7 @@ namespace MCBS
         {
             try
             {
-                LOGGER.Info("开始回收系统资源");
+                LOGGER.Info("开始释放系统资源");
 
                 LOGGER.Info("正在等待主任务完成...");
                 TaskManager.WaitForCurrentMainTask();
@@ -273,7 +273,7 @@ namespace MCBS
                 if (IsRunning)
                 {
                     Task task = WaitForStopAsync();
-                    LOGGER.Info("正在等待系统终止...");
+                    LOGGER.Info("正在等待MCBS终止运行...");
                     IsRunning = false;
                     task.Wait();
                 }
@@ -281,19 +281,23 @@ namespace MCBS
                 bool connection = MinecraftInstance.TestConnectivity();
                 if (!connection)
                 {
-                    LOGGER.Warn("由于无法连接到Minecraft实例，部分系统资源可能无法回收");
+                    LOGGER.Warn("由于无法继续连接到Minecraft实例，部分系统资源可能无法回收");
                     goto end;
                 }
 
-                LOGGER.Info($"正在卸载所有屏幕，共计{ScreenManager.Items.Count}个");
-                foreach (var context in ScreenManager.Items.Values)
-                    context.UnloadScreen();
-                LOGGER.Info("完成");
-
-                LOGGER.Info($"正在回收交互实体，{InteractionManager.Items.Count}个");
-                foreach (var interaction in InteractionManager.Items.Values)
-                    interaction.CloseInteraction();
-                LOGGER.Info("完成");
+                if (ScreenManager.Items.Count > 0)
+                {
+                    LOGGER.Info($"即将卸载所有屏幕，共计{ScreenManager.Items.Count}个");
+                    foreach (var context in ScreenManager.Items.Values)
+                        context.UnloadScreen();
+                }
+               
+                if (InteractionManager.Items.Count > 0)
+                {
+                    LOGGER.Info($"即将回收所有交互实体，共计{InteractionManager.Items.Count}个");
+                    foreach (var interaction in InteractionManager.Items.Values)
+                        interaction.CloseInteraction();
+                }
 
                 ScreenScheduling();
                 ProcessScheduling();
@@ -301,11 +305,11 @@ namespace MCBS
                 InteractionScheduling();
                 Thread.Sleep(1000);
 
-                LOGGER.Info("全部系统资源均已释放完成");
+                LOGGER.Info("系统资源均已释放完成");
             }
             catch (Exception ex)
             {
-                LOGGER.Error("无法回收系统资源", ex);
+                LOGGER.Error("释放系统资源时引发了异常", ex);
             }
 
             end:
