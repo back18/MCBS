@@ -28,6 +28,10 @@ namespace MCBS
                     result = fileStream;
                     return true;
                 }
+                else
+                {
+                    fileStream.Close();
+                }
             }
 
             result = null;
