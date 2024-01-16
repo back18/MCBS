@@ -26,21 +26,8 @@ namespace MCBS
 
         public static ResourceEntryManager LoadAll()
         {
-            while (true)
-            {
-                LOGGER.Info("开始构建Minecraft资源文件");
-                try
-                {
-                    BuildResourcesAsync(MinecraftConfig.GameVersion).Wait();
-                    LOGGER.Info("完成");
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    LOGGER.Error("构建失败，将在3秒后重试...", ex);
-                    Thread.Sleep(3000);
-                }
-            }
+            BuildResourcesAsync(MinecraftConfig.GameVersion).Wait();
+            LOGGER.Info("Minecraft资源文件构建完成");
 
             string[] resourcePacks = GetResourcePacks(MinecraftConfig.GameVersion);
             string[] languageFiles = GetLanguageFiles(MinecraftConfig.GameVersion);
@@ -60,13 +47,9 @@ namespace MCBS
                 zipPacks[0].AddFile("/assets/minecraft/lang/" + Path.GetFileName(languageFile), fileStream);
             }
 
-            LOGGER.Info($"开始加载Minecraft资源包，共计{resourcePacks.Length}个资源包，资源包列表：");
-            foreach (string path in resourcePacks)
-                LOGGER.Info(Path.GetFileName(path));
-
             ResourceEntryManager resources = ResourcePackReader.Load(zipPacks);
 
-            LOGGER.Info("完成，资源包数量: " + resources.Count);
+            LOGGER.Info("Minecraft资源文件加载完成");
 
             return resources;
         }
@@ -90,25 +73,6 @@ namespace MCBS
 
             VersionDirectory directory = GetVersionDirectory(MinecraftConfig.GameVersion);
             return directory.LanguagesDir.GetFiles("*.json");
-        }
-
-        private static void BuildResources()
-        {
-            while (true)
-            {
-                LOGGER.Info("开始构建Minecraft资源文件");
-                try
-                {
-                    BuildResourcesAsync(MinecraftConfig.GameVersion).Wait();
-                    LOGGER.Info("完成");
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    LOGGER.Error("构建失败，将在3秒后重试...", ex);
-                    Thread.Sleep(3000);
-                }
-            }
         }
 
         private static async Task BuildResourcesAsync(string version)

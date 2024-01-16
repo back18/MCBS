@@ -27,48 +27,42 @@ namespace MCBS.ConsoleTerminal
 
         private static ApplicationManifest[] LoadSystemAppComponents()
         {
-            LOGGER.Info("开始加载系统应用程序组件");
-
             List<ApplicationManifest> result = new();
-            foreach (string dll in ConfigManager.SystemConfig.SystemAppComponents)
+            foreach (string component in ConfigManager.SystemConfig.SystemAppComponents)
             {
                 try
                 {
-                    Assembly assembly = Assembly.Load(dll);
+                    Assembly assembly = Assembly.Load(component);
                     ApplicationManifest applicationManifest = ApplicationManifestReader.Load(assembly);
                     result.Add(applicationManifest);
+                    LOGGER.Info($"成功从命名空间“{component}”加载应用程序组件“{applicationManifest.ID}-{applicationManifest.Version}”");
                 }
                 catch (Exception ex)
                 {
-                    LOGGER.Error($"无法加载位于“{dll}”的DLL应用程序组件", ex);
+                    LOGGER.Error($"无法从命名空间“{component}”加载应用程序组件", ex);
                 }
             }
-
-            LOGGER.Info($"完成，共加载{result.Count}个应用程序组件");
 
             return result.ToArray();
         }
 
         private static ApplicationManifest[] LoadDllAppComponents()
         {
-            LOGGER.Info("开始加载DLL应用程序组件");
-
             List<ApplicationManifest> result = new();
-            string[] dlls = SR.McbsDirectory.DllAppComponentsDir.GetFiles("*.dll");
-            foreach (string dll in dlls)
+            string[] files = SR.McbsDirectory.DllAppComponentsDir.GetFiles("*.dll");
+            foreach (string file in files)
             {
                 try
                 {
-                    ApplicationManifest applicationManifest = ApplicationManifestReader.Load(dll);
+                    ApplicationManifest applicationManifest = ApplicationManifestReader.Load(file);
                     result.Add(applicationManifest);
+                    LOGGER.Info($"成功从文件“{Path.GetFileName(file)}”加载应用程序组件“{applicationManifest.ID}-{applicationManifest.Version}”");
                 }
                 catch (Exception ex)
                 {
-                    LOGGER.Error($"无法加载位于“{dll}”的DLL应用程序组件", ex);
+                    LOGGER.Error($"无法从文件“{Path.GetFileName(file)}”加载应用程序组件", ex);
                 }
             }
-
-            LOGGER.Info($"完成，共加载{result.Count}个应用程序组件");
 
             return result.ToArray();
         }

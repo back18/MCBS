@@ -16,48 +16,16 @@ namespace MCBS.Config
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        public static MinecraftConfig MinecraftConfig
-        {
-            get
-            {
-                if (_MinecraftConfig is null)
-                    throw new InvalidOperationException();
-                return _MinecraftConfig;
-            }
-        }
+        public static MinecraftConfig MinecraftConfig => _MinecraftConfig ?? throw new InvalidOperationException("配置文件未加载");
         private static MinecraftConfig? _MinecraftConfig;
 
-        public static SystemConfig SystemConfig
-        {
-            get
-            {
-                if (_SystemConfig is null)
-                    throw new InvalidOperationException();
-                return _SystemConfig;
-            }
-        }
+        public static SystemConfig SystemConfig => _SystemConfig ?? throw new InvalidOperationException("配置文件未加载");
         private static SystemConfig? _SystemConfig;
 
-        public static ScreenConfig ScreenConfig
-        {
-            get
-            {
-                if (_ScreenConfig is null)
-                    throw new InvalidOperationException();
-                return _ScreenConfig;
-            }
-        }
+        public static ScreenConfig ScreenConfig => _ScreenConfig ?? throw new InvalidOperationException("配置文件未加载");
         private static ScreenConfig? _ScreenConfig;
 
-        public static IReadOnlyDictionary<string, string> Registry
-        {
-            get
-            {
-                if (_Registry is null)
-                    throw new InvalidOperationException();
-                return _Registry;
-            }
-        }
+        public static IReadOnlyDictionary<string, string> Registry => _Registry ?? throw new InvalidOperationException("配置文件未加载");
         private static Dictionary<string, string>? _Registry;
 
         public static void CreateIfNotExists()
@@ -87,14 +55,12 @@ namespace MCBS.Config
 
         public static void LoadAll()
         {
-            LOGGER.Info("开始加载配置文件");
-
             _MinecraftConfig = MinecraftConfig.Load(SR.McbsDirectory.ConfigsDir.MinecraftFile);
             _SystemConfig = SystemConfig.Load(SR.McbsDirectory.ConfigsDir.SystemFile);
             _ScreenConfig = ScreenConfig.Load(SR.McbsDirectory.ConfigsDir.ScreenFile);
             _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(SR.McbsDirectory.ConfigsDir.RegistryFile)) ?? throw new FormatException();
 
-            LOGGER.Info("完成");
+            LOGGER.Info("配置文件加载完成");
         }
     }
 }

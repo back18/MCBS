@@ -26,18 +26,17 @@ namespace MCBS
 
         public static void LoadAll()
         {
-            LOGGER.Info("开始加载FFmpeg资源文件");
-
-            BuildResourcesAsync().Wait();
-
             try
             {
+                BuildResourcesAsync().Wait();
+                LOGGER.Info("FFmpeg资源文件构建完成");
+
                 FFmpegLoader.LoadFFmpeg();
-                LOGGER.Info("完成");
+                LOGGER.Info("FFmpeg资源文件加载完成");
             }
             catch (Exception ex)
             {
-                LOGGER.Warn("FFmpeg加载失败，可能会影响到视频解码器/播放器组件的正常使用", ex);
+                LOGGER.Warn("FFmpeg资源文件加载失败，可能会影响到视频解码器/播放器组件的正常使用", ex);
             }
         }
 

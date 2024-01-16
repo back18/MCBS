@@ -73,8 +73,6 @@ namespace MCBS
 
         private static void LoadBlockTextureManager(ResourceEntryManager resources)
         {
-            LOGGER.Info("开始加载Minecraft方块纹理");
-
             _BlockTextureManager = BlockTextureManager.LoadInstance(new(resources, MinecraftConfig.BlockTextureBlacklist));
             Dictionary<Facing, Rgba32BlockMapping> mappings = new()
             {
@@ -88,13 +86,11 @@ namespace MCBS
             _Rgba32BlockMappings = new(mappings);
             _HashBlockMapping = new();
 
-            LOGGER.Info("完成，方块数量: " + _BlockTextureManager.Count);
+            LOGGER.Info($"Minecraft方块纹理数据加载完成，成功加载 {_BlockTextureManager.Count} 个方块纹理数据");
         }
 
         private static void BuildColorMappingCache(ResourceEntryManager resources)
         {
-            LOGGER.Info("开始加载Minecraft方块颜色映射表缓存");
-
             Dictionary<Facing, ColorMappingCache> caches = new();
             foreach (Facing facing in Enum.GetValues(typeof(Facing)))
             {
@@ -113,26 +109,22 @@ namespace MCBS
             }
             _ColorMappingCaches = new(caches);
 
-            LOGGER.Info("完成");
+            LOGGER.Info("Minecraft方块颜色映射表缓存构建完成");
         }
 
         private static void LoadMinecraftLanguage(ResourceEntryManager resources)
         {
-            LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);
-
             _LanguageManager = LanguageManager.LoadInstance(new(resources, MinecraftConfig.Language));
 
-            LOGGER.Info("完成，语言条目数量: " + _LanguageManager.Count);
+            LOGGER.Info($"Minecraft语言数据加载完成，语言:{MinecraftConfig.Language} 条目数量:{_LanguageManager.Count}");
         }
 
         private static void LoadFontFile(ResourceEntryManager resources)
         {
-            LOGGER.Info("开始加载字体文件");
-
             using Stream defaultFontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(SystemResourceNamespace.DefaultFontFile) ?? throw new InvalidOperationException();
             _DefaultFont = BdfFont.Load(defaultFontStream);
 
-            LOGGER.Info($"完成，字体高度:{_DefaultFont.Height} 半角宽度:{_DefaultFont.HalfWidth} 全角宽度:{_DefaultFont.FullWidth} 字符数量:{_DefaultFont.Count}");
+            LOGGER.Info($"默认字体数据完成，字符数量:{_DefaultFont.Count} 字体高度:{_DefaultFont.Height} 全角宽度:{_DefaultFont.FullWidth} 半角宽度:{_DefaultFont.HalfWidth}");
         }
 
         private static void LoadCursorFile(ResourceEntryManager resources)
@@ -141,7 +133,7 @@ namespace MCBS
 
             _CursorStyleManager = CursorStyleManager.LoadInstance();
 
-            LOGGER.Info("完成，光标样式数量: " + _CursorStyleManager.Count);
+            LOGGER.Info($"光标数据加载完成，光标数量:{_CursorStyleManager.Count}");
         }
     }
 }

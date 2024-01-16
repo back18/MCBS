@@ -27,8 +27,6 @@ namespace MCBS.ConsoleTerminal
 
         protected override void Run()
         {
-            LOGGER.Info("命令行终端已启动");
-
             while (IsRunning)
             {
                 string? input = Console.ReadLine();
@@ -114,8 +112,6 @@ namespace MCBS.ConsoleTerminal
                         break;
                 }
             }
-
-            LOGGER.Info("命令行终端已终止");
         }
 
         private static void WaitForInputEnter()

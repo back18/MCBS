@@ -47,7 +47,6 @@ namespace MCBS.Interaction
                 return;
             directory.CreateIfNotExists();
             string[] files = directory.GetFiles("*.json");
-            LOGGER.Info($"开始回收交互实体，共计{files.Length}个");
             foreach (string file in files)
             {
                 try
@@ -60,11 +59,12 @@ namespace MCBS.Interaction
                     sender.KillEntity(model.EntityUUID);
                     sender.RemoveForceloadChunk(blockPos);
                     File.Delete(file);
+
                     LOGGER.Info($"玩家({model.PlayerUUID})的交互实体({model.EntityUUID})已回收");
                 }
                 catch (Exception ex)
                 {
-                    LOGGER.Error("无法回收交互实体", ex);
+                    LOGGER.Error($"无法回收位于“{Path.GetFileName(file)}”的交互实体", ex);
                 }
             }
         }

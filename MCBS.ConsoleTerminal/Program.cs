@@ -33,29 +33,62 @@ namespace MCBS.ConsoleTerminal
         private static void Main(string[] args)
         {
             LOGGER.Info("MCBS已启动，欢迎使用！");
+
+            Initialize();
+
+            LOGGER.Info($"将以 {ConfigManager.MinecraftConfig.CommunicationMode} 模式绑定到位于“{ConfigManager.MinecraftConfig.MinecraftPath}”Minecraft实例");
+
+            MinecraftInstance minecraftInstance = BindingMinecraft();
+
+            MinecraftConfig config = ConfigManager.MinecraftConfig;
+            if (minecraftInstance is McapiMinecraftClient mcapiMinecraftClient)
+                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft客户端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{mcapiMinecraftClient.ServerAddress} 端口:{mcapiMinecraftClient.McapiPort}");
+            else if (minecraftInstance is McapiMinecraftServer mcapiMinecraftServer)
+                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{mcapiMinecraftServer.ServerAddress} 端口:{mcapiMinecraftServer.McapiPort}");
+            else if (minecraftInstance is RconMinecraftServer rconMinecraftServer)
+                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{rconMinecraftServer.ServerAddress} 端口:{rconMinecraftServer.RconPort}");
+            else if (minecraftInstance is ConsoleMinecraftServer consoleMinecraftServer)
+                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} Java路径:{consoleMinecraftServer.ServerProcess.LaunchArguments.JavaPath} 启动参数:{consoleMinecraftServer.ServerProcess.LaunchArguments.GetArguments()}");
+            else if (minecraftInstance is HybridMinecraftServer hybridMinecraftServer)
+                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{hybridMinecraftServer.ServerAddress} 端口:{hybridMinecraftServer.RconPort} Java路径:{hybridMinecraftServer.ServerProcess.LaunchArguments.JavaPath} 启动参数:{hybridMinecraftServer.ServerProcess.LaunchArguments.GetArguments()}");
+
+            ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
+            MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
+            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
+
+            MinecraftBlockScreen.Instance.Start("System Thread");
             Terminal.Start("Terminal Thread");
             CommandLogger.Start("CommandLogger Thread");
 
+            MinecraftBlockScreen.Instance.WaitForStop();
+
+            Exit(0);
+        }
+
+        private static void Initialize()
+        {
             try
             {
+                LOGGER.Info("程序开始初始化");
+
                 ConfigManager.LoadAll();
-                FFmpegResourcesLoader.LoadAll();
-                ResourceEntryManager resources = MinecraftResourcesLoader.LoadAll();
+                using ResourceEntryManager resources = MinecraftResourcesLoader.LoadAll();
                 SR.LoadAll(resources);
+                FFmpegResourcesLoader.LoadAll();
                 TextureManager.LoadInstance();
 
-                resources.Dispose();
-                LOGGER.Info("资源包内所有资源均已加载完成，资源包缓存已释放");
+                LOGGER.Info("程序初始化完成");
             }
             catch (Exception ex)
             {
-                LOGGER.Fatal("无法完成资源文件的加载", ex);
-                Exit();
-                return;
+                LOGGER.Fatal("程序初始化失败", ex);
+                Exit(-1);
+                throw new InvalidOperationException();
             }
+        }
 
-            MinecraftInstance minecraftInstance;
-
+        private static MinecraftInstance BindingMinecraft()
+        {
             try
             {
                 MinecraftConfig config = ConfigManager.MinecraftConfig;
@@ -63,20 +96,18 @@ namespace MCBS.ConsoleTerminal
                 {
                     case InstanceTypes.CLIENT:
                         if (config.CommunicationMode == CommunicationModes.MCAPI)
-                            minecraftInstance = new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default);
+                            return new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default);
                         else
                             throw new InvalidOperationException();
-                        break;
                     case InstanceTypes.SERVER:
-                        minecraftInstance = config.CommunicationMode switch
+                        return config.CommunicationMode switch
                         {
+                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default),
                             CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, Logbuilder.Default),
                             CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), Logbuilder.Default),
                             CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), Logbuilder.Default),
-                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default),
                             _ => throw new InvalidOperationException(),
                         };
-                        break;
                     default:
                         throw new InvalidOperationException();
                 }
@@ -84,26 +115,12 @@ namespace MCBS.ConsoleTerminal
             catch (Exception ex)
             {
                 LOGGER.Fatal("无法绑定到Minecraft实例", ex);
-                Exit();
-                return;
+                Exit(-1);
+                throw new InvalidOperationException();
             }
-
-            ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
-            MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
-            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
-            MinecraftBlockScreen.Instance.Start("System Thread");
-            MinecraftBlockScreen.Instance.WaitForStop();
-
-            Exit();
-            return;
         }
 
-        private static void CommandSender_CommandSent(CommandSender sender, CommandInfoEventArgs e)
-        {
-            //CommandLogger.Submit(new(e.CommandInfo, MCOS.Instance.GameTick, MCOS.Instance.SystemTick, MCOS.Instance.SystemStage, Thread.CurrentThread.Name ?? "null"));
-        }
-
-        public static void Exit()
+        public static void Exit(int exitCode)
         {
             Task terminal = Terminal.WaitForStopAsync();
             Task commandLogger = CommandLogger.WaitForStopAsync();
@@ -126,6 +143,12 @@ namespace MCBS.ConsoleTerminal
             }
 
             LOGGER.Info("MCBS已退出，感谢使用！");
+            Environment.Exit(exitCode);
+        }
+
+        private static void CommandSender_CommandSent(CommandSender sender, CommandInfoEventArgs e)
+        {
+            //CommandLogger.Submit(new(e.CommandInfo, MCOS.Instance.GameTick, MCOS.Instance.SystemTick, MCOS.Instance.SystemStage, Thread.CurrentThread.Name ?? "null"));
         }
     }
 }

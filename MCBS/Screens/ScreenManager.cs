@@ -45,8 +45,6 @@ namespace MCBS.Screens
                 return;
 
             string[] files = directory.GetFiles("*.json");
-            LOGGER.Info($"开始构建所有本地屏幕，共计{files.Length}个");
-
             foreach (string file in files)
             {
                 try
@@ -54,15 +52,15 @@ namespace MCBS.Screens
                     string json = File.ReadAllText(file);
                     Screen.DataModel model = JsonConvert.DeserializeObject<Screen.DataModel>(json) ?? throw new FormatException();
                     Screen screen = Screen.FromDataModel(model);
-
                     string name = Path.GetFileNameWithoutExtension(file);
                     Guid guid = Guid.Parse(name);
+                    ScreenContext screenContext = MinecraftBlockScreen.Instance.BuildScreen(screen, guid);
 
-                    MinecraftBlockScreen.Instance.BuildScreen(screen, guid);
+                    LOGGER.Info($"成功从文件“{Path.GetFileName(file)}”构建屏幕({screenContext.Screen.StartPosition})");
                 }
                 catch (Exception ex)
                 {
-                    LOGGER.Error($"无法从文件“{file}”构建屏幕", ex);
+                    LOGGER.Error($"无法从文件“{Path.GetFileName(file)}”构建屏幕", ex);
                 }
             }
         }

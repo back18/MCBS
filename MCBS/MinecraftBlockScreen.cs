@@ -135,9 +135,9 @@ namespace MCBS
             }
         }
 
-        private void Initialize()
+        private void ConnectMinecraft()
         {
-            LOGGER.Info("正在等待Minecraft实例启动...");
+            LOGGER.Info($"正在等待位于“{MinecraftInstance.MinecraftDirectory.FullPath}”的Minecraft实例启动...");
 
             while (true)
             {
@@ -153,27 +153,31 @@ namespace MCBS
             Thread.Sleep(1000);
 
             LOGGER.Info("成功连接到Minecraft实例");
+        }
 
-            LOGGER.Info("开始初始化");
+        private void Initialize()
+        {
+            LOGGER.Info("MCBS开始初始化");
 
             _query = GetGameTickAsync();
             GameTick = _query.Result;
-            FileWriteQueue.Start("FileWrite Thread");
             TaskManager.Initialize();
             ScreenManager.Initialize();
             InteractionManager.Initialize();
             RightClickObjectiveManager.Initialize();
+            FileWriteQueue.Start("FileWrite Thread");
 
-            LOGGER.Info("初始化完成");
+            LOGGER.Info("MCBS初始化完成");
         }
 
         protected override void Run()
         {
-            LOGGER.Info("系统已启动");
+            ConnectMinecraft();
             Initialize();
-            _syatemStopwatch.Start();
 
-            MinecraftInstance.CommandSender.TryGetEntitySnbt("ORCEHK", out var result);
+            LOGGER.Info("MCBS已开始运行");
+
+            _syatemStopwatch.Start();
 
             run:
 
@@ -224,13 +228,11 @@ namespace MCBS
             }
             catch (Exception ex)
             {
-                //throw;
-
                 bool connection = MinecraftInstance.TestConnectivity();
 
                 if (!connection)
                 {
-                    LOGGER.Fatal("系统运行时引发了异常，并且无法连接到Minecraft实例，系统即将终止", ex);
+                    LOGGER.Fatal("MCBS运行时引发了异常，并且与Minecraft实例断开了连接，系统即将终止", ex);
                 }
                 else if (ConfigManager.SystemConfig.CrashAutoRestart)
                 {
@@ -238,7 +240,7 @@ namespace MCBS
                     {
                         context.RestartScreen();
                     }
-                    LOGGER.Error("系统运行时引发了异常，已启用自动重启，系统即将在3秒后重启", ex);
+                    LOGGER.Error("MCBS运行时引发了异常，已启用自动重启，系统即将在3秒后重启", ex);
                     for (int i = 3; i >= 1; i--)
                     {
                         LOGGER.Info($"将在{i}秒后自动重启...");
@@ -250,12 +252,13 @@ namespace MCBS
                 }
                 else
                 {
-                    LOGGER.Fatal("系统运行时引发了异常，并且未启用自动重启，系统即将终止", ex);
+                    LOGGER.Fatal("MCBS运行时引发了异常，并且未启用自动重启，系统即将终止", ex);
                 }
             }
 
             _syatemStopwatch.Stop();
-            LOGGER.Info("系统已终止");
+
+            LOGGER.Info("MCBS已终止运行");
         }
 
         protected override void DisposeUnmanaged()
