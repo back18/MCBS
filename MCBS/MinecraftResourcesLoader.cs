@@ -15,6 +15,8 @@ using QuanLib.Minecraft.ResourcePack;
 using QuanLib.Downloader;
 using QuanLib.Core.Extensions;
 using QuanLib.Core;
+using QuanLib.IO.Zip;
+using System.IO.Compression;
 
 namespace MCBS
 {
@@ -40,26 +42,75 @@ namespace MCBS
                 }
             }
 
-            VersionDirectory directory = SR.McbsDirectory.MinecraftDir.VanillaDir.GetVersionDirectory(MinecraftConfig.GameVersion);
-            string[] paths = new string[MinecraftConfig.ResourcePackList.Count + 1];
-            paths[0] = directory.ClientFile;
-            for (int i = 1; i < paths.Length; i++)
-                paths[i] = SR.McbsDirectory.MinecraftDir.ResourcePacksDir.Combine(MinecraftConfig.ResourcePackList[i]);
+            string[] resourcePacks = GetResourcePacks(MinecraftConfig.GameVersion);
+            string[] languageFiles = GetLanguageFiles(MinecraftConfig.GameVersion);
 
-            LOGGER.Info($"开始加载Minecraft资源包，共计{paths.Length}个资源包，资源包列表：");
-            foreach (string path in paths)
+            ZipPack[] zipPacks = new ZipPack[resourcePacks.Length];
+            for (int i = 0; i < resourcePacks.Length; i++)
+                zipPacks[i] = new(resourcePacks[i], ZipArchiveMode.Update);
+
+            foreach (string languageFile in languageFiles)
+            {
+                using FileStream fileStream = File.OpenRead(languageFile);
+                zipPacks[0].AddFile("/assets/minecraft/lang/" + Path.GetFileName(languageFile), fileStream);
+            }
+
+            LOGGER.Info($"开始加载Minecraft资源包，共计{resourcePacks.Length}个资源包，资源包列表：");
+            foreach (string path in resourcePacks)
                 LOGGER.Info(Path.GetFileName(path));
-            ResourceEntryManager resources = ResourcePackReader.Load(paths);
+
+            ResourceEntryManager resources = ResourcePackReader.Load(zipPacks);
+
             LOGGER.Info("完成，资源包数量: " + resources.Count);
 
             return resources;
         }
 
-        private static async Task<VersionDirectory> BuildResourcesAsync(string version)
+        private static string[] GetResourcePacks(string version)
         {
             ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
 
-            VersionDirectory directory = SR.McbsDirectory.MinecraftDir.VanillaDir.GetVersionDirectory(version);
+            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.GameVersion);
+            string[] result = new string[MinecraftConfig.ResourcePackList.Count + 1];
+            result[0] = directory.ClientFile;
+            for (int i = 1; i < result.Length; i++)
+                result[i] = SR.McbsDirectory.MinecraftDir.ResourcePacksDir.Combine(MinecraftConfig.ResourcePackList[i]);
+
+            return result;
+        }
+
+        private static string[] GetLanguageFiles(string version)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
+
+            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.GameVersion);
+            return directory.LanguagesDir.GetFiles("*.json");
+        }
+
+        private static void BuildResources()
+        {
+            while (true)
+            {
+                LOGGER.Info("开始构建Minecraft资源文件");
+                try
+                {
+                    BuildResourcesAsync(MinecraftConfig.GameVersion).Wait();
+                    LOGGER.Info("完成");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    LOGGER.Error("构建失败，将在3秒后重试...", ex);
+                    Thread.Sleep(3000);
+                }
+            }
+        }
+
+        private static async Task BuildResourcesAsync(string version)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
+
+            VersionDirectory directory = GetVersionDirectory(version);
             directory.BuildDirectoryTree();
 
             DownloadProvider downloadProvider = MinecraftConfig.DownloadApi switch
@@ -131,8 +182,6 @@ namespace MCBS
 
                 downloadManager.ClearAll();
             }
-
-            return directory;
         }
 
         private static async Task<Stream> ReadOrDownloadAsync(string path, NetworkAssetIndex networkAssetIndex, DownloadProvider? downloadProvider = null)
@@ -179,6 +228,13 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(downloadManager, nameof(downloadManager));
 
             return $"多个文件下载中: {downloadManager.CompletedCount}/{downloadManager.Count}";
+        }
+
+        private static VersionDirectory GetVersionDirectory(string version)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
+
+            return SR.McbsDirectory.MinecraftDir.VanillaDir.GetVersionDirectory(version);
         }
     }
 }
