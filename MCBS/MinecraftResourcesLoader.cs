@@ -47,7 +47,12 @@ namespace MCBS
 
             ZipPack[] zipPacks = new ZipPack[resourcePacks.Length];
             for (int i = 0; i < resourcePacks.Length; i++)
-                zipPacks[i] = new(resourcePacks[i], ZipArchiveMode.Update);
+            {
+                using FileStream fileStream = File.OpenRead(resourcePacks[i]);
+                MemoryStream memoryStream = new();
+                fileStream.CopyTo(memoryStream);
+                zipPacks[i] = new(memoryStream, ZipArchiveMode.Update);
+            }
 
             foreach (string languageFile in languageFiles)
             {
