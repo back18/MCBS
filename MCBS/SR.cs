@@ -75,7 +75,7 @@ namespace MCBS
         {
             LOGGER.Info("开始加载Minecraft方块纹理");
 
-            _BlockTextureManager = BlockTextureManager.LoadInstance(resources, MinecraftConfig.BlockTextureBlacklist);
+            _BlockTextureManager = BlockTextureManager.LoadInstance(new(resources, MinecraftConfig.BlockTextureBlacklist));
             Dictionary<Facing, Rgba32BlockMapping> mappings = new()
             {
                 { Facing.Xp, new(_BlockTextureManager, Facing.Xp) },
@@ -120,7 +120,7 @@ namespace MCBS
         {
             LOGGER.Info("开始加载Minecraft语言文件，语言标识: " + MinecraftConfig.Language);
 
-            _LanguageManager = LanguageManager.LoadInstance(resources, MinecraftConfig.Language);
+            _LanguageManager = LanguageManager.LoadInstance(new(resources, MinecraftConfig.Language));
 
             LOGGER.Info("完成，语言条目数量: " + _LanguageManager.Count);
         }
