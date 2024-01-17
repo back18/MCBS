@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using QuanLib.Core;
 using QuanLib.Core.Extensions;
 using QuanLib.Minecraft.Instance;
 using SixLabors.ImageSharp;
@@ -14,15 +15,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms.Utility
 {
-    public class TextureManager : IReadOnlyDictionary<string, Image<Rgba32>>
+    public class TextureManager : IReadOnlyDictionary<string, Image<Rgba32>>, ISingleton<TextureManager, InstantiateArgs>
     {
         private const string TEXTURES_NAMESPACE = "MCBS.BlockForms.SystemResource.Textures";
-
-        static TextureManager()
-        {
-            _slock = new();
-            IsLoaded = false;
-        }
 
         private TextureManager(Dictionary<string, Image<Rgba32>> items)
         {
@@ -31,19 +26,11 @@ namespace MCBS.BlockForms.Utility
             _items = items;
         }
 
-        private static readonly object _slock;
+        private static readonly object _slock = new();
 
-        public static bool IsLoaded { get; private set; }
+        public static bool IsInstanceLoaded => _Instance is not null;
 
-        public static TextureManager Instance
-        {
-            get
-            {
-                if (_Instance is null)
-                    throw new InvalidOperationException("实例未加载");
-                return _Instance;
-            }
-        }
+        public static TextureManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static TextureManager? _Instance;
 
         private readonly Dictionary<string, Image<Rgba32>> _items = new();
@@ -58,14 +45,18 @@ namespace MCBS.BlockForms.Utility
 
         public static TextureManager LoadInstance()
         {
+            return LoadInstance(InstantiateArgs.Empty);
+        }
+
+        public static TextureManager LoadInstance(InstantiateArgs instantiateArgs)
+        {
             lock (_slock)
             {
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
                 Dictionary<string, Image<Rgba32>> items = Load();
-                _Instance ??= new(items);
-                IsLoaded = true;
+                _Instance = new(items);
                 return _Instance;
             }
         }

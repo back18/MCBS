@@ -12,17 +12,12 @@ using System.Threading.Tasks;
 using QuanLib.Minecraft;
 using QuanLib.Core.Extensions;
 using MCBS.Rendering;
+using QuanLib.Core;
 
 namespace MCBS.Cursor.Style
 {
-    public class CursorStyleManager : IReadOnlyDictionary<string, CursorStyle>
+    public class CursorStyleManager : IReadOnlyDictionary<string, CursorStyle>, ISingleton<CursorStyleManager, InstantiateArgs>
     {
-        static CursorStyleManager()
-        {
-            _slock = new();
-            IsLoaded = false;
-        }
-
         private CursorStyleManager(Dictionary<string, CursorStyle> items)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
@@ -30,19 +25,11 @@ namespace MCBS.Cursor.Style
             _items = items;
         }
 
-        private static readonly object _slock;
+        private static readonly object _slock = new();
 
-        public static bool IsLoaded { get; private set; }
+        public static bool IsInstanceLoaded => _Instance is not null;
 
-        public static CursorStyleManager Instance
-        {
-            get
-            {
-                if (_Instance is null)
-                    throw new InvalidOperationException("实例未加载");
-                return _Instance;
-            }
-        }
+        public static CursorStyleManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static CursorStyleManager? _Instance;
 
         private readonly Dictionary<string, CursorStyle> _items;
@@ -57,14 +44,20 @@ namespace MCBS.Cursor.Style
 
         public static CursorStyleManager LoadInstance()
         {
+            return LoadInstance(InstantiateArgs.Empty);
+        }
+
+        public static CursorStyleManager LoadInstance(InstantiateArgs instantiateArgs)
+        {
+            ArgumentNullException.ThrowIfNull(instantiateArgs, nameof(instantiateArgs));
+
             lock (_slock)
             {
                 if (_Instance is not null)
                     throw new InvalidOperationException("试图重复加载单例实例");
 
                 Dictionary<string, CursorStyle> items = Load();
-                _Instance ??= new(items);
-                IsLoaded = true;
+                _Instance = new(items);
                 return _Instance;
             }
         }
