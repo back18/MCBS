@@ -27,7 +27,6 @@ namespace MCBS
                 { SystemStage.HandleUIRendering, new() },
                 { SystemStage.HandleScreenOutput, new() },
                 { SystemStage.HandleAfterFrame, new() },
-                { SystemStage.HandleSystemInterrupt, new() },
                 { SystemStage.Other, new() }
             };
         }
@@ -135,8 +134,6 @@ namespace MCBS
             public const string HandleScreenOutput = nameof(HandleScreenOutput);
 
             public const string HandleAfterFrame = nameof(HandleAfterFrame);
-
-            public const string HandleSystemInterrupt = nameof(HandleSystemInterrupt);
         }
     }
 }

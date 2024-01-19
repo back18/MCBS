@@ -32,8 +32,6 @@ namespace MCBS
 
         HandleAfterFrame,
 
-        HandleSystemInterrupt,
-
         Other,
     }
 }

@@ -27,11 +27,11 @@ using QuanLib.TickLoop;
 
 namespace MCBS
 {
-    public class MinecraftBlockScreen : UnmanagedRunnable, ISingleton<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
+    public class MinecraftBlockScreen : TickLoopSystem, ISingleton<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
-        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(Logbuilder.Default)
+        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), Logbuilder.Default)
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
@@ -49,15 +49,9 @@ namespace MCBS
             CursorManager = new();
             AppComponents = new(appComponents.ToDictionary(item => item.ID, item => item));
 
-            PreviousTickTime = TimeSpan.Zero;
-            NextTickTime = PreviousTickTime + TickTime;
-            TickTime = TimeSpan.FromMilliseconds(50);
             GameTick = 0;
-            SystemTick = 0;
             SystemStage = SystemStage.Other;
 
-            _syatemStopwatch = new();
-            _tickStopwatch = new();
             _times = new();
             _query = Task.Run(() => 0);
 
@@ -71,27 +65,11 @@ namespace MCBS
         public static MinecraftBlockScreen Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static MinecraftBlockScreen? _Instance;
 
-        private readonly Stopwatch _syatemStopwatch;
-
-        private readonly Stopwatch _tickStopwatch;
-
         private readonly Dictionary<SystemStage, TimeSpan> _times;
 
         private Task<int> _query;
 
-        public TimeSpan SystemRunningTime => _syatemStopwatch.Elapsed;
-
-        public TimeSpan TickRunningTime => _tickStopwatch.Elapsed;
-
-        public TimeSpan PreviousTickTime { get; private set; }
-
-        public TimeSpan NextTickTime { get; private set; }
-
-        public TimeSpan TickTime { get; }
-
         public int GameTick { get; private set; }
-
-        public int SystemTick { get; private set; }
 
         public SystemStage SystemStage { get; private set; }
 
@@ -171,6 +149,52 @@ namespace MCBS
             LOGGER.Info("MCBS初始化完成");
         }
 
+        public override void OnBeforeTick()
+        {
+
+        }
+
+        public override void OnTickUpdate(int tick)
+        {
+            ScreenScheduling();
+            ProcessScheduling();
+            FormScheduling();
+
+            if (_query.IsCompleted)
+            {
+                _times.Clear();
+                CommandManager.SnbtCache.Clear();
+
+                InteractionScheduling();
+                RightClickObjectiveScheduling();
+                ScreenBuildScheduling();
+                HandleScreenInput();
+                HandleScreenEvent();
+            }
+            else
+            {
+                //TaskManager.AddTempTask(() =>
+                //{
+                //    InteractionScheduling();
+                //    RightClickObjectiveScheduling();
+                //    ScreenBuildScheduling();
+                //    HandleScreenInput();
+                //});
+            }
+
+            HandleBeforeFrame();
+            HandleUIRendering();
+            HandleScreenOutput();
+            HandleAfterFrame();
+
+            TimeAnalysisManager.Submit(_times, TickRunningTime);
+        }
+
+        public override void OnAfterTick()
+        {
+
+        }
+
         protected override void Run()
         {
             ConnectMinecraft();
@@ -178,54 +202,11 @@ namespace MCBS
 
             LOGGER.Info("MCBS已开始运行");
 
-            _syatemStopwatch.Start();
-
             run:
 
             try
             {
-                while (IsRunning)
-                {
-                    _tickStopwatch.Restart();
-                    _times.Clear();
-                    CommandManager.SnbtCache.Clear();
-                    PreviousTickTime = SystemRunningTime;
-                    NextTickTime = PreviousTickTime + TickTime;
-                    SystemTick++;
-
-                    ScreenScheduling();
-                    ProcessScheduling();
-                    FormScheduling();
-
-                    if (_query.IsCompleted)
-                    {
-                        InteractionScheduling();
-                        RightClickObjectiveScheduling();
-                        ScreenBuildScheduling();
-                        HandleScreenInput();
-                        HandleScreenEvent();
-                    }
-                    else
-                    {
-                        //TaskManager.AddTempTask(() =>
-                        //{
-                        //    InteractionScheduling();
-                        //    RightClickObjectiveScheduling();
-                        //    ScreenBuildScheduling();
-                        //    HandleScreenInput();
-                        //});
-                    }
-
-                    HandleBeforeFrame();
-                    HandleUIRendering();
-                    HandleScreenOutput();
-                    HandleAfterFrame();
-
-                    HandleSystemInterrupt();
-
-                    _tickStopwatch.Stop();
-                    TimeAnalysisManager.Submit(_times, _tickStopwatch.Elapsed);
-                }
+                base.Run();
             }
             catch (Exception ex)
             {
@@ -256,8 +237,6 @@ namespace MCBS
                     LOGGER.Fatal("MCBS运行时引发了异常，并且未启用自动重启，系统即将终止", ex);
                 }
             }
-
-            _syatemStopwatch.Stop();
 
             LOGGER.Info("MCBS已终止运行");
         }
@@ -408,19 +387,6 @@ namespace MCBS
         public void HandleAfterFrame()
         {
             HandleAndTimeing(ScreenManager.HandleAllAfterFrame, SystemStage.HandleAfterFrame);
-        }
-
-        private void HandleSystemInterrupt()
-        {
-            HandleAndTimeing(() =>
-            {
-                int time = (int)((NextTickTime - SystemRunningTime).TotalMilliseconds - 10);
-                if (time > 0)
-                    Thread.Sleep(time);
-                while (SystemRunningTime < NextTickTime)
-                    Thread.Yield();
-            },
-            SystemStage.HandleSystemInterrupt);
         }
 
         public ScreenContext? ScreenContextOf(IForm form)
