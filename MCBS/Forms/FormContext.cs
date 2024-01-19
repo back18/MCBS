@@ -8,6 +8,7 @@ using MCBS.Processes;
 using MCBS.Screens;
 using MCBS.State;
 using MCBS.UI;
+using QuanLib.TickLoop;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace MCBS.Forms
     /// <summary>
     /// 窗体运行时上下文
     /// </summary>
-    public class FormContext : ITickable
+    public class FormContext : ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -201,7 +202,7 @@ namespace MCBS.Forms
 
         }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             StateManager.HandleAllState();
         }

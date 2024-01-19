@@ -8,10 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.Vector;
+using QuanLib.TickLoop;
 
 namespace MCBS.Screens.Building
 {
-    public class ScreenBuildContext : ITickable
+    public class ScreenBuildContext : ITickUpdatable
     {
         public ScreenBuildContext(string playerName)
         {
@@ -27,7 +28,7 @@ namespace MCBS.Screens.Building
         public Screen Screen => _Screen ?? throw new InvalidOperationException("屏幕未被初始化");
         private Screen? _Screen;
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
 

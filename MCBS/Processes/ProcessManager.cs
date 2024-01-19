@@ -3,6 +3,7 @@ using MCBS.Config;
 using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Processes
 {
-    public partial class ProcessManager
+    public partial class ProcessManager : ITickUpdatable
     {
         public ProcessManager()
         {
@@ -31,11 +32,11 @@ namespace MCBS.Processes
 
         protected virtual void OnRemovedProcess(ProcessManager sender, ProcessEventArgs e) { }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             foreach (var items in Items)
             {
-                items.Value.OnTick();
+                items.Value.OnTickUpdate(tick);
                 if (items.Value.ProcessState == ProcessState.Stopped)
                     Items.TryRemove(items.Key, out _);
             }

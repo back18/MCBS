@@ -13,10 +13,11 @@ using MCBS.UI;
 using Newtonsoft.Json;
 using MCBS.Directorys;
 using Microsoft.Extensions.Options;
+using QuanLib.TickLoop;
 
 namespace MCBS.Screens
 {
-    public partial class ScreenManager : ITickable
+    public partial class ScreenManager : ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -65,7 +66,7 @@ namespace MCBS.Screens
             }
         }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             foreach (var item in Items)
             {
@@ -80,7 +81,7 @@ namespace MCBS.Screens
                     }
                 }
 
-                item.Value.OnTick();
+                item.Value.OnTickUpdate(tick);
 
                 if (state.CurrentState == ScreenState.Unload)
                 {

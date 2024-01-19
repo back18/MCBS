@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft;
+using QuanLib.TickLoop;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -19,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public class MediaFilePlayer<TPixel> : UnmanagedBase, ITickable where TPixel : unmanaged, IPixel<TPixel>
+    public class MediaFilePlayer<TPixel> : UnmanagedBase, ITickUpdatable where TPixel : unmanaged, IPixel<TPixel>
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -210,7 +211,7 @@ namespace MCBS
             VideoFrameChanged.Invoke(this, new(temp, CurrentVideoFrame));
         }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             StateManager.HandleAllState();
         }

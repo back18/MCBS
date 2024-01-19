@@ -10,10 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.NBT.Models;
+using QuanLib.TickLoop;
 
 namespace MCBS.Screens.Building
 {
-    public class ScreenBuildManager : ITickable
+    public class ScreenBuildManager : ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -28,7 +29,7 @@ namespace MCBS.Screens.Building
 
         public bool Enable { get; set; }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             foreach (var context in _contexts.ToArray())
@@ -85,7 +86,7 @@ namespace MCBS.Screens.Building
 
             foreach (var context in _contexts.Values)
             {
-                context.OnTick();
+                context.OnTickUpdate(tick);
             }
         }
     }

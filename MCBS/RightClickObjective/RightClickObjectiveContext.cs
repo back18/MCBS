@@ -2,6 +2,7 @@
 using MCBS.Cursor;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
+using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.RightClickObjective
 {
-    public class RightClickObjectiveContext : ITickable
+    public class RightClickObjectiveContext : ITickUpdatable
     {
         public RightClickObjectiveContext(string playerName)
         {
@@ -24,7 +25,7 @@ namespace MCBS.RightClickObjective
 
         public bool IsRightClick { get; private set; }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             int score = sender.GetPlayerScoreboard(PlayerName, ConfigManager.ScreenConfig.RightClickObjective);

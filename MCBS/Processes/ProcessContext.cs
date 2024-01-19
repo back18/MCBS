@@ -6,6 +6,7 @@ using MCBS.Logging;
 using MCBS.State;
 using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Processes
 {
-    public class ProcessContext : RunnableBase, ITickable
+    public class ProcessContext : RunnableBase, ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -96,7 +97,7 @@ namespace MCBS.Processes
             return true;
         }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             StateManager.HandleAllState();
         }

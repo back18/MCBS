@@ -2,6 +2,7 @@
 using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Forms
 {
-    public partial class FormManager : ITickable
+    public partial class FormManager : ITickUpdatable
     {
         public FormManager()
         {
@@ -30,11 +31,11 @@ namespace MCBS.Forms
 
         protected virtual void OnRemovedForm(FormManager sender, FormContextEventArgs e) { }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             foreach (var item in Items)
             {
-                item.Value.OnTick();
+                item.Value.OnTickUpdate(tick);
                 if (item.Value.FormState == FormState.Closed)
                     Items.TryRemove(item.Key, out _);
             }

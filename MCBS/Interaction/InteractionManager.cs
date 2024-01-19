@@ -8,6 +8,7 @@ using QuanLib.Core;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Vector;
+using QuanLib.TickLoop;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -19,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Interaction
 {
-    public class InteractionManager : ITickable
+    public class InteractionManager : ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -69,11 +70,11 @@ namespace MCBS.Interaction
             }
         }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             foreach (var item in Items)
             {
-                item.Value.OnTick();
+                item.Value.OnTickUpdate(tick);
                 if (item.Value.InteractionState == InteractionState.Closed)
                     Items.Remove(item.Key);
             }

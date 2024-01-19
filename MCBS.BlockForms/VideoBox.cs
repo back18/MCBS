@@ -63,7 +63,7 @@ namespace MCBS.BlockForms
         {
             base.OnAfterFrame(sender, e);
 
-            MediaFilePlayer?.OnTick();
+            MediaFilePlayer?.OnTickUpdate(MinecraftBlockScreen.Instance.SystemTick);
         }
 
         protected override BlockFrame Rendering()

@@ -17,13 +17,14 @@ using MCBS.Rendering;
 using MCBS.Directorys;
 using QuanLib.IO;
 using Newtonsoft.Json;
+using QuanLib.TickLoop;
 
 namespace MCBS.Screens
 {
     /// <summary>
     /// 屏幕运行时上下文
     /// </summary>
-    public class ScreenContext : ITickable
+    public class ScreenContext : ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
 
@@ -129,7 +130,7 @@ namespace MCBS.Screens
             SaveJson();
         }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             StateManager.HandleAllState();
         }

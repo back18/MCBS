@@ -23,6 +23,7 @@ using QuanLib.Minecraft.Command;
 using QuanLib.IO;
 using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.Command.Models;
+using QuanLib.TickLoop;
 
 namespace MCBS
 {
@@ -318,6 +319,12 @@ namespace MCBS
             LOGGER.Info("已和Minecraft实例断开连接");
         }
 
+        private void HandleAndTimeing(TickUpdateHandler tickUpdateHandler, SystemStage stage)
+        {
+            ArgumentNullException.ThrowIfNull(tickUpdateHandler, nameof(tickUpdateHandler));
+            HandleAndTimeing(() => tickUpdateHandler.Invoke(SystemTick), stage);
+        }
+
         private void HandleAndTimeing(Action action, SystemStage stage)
         {
             ArgumentNullException.ThrowIfNull(action, nameof(action));
@@ -336,32 +343,32 @@ namespace MCBS
 
         private void ScreenScheduling()
         {
-            HandleAndTimeing(ScreenManager.OnTick, SystemStage.ScreenScheduling);
+            HandleAndTimeing(ScreenManager.OnTickUpdate, SystemStage.ScreenScheduling);
         }
 
         private void ProcessScheduling()
         {
-            HandleAndTimeing(ProcessManager.OnTick, SystemStage.ProcessScheduling);
+            HandleAndTimeing(ProcessManager.OnTickUpdate, SystemStage.ProcessScheduling);
         }
 
         private void FormScheduling()
         {
-            HandleAndTimeing(FormManager.OnTick, SystemStage.FormScheduling);
+            HandleAndTimeing(FormManager.OnTickUpdate, SystemStage.FormScheduling);
         }
 
         private void InteractionScheduling()
         {
-            HandleAndTimeing(InteractionManager.OnTick, SystemStage.InteractionScheduling);
+            HandleAndTimeing(InteractionManager.OnTickUpdate, SystemStage.InteractionScheduling);
         }
 
         private void RightClickObjectiveScheduling()
         {
-            HandleAndTimeing(RightClickObjectiveManager.OnTick, SystemStage.RightClickObjectiveScheduling);
+            HandleAndTimeing(RightClickObjectiveManager.OnTickUpdate, SystemStage.RightClickObjectiveScheduling);
         }
 
         private void ScreenBuildScheduling()
         {
-            HandleAndTimeing(ScreenBuildManager.OnTick, SystemStage.ScreenBuildScheduling);
+            HandleAndTimeing(ScreenBuildManager.OnTickUpdate, SystemStage.ScreenBuildScheduling);
         }
 
         private void HandleScreenInput()

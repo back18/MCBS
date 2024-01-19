@@ -10,6 +10,7 @@ using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Vector;
+using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -19,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Interaction
 {
-    public class InteractionContext : UnmanagedBase, ITickable
+    public class InteractionContext : UnmanagedBase, ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogUtil.GetLogger();
         private const string INTERACTION_ID = "minecraft:interaction";
@@ -69,7 +70,7 @@ namespace MCBS.Interaction
 
         public bool IsRightClick { get; private set; }
 
-        public void OnTick()
+        public void OnTickUpdate(int tick)
         {
             StateManager.HandleAllState();
         }
