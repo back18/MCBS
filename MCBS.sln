@@ -69,6 +69,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.Logging",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.NBT", "..\QuanLib.Minecraft\QuanLib.Minecraft.NBT\QuanLib.Minecraft.NBT.csproj", "{DFE5572E-089C-4316-BC62-95ECAD6A6A94}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.TickLoop", "..\QuanLib.TickLoop\QuanLib.TickLoop\QuanLib.TickLoop.csproj", "{C595F830-047A-4C09-A773-920039DCC124}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.TickLoop.StateMachine", "..\QuanLib.TickLoop\QuanLib.TickLoop.StateMachine\QuanLib.TickLoop.StateMachine.csproj", "{D5D92647-430A-4204-8E2B-1A3F94B3D7F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +211,14 @@ Global
 		{DFE5572E-089C-4316-BC62-95ECAD6A6A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFE5572E-089C-4316-BC62-95ECAD6A6A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFE5572E-089C-4316-BC62-95ECAD6A6A94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C595F830-047A-4C09-A773-920039DCC124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C595F830-047A-4C09-A773-920039DCC124}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C595F830-047A-4C09-A773-920039DCC124}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C595F830-047A-4C09-A773-920039DCC124}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5D92647-430A-4204-8E2B-1A3F94B3D7F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5D92647-430A-4204-8E2B-1A3F94B3D7F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5D92647-430A-4204-8E2B-1A3F94B3D7F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5D92647-430A-4204-8E2B-1A3F94B3D7F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

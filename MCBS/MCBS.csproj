@@ -45,6 +45,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\QuanLib.Minecraft\QuanLib.Minecraft.Downloading\QuanLib.Minecraft.Downloading.csproj" />
     <ProjectReference Include="..\..\QuanLib.Minecraft\QuanLib.Minecraft.Instance\QuanLib.Minecraft.Instance.csproj" />
+    <ProjectReference Include="..\..\QuanLib.TickLoop\QuanLib.TickLoop.StateMachine\QuanLib.TickLoop.StateMachine.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.BDF\QuanLib.BDF.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.Downloader\QuanLib.Downloader.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.TextFormat\QuanLib.TextFormat.csproj" />
