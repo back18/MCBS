@@ -3,10 +3,10 @@ using log4net.Core;
 using MCBS.Application;
 using MCBS.Forms;
 using MCBS.Logging;
-using MCBS.State;
 using MCBS.UI;
 using QuanLib.Core;
 using QuanLib.TickLoop;
+using QuanLib.TickLoop.StateMachine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,11 +31,11 @@ namespace MCBS.Processes
             Initiator = initiator;
 
             GUID = Guid.NewGuid();
-            StateManager = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
+            StateMachine = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
             {
-                new(ProcessState.Unstarted, Array.Empty<ProcessState>(), HandleUnstartedState),
-                new(ProcessState.Active, new ProcessState[] { ProcessState.Unstarted }, HandleActiveState),
-                new(ProcessState.Stopped, new ProcessState[] { ProcessState.Active }, HandleStoppedState)
+                new(ProcessState.Unstarted, Array.Empty<ProcessState>(), GotoUnstartedState),
+                new(ProcessState.Active, new ProcessState[] { ProcessState.Unstarted }, GotoActiveState),
+                new(ProcessState.Stopped, new ProcessState[] { ProcessState.Active }, GotoStoppedState)
             });
         }
 
@@ -43,9 +43,9 @@ namespace MCBS.Processes
 
         public Guid GUID { get; }
 
-        public StateManager<ProcessState> StateManager { get; }
+        public TickStateMachine<ProcessState> StateMachine { get; }
 
-        public ProcessState ProcessState => StateManager.CurrentState;
+        public ProcessState ProcessState => StateMachine.CurrentState;
 
         public ApplicationManifest Application { get; }
 
@@ -69,18 +69,18 @@ namespace MCBS.Processes
                 form.CloseForm();
         }
 
-        protected virtual bool HandleUnstartedState(ProcessState current, ProcessState next)
+        protected virtual bool GotoUnstartedState(ProcessState sourceState, ProcessState targetState)
         {
             return false;
         }
 
-        protected virtual bool HandleActiveState(ProcessState current, ProcessState next)
+        protected virtual bool GotoActiveState(ProcessState sourceState, ProcessState targetState)
         {
             Start($"{Application.ID} AppThread");
             return true;
         }
 
-        protected virtual bool HandleStoppedState(ProcessState current, ProcessState next)
+        protected virtual bool GotoStoppedState(ProcessState sourceState, ProcessState targetState)
         {
             if (Thread is not null && Thread.IsAlive)
             {
@@ -99,7 +99,7 @@ namespace MCBS.Processes
 
         public void OnTickUpdate(int tick)
         {
-            StateManager.HandleAllState();
+            StateMachine.OnTickUpdate(tick);
         }
 
         protected override void Run()
@@ -116,13 +116,13 @@ namespace MCBS.Processes
 
         public ProcessContext StartProcess()
         {
-            StateManager.AddNextState(ProcessState.Active);
+            StateMachine.Submit(ProcessState.Active);
             return this;
         }
 
         public void StopProcess()
         {
-            StateManager.AddNextState(ProcessState.Stopped);
+            StateMachine.Submit(ProcessState.Stopped);
         }
     }
 }

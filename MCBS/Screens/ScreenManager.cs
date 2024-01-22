@@ -70,7 +70,7 @@ namespace MCBS.Screens
         {
             foreach (var item in Items)
             {
-                var state = item.Value.StateManager;
+                var state = item.Value.StateMachine;
 
                 if (state.CurrentState == ScreenState.Active)
                 {

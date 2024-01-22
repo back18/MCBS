@@ -191,7 +191,7 @@ namespace MCBS.SystemApplications.Services
                 if (context is null)
                     return;
 
-                switch (context.StateManager.CurrentState)
+                switch (context.StateMachine.CurrentState)
                 {
                     case FormState.NotLoaded:
                     case FormState.Dragging:
@@ -215,7 +215,7 @@ namespace MCBS.SystemApplications.Services
                 if (context is null || icon is null)
                     return;
 
-                switch (context.StateManager.NextState)
+                switch (context.StateMachine.NextState)
                 {
                     case FormState.Minimize:
                         icon.IsSelected = false;

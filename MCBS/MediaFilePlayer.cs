@@ -2,13 +2,13 @@
 using log4net.Core;
 using MCBS.Events;
 using MCBS.Logging;
-using MCBS.State;
 using NAudio.Wave;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft;
 using QuanLib.TickLoop;
+using QuanLib.TickLoop.StateMachine;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
@@ -51,12 +51,12 @@ namespace MCBS
                 }
             }
 
-            StateManager = new(MediaFilePlayerState.Unstarted, new StateContext<MediaFilePlayerState>[]
+            StateMachine = new(MediaFilePlayerState.Unstarted, new StateContext<MediaFilePlayerState>[]
             {
-                new(MediaFilePlayerState.Unstarted, Array.Empty<MediaFilePlayerState>(), HandleUnstartedState),
-                new(MediaFilePlayerState.Playing, new MediaFilePlayerState[] { MediaFilePlayerState.Unstarted, MediaFilePlayerState.Pause }, HandlePlayingState, OnPlayingState),
-                new(MediaFilePlayerState.Pause, new MediaFilePlayerState[] { MediaFilePlayerState.Playing }, HandlePauseState),
-                new(MediaFilePlayerState.Ended, new MediaFilePlayerState[] { MediaFilePlayerState.Pause }, HandleEndedState),
+                new(MediaFilePlayerState.Unstarted, Array.Empty<MediaFilePlayerState>(), GotoUnstartedState),
+                new(MediaFilePlayerState.Playing, new MediaFilePlayerState[] { MediaFilePlayerState.Unstarted, MediaFilePlayerState.Pause }, GotoPlayingState, PlayingStateUpdate),
+                new(MediaFilePlayerState.Pause, new MediaFilePlayerState[] { MediaFilePlayerState.Playing }, GotoPauseState),
+                new(MediaFilePlayerState.Ended, new MediaFilePlayerState[] { MediaFilePlayerState.Pause }, GotoEndedState),
             });
 
             _start = TimeSpan.Zero;
@@ -109,9 +109,9 @@ namespace MCBS
 
         public TimeSpan TotalTime => MediaFile.Info.Duration;
 
-        public StateManager<MediaFilePlayerState> StateManager { get; }
+        public TickStateMachine<MediaFilePlayerState> StateMachine { get; }
 
-        public MediaFilePlayerState PlayerState => StateManager.CurrentState;
+        public MediaFilePlayerState PlayerState => StateMachine.CurrentState;
 
         public event EventHandler<MediaFilePlayer<TPixel>, EventArgs> Played;
 
@@ -141,14 +141,14 @@ namespace MCBS
             _stopwatch.Restart();
         }
 
-        protected virtual bool HandleUnstartedState(MediaFilePlayerState current, MediaFilePlayerState next)
+        protected virtual bool GotoUnstartedState(MediaFilePlayerState sourceState, MediaFilePlayerState targetState)
         {
             return false;
         }
 
-        protected virtual bool HandlePlayingState(MediaFilePlayerState current, MediaFilePlayerState next)
+        protected virtual bool GotoPlayingState(MediaFilePlayerState sourceState, MediaFilePlayerState targetState)
         {
-            switch (current)
+            switch (sourceState)
             {
                 case MediaFilePlayerState.Unstarted:
                     VideoDecoder.Start("VideoDecoder Thread");
@@ -168,7 +168,7 @@ namespace MCBS
             }
         }
 
-        protected virtual bool HandlePauseState(MediaFilePlayerState current, MediaFilePlayerState next)
+        protected virtual bool GotoPauseState(MediaFilePlayerState sourceState, MediaFilePlayerState targetState)
         {
             if (EnableAudio)
                 WaveOutEvent?.Stop();
@@ -177,13 +177,13 @@ namespace MCBS
             return true;
         }
 
-        protected virtual bool HandleEndedState(MediaFilePlayerState current, MediaFilePlayerState next)
+        protected virtual bool GotoEndedState(MediaFilePlayerState sourceState, MediaFilePlayerState targetState)
         {
             Dispose();
             return true;
         }
 
-        protected virtual void OnPlayingState()
+        protected virtual void PlayingStateUpdate(int tick)
         {
             VideoFrame<TPixel>? videoFrame;
             while (true)
@@ -194,9 +194,9 @@ namespace MCBS
                     break;
                 }
 
-                double next = videoFrame.Position.TotalMilliseconds + Math.Round(1000 / MediaFile.Video.Info.AvgFrameRate);
+                double targetState = videoFrame.Position.TotalMilliseconds + Math.Round(1000 / MediaFile.Video.Info.AvgFrameRate);
                 double now = (_start + _stopwatch.Elapsed).TotalMilliseconds;
-                if (Math.Abs(now - videoFrame.Position.TotalMilliseconds) < Math.Abs(now - next))
+                if (Math.Abs(now - videoFrame.Position.TotalMilliseconds) < Math.Abs(now - targetState))
                 {
                     break;
                 }
@@ -213,7 +213,7 @@ namespace MCBS
 
         public void OnTickUpdate(int tick)
         {
-            StateManager.HandleAllState();
+            StateMachine.OnTickUpdate(tick);
         }
 
         protected override void DisposeUnmanaged()
@@ -232,12 +232,12 @@ namespace MCBS
 
         public void Play()
         {
-            StateManager.AddNextState(MediaFilePlayerState.Playing);
+            StateMachine.Submit(MediaFilePlayerState.Playing);
         }
 
         public void Pause()
         {
-            StateManager.AddNextState(MediaFilePlayerState.Pause);
+            StateMachine.Submit(MediaFilePlayerState.Pause);
         }
     }
 }

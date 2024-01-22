@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using MCBS.Logging;
 using MCBS.UI;
-using MCBS.State;
 using MCBS.Events;
 using MCBS.Cursor.Style;
 using MCBS.Cursor;
@@ -18,6 +17,7 @@ using MCBS.Directorys;
 using QuanLib.IO;
 using Newtonsoft.Json;
 using QuanLib.TickLoop;
+using QuanLib.TickLoop.StateMachine;
 
 namespace MCBS.Screens
 {
@@ -40,12 +40,12 @@ namespace MCBS.Screens
             IsRestarting = false;
 
             GUID = guid != default ? guid : Guid.NewGuid();
-            StateManager = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
+            StateMachine = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
             {
-                new(ScreenState.NotLoaded, Array.Empty<ScreenState>(), HandleNotLoadedState),
-                new(ScreenState.Active, new ScreenState[] { ScreenState.NotLoaded }, HandleActiveState, OnActiveState),
-                new(ScreenState.Sleep, new ScreenState[] { ScreenState.Active }, HandleSleepState),
-                new(ScreenState.Unload, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, HandleUnloadState)
+                new(ScreenState.NotLoaded, Array.Empty<ScreenState>(), GotoNotLoadedState),
+                new(ScreenState.Active, new ScreenState[] { ScreenState.NotLoaded }, GotoActiveState, ActiveStateUpdate),
+                new(ScreenState.Sleep, new ScreenState[] { ScreenState.Active }, GotoSleepState),
+                new(ScreenState.Unload, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, GotoUnloadState)
             });
 
             _frame = null;
@@ -61,9 +61,9 @@ namespace MCBS.Screens
 
         public Guid GUID { get; }
 
-        public StateManager<ScreenState> StateManager { get; }
+        public TickStateMachine<ScreenState> StateMachine { get; }
 
-        public ScreenState ScreenState => StateManager.CurrentState;
+        public ScreenState ScreenState => StateMachine.CurrentState;
 
         public Screen Screen { get; }
 
@@ -77,14 +77,14 @@ namespace MCBS.Screens
 
         public bool IsRestarting { get; private set; }
 
-        protected virtual bool HandleNotLoadedState(ScreenState current, ScreenState next)
+        protected virtual bool GotoNotLoadedState(ScreenState sourceState, ScreenState targetState)
         {
             return false;
         }
 
-        protected virtual bool HandleActiveState(ScreenState current, ScreenState next)
+        protected virtual bool GotoActiveState(ScreenState sourceState, ScreenState targetState)
         {
-            switch (current)
+            switch (sourceState)
             {
                 case ScreenState.NotLoaded:
                     IsRestarting = false;
@@ -105,13 +105,13 @@ namespace MCBS.Screens
             }
         }
 
-        protected virtual bool HandleSleepState(ScreenState current, ScreenState next)
+        protected virtual bool GotoSleepState(ScreenState sourceState, ScreenState targetState)
         {
             //TODO
             return false;
         }
 
-        protected virtual bool HandleUnloadState(ScreenState current, ScreenState next)
+        protected virtual bool GotoUnloadState(ScreenState sourceState, ScreenState targetState)
         {
             foreach (var forem in MinecraftBlockScreen.Instance.FormManager.Items.Values)
             {
@@ -125,14 +125,14 @@ namespace MCBS.Screens
             return true;
         }
 
-        protected virtual void OnActiveState()
+        protected virtual void ActiveStateUpdate(int tick)
         {
             SaveJson();
         }
 
         public void OnTickUpdate(int tick)
         {
-            StateManager.HandleAllState();
+            StateMachine.OnTickUpdate(tick);
         }
 
         public async Task HandleScreenInputAsync()
@@ -222,29 +222,29 @@ namespace MCBS.Screens
 
         public ScreenContext LoadScreen()
         {
-            StateManager.AddNextState(ScreenState.Active);
+            StateMachine.Submit(ScreenState.Active);
             return this;
         }
 
         public void UnloadScreen()
         {
-            StateManager.AddNextState(ScreenState.Unload);
+            StateMachine.Submit(ScreenState.Unload);
         }
 
         public void RestartScreen()
         {
-            StateManager.AddNextState(ScreenState.Unload);
+            StateMachine.Submit(ScreenState.Unload);
             IsRestarting = true;
         }
 
         public void StartSleep()
         {
-            StateManager.AddNextState(ScreenState.Sleep);
+            StateMachine.Submit(ScreenState.Sleep);
         }
 
         public void StopSleep()
         {
-            StateManager.AddNextState(ScreenState.Active);
+            StateMachine.Submit(ScreenState.Active);
         }
 
         public Screen GetSubScreen()

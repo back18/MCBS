@@ -6,9 +6,9 @@ using MCBS.Cursor.Style;
 using MCBS.Logging;
 using MCBS.Processes;
 using MCBS.Screens;
-using MCBS.State;
 using MCBS.UI;
 using QuanLib.TickLoop;
+using QuanLib.TickLoop.StateMachine;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -62,14 +62,14 @@ namespace MCBS.Forms
             }
 
             GUID = Guid.NewGuid();
-            StateManager = new(FormState.NotLoaded, new StateContext<FormState>[]
+            StateMachine = new(FormState.NotLoaded, new StateContext<FormState>[]
             {
-                new(FormState.NotLoaded, Array.Empty<FormState>(), HandleNotLoadedState),
-                new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize, FormState.Dragging, FormState.Stretching }, HandleActiveState),
-                new(FormState.Minimize, new FormState[] { FormState.Active }, HandleMinimizeState),
-                new(FormState.Dragging, new FormState[] { FormState.Active }, HandleDraggingState, OnDraggingState),
-                new(FormState.Stretching, new FormState[] { FormState.Active }, HandleStretchingState, OnStretchingState),
-                new(FormState.Closed, new FormState[] { FormState.Active, FormState.Minimize }, HandleClosedState)
+                new(FormState.NotLoaded, Array.Empty<FormState>(), GotoNotLoadedState),
+                new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize, FormState.Dragging, FormState.Stretching }, ActiveStateUpdate),
+                new(FormState.Minimize, new FormState[] { FormState.Active }, GotoMinimizeState),
+                new(FormState.Dragging, new FormState[] { FormState.Active }, GotoDraggingState),
+                new(FormState.Stretching, new FormState[] { FormState.Active }, GotoStretchingState),
+                new(FormState.Closed, new FormState[] { FormState.Active, FormState.Minimize }, GotoClosedState)
             });
 
             _closeSemaphore = new(0);
@@ -82,9 +82,9 @@ namespace MCBS.Forms
 
         public Guid GUID { get; }
 
-        public StateManager<FormState> StateManager { get; }
+        public TickStateMachine<FormState> StateMachine { get; }
 
-        public FormState FormState => StateManager.CurrentState;
+        public FormState FormState => StateMachine.CurrentState;
 
         public DraggingContext? DraggingContext { get; private set; }
 
@@ -96,14 +96,14 @@ namespace MCBS.Forms
 
         public IForm Form { get; }
 
-        protected virtual bool HandleNotLoadedState(FormState current, FormState next)
+        protected virtual bool GotoNotLoadedState(FormState sourceState, FormState targetState)
         {
             return false;
         }
 
-        protected virtual bool HandleActiveState(FormState current, FormState next)
+        protected virtual bool ActiveStateUpdate(FormState sourceState, FormState targetState)
         {
-            switch (current)
+            switch (sourceState)
             {
                 case FormState.NotLoaded:
                     if (!RootForm.ContainsForm(Form))
@@ -148,7 +148,7 @@ namespace MCBS.Forms
             }
         }
 
-        protected virtual bool HandleMinimizeState(FormState current, FormState next)
+        protected virtual bool GotoMinimizeState(FormState sourceState, FormState targetState)
         {
             if (Form is IRootForm)
                 return false;
@@ -158,7 +158,7 @@ namespace MCBS.Forms
             LOGGER.Info($"窗体({Form.Text})已最小化");
             return true;
         }
-        protected virtual bool HandleDraggingState(FormState current, FormState next)
+        protected virtual bool GotoDraggingState(FormState sourceState, FormState targetState)
         {
             if (Form is IRootForm rootForm && !rootForm.AllowDrag)
                 return false;
@@ -172,7 +172,7 @@ namespace MCBS.Forms
             return true;
         }
 
-        protected virtual bool HandleStretchingState(FormState current, FormState next)
+        protected virtual bool GotoStretchingState(FormState sourceState, FormState targetState)
         {
             if (Form is IRootForm rootForm && !rootForm.AllowSelected)
                 return false;
@@ -182,7 +182,7 @@ namespace MCBS.Forms
             return true;
         }
 
-        protected virtual bool HandleClosedState(FormState current, FormState next)
+        protected virtual bool GotoClosedState(FormState sourceState, FormState targetState)
         {
             if (Form is not IRootForm && RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
@@ -192,40 +192,30 @@ namespace MCBS.Forms
             return true;
         }
 
-        public virtual void OnDraggingState()
-        {
-
-        }
-
-        public virtual void OnStretchingState()
-        {
-
-        }
-
         public void OnTickUpdate(int tick)
         {
-            StateManager.HandleAllState();
+            StateMachine.OnTickUpdate(tick);
         }
 
         public FormContext LoadForm()
         {
-            StateManager.AddNextState(FormState.Active);
+            StateMachine.Submit(FormState.Active);
             return this;
         }
 
         public void CloseForm()
         {
-            StateManager.AddNextState(FormState.Closed);
+            StateMachine.Submit(FormState.Closed);
         }
 
         public void MinimizeForm()
         {
-            StateManager.AddNextState(FormState.Minimize);
+            StateMachine.Submit(FormState.Minimize);
         }
 
         public void UnminimizeForm()
         {
-            StateManager.AddNextState(FormState.Active);
+            StateMachine.Submit(FormState.Active);
         }
 
         public void DragUpForm(CursorContext cursorContext, Point offsetPosition)
@@ -233,7 +223,7 @@ namespace MCBS.Forms
             ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
 
             DraggingContext = new(cursorContext, offsetPosition);
-            StateManager.AddNextState(FormState.Dragging);
+            StateMachine.Submit(FormState.Dragging);
         }
 
         public void DragDownForm(IRootForm rootForm)
@@ -243,7 +233,7 @@ namespace MCBS.Forms
                 return;
 
             RootForm = rootForm;
-            StateManager.AddNextState(FormState.Active);
+            StateMachine.Submit(FormState.Active);
         }
 
         public void StretchUpForm(CursorContext cursorContext, Direction borders)
@@ -251,7 +241,7 @@ namespace MCBS.Forms
             ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
 
             StretchingContext = new(cursorContext, borders);
-            StateManager.AddNextState(FormState.Stretching);
+            StateMachine.Submit(FormState.Stretching);
         }
 
         public void StretchDownForm()
@@ -259,7 +249,7 @@ namespace MCBS.Forms
             if (StretchingContext is null)
                 return;
 
-            StateManager.AddNextState(FormState.Active);
+            StateMachine.Submit(FormState.Active);
         }
 
         public void WaitForClose()

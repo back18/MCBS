@@ -2,7 +2,6 @@
 using log4net.Core;
 using MCBS.Directorys;
 using MCBS.Logging;
-using MCBS.State;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.IO;
@@ -11,6 +10,7 @@ using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Vector;
 using QuanLib.TickLoop;
+using QuanLib.TickLoop.StateMachine;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -39,20 +39,20 @@ namespace MCBS.Interaction
             IsLeftClick = false;
             IsRightClick = false;
 
-            StateManager = new(InteractionState.NotCreated, new StateContext<InteractionState>[]
+            StateMachine = new(InteractionState.NotCreated, new StateContext<InteractionState>[]
             {
-                new(InteractionState.NotCreated, Array.Empty<InteractionState>(), HandleNotCreatedState),
-                new(InteractionState.Active,  new InteractionState[] { InteractionState.NotCreated }, HandleActiveState, OnActiveState),
-                new(InteractionState.Offline, new InteractionState[] { InteractionState.Active }, HandleOfflineState),
-                new(InteractionState.Closed, new InteractionState[] { InteractionState.Active, InteractionState.Offline }, HandleClosedState)
+                new(InteractionState.NotCreated, Array.Empty<InteractionState>(), GotoNotCreatedState),
+                new(InteractionState.Active,  new InteractionState[] { InteractionState.NotCreated }, GotoActiveState, ActiveStateUpdate),
+                new(InteractionState.Offline, new InteractionState[] { InteractionState.Active }, GotoOfflineState),
+                new(InteractionState.Closed, new InteractionState[] { InteractionState.Active, InteractionState.Offline }, GotoClosedState)
             });
 
             SaveJson();
         }
 
-        public StateManager<InteractionState> StateManager { get; }
+        public TickStateMachine<InteractionState> StateMachine { get; }
 
-        public InteractionState InteractionState => StateManager.CurrentState;
+        public InteractionState InteractionState => StateMachine.CurrentState;
 
         public string PlayerName { get; }
 
@@ -72,15 +72,15 @@ namespace MCBS.Interaction
 
         public void OnTickUpdate(int tick)
         {
-            StateManager.HandleAllState();
+            StateMachine.OnTickUpdate(tick);
         }
 
-        protected virtual bool HandleNotCreatedState(InteractionState current, InteractionState next)
+        protected virtual bool GotoNotCreatedState(InteractionState sourceState, InteractionState targetState)
         {
             return false;
         }
 
-        protected virtual bool HandleActiveState(InteractionState current, InteractionState next)
+        protected virtual bool GotoActiveState(InteractionState sourceState, InteractionState targetState)
         {
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
 
@@ -106,18 +106,18 @@ namespace MCBS.Interaction
             return true;
         }
 
-        protected virtual bool HandleOfflineState(InteractionState current, InteractionState next)
+        protected virtual bool GotoOfflineState(InteractionState sourceState, InteractionState targetState)
         {
             return !ConditionalEntity();
         }
 
-        protected virtual bool HandleClosedState(InteractionState current, InteractionState next)
+        protected virtual bool GotoClosedState(InteractionState sourceState, InteractionState targetState)
         {
             Dispose();
             return true;
         }
 
-        protected virtual void OnActiveState()
+        protected virtual void ActiveStateUpdate(int tick)
         {
             if (!ConditionalEntity())
             {
@@ -133,12 +133,12 @@ namespace MCBS.Interaction
 
         public void CreateInteraction()
         {
-            StateManager.AddNextState(InteractionState.Active);
+            StateMachine.Submit(InteractionState.Active);
         }
 
         public void CloseInteraction()
         {
-            StateManager.AddNextState(InteractionState.Closed);
+            StateMachine.Submit(InteractionState.Closed);
         }
 
         public bool ConditionalEntity()
