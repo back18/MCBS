@@ -1,9 +1,8 @@
 ﻿using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Graphics;
-using log4net.Core;
-using MCBS.Logging;
 using QuanLib.Core;
 using QuanLib.Core.Events;
+using QuanLib.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -18,7 +17,7 @@ namespace MCBS
 {
     public class VideoDecoder<TPixel> : UnmanagedRunnable where TPixel : unmanaged, IPixel<TPixel>
     {
-        public VideoDecoder(VideoStream videoStream) : base(Logbuilder.Default)
+        public VideoDecoder(VideoStream videoStream) : base(LogManager.Instance.Logbuilder)
         {
             ArgumentNullException.ThrowIfNull(videoStream, nameof(videoStream));
 

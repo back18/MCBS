@@ -1,10 +1,10 @@
 ﻿using FFmpeg.AutoGen;
 using log4net.Core;
 using MCBS.Directorys;
-using MCBS.Logging;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.IO;
+using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
@@ -22,7 +22,7 @@ namespace MCBS.Interaction
 {
     public class InteractionContext : UnmanagedBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
         private const string INTERACTION_ID = "minecraft:interaction";
         private const string INTERACTION_NBT = "{width:3,height:3,response:true}";
 

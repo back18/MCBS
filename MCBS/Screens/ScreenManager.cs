@@ -1,25 +1,23 @@
 ﻿using static MCBS.Config.ConfigManager;
 using log4net.Core;
 using MCBS.Events;
-using MCBS.Logging;
 using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.Processes;
 using MCBS.UI;
 using Newtonsoft.Json;
 using MCBS.Directorys;
-using Microsoft.Extensions.Options;
 using QuanLib.TickLoop;
+using QuanLib.Logging;
 
 namespace MCBS.Screens
 {
     public partial class ScreenManager : ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
         public ScreenManager()
         {

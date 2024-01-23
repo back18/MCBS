@@ -2,7 +2,7 @@
 using MCBS.Application;
 using MCBS.BlockForms.Utility;
 using MCBS.Config;
-using MCBS.Logging;
+using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Events;
 using QuanLib.Minecraft.Command.Senders;
@@ -14,13 +14,13 @@ namespace MCBS.ConsoleTerminal
 {
     public static class Program
     {
-        private static readonly LogImpl LOGGER;
+        private static LogImpl LOGGER => LogManager.Instance.GetLogger();
 
         static Program()
         {
             Thread.CurrentThread.Name = "Main Thread";
             ConfigManager.CreateIfNotExists();
-            LOGGER = LogUtil.GetLogger();
+            LoadLogManager();
             Terminal = new();
             CommandLogger = new();
             CommandLogger.IsWriteToFile = true;
@@ -98,16 +98,16 @@ namespace MCBS.ConsoleTerminal
                 {
                     case InstanceTypes.CLIENT:
                         if (config.CommunicationMode == CommunicationModes.MCAPI)
-                            return new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default);
+                            return new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogManager.Instance.Logbuilder);
                         else
                             throw new InvalidOperationException();
                     case InstanceTypes.SERVER:
                         return config.CommunicationMode switch
                         {
-                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, Logbuilder.Default),
-                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, Logbuilder.Default),
-                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), Logbuilder.Default),
-                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), Logbuilder.Default),
+                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogManager.Instance.Logbuilder),
+                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, LogManager.Instance.Logbuilder),
+                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogManager.Instance.Logbuilder),
+                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.JavaPath, config.LaunchArguments), LogManager.Instance.Logbuilder),
                             _ => throw new InvalidOperationException(),
                         };
                     default:
@@ -120,6 +120,12 @@ namespace MCBS.ConsoleTerminal
                 Exit(-1);
                 throw new InvalidOperationException();
             }
+        }
+
+        private static void LoadLogManager()
+        {
+            using FileStream fileStream = File.OpenRead(SR.McbsDirectory.ConfigsDir.Log4NetFile);
+            LogManager.LoadInstance(new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n", SR.McbsDirectory.LogsDir.LatestFile, Encoding.UTF8, fileStream, true));
         }
 
         public static void Exit(int exitCode)

@@ -1,11 +1,5 @@
-﻿using log4net;
-using log4net.Appender;
-using log4net.Core;
-using log4net.Layout;
-using log4net.Repository.Hierarchy;
-using MCBS.Logging;
-using QuanLib.Core;
-using QuanLib.Minecraft.Command;
+﻿using QuanLib.Core;
+using QuanLib.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,7 +13,7 @@ namespace MCBS.ConsoleTerminal
 {
     public class CommandLogger : UnmanagedRunnable
     {
-        public CommandLogger() : base(Logbuilder.Default)
+        public CommandLogger() : base(LogManager.Instance.Logbuilder)
         {
             string file = SR.McbsDirectory.LogsDir.Combine("Command.log");
             if (File.Exists(file))

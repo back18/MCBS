@@ -3,10 +3,10 @@ using log4net.Repository.Hierarchy;
 using MCBS.Application;
 using MCBS.Cursor;
 using MCBS.Cursor.Style;
-using MCBS.Logging;
 using MCBS.Processes;
 using MCBS.Screens;
 using MCBS.UI;
+using QuanLib.Logging;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
 using SixLabors.ImageSharp;
@@ -24,7 +24,7 @@ namespace MCBS.Forms
     /// </summary>
     public class FormContext : ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
         internal FormContext(IProgram program, IForm form)
         {

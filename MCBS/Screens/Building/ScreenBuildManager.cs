@@ -1,6 +1,5 @@
 ﻿using static MCBS.Config.ConfigManager;
 using log4net.Core;
-using MCBS.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
@@ -11,12 +10,13 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft.NBT.Models;
 using QuanLib.TickLoop;
+using QuanLib.Logging;
 
 namespace MCBS.Screens.Building
 {
     public class ScreenBuildManager : ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
         public ScreenBuildManager()
         {

@@ -1,5 +1,4 @@
 ﻿using log4net.Core;
-using MCBS.Logging;
 using MCBS.Rendering;
 using Newtonsoft.Json;
 using QuanLib.Core;
@@ -13,12 +12,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuanLib.Logging;
 
 namespace MCBS
 {
     public static class ColorMappingCacheBuilder
     {
-        private static LogImpl LOGGER => LogUtil.GetLogger();
+        private static LogImpl LOGGER => LogManager.Instance.GetLogger();
 
         public static bool ReadIfValid(Facing facing, [MaybeNullWhen(false)] out ColorMappingCache result)
         {

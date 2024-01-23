@@ -2,7 +2,6 @@
 using log4net.Core;
 using MCBS.Cursor.Style;
 using MCBS.Directorys;
-using MCBS.Logging;
 using MCBS.Namespaces;
 using QuanLib.BDF;
 using QuanLib.Minecraft.ResourcePack;
@@ -18,15 +17,13 @@ using System.Threading.Tasks;
 using MCBS.Rendering;
 using System.Collections.ObjectModel;
 using QuanLib.Minecraft;
-using SixLabors.ImageSharp.PixelFormats;
-using Newtonsoft.Json;
-using MCBS.Application;
+using QuanLib.Logging;
 
 namespace MCBS
 {
     public static class SR
     {
-        private static LogImpl LOGGER => LogUtil.GetLogger();
+        private static LogImpl LOGGER => LogManager.Instance.GetLogger();
 
         static SR()
         {

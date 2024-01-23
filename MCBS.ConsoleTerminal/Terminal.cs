@@ -1,9 +1,8 @@
 ﻿using log4net.Core;
-using MCBS.Logging;
-using QuanLib;
 using QuanLib.CommandLine;
 using QuanLib.CommandLine.ConsoleTerminal;
 using QuanLib.Core;
+using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +14,9 @@ namespace MCBS.ConsoleTerminal
 {
     public class Terminal : RunnableBase
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
-        public Terminal() : base(Logbuilder.Default)
+        public Terminal() : base(LogManager.Instance.Logbuilder)
         {
             CommandSystem = new(new(Level.Root));
             RegistrationCommands();
@@ -60,24 +59,24 @@ namespace MCBS.ConsoleTerminal
                         break;
                     case "mccommand":
                         Console.WriteLine("【MCBS控制台】已进入Minecraft命令日志记录器");
-                        LogUtil.DisableConsoleOutput();
+                        LogManager.Instance.DisableConsoleOutput();
                         Program.CommandLogger.IsWriteToConsole = true;
                         WaitForInputEnter();
                         Program.CommandLogger.IsWriteToConsole = false;
-                        LogUtil.EnableConsoleOutput();
+                        LogManager.Instance.EnableConsoleOutput();
                         Console.WriteLine("【MCBS控制台】已退出Minecraft命令日志记录器");
                         break;
                     case "commandsystem":
                         Console.WriteLine("【MCBS控制台】已进入可视化命令系统");
-                        LogUtil.DisableConsoleOutput();
+                        LogManager.Instance.DisableConsoleOutput();
                         CommandSystem.Start();
                         CommandSystem.WaitForStop();
-                        LogUtil.EnableConsoleOutput();
+                        LogManager.Instance.EnableConsoleOutput();
                         Console.WriteLine("【MCBS控制台】已退出可视化命令系统");
                         break;
                     case "mspt":
                         Console.WriteLine("【MCBS控制台】已进入MSPT实时计时器");
-                        LogUtil.DisableConsoleOutput();
+                        LogManager.Instance.DisableConsoleOutput();
                         Console.CursorVisible = false;
                         bool run = true;
                         Task.Run(() =>
@@ -99,7 +98,7 @@ namespace MCBS.ConsoleTerminal
                         WaitForInputEnter();
                         run = false;
                         Console.CursorVisible = true;
-                        LogUtil.EnableConsoleOutput();
+                        LogManager.Instance.EnableConsoleOutput();
                         Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
                         break;
                     case "stop":

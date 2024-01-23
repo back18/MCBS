@@ -1,8 +1,8 @@
 ﻿using log4net.Core;
 using log4net.Repository.Hierarchy;
 using MCBS;
-using MCBS.Logging;
 using Newtonsoft.Json;
+using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace MCBS.Config
 {
     public static class ConfigManager
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
         public static MinecraftConfig MinecraftConfig => _MinecraftConfig ?? throw new InvalidOperationException("配置文件未加载");
         private static MinecraftConfig? _MinecraftConfig;

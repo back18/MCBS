@@ -9,7 +9,6 @@ using log4net.Core;
 using QuanLib.Core;
 using QuanLib.Minecraft.Instance;
 using MCBS.Screens;
-using MCBS.Logging;
 using MCBS.UI;
 using MCBS.Config;
 using MCBS.Processes;
@@ -24,14 +23,15 @@ using QuanLib.IO;
 using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.Command.Models;
 using QuanLib.TickLoop;
+using QuanLib.Logging;
 
 namespace MCBS
 {
     public class MinecraftBlockScreen : TickLoopSystem, ISingleton<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
-        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), Logbuilder.Default)
+        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), LogManager.Instance.Logbuilder)
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));

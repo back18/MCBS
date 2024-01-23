@@ -1,12 +1,12 @@
 ﻿using FFMediaToolkit;
 using log4net.Core;
 using MCBS.Directorys;
-using MCBS.Logging;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Core.Extensions;
 using QuanLib.IO;
 using QuanLib.IO.Zip;
+using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +20,7 @@ namespace MCBS
 {
     public static class FFmpegResourcesLoader
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
         private const string FFMPEG_ZIP_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl-shared.zip";
         private const string FFMPEG_BIN_DIR = "ffmpeg-master-latest-win64-gpl-shared/bin/";
 

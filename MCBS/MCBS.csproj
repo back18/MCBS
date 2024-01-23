@@ -35,7 +35,6 @@
 
   <ItemGroup>
     <PackageReference Include="FFMediaToolkit" Version="4.5.1" />
-    <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Nett" Version="0.15.0" />
     <PackageReference Include="QRCoder" Version="1.4.3" />
@@ -48,6 +47,7 @@
     <ProjectReference Include="..\..\QuanLib.TickLoop\QuanLib.TickLoop.StateMachine\QuanLib.TickLoop.StateMachine.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.BDF\QuanLib.BDF.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.Downloader\QuanLib.Downloader.csproj" />
+    <ProjectReference Include="..\..\QuanLib\QuanLib.Logging\QuanLib.Logging.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.TextFormat\QuanLib.TextFormat.csproj" />
   </ItemGroup>
 

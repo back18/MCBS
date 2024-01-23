@@ -1,6 +1,6 @@
 ﻿using log4net.Core;
-using MCBS.Logging;
 using QuanLib.Core;
+using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +14,7 @@ namespace MCBS.SystemApplications.Console
     {
         public ConsoleProcess() : this(ProcessInfo.CMD) { }
 
-        public ConsoleProcess(ProcessInfo processInfo) : base(Logbuilder.Default)
+        public ConsoleProcess(ProcessInfo processInfo) : base(LogManager.Instance.Logbuilder)
         {
             ArgumentNullException.ThrowIfNull(processInfo, nameof(processInfo));
 

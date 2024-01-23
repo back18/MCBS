@@ -1,6 +1,6 @@
 ﻿using log4net.Core;
-using MCBS.Logging;
 using QuanLib.Core;
+using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace MCBS.SystemApplications.Console
 {
     public class StandardStreamReader : UnmanagedRunnable
     {
-        public StandardStreamReader(StreamReader streamReader) : base(Logbuilder.Default)
+        public StandardStreamReader(StreamReader streamReader) : base(LogManager.Instance.Logbuilder)
         {
             ArgumentNullException.ThrowIfNull(streamReader, nameof(streamReader));
 

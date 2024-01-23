@@ -1,10 +1,10 @@
 ﻿using log4net.Core;
 using MCBS.Directorys;
 using MCBS.Events;
-using MCBS.Logging;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using QuanLib.Core;
+using QuanLib.Logging;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Vector;
@@ -22,7 +22,7 @@ namespace MCBS.Interaction
 {
     public class InteractionManager : ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
         public InteractionManager()
         {

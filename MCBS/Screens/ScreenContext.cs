@@ -6,9 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.Logging;
 using MCBS.UI;
-using MCBS.Events;
 using MCBS.Cursor.Style;
 using MCBS.Cursor;
 using QuanLib.Minecraft.NBT.Models;
@@ -18,6 +16,7 @@ using QuanLib.IO;
 using Newtonsoft.Json;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
+using QuanLib.Logging;
 
 namespace MCBS.Screens
 {
@@ -26,7 +25,7 @@ namespace MCBS.Screens
     /// </summary>
     public class ScreenContext : ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
         internal ScreenContext(Screen screen, IScreenView form, Guid guid = default)
         {

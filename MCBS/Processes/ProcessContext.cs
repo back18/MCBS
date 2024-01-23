@@ -2,9 +2,9 @@
 using log4net.Core;
 using MCBS.Application;
 using MCBS.Forms;
-using MCBS.Logging;
 using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.Logging;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
 using System;
@@ -18,9 +18,9 @@ namespace MCBS.Processes
 {
     public class ProcessContext : RunnableBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
-        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(Logbuilder.Default)
+        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(LogManager.Instance.Logbuilder)
         {
             ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
             ArgumentNullException.ThrowIfNull(args, nameof(args));

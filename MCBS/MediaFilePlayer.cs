@@ -1,11 +1,11 @@
 ﻿using FFMediaToolkit.Decoding;
 using log4net.Core;
 using MCBS.Events;
-using MCBS.Logging;
 using NAudio.Wave;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
 using QuanLib.Core.Events;
+using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
@@ -22,7 +22,7 @@ namespace MCBS
 {
     public class MediaFilePlayer<TPixel> : UnmanagedBase, ITickUpdatable where TPixel : unmanaged, IPixel<TPixel>
     {
-        private static readonly LogImpl LOGGER = LogUtil.GetLogger();
+        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
         public MediaFilePlayer(string path, MediaOptions mediaOptions, bool enableAudio = true)
         {
