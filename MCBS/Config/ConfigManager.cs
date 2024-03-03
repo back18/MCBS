@@ -1,8 +1,11 @@
 ﻿using log4net.Core;
 using log4net.Repository.Hierarchy;
 using MCBS;
+using Nett;
 using Newtonsoft.Json;
+using QuanLib.Core;
 using QuanLib.Logging;
+using QuanLib.TomlConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,27 +33,11 @@ namespace MCBS.Config
 
         public static void CreateIfNotExists()
         {
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.Log4NetFile, SR.SystemResourceNamespace.ConfigsNamespace.Log4NetConfigFile);
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.MinecraftFile, SR.SystemResourceNamespace.ConfigsNamespace.MinecraftConfigFile);
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.SystemFile, SR.SystemResourceNamespace.ConfigsNamespace.SystemConfigFile);
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.ScreenFile, SR.SystemResourceNamespace.ConfigsNamespace.ScreenConfigFile);
-            CreateIfNotExists(SR.McbsDirectory.ConfigsDir.RegistryFile, SR.SystemResourceNamespace.ConfigsNamespace.RegistryConfigFile);
-        }
-
-        private static void CreateIfNotExists(string path, string resource)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-            ArgumentException.ThrowIfNullOrEmpty(resource, nameof(resource));
-
-            if (!File.Exists(path))
-            {
-                using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource) ?? throw new InvalidOperationException();
-                FileStream fileStream = new(path, FileMode.Create);
-                stream.CopyTo(fileStream);
-                fileStream.Flush();
-                fileStream.Close();
-                LOGGER.Warn($"配置文件“{path}”不存在，已创建默认配置文件");
-            }
+            CreateLog4NetConfig(SR.McbsDirectory.ConfigsDir.Log4NetFile);
+            CreateRegistryConfig(SR.McbsDirectory.ConfigsDir.RegistryFile);
+            CreateTomlConfig(SR.McbsDirectory.ConfigsDir.MinecraftFile, MinecraftConfig.Model.CreateDefault());
+            CreateTomlConfig(SR.McbsDirectory.ConfigsDir.SystemFile, SystemConfig.Model.CreateDefault());
+            CreateTomlConfig(SR.McbsDirectory.ConfigsDir.ScreenFile, ScreenConfig.Model.CreateDefault());
         }
 
         public static void LoadAll()
@@ -61,6 +48,62 @@ namespace MCBS.Config
             _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(SR.McbsDirectory.ConfigsDir.RegistryFile)) ?? throw new FormatException();
 
             LOGGER.Info("配置文件加载完成");
+        }
+
+        private static void CreateLog4NetConfig(string path)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+
+            if (File.Exists(path))
+                return;
+
+            MemoryStream memoryStream = LogManager.CreateDefaultXmlConfigStream();
+            FileStream fileStream = new(path, FileMode.Create);
+            memoryStream.CopyTo(fileStream);
+            fileStream.Flush();
+            fileStream.Close();
+        }
+
+        private static void CreateRegistryConfig(string path)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+
+            if (File.Exists(path))
+                return;
+
+            Dictionary<string, string> dictionary = new()
+            {
+                { "txt", "System.Notepad" },
+                { "log", "System.Notepad" },
+                { "json", "System.Notepad" },
+                { "xml", "System.Notepad" },
+                { "jpg", "System.Album" },
+                { "jpeg", "System.Album" },
+                { "png", "System.Album" },
+                { "bmp", "System.Album" },
+                { "webp", "System.Album" },
+                { "mp4", "System.VideoPlayer" },
+                { "avi", "System.VideoPlayer" },
+                { "wmv", "System.VideoPlayer" },
+                { "mkv", "System.VideoPlayer" },
+                { "process", "System.Console" }
+            };
+
+            string json = JsonConvert.SerializeObject(dictionary);
+            File.WriteAllText(path, json);
+        }
+
+        private static void CreateTomlConfig(string path, object model)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+
+            if (File.Exists(path))
+                return;
+
+            TomlTable tomlTable = TomlConfigBuilder.Build(model);
+            string toml = tomlTable.ToString();
+            File.WriteAllText(path, toml);
         }
     }
 }

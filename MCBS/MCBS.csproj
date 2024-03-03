@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="SystemResource\Configs\**" />
+    <EmbeddedResource Remove="SystemResource\Configs\**" />
+    <None Remove="SystemResource\Configs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="SystemResource\CursorIndex.json" />
     <None Remove="SystemResource\Cursors\Default.png" />
     <None Remove="SystemResource\Cursors\HorizontalResize.png" />
@@ -18,11 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="SystemResource\Configs\log4net.xml" />
-    <EmbeddedResource Include="SystemResource\Configs\Minecraft.toml" />
-    <EmbeddedResource Include="SystemResource\Configs\Registry.json" />
-    <EmbeddedResource Include="SystemResource\Configs\Screen.toml" />
-    <EmbeddedResource Include="SystemResource\Configs\System.toml" />
     <EmbeddedResource Include="SystemResource\CursorIndex.json" />
     <EmbeddedResource Include="SystemResource\Cursors\Default.png" />
     <EmbeddedResource Include="SystemResource\Cursors\HorizontalResize.png" />
@@ -36,7 +37,6 @@
   <ItemGroup>
     <PackageReference Include="FFMediaToolkit" Version="4.5.1" />
     <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="Nett" Version="0.15.0" />
     <PackageReference Include="QRCoder" Version="1.4.3" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.0.1" />
   </ItemGroup>
@@ -49,6 +49,7 @@
     <ProjectReference Include="..\..\QuanLib\QuanLib.Downloader\QuanLib.Downloader.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.Logging\QuanLib.Logging.csproj" />
     <ProjectReference Include="..\..\QuanLib\QuanLib.TextFormat\QuanLib.TextFormat.csproj" />
+    <ProjectReference Include="..\..\QuanLib\QuanLib.TomlConfig\QuanLib.TomlConfig.csproj" />
   </ItemGroup>
 
 </Project>

@@ -584,20 +584,20 @@ namespace MCBS.Screens
                 YFacing = -2;
             }
 
-            [Required(ErrorMessage = "配置项缺失")]
-            [Length(3, 3, ErrorMessage = "数组的长度应该为3")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Length(3, 3, ErrorMessage = ErrorMessageHelper.Length)]
             public int[] StartPosition { get; set; }
 
-            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
             public int Width { get; set; }
 
-            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
             public int Height { get; set; }
 
-            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = "值只能为 1, -1, 2, -2, 3, -3")]
+            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = ErrorMessageHelper.AllowedValues + "（值只能为 1, -1, 2, -2, 3, -3）")]
             public int XFacing { get; set; }
 
-            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = "值只能为 1, -1, 2, -2, 3, -3")]
+            [AllowedValues(1, -1, 2, -2, 3, -3, ErrorMessage = ErrorMessageHelper.AllowedValues + "（值只能为 1, -1, 2, -2, 3, -3）")]
             public int YFacing { get; set; }
 
             public static DataModel CreateDefault()
@@ -619,7 +619,7 @@ namespace MCBS.Screens
                     foreach (var result in results)
                     {
                         string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        message.AppendLine($"[{memberName}]: {result.ErrorMessage}");
+                        message.AppendLine(result.ErrorMessage);
                         count++;
                     }
 

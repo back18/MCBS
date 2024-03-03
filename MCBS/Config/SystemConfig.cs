@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config
 {
-    public class SystemConfig
+    public class SystemConfig : IDataModelOwner<SystemConfig, SystemConfig.Model>
     {
         public SystemConfig(Model model)
         {
@@ -21,9 +21,9 @@ namespace MCBS.Config
             CrashAutoRestart = model.CrashAutoRestart;
             BuildColorMappingCaches = model.BuildColorMappingCaches;
             LoadDllAppComponents = model.LoadDllAppComponents;
-            SystemAppComponents = new(model.SystemAppComponents);
+            SystemAppComponents = model.SystemAppComponents.AsReadOnly();
             ServicesAppID = model.ServicesAppID;
-            StartupChecklist = new(model.StartupChecklist);
+            StartupChecklist = model.StartupChecklist.AsReadOnly();
         }
 
         public bool CrashAutoRestart { get; }
@@ -44,56 +44,106 @@ namespace MCBS.Config
 
             TomlTable table = Toml.ReadFile(path);
             Model model = table.Get<Model>();
-            Validate(model, Path.GetFileName(path));
+            Model.Validate(model, Path.GetFileName(path));
             return new(model);
         }
 
-        public static void Validate(Model model, string name)
+        public static SystemConfig FromDataModel(Model model)
         {
-            ArgumentNullException.ThrowIfNull(model, nameof(model));
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
-
-            List<ValidationResult> results = new();
-            if (!Validator.TryValidateObject(model, new(model), results, true))
-            {
-                StringBuilder message = new();
-                message.AppendLine();
-                int count = 0;
-                foreach (var result in results)
-                {
-                    string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                    message.AppendLine($"[{memberName}]: {result.ErrorMessage}");
-                    count++;
-                }
-
-                if (count > 0)
-                {
-                    message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
-                    throw new ValidationException(message.ToString().TrimEnd());
-                }
-            }
+            return new(model);
         }
 
-        public class Model
+        public Model ToDataModel()
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            return new()
+            {
+                CrashAutoRestart = CrashAutoRestart,
+                BuildColorMappingCaches = BuildColorMappingCaches,
+                LoadDllAppComponents = LoadDllAppComponents,
+                SystemAppComponents = SystemAppComponents.ToArray(),
+                ServicesAppID = ServicesAppID,
+                StartupChecklist = StartupChecklist.ToArray()
+            };
+        }
 
+        public class Model : IDataModel<Model>
+        {
+            public Model()
+            {
+                CrashAutoRestart = true;
+                BuildColorMappingCaches = false;
+                LoadDllAppComponents = false;
+                SystemAppComponents = [
+                    "MCBS.SystemApplications.Services",
+                    "MCBS.SystemApplications.Desktop",
+                    "MCBS.SystemApplications.Console",
+                    "MCBS.SystemApplications.Settings",
+                    "MCBS.SystemApplications.TaskManager",
+                    "MCBS.SystemApplications.FileExplorer",
+                    "MCBS.SystemApplications.ScreenManager",
+                    "MCBS.SystemApplications.ScreenController",
+                    "MCBS.SystemApplications.VideoPlayer",
+                    "MCBS.SystemApplications.Album",
+                    "MCBS.SystemApplications.Drawing",
+                    "MCBS.SystemApplications.Notepad",
+                    "MCBS.SystemApplications.QRCodeGenerator",
+                    "MCBS.SystemApplications.DataScreen"
+                    ];
+                ServicesAppID = "System.Services";
+                StartupChecklist = ["System.Desktop"];
+            }
+
+            [Display(Name = "崩溃时是否自动重启")]
             public bool CrashAutoRestart { get; set; }
 
+            [Display(Name = "启动时是否构建Minecraft方块颜色映射表缓存")]
             public bool BuildColorMappingCaches { get; set; }
 
+            [Display(Name = "是否加载“MCBS\\DllAppComponents\\”目录下的DLL应用程序")]
             public bool LoadDllAppComponents { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "系统应用程序组件加载列表")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string[] SystemAppComponents { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "系统服务AppID")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string ServicesAppID { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "启动项AppID列表")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string[] StartupChecklist { get; set; }
 
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public static Model CreateDefault()
+            {
+                return new();
+            }
+
+            public static void Validate(Model model, string name)
+            {
+                ArgumentNullException.ThrowIfNull(model, nameof(model));
+                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+
+                List<ValidationResult> results = new();
+                if (!Validator.TryValidateObject(model, new(model), results, true))
+                {
+                    StringBuilder message = new();
+                    message.AppendLine();
+                    int count = 0;
+                    foreach (var result in results)
+                    {
+                        string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                        message.AppendLine(result.ErrorMessage);
+                        count++;
+                    }
+
+                    if (count > 0)
+                    {
+                        message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
+                        throw new ValidationException(message.ToString().TrimEnd());
+                    }
+                }
+            }
         }
     }
 }

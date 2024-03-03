@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config
 {
-    public class ScreenConfig
+    public class ScreenConfig : IDataModelOwner<ScreenConfig, ScreenConfig.Model>
     {
         private ScreenConfig(Model model)
         {
@@ -31,8 +31,8 @@ namespace MCBS.Config
             RightClickItemID = model.RightClickItemID;
             TextEditorItemID = model.TextEditorItemID;
             ScreenBuilderItemName = model.ScreenBuilderItemName;
-            ScreenOperatorList = new(model.ScreenOperatorList);
-            ScreenBuildOperatorList = new(model.ScreenBuildOperatorList);
+            ScreenOperatorList = model.ScreenOperatorList.AsReadOnly();
+            ScreenBuildOperatorList = model.ScreenBuildOperatorList.AsReadOnly();
         }
 
         public int MaxCount { get; }
@@ -71,99 +71,160 @@ namespace MCBS.Config
 
             TomlTable table = Toml.ReadFile(path);
             Model model = table.Get<Model>();
-            Validate(model, Path.GetFileName(path));
+            Model.Validate(model, Path.GetFileName(path));
             return new(model);
         }
 
-        public static void Validate(Model model, string name)
+        public static ScreenConfig FromDataModel(Model model)
         {
-            ArgumentNullException.ThrowIfNull(model, nameof(model));
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
-
-            List<ValidationResult> results = new();
-            StringBuilder message = new();
-            message.AppendLine();
-            int count = 0;
-
-            if (!Validator.TryValidateObject(model, new(model), results, true))
-            {
-                foreach (var result in results)
-                {
-                    string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                    message.AppendLine($"[{memberName}]: {result.ErrorMessage}");
-                    count++;
-                }
-            }
-
-            if (model.MinLength > model.MaxLength)
-            {
-                message.AppendLine($"[{nameof(MinLength)}]: {nameof(MinLength)} 不能大于 {nameof(MaxLength)}");
-                count++;
-            }
-
-            if (model.MinAltitude > model.MaxAltitude)
-            {
-                message.AppendLine($"[{nameof(MinAltitude)}]: {nameof(MinAltitude)} 不能大于 {nameof(MaxAltitude)}");
-                count++;
-            }
-
-            if (count > 0)
-            {
-                message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
-                throw new ValidationException(message.ToString().TrimEnd());
-            }
+            return new(model);
         }
 
-        public class Model
+        public Model ToDataModel()
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            return new()
+            {
+                MaxCount = MaxCount,
+                MinLength = MinLength,
+                MaxLength = MaxLength,
+                MinAltitude = MinAltitude,
+                MaxAltitude = MaxAltitude,
+                InitialWidth = InitialWidth,
+                InitialHeight = InitialHeight,
+                RightClickObjective = RightClickObjective,
+                RightClickCriterion = RightClickCriterion,
+                RightClickItemID = RightClickItemID,
+                TextEditorItemID = TextEditorItemID,
+                ScreenBuilderItemName = ScreenBuilderItemName,
+                ScreenOperatorList = ScreenOperatorList.ToArray(),
+                ScreenBuildOperatorList = ScreenBuildOperatorList.ToArray()
+            };
+        }
 
-            [Range(0, 64, ErrorMessage = "值的范围应该为0~64")]
+        public class Model : IDataModel<Model>
+        {
+            public Model()
+            {
+                MaxCount = 8;
+                MinLength = 32;
+                MaxLength = 512;
+                MinAltitude = -64;
+                MaxAltitude = 319;
+                InitialWidth = 128;
+                InitialHeight = 72;
+                ScreenIdleTimeout = -1;
+                RightClickObjective = "snowball_mouse";
+                RightClickCriterion = "minecraft.used:minecraft.snowball";
+                RightClickItemID = "minecraft:snowball";
+                TextEditorItemID = "minecraft:writable_book";
+                ScreenBuilderItemName = "创建屏幕";
+                ScreenOperatorList = [];
+                ScreenBuildOperatorList = [];
+            }
+
+            [Display(Name = "屏幕最大数量")]
+            [Range(0, 64, ErrorMessage = ErrorMessageHelper.Range)]
             public int MaxCount { get; set; }
 
-            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            [Display(Name = "屏幕最小长度")]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
             public int MinLength { get; set; }
 
-            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            [Display(Name = "屏幕最大长度")]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
             public int MaxLength { get; set; }
 
-            [Range(-64, 319, ErrorMessage = "值的范围应该为-64~319")]
+            [Display(Name = "屏幕的位置在主世界中的最小高度")]
+            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.Range)]
             public int MinAltitude { get; set; }
 
-            [Range(-64, 319, ErrorMessage = "值的范围应该为-64~319")]
+            [Display(Name = "屏幕的位置在主世界中的最大高度")]
+            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.Range)]
             public int MaxAltitude { get; set; }
 
-            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            [Display(Name = "屏幕初始宽度")]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
             public int InitialWidth { get; set; }
 
-            [Range(1, 512, ErrorMessage = "值的范围应该为1~512")]
+            [Display(Name = "屏幕初始高度")]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
             public int InitialHeight { get; set; }
 
-            [Range(-1, int.MaxValue, ErrorMessage = "值的范围应该为-1~214748367")]
+            [Display(Name = "屏幕闲置超时", Description = "屏幕在一段时间无操作后会自动关闭，设置为-1将无限等待，单位为Tick(50ms)")]
+            [Range(-1, int.MaxValue, ErrorMessage = ErrorMessageHelper.Range)]
             public int ScreenIdleTimeout { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "触发右键点击操作的计分板名称")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string RightClickObjective { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "触发右键点击操作的计分板准则")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string RightClickCriterion { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "触发右键点击操作的物品ID")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string RightClickItemID { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "编辑屏幕文本的书与笔物品ID")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string TextEditorItemID { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "载入屏幕构建器的物品名称")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string ScreenBuilderItemName { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "允许控制屏幕的玩家白名单")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string[] ScreenOperatorList { get; set; }
 
-            [Required(ErrorMessage = "配置项缺失")]
+            [Display(Name = "允许创建屏幕的玩家白名单")]
+            [Required(ErrorMessage = ErrorMessageHelper.Required)]
             public string[] ScreenBuildOperatorList { get; set; }
 
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public static Model CreateDefault()
+            {
+                return new();
+            }
+
+            public static void Validate(Model model, string name)
+            {
+                ArgumentNullException.ThrowIfNull(model, nameof(model));
+                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+
+                List<ValidationResult> results = new();
+                StringBuilder message = new();
+                message.AppendLine();
+                int count = 0;
+
+                if (!Validator.TryValidateObject(model, new(model), results, true))
+                {
+                    foreach (var result in results)
+                    {
+                        string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                        message.AppendLine(result.ErrorMessage);
+                        count++;
+                    }
+                }
+
+                if (model.MinLength > model.MaxLength)
+                {
+                    message.AppendLine(ErrorMessageHelper.Format($"{nameof(MinLength)}不能大于{nameof(MaxLength)}"));
+                    count++;
+                }
+
+                if (model.MinAltitude > model.MaxAltitude)
+                {
+                    message.AppendLine(ErrorMessageHelper.Format($"{nameof(MinAltitude)}不能大于{nameof(MaxAltitude)}"));
+                    count++;
+                }
+
+                if (count > 0)
+                {
+                    message.Insert(0, $"解析“{name}”时遇到了{count}个错误：");
+                    throw new ValidationException(message.ToString().TrimEnd());
+                }
+            }
         }
     }
 }

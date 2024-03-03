@@ -11,16 +11,11 @@ namespace MCBS.Namespaces
     {
         public SystemResourceNamespace(string @namespace) : base(@namespace)
         {
-            ConfigsNamespace = AddNamespace<ConfigsNamespace>("Configs");
             CursorsNamespace = AddNamespace<CursorsNamespace>("Cursors");
             CursorIndexFile = Combine("CursorIndex.json");
             DefaultFontFile = Combine("DefaultFont.bdf");
             DefaultIconFile = Combine("DefaultIcon.png");
-            FFmpegIndexFile = Combine("FFmpegIndex.json");
-            FFmpegWin64BuildFile = Combine("ffmpeg-master-latest-win64-gpl-shared.zip");
         }
-
-        public ConfigsNamespace ConfigsNamespace { get; }
 
         public CursorsNamespace CursorsNamespace { get; }
 
@@ -29,9 +24,5 @@ namespace MCBS.Namespaces
         public string DefaultFontFile { get; }
 
         public string DefaultIconFile { get; }
-
-        public string FFmpegIndexFile { get; }
-
-        public string FFmpegWin64BuildFile { get; }
     }
 }
