@@ -17,7 +17,7 @@ namespace MCBS
 {
     public class VideoDecoder<TPixel> : UnmanagedRunnable where TPixel : unmanaged, IPixel<TPixel>
     {
-        public VideoDecoder(VideoStream videoStream) : base(LogManager.Instance.Logbuilder)
+        public VideoDecoder(VideoStream videoStream) : base(LogManager.Instance.LoggerGetter)
         {
             ArgumentNullException.ThrowIfNull(videoStream, nameof(videoStream));
 

@@ -16,7 +16,7 @@ namespace MCBS.ConsoleTerminal
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
-        public Terminal() : base(LogManager.Instance.Logbuilder)
+        public Terminal() : base(LogManager.Instance.LoggerGetter)
         {
             CommandSystem = new(new(Level.Root));
             RegistrationCommands();

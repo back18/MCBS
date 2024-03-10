@@ -20,7 +20,7 @@ namespace MCBS.Processes
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
-        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(LogManager.Instance.Logbuilder)
+        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(LogManager.Instance.LoggerGetter)
         {
             ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
             ArgumentNullException.ThrowIfNull(args, nameof(args));

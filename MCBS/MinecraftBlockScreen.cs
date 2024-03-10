@@ -31,7 +31,7 @@ namespace MCBS
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
-        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), LogManager.Instance.Logbuilder)
+        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), LogManager.Instance.LoggerGetter)
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
