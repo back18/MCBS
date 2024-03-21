@@ -1,6 +1,7 @@
 ﻿using Nett;
 using Newtonsoft.Json;
 using QuanLib.Core;
+using QuanLib.DataAnnotations;
 using QuanLib.Minecraft;
 using System;
 using System.Collections.Generic;
@@ -103,15 +104,15 @@ namespace MCBS.Config
             public bool LoadDllAppComponents { get; set; }
 
             [Display(Name = "系统应用程序组件加载列表")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] SystemAppComponents { get; set; }
 
             [Display(Name = "系统服务AppID")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string ServicesAppID { get; set; }
 
             [Display(Name = "启动项AppID列表")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] StartupChecklist { get; set; }
 
             public static Model CreateDefault()
@@ -130,6 +131,7 @@ namespace MCBS.Config
                     StringBuilder message = new();
                     message.AppendLine();
                     int count = 0;
+
                     foreach (var result in results)
                     {
                         string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;

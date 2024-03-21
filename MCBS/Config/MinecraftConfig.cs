@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
+using QuanLib.DataAnnotations;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.ResourcePack;
 using System;
@@ -159,58 +160,63 @@ namespace MCBS.Config
             }
 
             [Display(Name = "游戏版本", Description = "用于确定程序应该下载和使用什么游戏版本的资源包")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string GameVersion { get; set; }
 
             [Display(Name = "实例类型", Description = "用于确定连接的Minecraft实例是服务端还是客户端")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
-            [AllowedValues("CLIENT", "SERVER", ErrorMessage = ErrorMessageHelper.AllowedValues + "（只能为 CLIENT 或 SERVER）")]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
+            [AllowedValues("CLIENT", "SERVER", ErrorMessage = ErrorMessageHelper.AllowedValuesAttribute + "（只能为 CLIENT 或 SERVER）")]
             public string InstanceType { get; set; }
 
             [Display(Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
-            [AllowedValues("RCON", "CONSOLE", "HYBRID", "MCAPI", ErrorMessage = ErrorMessageHelper.AllowedValues + "（只能为 RCON 或 CONSOLE 或 HYBRID 或 MCAPI）")]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
+            [AllowedValues("RCON", "CONSOLE", "HYBRID", "MCAPI", ErrorMessage = ErrorMessageHelper.AllowedValuesAttribute + "（只能为 RCON 或 CONSOLE 或 HYBRID 或 MCAPI）")]
             public string CommunicationMode { get; set; }
 
             [Display(Name = "下载源", Description = "用于确定下载Minecraft资源包时使用的下载源")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
-            [AllowedValues("MOJANG", "BMCLAPI", ErrorMessage = ErrorMessageHelper.AllowedValues + "（只能为 MOJANG 或 BMCLAPI）")]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
+            [AllowedValues("MOJANG", "BMCLAPI", ErrorMessage = ErrorMessageHelper.AllowedValuesAttribute + "（只能为 MOJANG 或 BMCLAPI）")]
             public string DownloadApi { get; set; }
 
             [Display(Name = "Minecraft路径", Description = "用于确定Minecra主目录所在路径\n\".\"为程序工作目录\n\"..\"为程序工作目录的上一层目录")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
+            [DirectoryExists]
             public string MinecraftPath { get; set; }
 
             [Display(Name = "服务器地址", Description = "根据不同模式，也作为RCON地址或MCAPI地址")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required + "（当配置项 CommunicationMode 的值为 RCON 或 HYBRID 或 MCAPI 时）")]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "RCON", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "HYBRID", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "MCAPI", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string ServerAddress { get; set; }
 
             [Display(Name = "Java路径", Description = "启动服务端进程所使用的Java路径")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required + "（当配置项 CommunicationMode 的值为 CONSOLE 或 HYBRID 时）")]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "CONSOLE", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "HYBRID", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string JavaPath { get; set; }
 
             [Display(Name = "启动参数", Description = "启动服务端进程所使用的启动参数")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required + "（当配置项 CommunicationMode 的值为 CONSOLE 或 HYBRID 时）")]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "CONSOLE", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "HYBRID", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string LaunchArguments { get; set; }
 
             [Display(Name = "MCAPI端口")]
-            [Range(0, 65535, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(0, 65535, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int McapiPort { get; set; }
 
             [Display(Name = "MCAPI登录密码")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required + "（当配置项 CommunicationMode 的值为 MCAPI 时）")]
+            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "MCAPI", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string McapiPassword { get; set; }
 
             [Display(Name = "语言标识", Description = "服务端语言默认为en_us，客户端根据选择的语言设置\n主要影响命令结果文本的解析\n语言文件目录: MCBS\\Minecraft\\Vanilla\\{版本}\\Languages\\")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Language { get; set; }
 
             [Display(Name = "资源包列表", Description = "程序会根据资源包列表按照顺序加载资源包文件\n支持的文件类型: 客户端核心.jar, 服务端核心.jar, 模组文件.jar, 资源包.zip\n资源包目录: MCBS\\Minecraft\\ResourcePacks\\")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ResourcePackList { get; set; }
 
             [Display(Name = "屏幕方块黑名单")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] BlockTextureBlacklist { get; set; }
 
             public static Model CreateDefault()
@@ -224,72 +230,24 @@ namespace MCBS.Config
                 ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
                 List<ValidationResult> results = new();
-                StringBuilder message = new();
-                message.AppendLine();
-                int count = 0;
-
-                bool isConsole = model.CommunicationMode is CommunicationModes.CONSOLE or CommunicationModes.HYBRID;
-                bool isMcapi = model.CommunicationMode is CommunicationModes.MCAPI;
-
                 if (!Validator.TryValidateObject(model, new(model), results, true))
                 {
+                    StringBuilder message = new();
+                    message.AppendLine();
+                    int count = 0;
+
                     foreach (var result in results)
                     {
                         string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        switch (memberName)
-                        {
-                            case "JavaPath":
-                                if (!isConsole)
-                                {
-                                    model.JavaPath = string.Empty;
-                                    continue;
-                                }
-                                break;
-                            case "LaunchArguments":
-                                if (!isConsole)
-                                {
-                                    model.LaunchArguments = string.Empty;
-                                    continue;
-                                }
-                                break;
-                            case "McapiPassword":
-                                if (!isMcapi)
-                                {
-                                    model.McapiPassword = string.Empty;
-                                    continue;
-                                }
-                                break;
-                        }
                         message.AppendLine(result.ErrorMessage);
                         count++;
                     }
-                }
 
-                if (!string.IsNullOrEmpty(model.MinecraftPath) && !Directory.Exists(model.MinecraftPath))
-                {
-                    message.AppendLine(ErrorMessageHelper.Format("该目录不存在"));
-                    count++;
-                }
-
-                if (model.InstanceType == InstanceTypes.CLIENT && model.CommunicationMode != CommunicationModes.MCAPI)
-                {
-                    message.AppendLine(ErrorMessageHelper.Format("当配置项 InstanceType 的值为 CLIENT 时，当前配置项的值只能为 MCAPI"));
-                    count++;
-                }
-
-                foreach (string resourcePack in model.ResourcePackList)
-                {
-                    if (!SR.McbsDirectory.MinecraftDir.ResourcePacksDir.ExistsFile(resourcePack))
+                    if (count > 0)
                     {
-                        message.AppendLine(ErrorMessageHelper.Format("该文件不存在"));
-                        count++;
+                        message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
+                        throw new ValidationException(message.ToString().TrimEnd());
                     }
-                }
-
-                if (count > 0)
-                {
-                    message.Insert(0, $"解析“{name}”时遇到了{count}个错误：");
-                    throw new ValidationException(message.ToString().TrimEnd());
                 }
             }
         }

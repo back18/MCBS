@@ -2,6 +2,7 @@
 using Nett;
 using Newtonsoft.Json;
 using QuanLib.Core;
+using QuanLib.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -123,63 +124,65 @@ namespace MCBS.Config
             }
 
             [Display(Name = "屏幕最大数量")]
-            [Range(0, 64, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(0, 64, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int MaxCount { get; set; }
 
             [Display(Name = "屏幕最小长度")]
-            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int MinLength { get; set; }
 
             [Display(Name = "屏幕最大长度")]
-            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
+            [GreaterThan(nameof(MinLength), ErrorMessage = ErrorMessageHelper.GreaterThanAttribute)]
             public int MaxLength { get; set; }
 
             [Display(Name = "屏幕的位置在主世界中的最小高度")]
-            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int MinAltitude { get; set; }
 
             [Display(Name = "屏幕的位置在主世界中的最大高度")]
-            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
+            [GreaterThan(nameof(MinAltitude), ErrorMessage = ErrorMessageHelper.GreaterThanAttribute)]
             public int MaxAltitude { get; set; }
 
             [Display(Name = "屏幕初始宽度")]
-            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int InitialWidth { get; set; }
 
             [Display(Name = "屏幕初始高度")]
-            [Range(1, 512, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int InitialHeight { get; set; }
 
             [Display(Name = "屏幕闲置超时", Description = "屏幕在一段时间无操作后会自动关闭，设置为-1将无限等待，单位为Tick(50ms)")]
-            [Range(-1, int.MaxValue, ErrorMessage = ErrorMessageHelper.Range)]
+            [Range(-1, int.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int ScreenIdleTimeout { get; set; }
 
             [Display(Name = "触发右键点击操作的计分板名称")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string RightClickObjective { get; set; }
 
             [Display(Name = "触发右键点击操作的计分板准则")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string RightClickCriterion { get; set; }
 
             [Display(Name = "触发右键点击操作的物品ID")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string RightClickItemID { get; set; }
 
             [Display(Name = "编辑屏幕文本的书与笔物品ID")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string TextEditorItemID { get; set; }
 
             [Display(Name = "载入屏幕构建器的物品名称")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string ScreenBuilderItemName { get; set; }
 
             [Display(Name = "允许控制屏幕的玩家白名单")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ScreenOperatorList { get; set; }
 
             [Display(Name = "允许创建屏幕的玩家白名单")]
-            [Required(ErrorMessage = ErrorMessageHelper.Required)]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ScreenBuildOperatorList { get; set; }
 
             public static Model CreateDefault()
@@ -193,36 +196,24 @@ namespace MCBS.Config
                 ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
                 List<ValidationResult> results = new();
-                StringBuilder message = new();
-                message.AppendLine();
-                int count = 0;
-
                 if (!Validator.TryValidateObject(model, new(model), results, true))
                 {
+                    StringBuilder message = new();
+                    message.AppendLine();
+                    int count = 0;
+
                     foreach (var result in results)
                     {
                         string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
                         message.AppendLine(result.ErrorMessage);
                         count++;
                     }
-                }
 
-                if (model.MinLength > model.MaxLength)
-                {
-                    message.AppendLine(ErrorMessageHelper.Format($"{nameof(MinLength)}不能大于{nameof(MaxLength)}"));
-                    count++;
-                }
-
-                if (model.MinAltitude > model.MaxAltitude)
-                {
-                    message.AppendLine(ErrorMessageHelper.Format($"{nameof(MinAltitude)}不能大于{nameof(MaxAltitude)}"));
-                    count++;
-                }
-
-                if (count > 0)
-                {
-                    message.Insert(0, $"解析“{name}”时遇到了{count}个错误：");
-                    throw new ValidationException(message.ToString().TrimEnd());
+                    if (count > 0)
+                    {
+                        message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
+                        throw new ValidationException(message.ToString().TrimEnd());
+                    }
                 }
             }
         }
