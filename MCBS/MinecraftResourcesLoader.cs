@@ -17,6 +17,7 @@ using QuanLib.Core;
 using QuanLib.IO.Zip;
 using System.IO.Compression;
 using QuanLib.Logging;
+using QuanLib.IO;
 
 namespace MCBS
 {
@@ -99,7 +100,7 @@ namespace MCBS
                 VersionList versionList = await DownloadVersionListAsync(downloadProvider.VersionListUrl);
 
                 if (!versionList.TryGetValue(MinecraftConfig.GameVersion, out var versionIndex))
-                    throw new InvalidOperationException("未知的游戏版本：" + MinecraftConfig.GameVersion);
+                    throw new InvalidOperationException("未知的游戏版本: " + MinecraftConfig.GameVersion);
 
                 versionJsonText = await DownloadVersionJsonAsync(downloadProvider.RedirectUrl(versionIndex.Url), directory.VersionFile);
             }
@@ -112,44 +113,16 @@ namespace MCBS
             NetworkAssetIndex indexFileAssetIndex = versionJson.GetIndexFile() ?? throw new InvalidOperationException("在版本Json文件找不到索引文件的资源索引");
             AssetList assetList = await LoadAssetListAsync(directory.IndexFile, indexFileAssetIndex, downloadProvider);
 
-            string langPath = "minecraft/lang/";
-            DownloadManager downloadManager = new();
-            foreach (var asset in assetList)
+            string langFileName = MinecraftConfig.Language + ".json";
+            string langFilePath = directory.LanguagesDir.Combine(langFileName);
+            string langAssetPath = "minecraft/lang/" + langFileName;
+            if (!assetList.TryGetValue(langAssetPath, out var langAssetIndex))
+                throw new InvalidOperationException("未知的语言标识: " + MinecraftConfig.Language);
+
+            if (!File.Exists(langFilePath) || HashUtil.GetHashString(langFilePath, HashType.SHA1) != langAssetIndex.Hash)
             {
-                if (asset.Key.StartsWith(langPath))
-                {
-                    string path = directory.LanguagesDir.Combine(asset.Key[langPath.Length..]);
-                    if (DownloadHelper.ReadIfValid(path, asset.Value.Hash, HashType.SHA1, out var fileStream))
-                    {
-                        fileStream.Dispose();
-                        continue;
-                    }
-
-                    string url = downloadProvider.ToAssetUrl(asset.Value.Hash);
-                    downloadManager.Add(url, path);
-                    LOGGER.Info("已添加下载任务: " + url);
-                }
-            }
-
-            if (downloadManager.Count > 0)
-            {
-                while (!downloadManager.IsAllCompleted)
-                {
-                    downloadManager.RetryAllIfFailed();
-                    LOGGER.Info(FormatProgress(downloadManager));
-
-                    try
-                    {
-                        await downloadManager.WaitAllTaskCompletedAsync().WaitAsync(TimeSpan.FromSeconds(1));
-                    }
-                    catch (TimeoutException)
-                    {
-
-                    }
-                }
-                LOGGER.Info(FormatProgress(downloadManager));
-
-                downloadManager.ClearAll();
+                string langAssetUrl = downloadProvider.ToAssetUrl(langAssetIndex.Hash);
+                await DownloadHelper.DownloadAsync(langAssetUrl, langFilePath);
             }
         }
 
