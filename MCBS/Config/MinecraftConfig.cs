@@ -165,17 +165,18 @@ namespace MCBS.Config
 
             [Display(Name = "实例类型", Description = "用于确定连接的Minecraft实例是服务端还是客户端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            [AllowedValues("CLIENT", "SERVER", ErrorMessage = ErrorMessageHelper.AllowedValuesAttribute + "（只能为 CLIENT 或 SERVER）")]
+            [NewAllowedValues("CLIENT", "SERVER", ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
             public string InstanceType { get; set; }
 
             [Display(Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            [AllowedValues("RCON", "CONSOLE", "HYBRID", "MCAPI", ErrorMessage = ErrorMessageHelper.AllowedValuesAttribute + "（只能为 RCON 或 CONSOLE 或 HYBRID 或 MCAPI）")]
+            [NewAllowedValues("RCON", "CONSOLE", "HYBRID", "MCAPI", ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
+            [AllowedValuesIf(nameof(InstanceType), CompareOperator.Equal, "CLIENT", "MCAPI")]
             public string CommunicationMode { get; set; }
 
             [Display(Name = "下载源", Description = "用于确定下载Minecraft资源包时使用的下载源")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            [AllowedValues("MOJANG", "BMCLAPI", ErrorMessage = ErrorMessageHelper.AllowedValuesAttribute + "（只能为 MOJANG 或 BMCLAPI）")]
+            [NewAllowedValues("MOJANG", "BMCLAPI", ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
             public string DownloadApi { get; set; }
 
             [Display(Name = "Minecraft路径", Description = "用于确定Minecra主目录所在路径\n\".\"为程序工作目录\n\"..\"为程序工作目录的上一层目录")]
