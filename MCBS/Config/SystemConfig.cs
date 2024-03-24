@@ -122,29 +122,7 @@ namespace MCBS.Config
 
             public static void Validate(Model model, string name)
             {
-                ArgumentNullException.ThrowIfNull(model, nameof(model));
-                ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
-
-                List<ValidationResult> results = new();
-                if (!Validator.TryValidateObject(model, new(model), results, true))
-                {
-                    StringBuilder message = new();
-                    message.AppendLine();
-                    int count = 0;
-
-                    foreach (var result in results)
-                    {
-                        string memberName = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        message.AppendLine(result.ErrorMessage);
-                        count++;
-                    }
-
-                    if (count > 0)
-                    {
-                        message.Insert(0, $"解析“{name}”时遇到{count}个错误：");
-                        throw new ValidationException(message.ToString().TrimEnd());
-                    }
-                }
+                ValidationHelper.Validate(model, name);
             }
         }
     }
