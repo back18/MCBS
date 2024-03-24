@@ -79,6 +79,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.TomlConfig", "..\Qu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.DataAnnotations", "..\QuanLib\QuanLib.DataAnnotations\QuanLib.DataAnnotations.csproj", "{94DA49E7-BF55-4BAC-A49A-C4C14FDBD4D5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Game", "..\QuanLib\QuanLib.Game\QuanLib.Game.csproj", "{B0AA1D6F-C897-43AC-BADA-D3FA5C05CD99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,10 @@ Global
 		{94DA49E7-BF55-4BAC-A49A-C4C14FDBD4D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94DA49E7-BF55-4BAC-A49A-C4C14FDBD4D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94DA49E7-BF55-4BAC-A49A-C4C14FDBD4D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0AA1D6F-C897-43AC-BADA-D3FA5C05CD99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0AA1D6F-C897-43AC-BADA-D3FA5C05CD99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0AA1D6F-C897-43AC-BADA-D3FA5C05CD99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0AA1D6F-C897-43AC-BADA-D3FA5C05CD99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
