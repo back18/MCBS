@@ -1,22 +1,17 @@
 ﻿using static MCBS.Config.ConfigManager;
-using CoreRCON;
-using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using CoreRCON.Parsers.Standard;
-using QuanLib.Core;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft;
-using MCBS.Events;
 using MCBS.Cursor;
 using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.NBT.Models;
 using System.Diagnostics.CodeAnalysis;
+using QuanLib.Game;
 
 namespace MCBS.Screens
 {
@@ -42,9 +37,9 @@ namespace MCBS.Screens
             List<CursorContext> cursors = new();
             Screen screen = _owner.Screen;
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
-            Dictionary<string, EntityPos> playerPositions = sender.GetAllPlayerPosition();
+            Dictionary<string, Vector3<double>> playerPositions = sender.GetAllPlayerPosition();
             int length = screen.Width > screen.Height ? screen.Width : screen.Height;
-            BlockPos center = screen.CenterPosition;
+            Vector3<int> center = screen.CenterPosition;
             Vector3<double> start = new(center.X - length, center.Y - length, center.Z - length);
             Vector3<double> range = new(length * 2, length * 2, length * 2);
             Bounds bounds = new(start, range);
@@ -130,11 +125,12 @@ namespace MCBS.Screens
 
             if (!sender.TryGetEntityPosition(cursorContext.PlayerName, out var playerPosition) || !sender.TryGetEntityRotation(cursorContext.PlayerName, out var playerRotation))
                 goto fail;
-            if (!EntityPos.CheckPlaneReachability(playerPosition, playerRotation, screen.NormalFacing, screen.PlaneCoordinate))
-                goto fail;
 
             playerPosition.Y += 1.625;
-            BlockPos targetBlock = EntityPos.GetToPlaneIntersection(playerPosition, playerRotation.ToDirection(), screen.NormalFacing, screen.PlaneCoordinate).ToBlockPos();
+            if (!RayToPlaneReachability(playerPosition, playerRotation, screen.NormalFacing, screen.PlaneCoordinate))
+                goto fail;
+
+            Vector3<int> targetBlock = RayToPlaneIntersection(playerPosition, playerRotation.ToDirection(), screen.NormalFacing, screen.PlaneCoordinate).ToIntVector3();
             cursorPosition = screen.WorldPos2ScreenPos(targetBlock);
 
             if (!screen.IncludedOnScreen(cursorPosition))
@@ -189,6 +185,61 @@ namespace MCBS.Screens
             fail:
             result = null;
             return false;
+        }
+
+        public static bool RayToPlaneReachability(Vector3<double> position, Rotation rotation, Facing normalFacing, int target)
+        {
+            if (!rotation.Contains(normalFacing.Reverse()))
+                return false;
+
+            return normalFacing switch
+            {
+                Facing.Xp => position.X > target,
+                Facing.Xm => position.X < target,
+                Facing.Yp => position.Y > target,
+                Facing.Ym => position.Y < target,
+                Facing.Zp => position.Z > target,
+                Facing.Zm => position.Z < target,
+                _ => throw new InvalidOperationException(),
+            };
+        }
+
+        public static Vector3<double> RayToPlaneIntersection(Vector3<double> position, Vector3<double> direction, Facing planeFacing, int target)
+        {
+            int targetOffset = target;
+            if (planeFacing > 0)
+                targetOffset += 1;
+
+            // 计算t值，t值代表射线源点到交点的距离与射线方向向量的比值
+            double t, x, y, z;
+            switch (planeFacing)
+            {
+                case Facing.Yp:
+                case Facing.Ym:
+                    t = (targetOffset - position.Y) / direction.Y;
+                    x = position.X + direction.X * t;
+                    y = target;
+                    z = position.Z + direction.Z * t;
+                    break;
+                case Facing.Zp:
+                case Facing.Zm:
+                    t = (targetOffset - position.Z) / direction.Z;
+                    x = position.X + direction.X * t;
+                    y = position.Y + direction.Y * t;
+                    z = target;
+                    break;
+                case Facing.Xp:
+                case Facing.Xm:
+                    t = (targetOffset - position.X) / direction.X;
+                    x = target;
+                    y = position.Y + direction.Y * t; ;
+                    z = position.Z + direction.Z * t;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            return new(x, y, z);
         }
     }
 }

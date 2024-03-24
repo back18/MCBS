@@ -1,13 +1,12 @@
 ﻿using log4net.Core;
 using MCBS.Directorys;
 using MCBS.Events;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using QuanLib.Core;
+using QuanLib.Game;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
-using QuanLib.Minecraft.Vector;
 using QuanLib.TickLoop;
 using System;
 using System.Collections;
@@ -53,8 +52,8 @@ namespace MCBS.Interaction
                 try
                 {
                     InteractionContext.Model model = JsonConvert.DeserializeObject<InteractionContext.Model>(File.ReadAllText(file)) ?? throw new FormatException();
-                    EntityPos position = new(model.Position[0], model.Position[1], model.Position[2]);
-                    BlockPos blockPos = position.ToBlockPos();
+                    Vector3<double> entityPos = new(model.Position[0], model.Position[1], model.Position[2]);
+                    Vector3<int> blockPos = entityPos.ToIntVector3();
                     CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
                     sender.AddForceloadChunk(blockPos);
                     sender.KillEntity(model.EntityUUID);

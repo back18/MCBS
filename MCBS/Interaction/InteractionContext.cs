@@ -1,19 +1,16 @@
-﻿using FFmpeg.AutoGen;
-using log4net.Core;
+﻿using log4net.Core;
 using MCBS.Directorys;
 using Newtonsoft.Json;
 using QuanLib.Core;
+using QuanLib.Game;
 using QuanLib.IO;
 using QuanLib.Logging;
-using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
-using QuanLib.Minecraft.Vector;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,7 +57,7 @@ namespace MCBS.Interaction
 
         public Guid EntityUUID { get; private set; }
 
-        public EntityPos Position { get; private set; }
+        public Vector3<double> Position { get; private set; }
 
         public long LeftClickTimestamp { get; private set; }
 
@@ -208,7 +205,7 @@ namespace MCBS.Interaction
         protected override void DisposeUnmanaged()
         {
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
-            BlockPos blockPos = Position.ToBlockPos();
+            Vector3<int> blockPos = Position.ToIntVector3();
             sender.AddForceloadChunk(blockPos);
             sender.KillEntity(EntityUUID.ToString());
             sender.RemoveForceloadChunk(blockPos);

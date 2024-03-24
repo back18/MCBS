@@ -1,14 +1,14 @@
 ﻿using static MCBS.Config.ConfigManager;
+using QuanLib.Game;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
+using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using QuanLib.Minecraft.Vector;
-using QuanLib.TickLoop;
 
 namespace MCBS.Screens.Building
 {
@@ -49,7 +49,7 @@ namespace MCBS.Screens.Building
 
             position.Y += 1.625;
             Facing playerFacing = (rotation.Pitch <= -80 || rotation.Pitch >= 80) ? rotation.PitchFacing : rotation.YawFacing;
-            BlockPos anchorPosition = position.ToBlockPos().OffsetPosition(playerFacing, 1);
+            Vector3<int> anchorPosition = position.ToIntVector3().Offset((int)playerFacing, 1);
             if (playerFacing == Facing.Ym)
                 anchorPosition.Y -= 1;
 
@@ -75,7 +75,7 @@ namespace MCBS.Screens.Building
                     throw new InvalidOperationException();
             }
 
-            BlockPos startPosition = anchorPosition.OffsetPosition(yFacing, -ScreenConfig.InitialHeight + 1);
+            Vector3<int> startPosition = anchorPosition.Offset((int)yFacing, -ScreenConfig.InitialHeight + 1);
             Screen screen = new(startPosition, ScreenConfig.InitialWidth, ScreenConfig.InitialHeight, xFacing, yFacing);
 
             if (!screen.InAltitudeRange(ScreenConfig.MinAltitude, ScreenConfig.MaxAltitude))

@@ -1,6 +1,6 @@
 ﻿using QuanLib.Core;
+using QuanLib.Game;
 using QuanLib.Minecraft;
-using QuanLib.Minecraft.Vector;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace MCBS.Screens
             YFacing = (Facing)model.YFacing;
         }
 
-        public Screen(BlockPos startPosition, int width, int height, Facing xFacing, Facing yFacing)
+        public Screen(Vector3<int> startPosition, int width, int height, Facing xFacing, Facing yFacing)
         {
             StartPosition = startPosition;
             Width = width;
@@ -37,11 +37,11 @@ namespace MCBS.Screens
             YFacing = yFacing;
         }
 
-        public BlockPos StartPosition { get; internal set; }
+        public Vector3<int> StartPosition { get; internal set; }
 
-        public BlockPos EndPosition => ScreenPos2WorldPos(new(Width - 1, Height - 1));
+        public Vector3<int> EndPosition => ScreenPos2WorldPos(new(Width - 1, Height - 1));
 
-        public BlockPos CenterPosition => ScreenPos2WorldPos(new(Width / 2, Height / 2));
+        public Vector3<int> CenterPosition => ScreenPos2WorldPos(new(Width / 2, Height / 2));
 
         public int Width { get; internal set; }
 
@@ -115,12 +115,12 @@ namespace MCBS.Screens
 
         private void ApplyRotate(PlaneFacing planeFacing)
         {
-            BlockPos oldPos = CenterPosition;
+            Vector3<int> oldPos = CenterPosition;
             XFacing = planeFacing.XFacing;
             YFacing = planeFacing.YFacing;
-            BlockPos newPos = CenterPosition;
+            Vector3<int> newPos = CenterPosition;
 
-            BlockPos offset = newPos - oldPos;
+            Vector3<int> offset = newPos - oldPos;
             StartPosition -= offset;
         }
 
@@ -131,23 +131,23 @@ namespace MCBS.Screens
 
         public void Translate(int dx, int dy)
         {
-            BlockPos position = StartPosition;
-            position = position.OffsetPosition(XFacing, dx);
-            position = position.OffsetPosition(YFacing, dy);
+            Vector3<int> position = StartPosition;
+            position = position.Offset((int)XFacing, dx);
+            position = position.Offset((int)YFacing, dy);
             StartPosition = position;
         }
 
         public void OffsetPlaneCoordinate(int offset)
         {
-            StartPosition = StartPosition.OffsetPosition(NormalFacing, offset);
+            StartPosition = StartPosition.Offset((int)NormalFacing, offset);
         }
 
         public bool InAltitudeRange(int min, int max)
         {
-            BlockPos position1 = ScreenPos2WorldPos(new(0, 0));
-            BlockPos position2 = ScreenPos2WorldPos(new(Width - 1, 0));
-            BlockPos position3 = ScreenPos2WorldPos(new(0, Height - 1));
-            BlockPos position4 = ScreenPos2WorldPos(new(Width - 1, Height - 1));
+            Vector3<int> position1 = ScreenPos2WorldPos(new(0, 0));
+            Vector3<int> position2 = ScreenPos2WorldPos(new(Width - 1, 0));
+            Vector3<int> position3 = ScreenPos2WorldPos(new(0, Height - 1));
+            Vector3<int> position4 = ScreenPos2WorldPos(new(Width - 1, Height - 1));
 
             return
                 CheckHelper.Range(min, max, position1.Y) &&
@@ -165,7 +165,7 @@ namespace MCBS.Screens
             return new(ScreenPos2WorldPos(startPosition), width, height, XFacing, YFacing);
         }
 
-        public BlockPos ScreenPos2WorldPos(Point position, int offset = 0)
+        public Vector3<int> ScreenPos2WorldPos(Point position, int offset = 0)
         {
             int x = 0;
             int y = 0;
@@ -246,7 +246,7 @@ namespace MCBS.Screens
             return new(x, y, z);
         }
 
-        public Point WorldPos2ScreenPos(BlockPos position)
+        public Point WorldPos2ScreenPos(Vector3<int> position)
         {
             var x = XFacing switch
             {
@@ -293,7 +293,7 @@ namespace MCBS.Screens
             return position.X >= 0 && position.Y >= 0 && position.X < Width && position.Y < Height;
         }
 
-        public bool IncludedOnScreen(BlockPos position)
+        public bool IncludedOnScreen(Vector3<int> position)
         {
             bool isScreenPlane = NormalFacing switch
             {
@@ -327,7 +327,7 @@ namespace MCBS.Screens
             return new(model);
         }
 
-        public static Screen CreateScreen(BlockPos startPosition, BlockPos endPosition, Facing normalFacing)
+        public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition, Facing normalFacing)
         {
             Facing xFacing, yFacing;
             int width, height;
