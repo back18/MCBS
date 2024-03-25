@@ -19,27 +19,32 @@ namespace MCBS.Rendering
 
             Facing = facing;
 
-            _items = new();
+            _items1 = [];
+            _items2 = [];
             foreach (var texture in blockTextureManager.Values)
             {
                 if (texture.BlockType == BlockType.CubeAll)
-                    _items[texture.Textures[facing].AverageColor] = texture.BlockID;
+                    _items1[texture.Textures[facing].AverageColor] = texture.BlockID;
                 else
-                    _items.TryAdd(texture.Textures[facing].AverageColor, texture.BlockID);
+                    _items1.TryAdd(texture.Textures[facing].AverageColor, texture.BlockID);
+
+                _items2.Add(texture.BlockID, texture.Textures[facing].AverageColor);
             }
 
-            _items[default] = string.Empty;
+            _items1[default] = string.Empty;
+            _items2[string.Empty] = default;
         }
 
-        private readonly Dictionary<Rgba32, string> _items;
+        private readonly Dictionary<Rgba32, string> _items1;
+        private readonly Dictionary<string, Rgba32> _items2;
 
-        public string this[Rgba32 key] => _items[key];
+        public string this[Rgba32 key] => _items1[key];
 
-        public IEnumerable<Rgba32> Keys => _items.Keys;
+        public IEnumerable<Rgba32> Keys => _items1.Keys;
 
-        public IEnumerable<string> Values => _items.Values;
+        public IEnumerable<string> Values => _items1.Values;
 
-        public int Count => _items.Count;
+        public int Count => _items1.Count;
 
         public Facing Facing { get; }
 
@@ -51,22 +56,27 @@ namespace MCBS.Rendering
 
         public bool ContainsKey(Rgba32 key)
         {
-            return _items.ContainsKey(key);
+            return _items1.ContainsKey(key);
         }
 
         public bool TryGetValue(Rgba32 key, [MaybeNullWhen(false)] out string value)
         {
-            return _items.TryGetValue(key, out value);
+            return _items1.TryGetValue(key, out value);
+        }
+
+        public bool TryGetKey(string value, out Rgba32 key)
+        {
+            return _items2.TryGetValue(value, out key);
         }
 
         public IEnumerator<KeyValuePair<Rgba32, string>> GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return _items1.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)_items).GetEnumerator();
+            return ((IEnumerable)_items1).GetEnumerator();
         }
     }
 }

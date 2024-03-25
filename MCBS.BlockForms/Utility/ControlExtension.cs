@@ -27,9 +27,9 @@ namespace MCBS.BlockForms.Utility
                 return true;
             }
 
-            if (SR.BlockTextureManager.TryGetValue(blockId, out var texture))
+            if (SR.Rgba32BlockMappings[source.GetScreenPlane().NormalFacing].TryGetKey(blockId, out var rgba32))
             {
-                color = new Color(texture.Textures[source.GetScreenPlane().NormalFacing].AverageColor).ToPixel<TPixel>();
+                color = new Color(rgba32).ToPixel<TPixel>();
                 return true;
             }
             else

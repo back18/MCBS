@@ -48,6 +48,18 @@ namespace MCBS.Rendering
             return true;
         }
 
+        public bool TryGetKey(string value, out TPixel key)
+        {
+            if (_mapping.TryGetKey(value, out var rgba32))
+            {
+                key = new Color(rgba32).ToPixel<TPixel>();
+                return true;
+            }
+
+            key = default;
+            return false;
+        }
+
         public IEnumerator<KeyValuePair<TPixel, string>> GetEnumerator()
         {
             foreach (var item in _mapping)

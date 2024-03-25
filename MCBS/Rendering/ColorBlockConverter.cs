@@ -35,16 +35,7 @@ namespace MCBS.Rendering
 
         public string this[TPixel pixel] => _mapping[pixel];
 
-        public TPixel this[string blockId]
-        {
-            get
-            {
-                if (SR.BlockTextureManager.TryGetValue(blockId, out var texture))
-                    return new Color(texture.Textures[Facing].AverageColor).ToPixel<TPixel>();
-                else
-                    return default;
-            }
-        }
+        public TPixel this[string blockId] => _mapping.TryGetKey(blockId, out var pixel) ? pixel : default;
 
         public IBlockMapping<TPixel> BlockMapping => _mapping;
 
