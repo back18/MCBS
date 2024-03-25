@@ -24,11 +24,11 @@ namespace MCBS.Rendering
             foreach (var texture in blockTextureManager.Values)
             {
                 if (texture.BlockType == BlockType.CubeAll)
-                    _items1[texture.Textures[facing].AverageColor] = texture.BlockID;
+                    _items1[texture.Textures[facing].AverageColor] = texture.BlockId;
                 else
-                    _items1.TryAdd(texture.Textures[facing].AverageColor, texture.BlockID);
+                    _items1.TryAdd(texture.Textures[facing].AverageColor, texture.BlockId);
 
-                _items2.Add(texture.BlockID, texture.Textures[facing].AverageColor);
+                _items2.Add(texture.BlockId, texture.Textures[facing].AverageColor);
             }
 
             _items1[default] = string.Empty;
