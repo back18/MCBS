@@ -49,7 +49,7 @@ namespace MCBS.Screens.Building
 
             position.Y += 1.625;
             Facing playerFacing = (rotation.Pitch <= -80 || rotation.Pitch >= 80) ? rotation.PitchFacing : rotation.YawFacing;
-            Vector3<int> anchorPosition = position.ToIntVector3().Offset((int)playerFacing, 1);
+            Vector3<int> anchorPosition = position.ToIntVector3().Offset(playerFacing, 1);
             if (playerFacing == Facing.Ym)
                 anchorPosition.Y -= 1;
 
@@ -75,7 +75,7 @@ namespace MCBS.Screens.Building
                     throw new InvalidOperationException();
             }
 
-            Vector3<int> startPosition = anchorPosition.Offset((int)yFacing, -ScreenConfig.InitialHeight + 1);
+            Vector3<int> startPosition = anchorPosition.Offset(yFacing, -ScreenConfig.InitialHeight + 1);
             Screen screen = new(startPosition, ScreenConfig.InitialWidth, ScreenConfig.InitialHeight, xFacing, yFacing);
 
             if (!screen.InAltitudeRange(ScreenConfig.MinAltitude, ScreenConfig.MaxAltitude))

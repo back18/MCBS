@@ -131,14 +131,14 @@ namespace MCBS.Screens
         public void Translate(int dx, int dy)
         {
             Vector3<int> position = StartPosition;
-            position = position.Offset((int)XFacing, dx);
-            position = position.Offset((int)YFacing, dy);
+            position = position.Offset(XFacing, dx);
+            position = position.Offset(YFacing, dy);
             StartPosition = position;
         }
 
         public void OffsetPlaneCoordinate(int offset)
         {
-            StartPosition = StartPosition.Offset((int)NormalFacing, offset);
+            StartPosition = StartPosition.Offset(NormalFacing, offset);
         }
 
         public bool InAltitudeRange(int min, int max)
