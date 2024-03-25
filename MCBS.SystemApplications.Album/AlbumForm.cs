@@ -5,6 +5,7 @@ using MCBS.Events;
 using MCBS.Rendering;
 using QuanLib.Core;
 using QuanLib.Core.Events;
+using QuanLib.Game;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;

@@ -1,5 +1,6 @@
 ﻿using MCBS.BlockForms;
 using MCBS.BlockForms.DialogBox;
+using QuanLib.Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
-using MCBS;
+using QuanLib.Game;
 
 namespace MCBS.SystemApplications.TaskManager
 {

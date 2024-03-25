@@ -1,5 +1,5 @@
 ﻿using QuanLib.Core;
-using QuanLib.Minecraft;
+using QuanLib.Game;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;

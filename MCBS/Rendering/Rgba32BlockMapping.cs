@@ -1,4 +1,4 @@
-﻿using QuanLib.Minecraft;
+﻿using QuanLib.Game;
 using QuanLib.Minecraft.ResourcePack.Block;
 using SixLabors.ImageSharp.PixelFormats;
 using System;

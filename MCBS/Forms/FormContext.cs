@@ -6,6 +6,7 @@ using MCBS.Cursor.Style;
 using MCBS.Processes;
 using MCBS.Screens;
 using MCBS.UI;
+using QuanLib.Game;
 using QuanLib.Logging;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;

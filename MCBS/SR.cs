@@ -16,8 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MCBS.Rendering;
 using System.Collections.ObjectModel;
-using QuanLib.Minecraft;
 using QuanLib.Logging;
+using QuanLib.Game;
 
 namespace MCBS
 {

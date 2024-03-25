@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.IO;
 using QuanLib.Downloader;
-using QuanLib.Minecraft;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -13,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Logging;
+using QuanLib.Game;
 
 namespace MCBS
 {

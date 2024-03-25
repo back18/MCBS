@@ -3,6 +3,7 @@ using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Forms;
 using MCBS.UI;
+using QuanLib.Game;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
