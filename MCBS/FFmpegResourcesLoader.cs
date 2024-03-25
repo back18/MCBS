@@ -3,16 +3,12 @@ using log4net.Core;
 using MCBS.Directorys;
 using Newtonsoft.Json;
 using QuanLib.Core;
-using QuanLib.Core.Extensions;
 using QuanLib.IO;
 using QuanLib.IO.Zip;
 using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +17,7 @@ namespace MCBS
     public static class FFmpegResourcesLoader
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
-        private const string FFMPEG_ZIP_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl-shared.zip";
+        private const string FFMPEG_DOWMLOAD_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl-shared.zip";
         private const string FFMPEG_BIN_DIR = "ffmpeg-master-latest-win64-gpl-shared/bin/";
 
         public static void LoadAll()
@@ -36,7 +32,7 @@ namespace MCBS
             }
             catch (Exception ex)
             {
-                LOGGER.Warn("FFmpeg资源文件加载失败，可能会影响到视频解码器/播放器组件的正常使用", ex);
+                LOGGER.Warn("FFmpeg资源文件加载失败，可能会影响到视频播放器组件的正常使用", ex);
             }
         }
 
@@ -47,7 +43,7 @@ namespace MCBS
                 FFmpegDirectory ffmpegDir = SR.McbsDirectory.FFmpegDir;
                 FFmpegLoader.FFmpegPath = ffmpegDir.BinDir.FullPath;
 
-                ZipPack zipPack = await ReadOrDownloadFFmpegZipAsync(FFMPEG_ZIP_URL, ffmpegDir.FFmpegWin64ZipFile);
+                ZipPack zipPack = await ReadOrDownloadFFmpegZipAsync(FFMPEG_DOWMLOAD_URL, ffmpegDir.FFmpegWin64ZipFile);
                 Dictionary<string, string> indexs = BuildFFmpegIndex(zipPack, ffmpegDir.FFmpegWin64IndexFile);
 
                 foreach (var index in indexs)
@@ -57,7 +53,7 @@ namespace MCBS
                     {
                         using Stream stream = zipPack.GetFile(FFMPEG_BIN_DIR + index.Key).OpenStream();
                         using FileStream fileStream = new(file, FileMode.Create);
-                        stream.CopyTo(fileStream);
+                        await stream.CopyToAsync(fileStream);
                         LOGGER.Info("已还原: " + file);
                     }
                 }

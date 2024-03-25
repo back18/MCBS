@@ -1,5 +1,4 @@
-﻿using FFMediaToolkit.Decoding;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +7,8 @@ using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
+using QuanLib.TickLoop.VideoPlayer;
+using QuanLib.TickLoop.VideoPlayer.Events;
 
 namespace MCBS.BlockForms
 {

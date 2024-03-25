@@ -7,6 +7,8 @@ using Microsoft.VisualBasic;
 using NAudio.Midi;
 using NAudio.Wave;
 using QuanLib.Core;
+using QuanLib.TickLoop.VideoPlayer;
+using QuanLib.TickLoop.VideoPlayer.Events;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
