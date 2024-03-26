@@ -26,6 +26,8 @@ namespace MCBS.Rendering
 
         public string this[TPixel key] => _mapping[_matcher.Match(key)];
 
+        public TPixel this[string value] => new Color(_mapping[value]).ToPixel<TPixel>();
+
         public IEnumerable<TPixel> Keys => _matcher.GetCache().Keys;
 
         public IEnumerable<string> Values => _mapping.Values;

@@ -1,4 +1,6 @@
-﻿using QuanLib.Game;
+﻿using QuanLib.Core;
+using QuanLib.Game;
+using QuanLib.Minecraft;
 using QuanLib.Minecraft.ResourcePack.Block;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -13,22 +15,44 @@ namespace MCBS.Rendering
 {
     public class Rgba32BlockMapping : IBlockMapping<Rgba32>
     {
-        public Rgba32BlockMapping(BlockTextureManager blockTextureManager, Facing facing)
+        public Rgba32BlockMapping(BlockTextureManager blockTextureManager, Facing facing, IEnumerable<BlockState> blacklist)
         {
             ArgumentNullException.ThrowIfNull(blockTextureManager, nameof(blockTextureManager));
+            CollectionValidator.ValidateNull(blacklist, nameof(blacklist));
 
             Facing = facing;
-
             _items1 = [];
             _items2 = [];
-            foreach (var texture in blockTextureManager.Values)
-            {
-                if (texture.BlockType == BlockType.CubeAll)
-                    _items1[texture.Textures[facing].AverageColor] = texture.BlockId;
-                else
-                    _items1.TryAdd(texture.Textures[facing].AverageColor, texture.BlockId);
 
-                _items2.Add(texture.BlockId, texture.Textures[facing].AverageColor);
+            foreach (BlockTexture blockTexture in blockTextureManager.Values)
+            {
+                if (!BlockState.TryParse(blockTexture.BlockId, out var blockState))
+                    continue;
+
+                bool isBlacklist = false;
+                foreach (BlockState blacklistBlockState in blacklist)
+                {
+                    if (blacklistBlockState.BlockId != blockState.BlockId)
+                        continue;
+
+                    foreach (var item in blacklistBlockState.States)
+                    {
+                        if (!blockState.States.TryGetValue(item.Key, out var value) || value != item.Value)
+                            continue;
+                    }
+
+                    isBlacklist = true;
+                }
+
+                if (isBlacklist)
+                    continue;
+
+                if (blockTexture.BlockType == BlockType.CubeAll)
+                    _items1[blockTexture.Textures[facing].AverageColor] = blockTexture.BlockId;
+                else
+                    _items1.TryAdd(blockTexture.Textures[facing].AverageColor, blockTexture.BlockId);
+
+                _items2.Add(blockTexture.BlockId, blockTexture.Textures[facing].AverageColor);
             }
 
             _items1[default] = string.Empty;
@@ -39,6 +63,8 @@ namespace MCBS.Rendering
         private readonly Dictionary<string, Rgba32> _items2;
 
         public string this[Rgba32 key] => _items1[key];
+
+        public Rgba32 this[string value] => _items2[value];
 
         public IEnumerable<Rgba32> Keys => _items1.Keys;
 

@@ -9,7 +9,6 @@ using QuanLib.Minecraft.ResourcePack.Block;
 using QuanLib.Minecraft.ResourcePack.Language;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -35,9 +34,6 @@ namespace MCBS
         public static SystemResourceNamespace SystemResourceNamespace { get; }
 
         public static McbsDirectory McbsDirectory { get; }
-
-        public static BlockTextureManager BlockTextureManager => _BlockTextureManager ?? throw new InvalidOperationException();
-        private static BlockTextureManager? _BlockTextureManager;
 
         public static ReadOnlyDictionary<Facing, Rgba32BlockMapping> Rgba32BlockMappings => _Rgba32BlockMappings ?? new(new Dictionary<Facing, Rgba32BlockMapping>());
         private static ReadOnlyDictionary<Facing, Rgba32BlockMapping>? _Rgba32BlockMappings;
@@ -70,20 +66,21 @@ namespace MCBS
 
         private static void LoadBlockTextureManager(ResourceEntryManager resources)
         {
-            _BlockTextureManager = BlockTextureManager.LoadInstance(new(resources, MinecraftConfig.BlockTextureBlacklist));
+            using BlockTextureManager blockTextureManager = BlockTextureReader.Load(resources);
             Dictionary<Facing, Rgba32BlockMapping> mappings = new()
             {
-                { Facing.Xp, new(_BlockTextureManager, Facing.Xp) },
-                { Facing.Xm, new(_BlockTextureManager, Facing.Xm) },
-                { Facing.Yp, new(_BlockTextureManager, Facing.Yp) },
-                { Facing.Ym, new(_BlockTextureManager, Facing.Ym) },
-                { Facing.Zp, new(_BlockTextureManager, Facing.Zp) },
-                { Facing.Zm, new(_BlockTextureManager, Facing.Zm) }
+                { Facing.Xp, new(blockTextureManager, Facing.Xp, MinecraftConfig.BlockTextureBlacklist) },
+                { Facing.Xm, new(blockTextureManager, Facing.Xm, MinecraftConfig.BlockTextureBlacklist) },
+                { Facing.Yp, new(blockTextureManager, Facing.Yp, MinecraftConfig.BlockTextureBlacklist) },
+                { Facing.Ym, new(blockTextureManager, Facing.Ym, MinecraftConfig.BlockTextureBlacklist) },
+                { Facing.Zp, new(blockTextureManager, Facing.Zp, MinecraftConfig.BlockTextureBlacklist) },
+                { Facing.Zm, new(blockTextureManager, Facing.Zm, MinecraftConfig.BlockTextureBlacklist) }
             };
-            _Rgba32BlockMappings = new(mappings);
+
+            _Rgba32BlockMappings = mappings.AsReadOnly();
             _HashBlockMapping = new();
 
-            LOGGER.Info($"Minecraft方块纹理数据加载完成，成功加载 {_BlockTextureManager.Count} 个方块纹理数据");
+            LOGGER.Info($"Minecraft方块纹理数据加载完成，成功加载 {blockTextureManager.Count} 个方块纹理数据");
         }
 
         private static void BuildColorMappingCache(ResourceEntryManager resources)

@@ -16,7 +16,7 @@ namespace MCBS.BlockForms.Utility
             if (string.IsNullOrEmpty(blockId))
                 return default;
 
-            return new Color(SR.BlockTextureManager[blockId].Textures[source.GetScreenPlane().NormalFacing].AverageColor).ToPixel<TPixel>();
+            return new Color(SR.Rgba32BlockMappings[source.GetScreenPlane().NormalFacing][blockId]).ToPixel<TPixel>();
         }
 
         public static bool TryGetBlockColor<TPixel>(this Control source, string? blockId, out TPixel color) where TPixel : unmanaged, IPixel<TPixel>
