@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
 using QuanLib.Logging;
+using MCBS.Rendering.Extensions;
 
 namespace MCBS.Screens
 {

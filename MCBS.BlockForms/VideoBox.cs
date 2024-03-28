@@ -3,6 +3,7 @@ using FFMediaToolkit.Graphics;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using MCBS.Rendering;
+using MCBS.Rendering.Extensions;
 using Microsoft.VisualBasic;
 using NAudio.Midi;
 using NAudio.Wave;

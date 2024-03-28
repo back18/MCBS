@@ -2,6 +2,7 @@
 using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Rendering;
+using MCBS.Rendering.Extensions;
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;

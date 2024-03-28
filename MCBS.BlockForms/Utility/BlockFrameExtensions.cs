@@ -1,5 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Rendering;
+using MCBS.Rendering.Extensions;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,11 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms.Utility
 {
-    public static class BlockFrameExtension
+    public static class BlockFrameExtensions
     {
         public static OverwriteContext Overwrite(this BlockFrame source, BlockFrame blockFrame, AnchorPosition anchorPosition)
         {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
             ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
 
             Point location = anchorPosition switch
