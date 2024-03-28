@@ -6,6 +6,7 @@ using MCBS.Events;
 using MCBS.Forms;
 using MCBS.Screens;
 using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Core;
 using QuanLib.Game;
 using QuanLib.Minecraft.Blocks;

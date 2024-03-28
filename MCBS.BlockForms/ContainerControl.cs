@@ -1,6 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Events;
-using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
 using System;

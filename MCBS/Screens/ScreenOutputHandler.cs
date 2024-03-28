@@ -1,6 +1,6 @@
 ﻿using MCBS.Rendering;
 using MCBS.Rendering.Extensions;
-using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;

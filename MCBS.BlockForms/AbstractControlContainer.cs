@@ -2,6 +2,7 @@
 using MCBS.Events;
 using MCBS.Rendering;
 using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
 using System;

@@ -20,6 +20,7 @@ using MCBS.Cursor;
 using System.Diagnostics.CodeAnalysis;
 using MCBS.Rendering;
 using QuanLib.Game;
+using MCBS.UI.Extensions;
 
 namespace MCBS.BlockForms
 {
