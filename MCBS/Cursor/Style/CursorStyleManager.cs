@@ -67,7 +67,7 @@ namespace MCBS.Cursor.Style
             Assembly assembly = Assembly.GetExecutingAssembly();
 
             using Stream indexsStream = assembly.GetManifestResourceStream(SR.SystemResourceNamespace.CursorIndexFile) ?? throw new InvalidOperationException();
-            string indexsJson = indexsStream.ToUtf8Text();
+            string indexsJson = indexsStream.ReadAllText();
             CursorModel[] indexs = JsonConvert.DeserializeObject<CursorModel[]>(indexsJson) ?? throw new InvalidOperationException();
 
             Dictionary<string, CursorStyle> result = new();

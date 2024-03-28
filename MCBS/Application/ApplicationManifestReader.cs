@@ -27,7 +27,7 @@ namespace MCBS.Application
             Stream? stream = assembly.GetManifestResourceStream(path) ?? throw new InvalidOperationException("找不到配置文件");
             try
             {
-                ApplicationManifest.Model model = JsonConvert.DeserializeObject<ApplicationManifest.Model>(stream.ToUtf8Text()) ?? throw new NullReferenceException();
+                ApplicationManifest.Model model = JsonConvert.DeserializeObject<ApplicationManifest.Model>(stream.ReadAllText()) ?? throw new NullReferenceException();
                 return new(assembly, model);
             }
             catch (Exception ex)

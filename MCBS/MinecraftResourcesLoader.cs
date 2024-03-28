@@ -139,7 +139,7 @@ namespace MCBS
             ArgumentException.ThrowIfNullOrEmpty(url, nameof(url));
 
             using Stream stream = await DownloadHelper.DownloadAsync(url);
-            string text = stream.ToUtf8Text();
+            string text = stream.ReadAllText();
             var model = JsonConvert.DeserializeObject<VersionList.Model>(text) ?? throw new FormatException();
             return new(model);
         }
@@ -150,7 +150,7 @@ namespace MCBS
             ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
 
             using Stream stream = await DownloadHelper.DownloadAsync(url, path);
-            string text = stream.ToUtf8Text();
+            string text = stream.ReadAllText();
             return text;
         }
 
@@ -160,7 +160,7 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(networkAssetIndex, nameof(networkAssetIndex));
 
             using Stream stream = await ReadOrDownloadAsync(path, networkAssetIndex, downloadProvider);
-            string text = stream.ToUtf8Text();
+            string text = stream.ReadAllText();
             var model = JsonConvert.DeserializeObject<AssetList.Model>(text) ?? throw new FormatException();
             return new(model);
         }
