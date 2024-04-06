@@ -94,7 +94,7 @@ namespace MCBS.ConsoleTerminal
             try
             {
                 MinecraftConfig config = ConfigManager.MinecraftConfig;
-                switch (config.InstanceType)
+                switch (config.MinecraftType)
                 {
                     case MinecraftTypes.CLIENT:
                         if (config.CommunicationMode == CommunicationModes.MCAPI)

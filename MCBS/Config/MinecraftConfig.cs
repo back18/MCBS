@@ -22,9 +22,9 @@ namespace MCBS.Config
             NullValidator.ValidateObject(model, nameof(model));
 
             GameVersion = model.GameVersion;
-            InstanceType = model.MinecraftType;
+            MinecraftType = model.MinecraftType;
             CommunicationMode = model.CommunicationMode;
-            DownloadApi = model.DownloadSource;
+            DownloadSource = model.DownloadSource;
             MinecraftPath = model.MinecraftPath;
             ServerAddress = model.ServerAddress;
             JavaPath = model.JavaPath;
@@ -33,23 +33,15 @@ namespace MCBS.Config
             McapiPassword = model.McapiPassword;
             Language = model.Language;
             ResourcePackList = new(model.ResourcePackList);
-
-            List<BlockState> list = new();
-            foreach (var item in model.ScreenBlockBlacklist)
-            {
-                if (BlockState.TryParse(item, out var blockState))
-                    list.Add(blockState);
-            }
-            BlockTextureBlacklist = list.AsReadOnly();
         }
 
         public string GameVersion { get; }
 
-        public string InstanceType { get; }
+        public string MinecraftType { get; }
 
         public string CommunicationMode { get; }
 
-        public string DownloadApi { get; }
+        public string DownloadSource { get; }
 
         public string MinecraftPath { get; }
 
@@ -67,8 +59,6 @@ namespace MCBS.Config
 
         public ReadOnlyCollection<string> ResourcePackList { get; }
 
-        public ReadOnlyCollection<BlockState> BlockTextureBlacklist { get; }
-
         public static MinecraftConfig FromDataModel(Model model)
         {
             return new(model);
@@ -79,9 +69,9 @@ namespace MCBS.Config
             return new()
             {
                 GameVersion = GameVersion,
-                MinecraftType = InstanceType,
+                MinecraftType = MinecraftType,
                 CommunicationMode = CommunicationMode,
-                DownloadSource = DownloadApi,
+                DownloadSource = DownloadSource,
                 MinecraftPath = MinecraftPath,
                 ServerAddress = ServerAddress,
                 JavaPath = JavaPath,
@@ -90,7 +80,6 @@ namespace MCBS.Config
                 McapiPassword = McapiPassword,
                 Language = Language,
                 ResourcePackList = ResourcePackList.ToArray(),
-                ScreenBlockBlacklist = BlockTextureBlacklist.Select(x => x.ToString()).ToArray()
             };
         }
 
@@ -120,43 +109,6 @@ namespace MCBS.Config
                 McapiPassword = "";
                 Language = "zh_cn";
                 ResourcePackList = [];
-                ScreenBlockBlacklist = [
-                    "minecraft:glowstone",                  //荧石
-                    "minecraft:jack_o_lantern",             //南瓜灯
-                    "minecraft:sea_lantern",                //海晶灯
-                    "minecraft:ochre_froglight",            //赭黄蛙明灯
-                    "minecraft:verdant_froglight",          //青翠蛙明灯
-                    "minecraft:pearlescent_froglight",      //珠光蛙明灯
-                    "minecraft:shroomlight",                //菌光体
-                    "minecraft:redstone_lamp[lit=true]",    //红石灯（点亮）
-                    "minecraft:crying_obsidian",            //哭泣的黑曜石
-                    "minecraft:magma_block",                //岩浆块
-                    "minecraft:sculk_catalyst",             //幽匿催发体
-                    "minecraft:beacon",                     //信标
-                    "minecraft:respawn_anchor[charges=1]",  //重生锚（充能等级1）
-                    "minecraft:respawn_anchor[charges=2]",  //重生锚（充能等级2）
-                    "minecraft:respawn_anchor[charges=3]",  //重生锚（充能等级2）
-                    "minecraft:respawn_anchor[charges=4]",  //重生锚（充能等级4）
-                    "minecraft:furnace[lit=true]",          //熔炉（燃烧中）
-                    "minecraft:smoker[lit=true]",           //烟熏炉（燃烧中）
-                    "minecraft:blast_furnace[lit=true]",    //高炉（燃烧中）
-                    "minecraft:redstone_ore[lit=true]",     //红石矿石（激活）
-                    "minecraft:deepslate_redstone_ore[lit=true]",   //深层红石矿石（激活）
-                    "minecraft:grass_block",                //草方块
-                    "minecraft:podzol",                     //灰化土
-                    "minecraft:mycelium",                   //菌丝体
-                    "minecraft:crimson_nylium",             //绯红菌岩
-                    "minecraft:warped_nylium",              //诡异菌岩
-                    "minecraft:tnt",                        //TNT
-                    "minecraft:snow",                       //雪
-                    "minecraft:ice",                        //冰
-                    "minecraft:budding_amethyst",           //紫水晶母岩
-                    "minecraft:tube_coral_block",           //管珊瑚块
-                    "minecraft:brain_coral_block",          //脑纹珊瑚块
-                    "minecraft:bubble_coral_block",         //气泡珊瑚块
-                    "minecraft:fire_coral_block",           //火珊瑚块
-                    "minecraft:horn_coral_block",           //鹿角珊瑚块
-                    ];
             }
 
             [Display(Name = "游戏版本", Description = "用于确定Minecraft的游戏版本")]
@@ -215,10 +167,6 @@ namespace MCBS.Config
             [Display(Name = "资源包列表", Description = "程序会根据资源包列表按照顺序加载资源包文件\n支持的文件类型: 客户端核心.jar, 服务端核心.jar, 模组文件.jar, 资源包.zip\n资源包目录: MCBS\\Minecraft\\ResourcePacks\\")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ResourcePackList { get; set; }
-
-            [Display(Name = "屏幕方块黑名单", Description = "将方块ID添加到黑名单后，屏幕将不再把像素映射至此方块")]
-            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            public string[] ScreenBlockBlacklist { get; set; }
 
             public static Model CreateDefault()
             {

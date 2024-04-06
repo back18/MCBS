@@ -83,7 +83,7 @@ namespace MCBS
             VersionDirectory directory = GetVersionDirectory(version);
             directory.BuildDirectoryTree();
 
-            DownloadProvider downloadProvider = MinecraftConfig.DownloadApi switch
+            DownloadProvider downloadProvider = MinecraftConfig.DownloadSource switch
             {
                 Config.DownloadSources.MOJANG => DownloadProvider.MOJANG_PROVIDER,
                 Config.DownloadSources.BMCLAPI => DownloadProvider.BMCLAPI_PROVIDER,

@@ -69,12 +69,12 @@ namespace MCBS
             using BlockTextureManager blockTextureManager = BlockTextureReader.Load(resources);
             Dictionary<Facing, Rgba32BlockMapping> mappings = new()
             {
-                { Facing.Xp, new(blockTextureManager, Facing.Xp, MinecraftConfig.BlockTextureBlacklist) },
-                { Facing.Xm, new(blockTextureManager, Facing.Xm, MinecraftConfig.BlockTextureBlacklist) },
-                { Facing.Yp, new(blockTextureManager, Facing.Yp, MinecraftConfig.BlockTextureBlacklist) },
-                { Facing.Ym, new(blockTextureManager, Facing.Ym, MinecraftConfig.BlockTextureBlacklist) },
-                { Facing.Zp, new(blockTextureManager, Facing.Zp, MinecraftConfig.BlockTextureBlacklist) },
-                { Facing.Zm, new(blockTextureManager, Facing.Zm, MinecraftConfig.BlockTextureBlacklist) }
+                { Facing.Xp, new(blockTextureManager, Facing.Xp, ScreenConfig.ScreenBlockBlacklist) },
+                { Facing.Xm, new(blockTextureManager, Facing.Xm, ScreenConfig.ScreenBlockBlacklist) },
+                { Facing.Yp, new(blockTextureManager, Facing.Yp, ScreenConfig.ScreenBlockBlacklist) },
+                { Facing.Ym, new(blockTextureManager, Facing.Ym, ScreenConfig.ScreenBlockBlacklist) },
+                { Facing.Zp, new(blockTextureManager, Facing.Zp, ScreenConfig.ScreenBlockBlacklist) },
+                { Facing.Zm, new(blockTextureManager, Facing.Zm, ScreenConfig.ScreenBlockBlacklist) }
             };
 
             _Rgba32BlockMappings = mappings.AsReadOnly();
