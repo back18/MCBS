@@ -96,12 +96,12 @@ namespace MCBS.ConsoleTerminal
                 MinecraftConfig config = ConfigManager.MinecraftConfig;
                 switch (config.InstanceType)
                 {
-                    case InstanceTypes.CLIENT:
+                    case MinecraftTypes.CLIENT:
                         if (config.CommunicationMode == CommunicationModes.MCAPI)
                             return new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogManager.Instance.LoggerGetter);
                         else
                             throw new InvalidOperationException();
-                    case InstanceTypes.SERVER:
+                    case MinecraftTypes.SERVER:
                         return config.CommunicationMode switch
                         {
                             CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiPort, config.McapiPassword, LogManager.Instance.LoggerGetter),

@@ -85,8 +85,8 @@ namespace MCBS
 
             DownloadProvider downloadProvider = MinecraftConfig.DownloadApi switch
             {
-                Config.DownloadApis.MOJANG => DownloadProvider.MOJANG_PROVIDER,
-                Config.DownloadApis.BMCLAPI => DownloadProvider.BMCLAPI_PROVIDER,
+                Config.DownloadSources.MOJANG => DownloadProvider.MOJANG_PROVIDER,
+                Config.DownloadSources.BMCLAPI => DownloadProvider.BMCLAPI_PROVIDER,
                 _ => throw new InvalidOperationException()
             };
 

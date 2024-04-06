@@ -22,9 +22,9 @@ namespace MCBS.Config
             NullValidator.ValidateObject(model, nameof(model));
 
             GameVersion = model.GameVersion;
-            InstanceType = model.InstanceType;
+            InstanceType = model.MinecraftType;
             CommunicationMode = model.CommunicationMode;
-            DownloadApi = model.DownloadApi;
+            DownloadApi = model.DownloadSource;
             MinecraftPath = model.MinecraftPath;
             ServerAddress = model.ServerAddress;
             JavaPath = model.JavaPath;
@@ -35,7 +35,7 @@ namespace MCBS.Config
             ResourcePackList = new(model.ResourcePackList);
 
             List<BlockState> list = new();
-            foreach (var item in model.BlockTextureBlacklist)
+            foreach (var item in model.ScreenBlockBlacklist)
             {
                 if (BlockState.TryParse(item, out var blockState))
                     list.Add(blockState);
@@ -79,9 +79,9 @@ namespace MCBS.Config
             return new()
             {
                 GameVersion = GameVersion,
-                InstanceType = InstanceType,
+                MinecraftType = InstanceType,
                 CommunicationMode = CommunicationMode,
-                DownloadApi = DownloadApi,
+                DownloadSource = DownloadApi,
                 MinecraftPath = MinecraftPath,
                 ServerAddress = ServerAddress,
                 JavaPath = JavaPath,
@@ -90,7 +90,7 @@ namespace MCBS.Config
                 McapiPassword = McapiPassword,
                 Language = Language,
                 ResourcePackList = ResourcePackList.ToArray(),
-                BlockTextureBlacklist = BlockTextureBlacklist.Select(x => x.ToString()).ToArray()
+                ScreenBlockBlacklist = BlockTextureBlacklist.Select(x => x.ToString()).ToArray()
             };
         }
 
@@ -109,9 +109,9 @@ namespace MCBS.Config
             public Model()
             {
                 GameVersion = "1.20.1";
-                InstanceType = InstanceTypes.CLIENT;
+                MinecraftType = MinecraftTypes.CLIENT;
                 CommunicationMode = CommunicationModes.MCAPI;
-                DownloadApi = DownloadApis.BMCLAPI;
+                DownloadSource = Config.DownloadSources.BMCLAPI;
                 MinecraftPath = "";
                 ServerAddress = "127.0.0.1";
                 JavaPath = "";
@@ -120,7 +120,7 @@ namespace MCBS.Config
                 McapiPassword = "";
                 Language = "zh_cn";
                 ResourcePackList = [];
-                BlockTextureBlacklist = [
+                ScreenBlockBlacklist = [
                     "minecraft:glowstone",                  //荧石
                     "minecraft:jack_o_lantern",             //南瓜灯
                     "minecraft:sea_lantern",                //海晶灯
@@ -159,25 +159,25 @@ namespace MCBS.Config
                     ];
             }
 
-            [Display(Name = "游戏版本", Description = "用于确定程序应该下载和使用什么游戏版本的资源包")]
+            [Display(Name = "游戏版本", Description = "用于确定Minecraft的游戏版本")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string GameVersion { get; set; }
 
-            [Display(Name = "实例类型", Description = "用于确定连接的Minecraft实例是服务端还是客户端")]
+            [Display(Name = "Minecraft类型", Description = "用于确定Minecraft是服务端还是客户端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            [NewAllowedValues("CLIENT", "SERVER", ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
-            public string InstanceType { get; set; }
+            [NewAllowedValues(MinecraftTypes.SERVER, MinecraftTypes.CLIENT, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
+            public string MinecraftType { get; set; }
 
-            [Display(Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信")]
+            [Display(Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信，支持服务端和客户端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            [NewAllowedValues("RCON", "CONSOLE", "HYBRID", "MCAPI", ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
-            [AllowedValuesIf(nameof(InstanceType), CompareOperator.Equal, "CLIENT", "MCAPI")]
+            [NewAllowedValues(CommunicationModes.RCON, CommunicationModes.CONSOLE, CommunicationModes.HYBRID, CommunicationModes.MCAPI, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
+            [AllowedValuesIf(nameof(MinecraftType), CompareOperator.Equal, "CLIENT", "MCAPI")]
             public string CommunicationMode { get; set; }
 
-            [Display(Name = "下载源", Description = "用于确定下载Minecraft资源包时使用的下载源")]
+            [Display(Name = "下载源", Description = "用于确定下载Minecraft游戏资源时使用的下载源")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            [NewAllowedValues("MOJANG", "BMCLAPI", ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
-            public string DownloadApi { get; set; }
+            [NewAllowedValues(DownloadSources.MOJANG, DownloadSources.BMCLAPI, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
+            public string DownloadSource { get; set; }
 
             [Display(Name = "Minecraft路径", Description = "用于确定Minecra主目录所在路径\n\".\"为程序工作目录\n\"..\"为程序工作目录的上一层目录")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
@@ -190,12 +190,12 @@ namespace MCBS.Config
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "MCAPI", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string ServerAddress { get; set; }
 
-            [Display(Name = "Java路径", Description = "启动服务端进程所使用的Java路径")]
+            [Display(Name = "Java路径", Description = "启动Minecraft服务端进程所使用的Java路径")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "CONSOLE", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "HYBRID", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string JavaPath { get; set; }
 
-            [Display(Name = "启动参数", Description = "启动服务端进程所使用的启动参数")]
+            [Display(Name = "启动参数", Description = "启动Minecraft服务端进程所使用的启动参数")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "CONSOLE", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "HYBRID", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string LaunchArguments { get; set; }
@@ -216,9 +216,9 @@ namespace MCBS.Config
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ResourcePackList { get; set; }
 
-            [Display(Name = "屏幕方块黑名单")]
+            [Display(Name = "屏幕方块黑名单", Description = "将方块ID添加到黑名单后，屏幕将不再把像素映射至此方块")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            public string[] BlockTextureBlacklist { get; set; }
+            public string[] ScreenBlockBlacklist { get; set; }
 
             public static Model CreateDefault()
             {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config
 {
-    public static class InstanceTypes
+    public static class MinecraftTypes
     {
         public const string CLIENT = nameof(CLIENT);
 

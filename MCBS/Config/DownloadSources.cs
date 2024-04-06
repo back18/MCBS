@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config
 {
-    public static class DownloadApis
+    public static class DownloadSources
     {
         public const string MOJANG = nameof(MOJANG);
 
