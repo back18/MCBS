@@ -145,9 +145,7 @@ namespace MCBS.Config.Minecraft
             public string MinecraftType { get; set; }
 
             [Display(Name = "Minecraft服务器地址", Description = "也作为RCON地址以及MCAPI地址\n由于一般情况下MCBS与Minecraft均运行在同一台主机\n因此将其设置为localhost即可")]
-            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "MCAPI", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
-            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "RCON", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
-            [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, "HYBRID", ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [RequiredIf(nameof(MinecraftType), CompareOperator.Equal, MinecraftTypes.SERVER, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string ServerAddress { get; set; }
 
             [Display(Name = "Minecraft服务器端口")]

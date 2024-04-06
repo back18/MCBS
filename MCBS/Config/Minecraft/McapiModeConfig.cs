@@ -15,9 +15,12 @@ namespace MCBS.Config.Minecraft
         {
             NullValidator.ValidateObject(model, nameof(model));
 
+            Address = model.Address;
             Port = (ushort)model.Port;
             Password = model.Password;
         }
+
+        public string Address { get; }
 
         public ushort Port { get; }
 
@@ -32,6 +35,7 @@ namespace MCBS.Config.Minecraft
         {
             return new()
             {
+                Address = Address,
                 Port = Port,
                 Password = Password
             };
@@ -41,9 +45,14 @@ namespace MCBS.Config.Minecraft
         {
             public Model()
             {
+                Address = "localhost";
                 Port = 25585;
                 Password = string.Empty;
             }
+
+            [Display(Name = "MCAPI地址")]
+            [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
+            public string Address { get; set; }
 
             [Display(Name = "MCAPI端口")]
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]

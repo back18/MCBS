@@ -44,7 +44,7 @@ namespace MCBS.ConsoleTerminal
 
             MinecraftConfig config = ConfigManager.MinecraftConfig;
             if (minecraftInstance is McapiMinecraftClient mcapiMinecraftClient)
-                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft客户端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{mcapiMinecraftClient.ServerAddress} 端口:{mcapiMinecraftClient.McapiPort}");
+                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft客户端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{mcapiMinecraftClient.McapiAddress} 端口:{mcapiMinecraftClient.McapiPort}");
             else if (minecraftInstance is McapiMinecraftServer mcapiMinecraftServer)
                 LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{mcapiMinecraftServer.ServerAddress} 端口:{mcapiMinecraftServer.McapiPort}");
             else if (minecraftInstance is RconMinecraftServer rconMinecraftServer)
@@ -100,16 +100,16 @@ namespace MCBS.ConsoleTerminal
                 {
                     case MinecraftTypes.CLIENT:
                         if (config.CommunicationMode == CommunicationModes.MCAPI)
-                            return new McapiMinecraftClient(config.MinecraftPath, config.ServerAddress, config.McapiModeConfig.Port, config.McapiModeConfig.Password, LogManager.Instance.LoggerGetter);
+                            return new McapiMinecraftClient(config.MinecraftPath, config.McapiModeConfig.Address, config.McapiModeConfig.Port, config.McapiModeConfig.Password, LogManager.Instance.LoggerGetter);
                         else
                             throw new InvalidOperationException();
                     case MinecraftTypes.SERVER:
                         return config.CommunicationMode switch
                         {
-                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.McapiModeConfig.Port, config.McapiModeConfig.Password, LogManager.Instance.LoggerGetter),
-                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, LogManager.Instance.LoggerGetter),
-                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.ConsoleModeConfig.JavaPath, config.ConsoleModeConfig.LaunchArguments), LogManager.Instance.LoggerGetter),
-                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, new GenericServerLaunchArguments(config.ConsoleModeConfig.JavaPath, config.ConsoleModeConfig.LaunchArguments), LogManager.Instance.LoggerGetter),
+                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, config.McapiModeConfig.Port, config.McapiModeConfig.Password, LogManager.Instance.LoggerGetter),
+                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, config.RconModeConfig.Port, config.RconModeConfig.Password, LogManager.Instance.LoggerGetter),
+                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, new GenericServerLaunchArguments(config.ConsoleModeConfig.JavaPath, config.ConsoleModeConfig.LaunchArguments), LogManager.Instance.LoggerGetter),
+                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, config.RconModeConfig.Port, config.RconModeConfig.Password, new GenericServerLaunchArguments(config.ConsoleModeConfig.JavaPath, config.ConsoleModeConfig.LaunchArguments), LogManager.Instance.LoggerGetter),
                             _ => throw new InvalidOperationException(),
                         };
                     default:
