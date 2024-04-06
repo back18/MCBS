@@ -28,11 +28,11 @@ namespace MCBS
 
         public static ResourceEntryManager LoadAll()
         {
-            BuildResourcesAsync(MinecraftConfig.GameVersion).Wait();
+            BuildResourcesAsync(MinecraftConfig.MinecraftVersion).Wait();
             LOGGER.Info("Minecraft资源文件构建完成");
 
-            string[] resourcePacks = GetResourcePacks(MinecraftConfig.GameVersion);
-            string[] languageFiles = GetLanguageFiles(MinecraftConfig.GameVersion);
+            string[] resourcePacks = GetResourcePacks(MinecraftConfig.MinecraftVersion);
+            string[] languageFiles = GetLanguageFiles(MinecraftConfig.MinecraftVersion);
 
             ZipPack[] zipPacks = new ZipPack[resourcePacks.Length];
             for (int i = 0; i < resourcePacks.Length; i++)
@@ -60,7 +60,7 @@ namespace MCBS
         {
             ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
 
-            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.GameVersion);
+            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.MinecraftVersion);
             string[] result = new string[MinecraftConfig.ResourcePackList.Count + 1];
             result[0] = directory.ClientFile;
             for (int i = 1; i < result.Length; i++)
@@ -73,7 +73,7 @@ namespace MCBS
         {
             ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
 
-            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.GameVersion);
+            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.MinecraftVersion);
             return directory.LanguagesDir.GetFiles("*.json");
         }
 
@@ -100,8 +100,8 @@ namespace MCBS
             {
                 VersionList versionList = await DownloadVersionListAsync(downloadProvider.VersionListUrl);
 
-                if (!versionList.TryGetValue(MinecraftConfig.GameVersion, out var versionIndex))
-                    throw new InvalidOperationException("未知的游戏版本: " + MinecraftConfig.GameVersion);
+                if (!versionList.TryGetValue(MinecraftConfig.MinecraftVersion, out var versionIndex))
+                    throw new InvalidOperationException("未知的游戏版本: " + MinecraftConfig.MinecraftVersion);
 
                 versionJsonText = await DownloadVersionJsonAsync(downloadProvider.RedirectUrl(versionIndex.Url), directory.VersionFile);
             }

@@ -1,6 +1,7 @@
 ﻿using log4net.Core;
 using log4net.Repository.Hierarchy;
 using MCBS;
+using MCBS.Config.Minecraft;
 using Nett;
 using Newtonsoft.Json;
 using QuanLib.Core;
