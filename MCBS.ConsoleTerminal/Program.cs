@@ -2,6 +2,7 @@
 using MCBS.Application;
 using MCBS.BlockForms.Utility;
 using MCBS.Config;
+using MCBS.Config.Constants;
 using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Events;

@@ -18,6 +18,7 @@ using QuanLib.IO.Zip;
 using System.IO.Compression;
 using QuanLib.Logging;
 using QuanLib.IO;
+using MCBS.Config.Constants;
 
 namespace MCBS
 {
@@ -85,8 +86,8 @@ namespace MCBS
 
             DownloadProvider downloadProvider = MinecraftConfig.DownloadSource switch
             {
-                Config.DownloadSources.MOJANG => DownloadProvider.MOJANG_PROVIDER,
-                Config.DownloadSources.BMCLAPI => DownloadProvider.BMCLAPI_PROVIDER,
+                DownloadSources.MOJANG => DownloadProvider.MOJANG_PROVIDER,
+                DownloadSources.BMCLAPI => DownloadProvider.BMCLAPI_PROVIDER,
                 _ => throw new InvalidOperationException()
             };
 

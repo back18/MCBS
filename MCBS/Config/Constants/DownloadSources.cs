@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Config
+namespace MCBS.Config.Constants
 {
     public static class DownloadSources
     {

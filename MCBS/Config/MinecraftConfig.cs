@@ -1,4 +1,5 @@
-﻿using Nett;
+﻿using MCBS.Config.Constants;
+using Nett;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
@@ -100,7 +101,7 @@ namespace MCBS.Config
                 GameVersion = "1.20.1";
                 MinecraftType = MinecraftTypes.CLIENT;
                 CommunicationMode = CommunicationModes.MCAPI;
-                DownloadSource = Config.DownloadSources.BMCLAPI;
+                DownloadSource = DownloadSources.BMCLAPI;
                 MinecraftPath = "";
                 ServerAddress = "127.0.0.1";
                 JavaPath = "";
