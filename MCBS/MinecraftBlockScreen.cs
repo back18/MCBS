@@ -252,6 +252,7 @@ namespace MCBS
 
                 if (IsRunning)
                 {
+                    StopSubTasks();
                     Task task = WaitForStopAsync();
                     LOGGER.Info("正在等待MCBS终止运行...");
                     IsRunning = false;
