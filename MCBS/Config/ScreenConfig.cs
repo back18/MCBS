@@ -159,6 +159,7 @@ namespace MCBS.Config
                     "minecraft:mycelium",                   //菌丝体
                     "minecraft:crimson_nylium",             //绯红菌岩
                     "minecraft:warped_nylium",              //诡异菌岩
+                    "minecraft:carved_pumpkin",             //雕刻南瓜
                     "minecraft:tnt",                        //TNT
                     "minecraft:snow",                       //雪
                     "minecraft:ice",                        //冰
