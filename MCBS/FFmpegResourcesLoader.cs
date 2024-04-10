@@ -17,8 +17,8 @@ namespace MCBS
     public static class FFmpegResourcesLoader
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
-        private const string FFMPEG_DOWMLOAD_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl-shared.zip";
-        private const string FFMPEG_BIN_DIR = "ffmpeg-master-latest-win64-gpl-shared/bin/";
+        private const string FFMPEG_DOWMLOAD_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2024-04-04-12-57/ffmpeg-n6.1.1-34-g5e45c27ba9-win64-gpl-shared-6.1.zip";
+        private const string FFMPEG_BIN_DIR = "ffmpeg-n6.1.1-34-g5e45c27ba9-win64-gpl-shared-6.1/bin/";
 
         public static void LoadAll()
         {
