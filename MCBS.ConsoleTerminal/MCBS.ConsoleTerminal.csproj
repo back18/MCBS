@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\QuanLib.CommandLine\QuanLib.CommandLine.ConsoleTerminal\QuanLib.CommandLine.ConsoleTerminal.csproj" />
+    <ProjectReference Include="..\..\QuanLib.Commands\QuanLib.Commands.CommandLine\QuanLib.Commands.CommandLine.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.Album\MCBS.SystemApplications.Album.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.Console\MCBS.SystemApplications.Console.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.DataScreen\MCBS.SystemApplications.DataScreen.csproj" />

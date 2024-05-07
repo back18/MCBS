@@ -4,6 +4,8 @@ using MCBS.BlockForms.Utility;
 using MCBS.Config;
 using MCBS.Config.Constants;
 using MCBS.Config.Minecraft;
+using QuanLib.Commands;
+using QuanLib.Consoles;
 using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Events;
@@ -23,7 +25,8 @@ namespace MCBS.ConsoleTerminal
             Thread.CurrentThread.Name = "Main Thread";
             ConfigManager.CreateIfNotExists();
             LoadLogManager();
-            Terminal = new();
+            CharacterWidthMapping.LoadInstance(new(null));
+            Terminal = new AdvancedTerminal(new("SYSTEM", PrivilegeLevel.Root));
             CommandLogger = new();
             CommandLogger.IsWriteToFile = true;
         }
@@ -58,7 +61,6 @@ namespace MCBS.ConsoleTerminal
 
             ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
             MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
-            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
 
             MinecraftBlockScreen.Instance.Start("System Thread");
             Terminal.Start("Terminal Thread");
@@ -154,11 +156,6 @@ namespace MCBS.ConsoleTerminal
 
             LOGGER.Info("MCBS已退出，感谢使用！");
             Environment.Exit(exitCode);
-        }
-
-        private static void CommandSender_CommandSent(CommandSender sender, CommandInfoEventArgs e)
-        {
-            //CommandLogger.Submit(new(e.CommandInfo, MCOS.Instance.GameTick, MCOS.Instance.SystemTick, MCOS.Instance.SystemStage, Thread.CurrentThread.Name ?? "null"));
         }
     }
 }

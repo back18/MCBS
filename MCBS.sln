@@ -15,13 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Minecraft.API", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.BDF", "..\QuanLib\QuanLib.BDF\QuanLib.BDF.csproj", "{2558DDDF-A740-4909-B440-E45819979A9D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.CommandLine.ConsoleTerminal", "..\QuanLib.CommandLine\QuanLib.CommandLine.ConsoleTerminal\QuanLib.CommandLine.ConsoleTerminal.csproj", "{40FB146A-4A86-417C-95DA-F9F30DE1147D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.CommandLine", "..\QuanLib.CommandLine\QuanLib.CommandLine\QuanLib.CommandLine.csproj", "{5907686C-6061-48A5-A987-BB7E0C4E138B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Core", "..\QuanLib\QuanLib.Core\QuanLib.Core.csproj", "{585045F2-699D-4418-9D0F-60B4D9053DEA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.ConsoleUtil", "..\QuanLib\QuanLib.ConsoleUtil\QuanLib.ConsoleUtil.csproj", "{824703AF-0F25-4753-AE15-C6B305EAE4CA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCBS.SystemApplications.Album", "MCBS.SystemApplications.Album\MCBS.SystemApplications.Album.csproj", "{5CA8AC1B-BEE3-4745-8180-EFC520EC9D83}"
 EndProject
@@ -85,6 +79,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.TickLoop.VideoPlaye
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.BusyWaiting", "..\QuanLib\QuanLib.BusyWaiting\QuanLib.BusyWaiting.csproj", "{19AF588D-A20B-41E3-AE57-57921E16E55A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Consoles", "..\QuanLib.Consoles\QuanLib.Consoles\QuanLib.Consoles.csproj", "{7BFB88C6-CFB7-4D0E-8861-00400C765FB5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Commands", "..\QuanLib.Commands\QuanLib.Commands\QuanLib.Commands.csproj", "{F5EAA951-252B-4414-A901-41933F288757}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuanLib.Commands.CommandLine", "..\QuanLib.Commands\QuanLib.Commands.CommandLine\QuanLib.Commands.CommandLine.csproj", "{D596BA9E-90DC-4891-A0E4-A5DC9C27C0B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,22 +115,10 @@ Global
 		{2558DDDF-A740-4909-B440-E45819979A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2558DDDF-A740-4909-B440-E45819979A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2558DDDF-A740-4909-B440-E45819979A9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40FB146A-4A86-417C-95DA-F9F30DE1147D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5907686C-6061-48A5-A987-BB7E0C4E138B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{585045F2-699D-4418-9D0F-60B4D9053DEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{824703AF-0F25-4753-AE15-C6B305EAE4CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CA8AC1B-BEE3-4745-8180-EFC520EC9D83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CA8AC1B-BEE3-4745-8180-EFC520EC9D83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CA8AC1B-BEE3-4745-8180-EFC520EC9D83}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -255,6 +243,18 @@ Global
 		{19AF588D-A20B-41E3-AE57-57921E16E55A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19AF588D-A20B-41E3-AE57-57921E16E55A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19AF588D-A20B-41E3-AE57-57921E16E55A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BFB88C6-CFB7-4D0E-8861-00400C765FB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BFB88C6-CFB7-4D0E-8861-00400C765FB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BFB88C6-CFB7-4D0E-8861-00400C765FB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BFB88C6-CFB7-4D0E-8861-00400C765FB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5EAA951-252B-4414-A901-41933F288757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5EAA951-252B-4414-A901-41933F288757}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5EAA951-252B-4414-A901-41933F288757}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5EAA951-252B-4414-A901-41933F288757}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D596BA9E-90DC-4891-A0E4-A5DC9C27C0B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D596BA9E-90DC-4891-A0E4-A5DC9C27C0B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D596BA9E-90DC-4891-A0E4-A5DC9C27C0B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D596BA9E-90DC-4891-A0E4-A5DC9C27C0B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

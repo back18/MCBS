@@ -1,6 +1,5 @@
-﻿using log4net.Core;
-using QuanLib.CommandLine;
-using QuanLib.CommandLine.ConsoleTerminal;
+﻿using QuanLib.Commands;
+using QuanLib.Commands.CommandLine;
 using QuanLib.Core;
 using QuanLib.Logging;
 using System;
@@ -8,142 +7,109 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Level = QuanLib.CommandLine.Level;
 
 namespace MCBS.ConsoleTerminal
 {
-    public class Terminal : RunnableBase
+    public abstract class Terminal : RunnableBase
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
-
-        public Terminal() : base(LogManager.Instance.LoggerGetter)
+        public Terminal(CommandSender commandSender) : base(LogManager.Instance.LoggerGetter)
         {
-            CommandSystem = new(new(Level.Root));
-            RegistrationCommands();
+            ArgumentNullException.ThrowIfNull(commandSender, nameof(commandSender));
+
+            _commandSender = commandSender;
+            CommandManager = new();
+            RegisterCommands();
         }
 
-        public CommandSystem CommandSystem { get; }
+        protected readonly CommandSender _commandSender;
+
+        public CommandManager CommandManager { get; }
+
+        protected abstract CommandReaderResult ReadCommand();
 
         protected override void Run()
         {
             while (IsRunning)
             {
-                string? input = Console.ReadLine();
+                CommandReaderResult result = ReadCommand();
+
                 if (!IsRunning)
                 {
                     break;
                 }
-                if (!MinecraftBlockScreen.IsInstanceLoaded)
+
+                if (!MinecraftBlockScreen.IsInstanceLoaded || !MinecraftBlockScreen.Instance.IsRunning)
                 {
-                    Console.WriteLine("【MCBS控制台】系统未加载，控制台输入已被禁用");
-                    continue;
-                }
-                if (input is null)
-                {
+                    Console.WriteLine("MCBS未在运行，无法执行命令");
                     continue;
                 }
 
-                switch (input)
+                if (result.Command is null)
                 {
-                    case "help":
-                        Console.WriteLine("【MCBS控制台】mcconsole--------Minecraft控制台");
-                        Console.WriteLine("【MCBS控制台】mccommand--------Minecraft命令日志记录器");
-                        Console.WriteLine("【MCBS控制台】commandsystem----可视化命令系统");
-                        Console.WriteLine("【MCBS控制台】mspt------------MSPT实时计时器");
-                        Console.WriteLine("【MCBS控制台】stop-------------终止系统并退出程序");
-                        break;
-                    case "mcconsole":
-                        Console.WriteLine("【MCBS控制台】已进入Minecraft控制台");
-                        Console.WriteLine("【MCBS控制台】该功能不可用");
-                        Console.WriteLine("【MCBS控制台】已退出Minecraft控制台");
-                        break;
-                    case "mccommand":
-                        Console.WriteLine("【MCBS控制台】已进入Minecraft命令日志记录器");
-                        LogManager.Instance.DisableConsoleOutput();
-                        Program.CommandLogger.IsWriteToConsole = true;
-                        WaitForInputEnter();
-                        Program.CommandLogger.IsWriteToConsole = false;
-                        LogManager.Instance.EnableConsoleOutput();
-                        Console.WriteLine("【MCBS控制台】已退出Minecraft命令日志记录器");
-                        break;
-                    case "commandsystem":
-                        Console.WriteLine("【MCBS控制台】已进入可视化命令系统");
-                        LogManager.Instance.DisableConsoleOutput();
-                        CommandSystem.Start();
-                        CommandSystem.WaitForStop();
-                        LogManager.Instance.EnableConsoleOutput();
-                        Console.WriteLine("【MCBS控制台】已退出可视化命令系统");
-                        break;
-                    case "mspt":
-                        Console.WriteLine("【MCBS控制台】已进入MSPT实时计时器");
-                        LogManager.Instance.DisableConsoleOutput();
-                        Console.CursorVisible = false;
-                        bool run = true;
-                        Task.Run(() =>
-                        {
-                            string empty = new(' ', 32);
-                            int lines = MinecraftBlockScreen.Instance.TimeAnalysisManager.Count + 1;
-                            for (int i = 0; i < lines; i++)
-                                Console.WriteLine(empty);
-                            while (run)
-                            {
-                                Console.CursorTop -= lines;
-                                for (int i = 0; i < lines; i++)
-                                    Console.WriteLine(empty);
-                                Console.CursorTop -= lines;
-                                Console.WriteLine(MinecraftBlockScreen.Instance.TimeAnalysisManager.ToString());
-                                Thread.Sleep(50);
-                            }
-                        });
-                        WaitForInputEnter();
-                        run = false;
-                        Console.CursorVisible = true;
-                        LogManager.Instance.EnableConsoleOutput();
-                        Console.WriteLine("【MCBS控制台】已退出MSPT实时计时器");
-                        break;
-                    case "stop":
-                        if (!MinecraftBlockScreen.IsInstanceLoaded || !MinecraftBlockScreen.Instance.IsRunning)
-                            Console.WriteLine("【MCBS控制台】系统未开始运行，因此无法关闭");
-                        MinecraftBlockScreen.Instance.Stop();
-                        break;
-                    default:
-                        Console.WriteLine("【MCBS控制台】未知或不完整命令，输入“help”可查看可用命令列表");
-                        break;
+                    Console.WriteLine("未知或不完整命令");
+                    continue;
+                }
+
+                try
+                {
+                    string message = result.Command.Execute(_commandSender, result.Args.ToArray());
+                    Console.WriteLine(message);
+                }
+                catch (AggregateException aggregateException)
+                {
+                    foreach (Exception innerException in aggregateException.InnerExceptions)
+                        Console.WriteLine(ObjectFormatter.Format(innerException));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ObjectFormatter.Format(ex));
                 }
             }
         }
 
-        private static void WaitForInputEnter()
+        private void RegisterCommands()
         {
-            WaitForInputKey(ConsoleKey.Enter);
-        }
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("application list")
+                .Allow(PrivilegeLevel.User)
+                .Execute(GetApplicationList)
+                .Build());
 
-        private static void WaitForInputKey(ConsoleKey key)
-        {
-            while (true)
-            {
-                if (Console.KeyAvailable)
-                {
-                    if (Console.ReadKey(true).Key == key)
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    Thread.Sleep(10);
-                }
-            }
-        }
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("screen list")
+                .Allow(PrivilegeLevel.User)
+                .Execute(GetScreenList)
+                .Build());
 
-        private void RegistrationCommands()
-        {
-            CommandSystem.CommandPool.AddCommand(new(new("application list"), CommandFunc.GetFunc(GetApplicationList)));
-            CommandSystem.CommandPool.AddCommand(new(new("screen list"), CommandFunc.GetFunc(GetScreenList)));
-            CommandSystem.CommandPool.AddCommand(new(new("screen builder"), CommandFunc.GetFunc(SetScreenBuilderEnable)));
-            CommandSystem.CommandPool.AddCommand(new(new("process list"), CommandFunc.GetFunc(GetProcessList)));
-            CommandSystem.CommandPool.AddCommand(new(new("form list"), CommandFunc.GetFunc(GetFormList)));
-            CommandSystem.CommandPool.AddCommand(new(new("frame count"), CommandFunc.GetFunc(GetFrameCount)));
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("process list")
+                .Allow(PrivilegeLevel.User)
+                .Execute(GetProcessList)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("form list")
+                .Allow(PrivilegeLevel.User)
+                .Execute(GetFormList)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("screen builder")
+                .Allow(PrivilegeLevel.User)
+                .Execute(GetScreenList)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("frame count")
+                .Allow(PrivilegeLevel.User)
+                .Execute(GetFrameCount)
+                .Build());
         }
 
         #region commands
