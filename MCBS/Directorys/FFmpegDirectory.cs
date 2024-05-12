@@ -12,8 +12,8 @@ namespace MCBS.Directorys
         public FFmpegDirectory(string directory) : base(directory)
         {
             BinDir = AddDirectory<BinDirectory>("bin");
-            FFmpegWin64ZipFile = Combine("ffmpeg-master-latest-win64-gpl-shared.zip");
-            FFmpegWin64IndexFile = Combine("ffmpeg-master-latest-win64-gpl-shared.json");
+            FFmpegWin64ZipFile = Combine("ffmpeg-n6.1-latest-win64-gpl-shared-6.1.zip");
+            FFmpegWin64IndexFile = Combine("ffmpeg-n6.1-latest-win64-gpl-shared-6.1.json");
         }
 
         public BinDirectory BinDir { get; }
