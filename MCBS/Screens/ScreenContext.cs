@@ -11,7 +11,6 @@ using MCBS.Cursor.Style;
 using MCBS.Cursor;
 using QuanLib.Minecraft.NBT.Models;
 using MCBS.Rendering;
-using MCBS.Directorys;
 using QuanLib.IO;
 using Newtonsoft.Json;
 using QuanLib.TickLoop;
@@ -19,6 +18,7 @@ using QuanLib.TickLoop.StateMachine;
 using QuanLib.Logging;
 using MCBS.Rendering.Extensions;
 using MCBS.UI.Extensions;
+using QuanLib.IO.Extensions;
 
 namespace MCBS.Screens
 {
@@ -52,6 +52,10 @@ namespace MCBS.Screens
             _frame = null;
             _activeCursors = new();
             _offlineCursors = new();
+
+            DirectoryInfo? worldDirectory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftPathManager.GetActiveWorlds().FirstOrDefault() ?? throw new InvalidOperationException("无法定位存档文件夹");
+            McbsDataPathManager mcbsDataPathManager = McbsDataPathManager.FromWorldDirectoryCreate(worldDirectory.FullName);
+            _savePath = mcbsDataPathManager.McbsData_Screens.FullName.PathCombine(GUID + ".json");
         }
 
         private BlockFrame? _frame;
@@ -59,6 +63,8 @@ namespace MCBS.Screens
         private readonly List<CursorContext> _activeCursors;
 
         private readonly List<CursorContext> _offlineCursors;
+
+        private readonly string _savePath;
 
         public Guid GUID { get; }
 
@@ -280,14 +286,13 @@ namespace MCBS.Screens
 
         private void SaveJson()
         {
-            MinecraftBlockScreen.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
+            MinecraftBlockScreen.Instance.FileWriteQueue.Submit(new TextWriteTask(_savePath, ToJson()));
         }
 
         private void DeleteJson()
         {
-            string savePath = GetSavePath();
-            if (File.Exists(savePath))
-                File.Delete(savePath);
+            if (File.Exists(_savePath))
+                File.Delete(_savePath);
         }
 
         private string ToJson()
@@ -295,11 +300,6 @@ namespace MCBS.Screens
             Screen screen = GetSubScreen();
             Screen.DataModel model = screen.ToDataModel();
             return JsonConvert.SerializeObject(model);
-        }
-
-        private string GetSavePath()
-        {
-            return MinecraftBlockScreen.Instance.WorldDirectory.GetMcbsDataDirectory().ScreensDir.Combine(GUID + ".json");
         }
     }
 }

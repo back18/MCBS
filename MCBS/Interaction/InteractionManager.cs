@@ -1,9 +1,9 @@
 ﻿using log4net.Core;
-using MCBS.Directorys;
 using MCBS.Events;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Game;
+using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
@@ -42,11 +42,15 @@ namespace MCBS.Interaction
 
         public void Initialize()
         {
-            InteractionsDirectory? directory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.InteractionsDir;
-            if (directory is null)
+            DirectoryInfo? worldDirectory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftPathManager.GetActiveWorlds().FirstOrDefault();
+
+            if (worldDirectory is null)
                 return;
-            directory.CreateIfNotExists();
-            string[] files = directory.GetFiles("*.json");
+
+            McbsDataPathManager mcbsDataPathManager = McbsDataPathManager.FromWorldDirectoryCreate(worldDirectory.FullName);
+            mcbsDataPathManager.McbsData_Interactions.CreateIfNotExists();
+            string[] files = mcbsDataPathManager.McbsData_Interactions.GetFilePaths("*.json");
+
             foreach (string file in files)
             {
                 try

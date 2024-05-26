@@ -1,7 +1,6 @@
 ﻿using static MCBS.Config.ConfigManager;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using MCBS.Directorys;
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.Downloading;
 using System;
@@ -19,6 +18,7 @@ using System.IO.Compression;
 using QuanLib.Logging;
 using QuanLib.IO;
 using MCBS.Config.Constants;
+using QuanLib.IO.Extensions;
 
 namespace MCBS
 {
@@ -28,11 +28,11 @@ namespace MCBS
 
         public static ResourceEntryManager LoadAll()
         {
-            BuildResourcesAsync(MinecraftConfig.MinecraftVersion).Wait();
+            BuildResourcesAsync().Wait();
             LOGGER.Info("Minecraft资源文件构建完成");
 
-            string[] resourcePacks = GetResourcePacks(MinecraftConfig.MinecraftVersion);
-            string[] languageFiles = GetLanguageFiles(MinecraftConfig.MinecraftVersion);
+            string[] resourcePacks = GetResourcePacks();
+            string[] languageFiles = GetLanguageFiles();
 
             ZipPack[] zipPacks = new ZipPack[resourcePacks.Length];
             for (int i = 0; i < resourcePacks.Length; i++)
@@ -56,34 +56,23 @@ namespace MCBS
             return resources;
         }
 
-        private static string[] GetResourcePacks(string version)
+        private static string[] GetResourcePacks()
         {
-            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
-
-            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.MinecraftVersion);
             string[] result = new string[MinecraftConfig.ResourcePackList.Count + 1];
-            result[0] = directory.ClientFile;
+            result[0] = McbsPathManager.MCBS_Minecraft_Vanilla_Version_ClientCore.FullName;
             for (int i = 1; i < result.Length; i++)
-                result[i] = SR.McbsDirectory.MinecraftDir.ResourcePacksDir.Combine(MinecraftConfig.ResourcePackList[i]);
+                result[i] = McbsPathManager.MCBS_Minecraft_ResourcePacks.CombineFile(MinecraftConfig.ResourcePackList[i]).FullName;
 
             return result;
         }
 
-        private static string[] GetLanguageFiles(string version)
+        private static string[] GetLanguageFiles()
         {
-            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
-
-            VersionDirectory directory = GetVersionDirectory(MinecraftConfig.MinecraftVersion);
-            return directory.LanguagesDir.GetFiles("*.json");
+            return McbsPathManager.MCBS_Minecraft_Vanilla_Version_Languages.GetFilePaths("*.json");
         }
 
-        private static async Task BuildResourcesAsync(string version)
+        private static async Task BuildResourcesAsync()
         {
-            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
-
-            VersionDirectory directory = GetVersionDirectory(version);
-            directory.BuildDirectoryTree();
-
             DownloadProvider downloadProvider = MinecraftConfig.DownloadSource switch
             {
                 DownloadSources.MOJANG => DownloadProvider.MOJANG_PROVIDER,
@@ -92,9 +81,9 @@ namespace MCBS
             };
 
             string versionJsonText;
-            if (File.Exists(directory.VersionFile))
+            if (McbsPathManager.MCBS_Minecraft_Vanilla_Version_VersionJson.Exists)
             {
-                versionJsonText = await File.ReadAllTextAsync(directory.VersionFile);
+                versionJsonText = await File.ReadAllTextAsync(McbsPathManager.MCBS_Minecraft_Vanilla_Version_VersionJson.FullName);
             }
             else
             {
@@ -103,19 +92,19 @@ namespace MCBS
                 if (!versionList.TryGetValue(MinecraftConfig.MinecraftVersion, out var versionIndex))
                     throw new InvalidOperationException("未知的游戏版本: " + MinecraftConfig.MinecraftVersion);
 
-                versionJsonText = await DownloadVersionJsonAsync(downloadProvider.RedirectUrl(versionIndex.Url), directory.VersionFile);
+                versionJsonText = await DownloadVersionJsonAsync(downloadProvider.RedirectUrl(versionIndex.Url), McbsPathManager.MCBS_Minecraft_Vanilla_Version_VersionJson.FullName);
             }
 
             VersionJson versionJson = new(JObject.Parse(versionJsonText));
 
             NetworkAssetIndex clientAssetIndex = versionJson.GetClientCore() ?? throw new InvalidOperationException("在版本Json文件找不到客户端核心文件的资源索引");
-            (await ReadOrDownloadAsync(directory.ClientFile, clientAssetIndex, downloadProvider)).Dispose();
+            (await ReadOrDownloadAsync(McbsPathManager.MCBS_Minecraft_Vanilla_Version_ClientCore.FullName, clientAssetIndex, downloadProvider)).Dispose();
 
             NetworkAssetIndex indexFileAssetIndex = versionJson.GetIndexFile() ?? throw new InvalidOperationException("在版本Json文件找不到索引文件的资源索引");
-            AssetList assetList = await LoadAssetListAsync(directory.IndexFile, indexFileAssetIndex, downloadProvider);
+            AssetList assetList = await LoadAssetListAsync(McbsPathManager.MCBS_Minecraft_Vanilla_Version_IndexFile.FullName, indexFileAssetIndex, downloadProvider);
 
             string langFileName = MinecraftConfig.Language + ".json";
-            string langFilePath = directory.LanguagesDir.Combine(langFileName);
+            string langFilePath = McbsPathManager.MCBS_Minecraft_Vanilla_Version_Languages.CombineFile(langFileName).FullName;
             string langAssetPath = "minecraft/lang/" + langFileName;
             if (!assetList.TryGetValue(langAssetPath, out var langAssetIndex))
                 throw new InvalidOperationException("未知的语言标识: " + MinecraftConfig.Language);
@@ -171,13 +160,6 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(downloadManager, nameof(downloadManager));
 
             return $"多个文件下载中: {downloadManager.CompletedCount}/{downloadManager.Count}";
-        }
-
-        private static VersionDirectory GetVersionDirectory(string version)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(version, nameof(version));
-
-            return SR.McbsDirectory.MinecraftDir.VanillaDir.GetVersionDirectory(version);
         }
     }
 }

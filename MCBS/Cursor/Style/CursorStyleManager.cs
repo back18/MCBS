@@ -66,14 +66,14 @@ namespace MCBS.Cursor.Style
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
 
-            using Stream indexsStream = assembly.GetManifestResourceStream(SR.SystemResourceNamespace.CursorIndexFile) ?? throw new InvalidOperationException();
+            using Stream indexsStream = assembly.GetManifestResourceStream("MCBS.SystemResource.CursorIndex.json") ?? throw new InvalidOperationException();
             string indexsJson = indexsStream.ReadAllText();
             CursorModel[] indexs = JsonConvert.DeserializeObject<CursorModel[]>(indexsJson) ?? throw new InvalidOperationException();
 
             Dictionary<string, CursorStyle> result = new();
             foreach (var index in indexs)
             {
-                using Stream stream = assembly.GetManifestResourceStream(SR.SystemResourceNamespace.CursorsNamespace.Combine(index.Image)) ?? throw new InvalidOperationException();
+                using Stream stream = assembly.GetManifestResourceStream($"MCBS.SystemResource.Cursors.{index.Image}") ?? throw new InvalidOperationException();
                 var image = Image.Load<Rgba32>(stream);
                 ColorBlockFrame<Rgba32> colorBlockFrame = new(image);
                 CursorStyle cursor = new(index.Type, new(index.XOffset, index.YOffset), colorBlockFrame);

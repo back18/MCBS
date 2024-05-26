@@ -1,6 +1,5 @@
 ﻿using FFMediaToolkit;
 using log4net.Core;
-using MCBS.Directorys;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.IO;
@@ -40,15 +39,12 @@ namespace MCBS
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                FFmpegDirectory ffmpegDir = SR.McbsDirectory.FFmpegDir;
-                FFmpegLoader.FFmpegPath = ffmpegDir.BinDir.FullPath;
-
-                ZipPack zipPack = await ReadOrDownloadFFmpegZipAsync(FFMPEG_DOWMLOAD_URL, ffmpegDir.FFmpegWin64ZipFile);
-                Dictionary<string, string> indexs = BuildFFmpegIndex(zipPack, ffmpegDir.FFmpegWin64IndexFile);
+                ZipPack zipPack = await ReadOrDownloadFFmpegZipAsync(FFMPEG_DOWMLOAD_URL, McbsPathManager.MCBS_FFmpeg_Win64ZipFile.FullName);
+                Dictionary<string, string> indexs = BuildFFmpegIndex(zipPack, McbsPathManager.MCBS_FFmpeg_Win64IndexFile.FullName);
 
                 foreach (var index in indexs)
                 {
-                    string file = Path.Combine(FFmpegLoader.FFmpegPath, index.Key);
+                    string file = Path.Combine(McbsPathManager.MCBS_FFmpeg_Bin.FullName, index.Key);
                     if (!File.Exists(file) || HashUtil.GetHashString(file, HashType.SHA1) != index.Value)
                     {
                         using Stream stream = zipPack.GetFile(FFMPEG_BIN_DIR + index.Key).OpenStream();
@@ -59,6 +55,8 @@ namespace MCBS
                 }
 
                 zipPack.Dispose();
+
+                FFmpegLoader.FFmpegPath = McbsPathManager.MCBS_FFmpeg_Bin.FullName;
             }
             else
             {

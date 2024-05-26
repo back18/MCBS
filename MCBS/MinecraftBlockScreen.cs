@@ -20,10 +20,10 @@ using MCBS.RightClickObjective;
 using MCBS.Screens.Building;
 using QuanLib.Minecraft.Command;
 using QuanLib.IO;
-using QuanLib.Minecraft.Directorys;
 using QuanLib.Minecraft.Command.Models;
 using QuanLib.TickLoop;
 using QuanLib.Logging;
+using QuanLib.IO.Extensions;
 
 namespace MCBS
 {
@@ -75,9 +75,6 @@ namespace MCBS
 
         public MinecraftInstance MinecraftInstance { get; }
 
-        public WorldDirectory WorldDirectory => _WorldDirectory ?? throw new InvalidOperationException("当前状态无法定位世界文件夹");
-        private WorldDirectory? _WorldDirectory;
-
         public FileWriteQueue FileWriteQueue { get; }
 
         public TimeAnalysisManager TimeAnalysisManager { get; }
@@ -116,17 +113,7 @@ namespace MCBS
 
         private void ConnectMinecraft()
         {
-            LOGGER.Info($"正在等待位于“{MinecraftInstance.MinecraftDirectory.FullPath}”的Minecraft实例启动...");
-
-            while (true)
-            {
-                _WorldDirectory = MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory();
-                if (_WorldDirectory is not null)
-                    break;
-
-                Thread.Sleep(1000);
-            }
-
+            LOGGER.Info($"正在等待位于“{MinecraftInstance.MinecraftPathManager.Minecraft.FullName}”的Minecraft实例启动...");
             MinecraftInstance.WaitForConnection();
             MinecraftInstance.Start("MinecraftInstance Thread");
             Thread.Sleep(1000);
@@ -445,12 +432,8 @@ namespace MCBS
 
         private void CreateAppComponentsDirectory()
         {
-            foreach (var appID in AppComponents.Keys)
-            {
-                string dir = Path.Combine(SR.McbsDirectory.ApplicationsDir.FullPath, appID);
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-            }
+            foreach (var appId in AppComponents.Keys)
+                McbsPathManager.MCBS_Applications.CombineDirectory(appId).CreateIfNotExists();
         }
 
         public async Task<int> GetGameTickAsync()

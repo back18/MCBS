@@ -23,6 +23,7 @@ namespace MCBS.ConsoleTerminal
         static Program()
         {
             Thread.CurrentThread.Name = "Main Thread";
+            McbsPathManager.CreateAllDirectory();
             ConfigManager.CreateIfNotExists();
             LoadLogManager();
             CharacterWidthMapping.LoadInstance(new(null));
@@ -128,8 +129,8 @@ namespace MCBS.ConsoleTerminal
 
         private static void LoadLogManager()
         {
-            using FileStream fileStream = File.OpenRead(SR.McbsDirectory.ConfigsDir.Log4NetFile);
-            LogManager.LoadInstance(new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n", SR.McbsDirectory.LogsDir.LatestFile, Encoding.UTF8, fileStream, true));
+            using FileStream fileStream = File.OpenRead(McbsPathManager.MCBS_Configs_Log4NetConfig.FullName);
+            LogManager.LoadInstance(new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n", McbsPathManager.MCBS_Logs_LatestLog.FullName, Encoding.UTF8, fileStream, true));
         }
 
         public static void Exit(int exitCode)

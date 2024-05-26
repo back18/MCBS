@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using MCBS.UI;
 using Newtonsoft.Json;
-using MCBS.Directorys;
 using QuanLib.TickLoop;
 using QuanLib.Logging;
+using QuanLib.IO.Extensions;
 
 namespace MCBS.Screens
 {
@@ -39,11 +39,15 @@ namespace MCBS.Screens
 
         public void Initialize()
         {
-            ScreensDirectory directory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftDirectory.GetActiveWorldDirectory()?.GetMcbsDataDirectory()?.ScreensDir ?? throw new InvalidOperationException("无法定位游戏存档文件夹");
-            if (!directory.Exists())
+            DirectoryInfo? worldDirectory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftPathManager.GetActiveWorlds().FirstOrDefault();
+
+            if (worldDirectory is null)
                 return;
 
-            string[] files = directory.GetFiles("*.json");
+            McbsDataPathManager mcbsDataPathManager = McbsDataPathManager.FromWorldDirectoryCreate(worldDirectory.FullName);
+            mcbsDataPathManager.McbsData_Screens.CreateIfNotExists();
+            string[] files = mcbsDataPathManager.McbsData_Screens.GetFilePaths("*.json");
+
             foreach (string file in files)
             {
                 try

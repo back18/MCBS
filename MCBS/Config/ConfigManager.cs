@@ -34,19 +34,19 @@ namespace MCBS.Config
 
         public static void CreateIfNotExists()
         {
-            CreateLog4NetConfig(SR.McbsDirectory.ConfigsDir.Log4NetFile);
-            CreateRegistryConfig(SR.McbsDirectory.ConfigsDir.RegistryFile);
-            CreateTomlConfig(SR.McbsDirectory.ConfigsDir.MinecraftFile, MinecraftConfig.Model.CreateDefault());
-            CreateTomlConfig(SR.McbsDirectory.ConfigsDir.SystemFile, SystemConfig.Model.CreateDefault());
-            CreateTomlConfig(SR.McbsDirectory.ConfigsDir.ScreenFile, ScreenConfig.Model.CreateDefault());
+            CreateLog4NetConfig(McbsPathManager.MCBS_Configs_Log4NetConfig.FullName);
+            CreateRegistryConfig(McbsPathManager.MCBS_Configs_RegistryConfig.FullName);
+            CreateTomlConfig(McbsPathManager.MCBS_Configs_MinecraftConfig.FullName, MinecraftConfig.Model.CreateDefault());
+            CreateTomlConfig(McbsPathManager.MCBS_Configs_SystemConfig.FullName, SystemConfig.Model.CreateDefault());
+            CreateTomlConfig(McbsPathManager.MCBS_Configs_ScreenConfig.FullName, ScreenConfig.Model.CreateDefault());
         }
 
         public static void LoadAll()
         {
-            _MinecraftConfig = MinecraftConfig.Load(SR.McbsDirectory.ConfigsDir.MinecraftFile);
-            _SystemConfig = SystemConfig.Load(SR.McbsDirectory.ConfigsDir.SystemFile);
-            _ScreenConfig = ScreenConfig.Load(SR.McbsDirectory.ConfigsDir.ScreenFile);
-            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(SR.McbsDirectory.ConfigsDir.RegistryFile)) ?? throw new FormatException();
+            _MinecraftConfig = MinecraftConfig.Load(McbsPathManager.MCBS_Configs_MinecraftConfig.FullName);
+            _SystemConfig = SystemConfig.Load(McbsPathManager.MCBS_Configs_SystemConfig.FullName);
+            _ScreenConfig = ScreenConfig.Load(McbsPathManager.MCBS_Configs_ScreenConfig.FullName);
+            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(McbsPathManager.MCBS_Configs_RegistryConfig.FullName)) ?? throw new FormatException();
 
             LOGGER.Info("配置文件加载完成");
         }

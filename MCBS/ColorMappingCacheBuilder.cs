@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Logging;
 using QuanLib.Game;
+using QuanLib.IO.Extensions;
 
 namespace MCBS
 {
@@ -131,9 +132,9 @@ namespace MCBS
             return true;
         }
 
-        private static string GetJsonFilePath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".json");
+        private static string GetJsonFilePath(Facing facing) => McbsPathManager.MCBS_Caches_ColorMapping.CombineFile(facing.ToString() + ".json").FullName;
 
-        private static string GetBinFilePath(Facing facing) => SR.McbsDirectory.CachesDir.ColorMappingDir.Combine(facing.ToString() + ".bin");
+        private static string GetBinFilePath(Facing facing) => McbsPathManager.MCBS_Caches_ColorMapping.CombineFile(facing.ToString() + ".bin").FullName;
 
         private class BuildInfo
         {

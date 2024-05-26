@@ -1,5 +1,6 @@
 ﻿using MCBS.Forms;
 using MCBS.UI;
+using QuanLib.IO.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace MCBS.Application
             if (applicationManifest is null)
                 return null;
 
-            return SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(applicationManifest.ID);
+            return McbsPathManager.MCBS_Applications.CombineDirectory(applicationManifest.ID).FullName;
         }
     }
 }

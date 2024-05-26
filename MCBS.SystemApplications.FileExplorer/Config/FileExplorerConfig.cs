@@ -1,5 +1,6 @@
 ﻿using MCBS.BlockForms.SimpleFileSystem;
 using Nett;
+using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,9 @@ namespace MCBS.SystemApplications.FileExplorer.Config
 
         public static void CreateIfNotExists()
         {
-            string dir = SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(FileExplorerApp.ID);
-            string path = Path.Combine(dir, "Config.toml");
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
+            DirectoryInfo directoryInfo = McbsPathManager.MCBS_Applications.CombineDirectory(FileExplorerApp.ID);
+            string path = directoryInfo.CombineFile("Config.toml").FullName;
+            directoryInfo.CreateIfNotExists();
             CreateIfNotExists(path, "MCBS.SystemApplications.FileExplorer.Config.Default.Config.toml");
         }
 
@@ -47,7 +46,7 @@ namespace MCBS.SystemApplications.FileExplorer.Config
 
         public static FileExplorerConfig Load()
         {
-            string path = Path.Combine(SR.McbsDirectory.ApplicationsDir.GetApplicationDirectory(FileExplorerApp.ID), "Config.toml");
+            string path = McbsPathManager.MCBS_Applications.CombineFile(FileExplorerApp.ID, "Config.toml").FullName;
             TomlTable table = Toml.ReadFile(path);
             Model model = table.Get<Model>();
 

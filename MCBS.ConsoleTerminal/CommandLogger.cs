@@ -1,4 +1,5 @@
 ﻿using QuanLib.Core;
+using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -15,15 +16,15 @@ namespace MCBS.ConsoleTerminal
     {
         public CommandLogger() : base(LogManager.Instance.LoggerGetter)
         {
-            string file = SR.McbsDirectory.LogsDir.Combine("Command.log");
-            if (File.Exists(file))
-                File.Delete(file);
+            FileInfo fileInfo = McbsPathManager.MCBS_Logs.CombineFile("Command.log");
+            if (fileInfo.Exists)
+                fileInfo.Delete();
 
             IsWriteToConsole = false;
             IsWriteToFile = false;
 
             _memoryStream = new();
-            _fileStream = new(file, FileMode.Create, FileAccess.Write, FileShare.Read);
+            _fileStream = new(fileInfo.FullName, FileMode.Create, FileAccess.Write, FileShare.Read);
 
             _memoryWriter = new StreamWriter(_memoryStream, Encoding.UTF8);
             _fileWriter = new StreamWriter(_fileStream, Encoding.UTF8);

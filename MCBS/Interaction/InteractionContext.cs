@@ -1,9 +1,10 @@
-﻿using log4net.Core;
-using MCBS.Directorys;
+﻿using FFmpeg.AutoGen;
+using log4net.Core;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Game;
 using QuanLib.IO;
+using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
@@ -44,8 +45,14 @@ namespace MCBS.Interaction
                 new(InteractionState.Closed, new InteractionState[] { InteractionState.Active, InteractionState.Offline }, GotoClosedState)
             });
 
+            DirectoryInfo? worldDirectory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftPathManager.GetActiveWorlds().FirstOrDefault() ?? throw new InvalidOperationException("无法定位存档文件夹");
+            McbsDataPathManager mcbsDataPathManager = McbsDataPathManager.FromWorldDirectoryCreate(worldDirectory.FullName);
+            _savePath = mcbsDataPathManager.McbsData_Interactions.FullName.PathCombine(PlayerName + ".json");
+
             SaveJson();
         }
+
+        private readonly string _savePath;
 
         public TickStateMachine<InteractionState> StateMachine { get; }
 
@@ -177,14 +184,13 @@ namespace MCBS.Interaction
 
         private void SaveJson()
         {
-            MinecraftBlockScreen.Instance.FileWriteQueue.Submit(new TextWriteTask(GetSavePath(), ToJson()));
+            MinecraftBlockScreen.Instance.FileWriteQueue.Submit(new TextWriteTask(_savePath, ToJson()));
         }
 
         private void DeleteJson()
         {
-            string savePath = GetSavePath();
-            if (File.Exists(savePath))
-                File.Delete(savePath);
+            if (File.Exists(_savePath))
+                File.Delete(_savePath);
         }
 
         private string ToJson()
@@ -195,11 +201,6 @@ namespace MCBS.Interaction
         private Model ToModel()
         {
             return new(PlayerUUID.ToString(), EntityUUID.ToString(), [Position.X, Position.Y, Position.Z]);
-        }
-
-        private string GetSavePath()
-        {
-            return MinecraftBlockScreen.Instance.WorldDirectory.GetMcbsDataDirectory().InteractionsDir.Combine(PlayerName + ".json");
         }
 
         protected override void DisposeUnmanaged()

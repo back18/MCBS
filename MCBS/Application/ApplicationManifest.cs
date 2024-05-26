@@ -16,7 +16,7 @@ namespace MCBS.Application
     {
         static ApplicationManifest()
         {
-            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(SR.SystemResourceNamespace.DefaultIconFile) ?? throw new InvalidOperationException();
+            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"MCBS.SystemResource.DefaultIcon.png") ?? throw new InvalidOperationException();
             _defaultIcon = Image.Load<Rgba32>(stream);
         }
 

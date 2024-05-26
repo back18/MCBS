@@ -1,8 +1,6 @@
 ﻿using static MCBS.Config.ConfigManager;
 using log4net.Core;
 using MCBS.Cursor.Style;
-using MCBS.Directorys;
-using MCBS.Namespaces;
 using QuanLib.BDF;
 using QuanLib.Minecraft.ResourcePack;
 using QuanLib.Minecraft.ResourcePack.Block;
@@ -23,17 +21,6 @@ namespace MCBS
     public static class SR
     {
         private static LogImpl LOGGER => LogManager.Instance.GetLogger();
-
-        static SR()
-        {
-            SystemResourceNamespace = new("MCBS.SystemResource");
-            McbsDirectory = new(Path.GetFullPath("MCBS"));
-            McbsDirectory.BuildDirectoryTree();
-        }
-
-        public static SystemResourceNamespace SystemResourceNamespace { get; }
-
-        public static McbsDirectory McbsDirectory { get; }
 
         public static ReadOnlyDictionary<Facing, Rgba32BlockMapping> Rgba32BlockMappings => _Rgba32BlockMappings ?? new(new Dictionary<Facing, Rgba32BlockMapping>());
         private static ReadOnlyDictionary<Facing, Rgba32BlockMapping>? _Rgba32BlockMappings;
@@ -115,16 +102,14 @@ namespace MCBS
 
         private static void LoadFontFile(ResourceEntryManager resources)
         {
-            using Stream defaultFontStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(SystemResourceNamespace.DefaultFontFile) ?? throw new InvalidOperationException();
-            _DefaultFont = BdfFont.Load(defaultFontStream);
+            using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MCBS.SystemResource.DefaultFont.bdf") ?? throw new InvalidOperationException();
+            _DefaultFont = BdfFont.Load(stream);
 
             LOGGER.Info($"默认字体数据完成，字符数量:{_DefaultFont.Count} 字体高度:{_DefaultFont.Height} 全角宽度:{_DefaultFont.FullWidth} 半角宽度:{_DefaultFont.HalfWidth}");
         }
 
         private static void LoadCursorFile(ResourceEntryManager resources)
         {
-            LOGGER.Info("开始加载光标文件");
-
             _CursorStyleManager = CursorStyleManager.LoadInstance();
 
             LOGGER.Info($"光标数据加载完成，光标数量:{_CursorStyleManager.Count}");

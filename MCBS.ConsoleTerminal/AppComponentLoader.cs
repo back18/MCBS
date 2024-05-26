@@ -1,6 +1,7 @@
 ﻿using log4net.Core;
 using MCBS.Application;
 using MCBS.Config;
+using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace MCBS.ConsoleTerminal
         private static ApplicationManifest[] LoadDllAppComponents()
         {
             List<ApplicationManifest> result = new();
-            string[] files = SR.McbsDirectory.DllAppComponentsDir.GetFiles("*.dll");
+            string[] files = McbsPathManager.MCBS_DllAppComponents.GetFilePaths("*.dll");
             foreach (string file in files)
             {
                 try
