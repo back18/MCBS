@@ -6,6 +6,7 @@ using MCBS.Config.Constants;
 using MCBS.Config.Minecraft;
 using QuanLib.Commands;
 using QuanLib.Consoles;
+using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Events;
@@ -26,7 +27,7 @@ namespace MCBS.ConsoleTerminal
             McbsPathManager.CreateAllDirectory();
             ConfigManager.CreateIfNotExists();
             LoadLogManager();
-            CharacterWidthMapping.LoadInstance(new(null));
+            LoadCharacterWidthMapping();
             Terminal = new AdvancedTerminal(new("SYSTEM", PrivilegeLevel.Root));
             CommandLogger = new();
             CommandLogger.IsWriteToFile = true;
@@ -131,6 +132,21 @@ namespace MCBS.ConsoleTerminal
         {
             using FileStream fileStream = File.OpenRead(McbsPathManager.MCBS_Configs_Log4NetConfig.FullName);
             LogManager.LoadInstance(new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n", McbsPathManager.MCBS_Logs_LatestLog.FullName, Encoding.UTF8, fileStream, true));
+        }
+
+        private static void LoadCharacterWidthMapping()
+        {
+            FileInfo fileInfo = McbsPathManager.MCBS_Caches.CombineFile("CharacterWidthMapping.bin");
+
+            if (fileInfo.Exists)
+            {
+                CharacterWidthMapping.LoadInstance(new(File.ReadAllBytes(fileInfo.FullName)));
+            }
+            else
+            {
+                CharacterWidthMapping characterWidthMapping = CharacterWidthMapping.LoadInstance(new(null));
+                File.WriteAllBytes(fileInfo.FullName, characterWidthMapping.BuildCacheBytes());
+            }    
         }
 
         public static void Exit(int exitCode)
