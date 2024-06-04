@@ -135,7 +135,7 @@ namespace MCBS.SystemApplications.Album
             ResizeMode_ComboButton.Width = width;
             ResizeMode_ComboButton.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             ResizeMode_ComboButton.Title = "模式";
-            ResizeMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<ResizeMode>());
+            ResizeMode_ComboButton.Items.AddRenge(Enum.GetValues<ResizeMode>());
             ResizeMode_ComboButton.Items.SelectedItem = ScalablePictureBox.DefaultResizeOptions.Mode;
             ResizeMode_ComboButton.Items.ItemToStringFunc = (item) =>
             {
@@ -156,7 +156,7 @@ namespace MCBS.SystemApplications.Album
             AnchorPositionMode_ComboButton.Width = width;
             AnchorPositionMode_ComboButton.Skin.SetBackgroundColor(string.Empty, ControlState.None);
             AnchorPositionMode_ComboButton.Title = "锚点";
-            AnchorPositionMode_ComboButton.Items.AddRenge(EnumUtil.ToArray<AnchorPositionMode>());
+            AnchorPositionMode_ComboButton.Items.AddRenge(Enum.GetValues<AnchorPositionMode>());
             AnchorPositionMode_ComboButton.Items.SelectedItem = ScalablePictureBox.DefaultResizeOptions.Position;
             AnchorPositionMode_ComboButton.Items.ItemToStringFunc = (item) =>
             {
