@@ -75,28 +75,61 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(colorMatcher, nameof(colorMatcher));
             ThrowHelper.ArgumentOutOfMin(0, sleepMilliseconds, nameof(sleepMilliseconds));
 
-            BuildProgress buildProgress = new();
-            buildProgress.TotalCount = 256 * 256 * 256;
-            Rgba32[] mapping = new Rgba32[buildProgress.TotalCount];
+            BuildProgress totalProgress = new(256 * 256 * 256);
+            List<BuildProgress> threadProgresses = [];
+            List<Thread> threads = [];
+            Rgba32[] mapping = new Rgba32[totalProgress.TotalCount];
+            int processorCount = Math.Max(Environment.ProcessorCount - 1, 1);
+            int countPerThread = (int)Math.Ceiling((double)totalProgress.TotalCount / processorCount);
 
-            bool completed = false;
-            Task.Run(() =>
+            for (int i = 0; i < processorCount; i++)
             {
-                while (buildProgress.CompletedCount < buildProgress.TotalCount || !completed)
+                int count = i;
+                BuildProgress threadProgress = new(countPerThread);
+                Thread thread = new(() => BuildRange(colorMatcher, mapping, countPerThread * count, countPerThread, threadProgress))
                 {
-                    onProgress?.Invoke(buildProgress);
-                    Thread.Sleep(sleepMilliseconds);
-                }
-            });
+                    Priority = ThreadPriority.Highest
+                };
 
-            ParallelLoopResult parallelLoopResult = Parallel.For(0, buildProgress.TotalCount, (i) =>
+                threadProgresses.Add(threadProgress);
+                threads.Add(thread);
+                thread.Start();
+            }
+
+            while (true)
             {
-                mapping[i] = colorMatcher.Match(ColorMappingCache.ToColor(i));
-                Interlocked.Increment(ref buildProgress.CompletedCount);
-            });
+                bool isCompleted = !threads.Any(a => a.IsAlive);
+                if (isCompleted)
+                    break;
 
-            completed = true;
+                ReportProgress();
+                Thread.Sleep(sleepMilliseconds);
+            }
+
+            foreach (var thread in threads)
+                thread.Join();
+
+            ReportProgress();
+
             return new(mapping);
+
+            void ReportProgress()
+            {
+                totalProgress.CompletedCount = 0;
+                foreach (BuildProgress threadProgress in threadProgresses)
+                    totalProgress.CompletedCount += threadProgress.CompletedCount;
+                onProgress?.Invoke(totalProgress);
+            }
+        }
+
+        private static void BuildRange(ColorMatcher<Rgba32> colorMatcher, Rgba32[] mapping, int startIndex, int count, BuildProgress buildProgress)
+        {
+            int endIndex = Math.Min(startIndex + count, mapping.Length);
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                mapping[i] = colorMatcher.Find(ColorMappingCache.ToColor(i));
+                buildProgress.CompletedCount++;
+            }
         }
 
         private static string FormatBuildProgress(BuildProgress buildProgress)
@@ -155,13 +188,15 @@ namespace MCBS
 
         private class BuildProgress
         {
-            public BuildProgress()
+            public BuildProgress(int totalCount)
             {
-                TotalCount = 0;
+                ThrowHelper.ArgumentOutOfMin(0, totalCount, nameof(totalCount));
+
+                TotalCount = totalCount;
                 CompletedCount = 0;
             }
 
-            public int TotalCount;
+            public readonly int TotalCount;
 
             public int CompletedCount;
 

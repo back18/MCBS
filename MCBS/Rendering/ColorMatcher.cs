@@ -29,7 +29,7 @@ namespace MCBS.Rendering
 
         private readonly ConcurrentDictionary<TPixel, Rgba32> _tempCache;
 
-        private Rgba32 Match(Rgba32 rgba32)
+        public Rgba32 Find(Rgba32 rgba32)
         {
             Rgba32 result = _colors.FirstOrDefault();
             int distance = int.MaxValue;
@@ -60,7 +60,7 @@ namespace MCBS.Rendering
             if (_mappingCache is not null && rgba32.A == byte.MaxValue)
                 return _mappingCache[rgba32];
 
-            result = Match(rgba32);
+            result = Find(rgba32);
             _tempCache.TryAdd(pixel, result);
             return result;
         }
@@ -149,7 +149,7 @@ namespace MCBS.Rendering
             return _tempCache;
         }
 
-        private class RgbaVector
+        private struct RgbaVector
         {
             public RgbaVector(int r, int g, int b, int a)
             {
