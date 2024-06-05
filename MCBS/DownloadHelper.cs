@@ -101,13 +101,17 @@ namespace MCBS
             TimeFormatter timeFormatter = new(AbbreviationTimeFormatText.Default);
             timeFormatter.MinUnit = TimeUnit.Second;
             StringBuilder sb = new();
-            sb.Append(DownloaderUtil.FormatProgressBar(e.TotalBytesToReceive, e.ReceivedBytesSize, 20));
+            sb.Append(new ProgressBar((int)e.TotalBytesToReceive)
+            {
+                Current = (int)e.ReceivedBytesSize,
+                Length = 20
+            });
             sb.AppendFormat(
                 " {0}/s - {1}/{2} - {3}",
-                bytesFormatter.Format((long)e.AverageBytesPerSecondSpeed),
+                bytesFormatter.Format((long)e.BytesPerSecondSpeed),
                 bytesFormatter.Format(e.ReceivedBytesSize),
                 bytesFormatter.Format(e.TotalBytesToReceive),
-                timeFormatter.Format(e.AverageBytesPerSecondSpeed == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds((e.TotalBytesToReceive - e.ReceivedBytesSize) / e.AverageBytesPerSecondSpeed)));
+                timeFormatter.Format(e.BytesPerSecondSpeed == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds((e.TotalBytesToReceive - e.ReceivedBytesSize) / e.BytesPerSecondSpeed)));
 
             return sb.ToString();
         }

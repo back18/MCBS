@@ -101,7 +101,13 @@ namespace MCBS
 
         private static string FormatBuildProgress(BuildProgress buildProgress)
         {
-            return $"{DownloaderUtil.FormatProgressBar(buildProgress.TotalCount, buildProgress.CompletedCount, 20)} {Math.Round(buildProgress.Percentage, 2)}% - {buildProgress.CompletedCount}/{buildProgress.TotalCount}";
+            ProgressBar progressBar = new(buildProgress.TotalCount)
+            {
+                Current = buildProgress.CompletedCount,
+                Length = 20
+            };
+
+            return $"{progressBar} {Math.Round(buildProgress.Percentage, 2)}% - {buildProgress.CompletedCount}/{buildProgress.TotalCount}";
         }
 
         private static bool Validate(Facing facing)
