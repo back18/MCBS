@@ -10,26 +10,25 @@ using System.Threading.Tasks;
 
 namespace MCBS.Rendering
 {
-    public class ColorMappingCache
+    public class ColorMappingFastCache : IColorMappingCache
     {
-        public ColorMappingCache(byte[] bytes)
-        {
-            ArgumentNullException.ThrowIfNull(bytes, nameof(bytes));
-            ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256 * 4, bytes, nameof(bytes));
-
-            int index = 0;
-            _mapping = new Rgba32[256 * 256 * 256];
-            for (int i = 0; i < bytes.Length; i += 4)
-                _mapping[index++] = new(bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]);
-        }
-
-        public ColorMappingCache(Rgba32[] mapping)
+        public ColorMappingFastCache(Rgba32[] mapping)
         {
             ArgumentNullException.ThrowIfNull(mapping, nameof(mapping));
             ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256, mapping, nameof(mapping));
 
             _mapping = new Rgba32[256 * 256 * 256];
             new Span<Rgba32>(mapping).CopyTo(new Span<Rgba32>(_mapping));
+        }
+
+        public ColorMappingFastCache(byte[] bytes)
+        {
+            ArgumentNullException.ThrowIfNull(bytes, nameof(bytes));
+            ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256 * 4, bytes, nameof(bytes));
+
+            _mapping = new Rgba32[256 * 256 * 256];
+            for (int i = 0; i < bytes.Length; i += 4)
+                _mapping[i / 4] = new(bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]);
         }
 
         private readonly Rgba32[] _mapping;
@@ -41,7 +40,8 @@ namespace MCBS.Rendering
         public byte[] ToBytes()
         {
             int index = 0;
-            byte[] bytes = new byte[256 * 256 * 256 * 4];
+            byte[] bytes = new byte[_mapping.Length * 4];
+
             foreach (Rgba32 color in _mapping)
             {
                 bytes[index++] = color.R;

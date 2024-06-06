@@ -21,6 +21,7 @@ namespace MCBS.Config
 
             CrashAutoRestart = model.CrashAutoRestart;
             BuildColorMappingCaches = model.BuildColorMappingCaches;
+            EnableCompressionCache = model.EnableCompressionCache;
             LoadDllAppComponents = model.LoadDllAppComponents;
             SystemAppComponents = model.SystemAppComponents.AsReadOnly();
             ServicesAppID = model.ServicesAppID;
@@ -30,6 +31,8 @@ namespace MCBS.Config
         public bool CrashAutoRestart { get; }
 
         public bool BuildColorMappingCaches { get; }
+
+        public bool EnableCompressionCache { get; }
 
         public bool LoadDllAppComponents { get; }
 
@@ -72,7 +75,8 @@ namespace MCBS.Config
             public Model()
             {
                 CrashAutoRestart = true;
-                BuildColorMappingCaches = false;
+                BuildColorMappingCaches = true;
+                EnableCompressionCache = true;
                 LoadDllAppComponents = false;
                 SystemAppComponents = [
                     "MCBS.SystemApplications.Services",
@@ -99,6 +103,9 @@ namespace MCBS.Config
 
             [Display(Name = "启动时是否构建Minecraft方块颜色映射表缓存")]
             public bool BuildColorMappingCaches { get; set; }
+
+            [Display(Name = "是否启用压缩缓存，启用后大幅降低缓存内存占用，但会降低一些执行效率")]
+            public bool EnableCompressionCache { get; set; }
 
             [Display(Name = "是否加载“MCBS\\DllAppComponents\\”目录下的DLL应用程序")]
             public bool LoadDllAppComponents { get; set; }

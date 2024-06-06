@@ -28,8 +28,8 @@ namespace MCBS
         public static HashBlockMapping HashBlockMapping => _HashBlockMapping ?? throw new InvalidOperationException();
         private static HashBlockMapping? _HashBlockMapping;
 
-        public static ReadOnlyDictionary<Facing, ColorMappingCache> ColorMappingCaches => _ColorMappingCaches ?? new(new Dictionary<Facing, ColorMappingCache>());
-        private static ReadOnlyDictionary<Facing, ColorMappingCache>? _ColorMappingCaches;
+        public static ReadOnlyDictionary<Facing, IColorMappingCache> ColorMappingCaches => _ColorMappingCaches ?? new(new Dictionary<Facing, IColorMappingCache>());
+        private static ReadOnlyDictionary<Facing, IColorMappingCache>? _ColorMappingCaches;
 
         public static LanguageManager LanguageManager => _LanguageManager ?? throw new InvalidOperationException();
         private static LanguageManager? _LanguageManager;
@@ -72,17 +72,17 @@ namespace MCBS
 
         private static void BuildColorMappingCache(ResourceEntryManager resources)
         {
-            Dictionary<Facing, ColorMappingCache> caches = new();
+            Dictionary<Facing, IColorMappingCache> caches = new();
             foreach (Facing facing in Enum.GetValues(typeof(Facing)))
             {
-                ColorMappingCache? cache;
+                IColorMappingCache? cache;
                 if (SystemConfig.BuildColorMappingCaches)
                 {
-                    cache = ColorMappingCacheBuilder.ReadOrBuild(facing);
+                    cache = ColorMappingCacheBuilder.ReadOrBuild(facing, SystemConfig.EnableCompressionCache);
                 }
                 else
                 {
-                    if (!ColorMappingCacheBuilder.ReadIfValid(facing, out cache))
+                    if (!ColorMappingCacheBuilder.ReadIfValid(facing, SystemConfig.EnableCompressionCache, out cache))
                         continue;
                 }
 

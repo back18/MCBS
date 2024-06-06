@@ -21,12 +21,15 @@ namespace MCBS
     {
         private static LogImpl LOGGER => LogManager.Instance.GetLogger();
 
-        public static bool ReadIfValid(Facing facing, [MaybeNullWhen(false)] out ColorMappingCache result)
+        public static bool ReadIfValid(Facing facing, bool enableCompressionCache, [MaybeNullWhen(false)] out IColorMappingCache result)
         {
-            if (Validate(facing))
+            if (Validate(facing, enableCompressionCache))
             {
                 byte[] bytes = File.ReadAllBytes(GetBinFilePath(facing));
-                result = new(bytes);
+                if (enableCompressionCache)
+                    result = new ColorMappingCompressionCache(bytes);
+                else
+                    result = new ColorMappingFastCache(bytes);
                 return true;
             }
 
@@ -34,20 +37,23 @@ namespace MCBS
             return false;
         }
 
-        public static ColorMappingCache ReadOrBuild(Facing facing)
+        public static IColorMappingCache ReadOrBuild(Facing facing, bool enableCompressionCache)
         {
             string jsonPath = GetJsonFilePath(facing);
             string binPath = GetBinFilePath(facing);
 
-            if (Validate(facing))
+            if (Validate(facing, enableCompressionCache))
             {
                 byte[] bytes = File.ReadAllBytes(binPath);
-                return new(bytes);
+                if (enableCompressionCache)
+                    return new ColorMappingCompressionCache(bytes);
+                else
+                    return new ColorMappingFastCache(bytes);
             }
             else
             {
                 LOGGER.Info($"开始构建方块[{facing.ToEnglishString()}]面颜色映射表");
-                ColorMappingCache cache = BuildMappingCache(SR.Rgba32BlockMappings[facing].CreateColorMatcher<Rgba32>(), 1000, (buildProgress) =>
+                IColorMappingCache cache = BuildMappingCache(SR.Rgba32BlockMappings[facing].CreateColorMatcher<Rgba32>(), enableCompressionCache, 1000, (buildProgress) =>
                 {
                     LOGGER.Info(FormatBuildProgress(buildProgress));
                 });
@@ -59,6 +65,7 @@ namespace MCBS
 
                 BuildInfo buildInfo = new()
                 {
+                    CacheType = enableCompressionCache ? nameof(ColorMappingCompressionCache) : nameof(ColorMappingCompressionCache),
                     CacheHash = HashUtil.GetHashString(bytes, HashType.SHA1),
                     Colors = colors.ToArray()
                 };
@@ -70,10 +77,10 @@ namespace MCBS
             }
         }
 
-        private static ColorMappingCache BuildMappingCache(ColorMatcher<Rgba32> colorMatcher, int sleepMilliseconds, Action<BuildProgress>? onProgress = null)
+        private static IColorMappingCache BuildMappingCache(ColorMatcher<Rgba32> colorMatcher, bool enableCompressionCache, int progressUpdateMilliseconds = 1000, Action<BuildProgress>? onProgress = null)
         {
             ArgumentNullException.ThrowIfNull(colorMatcher, nameof(colorMatcher));
-            ThrowHelper.ArgumentOutOfMin(0, sleepMilliseconds, nameof(sleepMilliseconds));
+            ThrowHelper.ArgumentOutOfMin(0, progressUpdateMilliseconds, nameof(progressUpdateMilliseconds));
 
             BuildProgress totalProgress = new(256 * 256 * 256);
             List<BuildProgress> threadProgresses = [];
@@ -103,7 +110,7 @@ namespace MCBS
                     break;
 
                 ReportProgress();
-                Thread.Sleep(sleepMilliseconds);
+                Thread.Sleep(progressUpdateMilliseconds);
             }
 
             foreach (var thread in threads)
@@ -111,7 +118,10 @@ namespace MCBS
 
             ReportProgress();
 
-            return new(mapping);
+            if (enableCompressionCache)
+                return new ColorMappingCompressionCache(mapping);
+            else
+                return new ColorMappingFastCache(mapping);
 
             void ReportProgress()
             {
@@ -127,7 +137,7 @@ namespace MCBS
             int endIndex = Math.Min(startIndex + count, mapping.Length);
             for (int i = startIndex; i < endIndex; i++)
             {
-                mapping[i] = colorMatcher.Find(ColorMappingCache.ToColor(i));
+                mapping[i] = colorMatcher.Find(ColorMappingFastCache.ToColor(i));
                 buildProgress.CompletedCount++;
             }
         }
@@ -143,7 +153,7 @@ namespace MCBS
             return $"{progressBar} {Math.Round(buildProgress.Percentage, 2)}% - {buildProgress.CompletedCount}/{buildProgress.TotalCount}";
         }
 
-        private static bool Validate(Facing facing)
+        private static bool Validate(Facing facing, bool enableCompressionCache)
         {
             string jsonPath = GetJsonFilePath(facing);
             if (!File.Exists(jsonPath))
@@ -152,6 +162,17 @@ namespace MCBS
             BuildInfo? buildInfo = JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(jsonPath));
             if (buildInfo is null)
                 return false;
+
+            if (enableCompressionCache)
+            {
+                if (buildInfo.CacheType != nameof(ColorMappingCompressionCache))
+                    return false;
+            }
+            else
+            {
+                if (buildInfo.CacheType != nameof(ColorMappingFastCache))
+                    return false;
+            }
 
             HashSet<string> colors = new();
             foreach (Rgba32 color in SR.Rgba32BlockMappings[facing].Keys)
@@ -177,13 +198,11 @@ namespace MCBS
 
         private class BuildInfo
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public required string CacheType { get; set; }
 
-            public string CacheHash { get; set; }
+            public required string CacheHash { get; set; }
 
-            public string[] Colors { get; set; }
-
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public required string[] Colors { get; set; }
         }
 
         private class BuildProgress

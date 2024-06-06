@@ -14,7 +14,7 @@ namespace MCBS.Rendering
 {
     public class ColorMatcher<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
-        public ColorMatcher(ISet<Rgba32> colors, ColorMappingCache? mappingCache = null)
+        public ColorMatcher(ISet<Rgba32> colors, IColorMappingCache? mappingCache = null)
         {
             ArgumentNullException.ThrowIfNull(colors, nameof(colors));
 
@@ -25,7 +25,7 @@ namespace MCBS.Rendering
 
         private readonly Rgba32[] _colors;
 
-        private readonly ColorMappingCache? _mappingCache;
+        private readonly IColorMappingCache? _mappingCache;
 
         private readonly ConcurrentDictionary<TPixel, Rgba32> _tempCache;
 
