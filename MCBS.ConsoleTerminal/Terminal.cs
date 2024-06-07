@@ -99,16 +99,30 @@ namespace MCBS.ConsoleTerminal
 
             CommandManager.Register(
                 new CommandBuilder()
-                .On("screen builder")
+                .On("screen forms")
                 .Allow(PrivilegeLevel.User)
-                .Execute(GetScreenList)
+                .Execute(GetFormsOfScreen)
                 .Build());
 
             CommandManager.Register(
                 new CommandBuilder()
-                .On("frame count")
+                .On("screen builder enable")
                 .Allow(PrivilegeLevel.User)
-                .Execute(GetFrameCount)
+                .Execute(EnableScreenBuilder)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("screen builder disable")
+                .Allow(PrivilegeLevel.User)
+                .Execute(DisableScreenBuilder)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("mcbs SystemTick")
+                .Allow(PrivilegeLevel.User)
+                .Execute(GetSystemTick)
                 .Build());
         }
 
@@ -117,60 +131,86 @@ namespace MCBS.ConsoleTerminal
         private static string GetApplicationList()
         {
             var list = MinecraftBlockScreen.Instance.AppComponents;
-            StringBuilder sb = new();
-            sb.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
-            foreach (var applicationManifest in list.Values)
-                sb.AppendLine(applicationManifest.ToString());
 
-            return sb.ToString().TrimEnd();
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
+            foreach (var applicationManifest in list.Values)
+                stringBuilder.AppendLine(applicationManifest.ToString());
+            stringBuilder.Length -= Environment.NewLine.Length;
+
+            return stringBuilder.ToString();
         }
 
         private static string GetScreenList()
         {
             var list = MinecraftBlockScreen.Instance.ScreenManager.Items;
-            StringBuilder sb = new();
-            sb.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
+
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
             foreach (var context in list.Values)
-                sb.AppendLine(context.ToString());
+                stringBuilder.AppendLine(context.ToString());
+            stringBuilder.Length -= Environment.NewLine.Length;
 
-            return sb.ToString().TrimEnd();
-        }
-
-        private static string SetScreenBuilderEnable(bool enable)
-        {
-            MinecraftBlockScreen.Instance.ScreenBuildManager.Enable = enable;
-
-            if (enable)
-                return "屏幕构造器已启用";
-            else
-                return "屏幕构造器已禁用";
+            return stringBuilder.ToString();
         }
 
         private static string GetProcessList()
         {
             var list = MinecraftBlockScreen.Instance.ProcessManager.Items;
-            StringBuilder sb = new();
-            sb.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
-            foreach (var context in list.Values)
-                sb.AppendLine(context.ToString());
 
-            return sb.ToString().TrimEnd();
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
+            foreach (var context in list.Values)
+                stringBuilder.AppendLine(context.ToString());
+            stringBuilder.Length -= Environment.NewLine.Length;
+
+            return stringBuilder.ToString();
         }
 
         private static string GetFormList()
         {
             var list = MinecraftBlockScreen.Instance.FormManager.Items;
-            StringBuilder sb = new();
-            sb.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
-            foreach (var context in list.Values)
-                sb.AppendLine(context.ToString());
 
-            return sb.ToString().TrimEnd();
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
+            foreach (var context in list.Values)
+                stringBuilder.AppendLine(context.ToString());
+            stringBuilder.Length -= Environment.NewLine.Length;
+
+            return stringBuilder.ToString();
         }
 
-        private static int GetFrameCount()
+        private static string GetFormsOfScreen(Guid screenGUID)
         {
-            return MinecraftBlockScreen.Instance.SystemTick;
+            if (!MinecraftBlockScreen.Instance.ScreenManager.Items.TryGetValue(screenGUID, out var screenContext))
+                return $"找不到GUID为 {screenGUID} 的屏幕";
+
+            var list = MinecraftBlockScreen.Instance.FormManager.Items.Values.Where(s => s.RootForm == screenContext.RootForm);
+
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendLine($"屏幕({screenGUID})当前已打开{list.Count()}个窗体，窗体列表：");
+            foreach (var context in list)
+                stringBuilder.AppendLine(context.ToString());
+            stringBuilder.Length -= Environment.NewLine.Length;
+
+            return stringBuilder.ToString();
+        }
+
+        private static string EnableScreenBuilder()
+        {
+            MinecraftBlockScreen.Instance.ScreenBuildManager.Enable = true;
+            return "屏幕构造器已启用";
+        }
+
+        private static string DisableScreenBuilder()
+        {
+            MinecraftBlockScreen.Instance.ScreenBuildManager.Enable = false;
+            return "屏幕构造器已禁用";
+        }
+
+        private static string GetSystemTick()
+        {
+            return $"MCBS已运行{MinecraftBlockScreen.Instance.SystemTick}个Tick";
         }
 
         #endregion
