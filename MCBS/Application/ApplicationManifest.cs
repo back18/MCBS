@@ -65,19 +65,19 @@ namespace MCBS.Application
                 }
             }
 
-            Environment = PlatformType.None;
+            Environment = Platforms.None;
             foreach (string platform in model.Environment)
             {
                 switch (platform)
                 {
                     case "WINDOWS":
-                        Environment |= PlatformType.Windows;
+                        Environment |= Platforms.Windows;
                         break;
                     case "LINUX":
-                        Environment |= PlatformType.Linux;
+                        Environment |= Platforms.Linux;
                         break;
                     case "MACOS":
-                        Environment |= PlatformType.MacOS;
+                        Environment |= Platforms.MacOS;
                         break;
                     default:
                         break;
@@ -108,7 +108,7 @@ namespace MCBS.Application
 
         private Image<Rgba32> Icon { get; }
 
-        public PlatformType Environment { get; }
+        public Platforms Environment { get; }
 
         public ReadOnlyCollection<ApplicationDependencie> Dependencies { get; }
 
