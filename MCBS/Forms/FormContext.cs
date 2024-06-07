@@ -263,6 +263,11 @@ namespace MCBS.Forms
             await _closeTask;
         }
 
+        public override string ToString()
+        {
+            return $"GUID={GUID} State={StateMachine.CurrentState} Title={Form.Text} Position=[{Form.ClientLocation.X},{Form.ClientLocation.Y}] Size=({Form.ClientSize.Width},{Form.ClientSize.Height})";
+        }
+
         private async Task GetCloseTask()
         {
             await _closeSemaphore.WaitAsync();

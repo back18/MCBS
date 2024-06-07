@@ -127,6 +127,11 @@ namespace MCBS.Application
             return program;
         }
 
+        public override string ToString()
+        {
+            return $"{Name} - {ID} ({Version})";
+        }
+
         public class Model
         {
             public required string MainClass { get; set; }

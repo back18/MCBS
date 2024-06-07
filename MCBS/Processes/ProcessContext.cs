@@ -124,5 +124,10 @@ namespace MCBS.Processes
         {
             StateMachine.Submit(ProcessState.Stopped);
         }
+
+        public override string ToString()
+        {
+            return $"GUID={GUID} State={StateMachine.CurrentState} Application={Application.ID}";
+        }
     }
 }

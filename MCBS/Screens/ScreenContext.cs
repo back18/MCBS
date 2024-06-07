@@ -259,6 +259,12 @@ namespace MCBS.Screens
             return Screen.SubScreen(RootForm.GetRectangle());
         }
 
+        public override string ToString()
+        {
+            Screen subScreen = GetSubScreen();
+            return $"GUID={GUID} State={StateMachine.CurrentState} Position={subScreen.StartPosition} Size=({subScreen.Width},{subScreen.Height}) Facing={subScreen.NormalFacing}";
+        }
+
         private void InvokeScreenEvent(CursorContext cursorContext)
         {
             ArgumentNullException.ThrowIfNull(cursorContext, nameof(cursorContext));
