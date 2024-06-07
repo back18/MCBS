@@ -129,25 +129,23 @@ namespace MCBS.Application
 
         public class Model
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-            public string MainClass { get; set; }
+            public required string MainClass { get; set; }
 
-            public string ID { get; set; }
+            public required string ID { get; set; }
 
-            public string Name { get; set; }
+            public required string Name { get; set; }
 
-            public string Version { get; set; }
+            public required string Version { get; set; }
 
-            public string Icon { get; set; }
+            public required string Icon { get; set; }
 
-            public bool IsBackground { get; set; }
+            public required bool IsBackground { get; set; }
 
-            public string[] Environment { get; set; }
+            public required string[] Environment { get; set; }
 
-            public ApplicationDependencie.Model[] Dependencies { get; set; }
+            public required ApplicationDependencie.Model[] Dependencies { get; set; }
 
-            public string[] Authors { get; set; }
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public required string[] Authors { get; set; }
         }
     }
 }

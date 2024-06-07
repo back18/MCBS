@@ -68,7 +68,7 @@ namespace MCBS.Cursor.Style
 
             using Stream indexsStream = assembly.GetManifestResourceStream("MCBS.SystemResource.CursorIndex.json") ?? throw new InvalidOperationException();
             string indexsJson = indexsStream.ReadAllText();
-            CursorModel[] indexs = JsonConvert.DeserializeObject<CursorModel[]>(indexsJson) ?? throw new InvalidOperationException();
+            IndexModel[] indexs = JsonConvert.DeserializeObject<IndexModel[]>(indexsJson) ?? throw new InvalidOperationException();
 
             Dictionary<string, CursorStyle> result = new();
             foreach (var index in indexs)
@@ -103,17 +103,15 @@ namespace MCBS.Cursor.Style
             return ((IEnumerable)_items).GetEnumerator();
         }
 
-        private class CursorModel
+        private class IndexModel
         {
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-            public string Type { get; set; }
+            public required string Type { get; set; }
 
-            public string Image { get; set; }
+            public required string Image { get; set; }
 
-            public int XOffset { get; set; }
+            public required int XOffset { get; set; }
 
-            public int YOffset { get; set; }
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public required int YOffset { get; set; }
         }
     }
 }
