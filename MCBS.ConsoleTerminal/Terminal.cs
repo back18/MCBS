@@ -1,5 +1,6 @@
 ﻿using QuanLib.Commands;
 using QuanLib.Commands.CommandLine;
+using QuanLib.Consoles;
 using QuanLib.Core;
 using QuanLib.Logging;
 using System;
@@ -124,6 +125,13 @@ namespace MCBS.ConsoleTerminal
                 .Allow(PrivilegeLevel.User)
                 .Execute(GetSystemTick)
                 .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("analyzer mspt")
+                .Allow(PrivilegeLevel.User)
+                .Execute(MsptAnalysis)
+                .Build());
         }
 
         #region commands
@@ -211,6 +219,20 @@ namespace MCBS.ConsoleTerminal
         private static string GetSystemTick()
         {
             return $"MCBS已运行{MinecraftBlockScreen.Instance.SystemTick}个Tick";
+        }
+
+        private static void MsptAnalysis()
+        {
+            LogManager.Instance.DisableConsoleOutput();
+            Console.CursorVisible = false;
+
+            ConsoleDynamicViwe consoleDynamicViwe = new(MinecraftBlockScreen.Instance.TimeAnalysisManager.ToString, 50);
+            consoleDynamicViwe.Start();
+            ConsoleUtil.WaitForInputKey(ConsoleKey.Enter, 10);
+            consoleDynamicViwe.Stop();
+
+            Console.CursorVisible = true;
+            LogManager.Instance.EnableConsoleOutput();
         }
 
         #endregion
