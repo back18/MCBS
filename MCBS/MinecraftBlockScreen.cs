@@ -24,6 +24,7 @@ using QuanLib.Minecraft.Command.Models;
 using QuanLib.TickLoop;
 using QuanLib.Logging;
 using QuanLib.IO.Extensions;
+using MCBS.Analyzer;
 
 namespace MCBS
 {
@@ -38,7 +39,7 @@ namespace MCBS
 
             MinecraftInstance = minecraftInstance;
             FileWriteQueue = new();
-            TimeAnalysisManager = new();
+            MsptAnalyzer = new();
             TaskManager = new();
             ScreenManager = new();
             ProcessManager = new();
@@ -50,9 +51,9 @@ namespace MCBS
             AppComponents = new(appComponents.ToDictionary(item => item.ID, item => item));
 
             GameTick = 0;
-            SystemStage = SystemStage.Other;
+            SystemStage = SystemStage.ScreenScheduling;
 
-            _times = new();
+            _msptRecord = new();
             _query = Task.Run(() => 0);
 
             CreateAppComponentsDirectory();
@@ -65,7 +66,7 @@ namespace MCBS
         public static MinecraftBlockScreen Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static MinecraftBlockScreen? _Instance;
 
-        private readonly Dictionary<SystemStage, TimeSpan> _times;
+        private readonly MsptRecord<SystemStage> _msptRecord;
 
         private Task<int> _query;
 
@@ -77,7 +78,7 @@ namespace MCBS
 
         public FileWriteQueue FileWriteQueue { get; }
 
-        public TimeAnalysisManager TimeAnalysisManager { get; }
+        public MsptAnalyzer<SystemStage> MsptAnalyzer { get; }
 
         public TaskManager TaskManager { get; }
 
@@ -149,7 +150,7 @@ namespace MCBS
 
             if (_query.IsCompleted)
             {
-                _times.Clear();
+                _msptRecord.Clear();
                 CommandManager.SnbtCache.Clear();
 
                 InteractionScheduling();
@@ -174,7 +175,7 @@ namespace MCBS
             HandleScreenOutput();
             HandleAfterFrame();
 
-            TimeAnalysisManager.Submit(_times, TickRunningTime);
+            MsptAnalyzer.Update(_msptRecord);
         }
 
         public override void OnAfterTick()
@@ -297,15 +298,7 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(action, nameof(action));
 
             SystemStage = stage;
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            action.Invoke();
-            stopwatch.Stop();
-            SystemStage = SystemStage.Other;
-
-            if (_times.TryGetValue(stage, out var time))
-                _times[stage] = time + stopwatch.Elapsed;
-            else
-                _times.Add(stage, stopwatch.Elapsed);
+            _msptRecord.Execute(action, stage);
         }
 
         private void ScreenScheduling()

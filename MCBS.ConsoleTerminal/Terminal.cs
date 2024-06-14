@@ -1,4 +1,6 @@
-﻿using QuanLib.Commands;
+﻿using MCBS.Analyzer;
+using MCBS.ConsoleTerminal.Extensions;
+using QuanLib.Commands;
 using QuanLib.Commands.CommandLine;
 using QuanLib.Consoles;
 using QuanLib.Core;
@@ -130,8 +132,18 @@ namespace MCBS.ConsoleTerminal
                 new CommandBuilder()
                 .On("analyzer mspt")
                 .Allow(PrivilegeLevel.User)
-                .Execute(MsptAnalysis)
+                .Execute<Action>(MsptAnalysis)
                 .Build());
+
+            foreach (SystemStage stage in Enum.GetValues<SystemStage>())
+            {
+                CommandManager.Register(
+                    new CommandBuilder()
+                    .On(["analyzer", "mspt", stage.ToString()])
+                    .Allow(PrivilegeLevel.User)
+                    .Execute(() => MsptAnalysis(stage))
+                    .Build());
+            }
         }
 
         #region commands
@@ -226,10 +238,28 @@ namespace MCBS.ConsoleTerminal
             LogManager.Instance.DisableConsoleOutput();
             Console.CursorVisible = false;
 
-            ConsoleDynamicViwe consoleDynamicViwe = new(MinecraftBlockScreen.Instance.TimeAnalysisManager.ToString, 50);
+            ConsoleDynamicViwe consoleDynamicViwe = new(MinecraftBlockScreen.Instance.MsptAnalyzer.ToConsoleViwe, 50);
             consoleDynamicViwe.Start();
             ConsoleUtil.WaitForInputKey(ConsoleKey.Enter, 10);
             consoleDynamicViwe.Stop();
+
+            Console.CursorVisible = true;
+            LogManager.Instance.EnableConsoleOutput();
+        }
+
+        private static void MsptAnalysis(SystemStage stage)
+        {
+            LogManager.Instance.DisableConsoleOutput();
+            Console.CursorVisible = false;
+
+            do
+            {
+                Console.WriteLine(
+                    string.Format("Tick{0}: {1}ms",
+                    MinecraftBlockScreen.Instance.SystemTick,
+                    Math.Round(MinecraftBlockScreen.Instance.MsptAnalyzer.StageTimes[stage].GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3)));
+            }
+            while (!((Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Enter)));
 
             Console.CursorVisible = true;
             LogManager.Instance.EnableConsoleOutput();

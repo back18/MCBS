@@ -30,8 +30,6 @@ namespace MCBS
 
         HandleScreenOutput,
 
-        HandleAfterFrame,
-
-        Other,
+        HandleAfterFrame
     }
 }
