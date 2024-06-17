@@ -4,7 +4,6 @@ using MCBS.Rendering;
 using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.Minecraft.Blocks;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace MCBS.BlockForms
                 _owner = owner;
 
                 base.Text = _owner.Text;
-                LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewSize.Width);
+                LayoutSyncer = new(_owner, (sender, e) => { }, (sender, e) => Width = e.NewValue.Width);
                 _owner.TextChanged += Owner_TextChanged;
                 _owner.InitializeCompleted += Owner_InitializeCompleted;
 
@@ -178,7 +177,7 @@ namespace MCBS.BlockForms
                 ActiveLayoutAll();
             }
 
-            private void Owner_TextChanged(Control sender, TextChangedEventArgs e)
+            private void Owner_TextChanged(Control sender, ValueChangedEventArgs<string> e)
             {
                 base.Text = _owner.Text;
             }

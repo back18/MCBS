@@ -3,7 +3,6 @@ using MCBS.Cursor;
 using MCBS.Events;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +40,7 @@ namespace MCBS.BlockForms
             UpdateSelected();
         }
 
-        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
+        protected override void OnTextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
             base.OnTextChanged(sender, e);
 

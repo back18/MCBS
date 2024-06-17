@@ -1,6 +1,8 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Cursor;
 using MCBS.Events;
+using MCBS.Rendering;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
@@ -8,7 +10,6 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -117,7 +118,7 @@ namespace MCBS.BlockForms
             e.CursorContext.Visible = true;
         }
 
-        protected override void OnTextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
+        protected override void OnTextureChanged(PictureBox<TPixel> sender, ValueChangedEventArgs<Texture<TPixel>> e)
         {
             base.OnTextureChanged(sender, e);
 

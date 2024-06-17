@@ -1,6 +1,7 @@
 ﻿using MCBS.BlockForms;
-using MCBS.Events;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,12 +60,12 @@ namespace MCBS.SystemApplications.ScreenController
             ActiveLayoutAll();
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             base.OnResize(sender, e);
         }
 
-        protected override void OnLayoutAll(AbstractControlContainer<Control> sender, SizeChangedEventArgs e)
+        protected override void OnLayoutAll(AbstractControlContainer<Control> sender, ValueChangedEventArgs<Size> e)
         {
             base.OnLayoutAll(sender, e);
 

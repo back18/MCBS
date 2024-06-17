@@ -1,15 +1,10 @@
 ﻿using FFMediaToolkit.Decoding;
-using FFMediaToolkit.Graphics;
 using MCBS.BlockForms.Utility;
-using MCBS.Events;
 using MCBS.Rendering;
 using MCBS.Rendering.Extensions;
-using Microsoft.VisualBasic;
-using NAudio.Midi;
-using NAudio.Wave;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.TickLoop.VideoPlayer;
-using QuanLib.TickLoop.VideoPlayer.Events;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -51,13 +46,13 @@ namespace MCBS.BlockForms
 
         public event EventHandler<VideoBox<TPixel>, EventArgs> Paused;
 
-        public event EventHandler<VideoBox<TPixel>, VideoFrameChangedEventArgs<TPixel>> VideoFrameChanged;
+        public event EventHandler<VideoBox<TPixel>, ValueChangedEventArgs<VideoFrame<TPixel>?>> VideoFrameChanged;
 
         protected virtual void OnPlayed(VideoBox<TPixel> sender, EventArgs e) { }
 
         protected virtual void OnPaused(VideoBox<TPixel> sender, EventArgs e) { }
 
-        protected virtual void OnVideoFrameChanged(VideoBox<TPixel> sender, VideoFrameChangedEventArgs<TPixel> e)
+        protected virtual void OnVideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
         {
             RequestRendering();
         }
@@ -95,7 +90,7 @@ namespace MCBS.BlockForms
             Paused.Invoke(this, e);
         }
 
-        private void MediaFilePlayer_VideoFrameChanged(MediaFilePlayer<TPixel> sender, VideoFrameChangedEventArgs<TPixel> e)
+        private void MediaFilePlayer_VideoFrameChanged(MediaFilePlayer<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
         {
             VideoFrameChanged.Invoke(this, e);
         }

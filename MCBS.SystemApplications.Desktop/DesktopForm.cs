@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
-using System.Diagnostics;
 using SixLabors.ImageSharp.PixelFormats;
 using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
 using System.Reflection;
-using MCBS.Events;
-using MCBS.Rendering;
 using QuanLib.Game;
+using QuanLib.Core.Events;
 
 namespace MCBS.SystemApplications.Desktop
 {
@@ -77,7 +75,7 @@ namespace MCBS.SystemApplications.Desktop
             throw new NotSupportedException();
         }
 
-        private void ClientPanel_LayoutAll(AbstractControlContainer<Control> sender, SizeChangedEventArgs e)
+        private void ClientPanel_LayoutAll(AbstractControlContainer<Control> sender, ValueChangedEventArgs<Size> e)
         {
             ActiveLayoutAll();
         }

@@ -5,9 +5,8 @@ using MCBS.Rendering.Extensions;
 using MCBS.UI;
 using MCBS.UI.Extensions;
 using QuanLib.Core;
-using SixLabors.ImageSharp;
+using QuanLib.Core.Events;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,13 +26,13 @@ namespace MCBS.BlockForms
 
         public bool IsChildControlType<T>() => typeof(T) == ChildControlType;
 
-        public abstract event EventHandler<AbstractControlContainer<TControl>, ControlEventArgs<TControl>> AddedChildControl;
+        public abstract event EventHandler<AbstractControlContainer<TControl>, EventArgs<TControl>> AddedChildControl;
 
-        public abstract event EventHandler<AbstractControlContainer<TControl>, ControlEventArgs<TControl>> RemovedChildControl;
+        public abstract event EventHandler<AbstractControlContainer<TControl>, EventArgs<TControl>> RemovedChildControl;
 
-        protected virtual void OnAddedChildControl(AbstractControlContainer<TControl> sender, ControlEventArgs<TControl> e)
+        protected virtual void OnAddedChildControl(AbstractControlContainer<TControl> sender, EventArgs<TControl> e)
         {
-            IControlInitializeHandling handling = e.Control;
+            IControlInitializeHandling handling = e.Argument;
             if (IsInitCompleted && !handling.IsInitCompleted)
             {
                 handling.HandleBeforeInitialize();
@@ -42,11 +41,11 @@ namespace MCBS.BlockForms
             }
         }
 
-        protected virtual void OnRemovedChildControl(AbstractControlContainer<TControl> sender, ControlEventArgs<TControl> e)
+        protected virtual void OnRemovedChildControl(AbstractControlContainer<TControl> sender, EventArgs<TControl> e)
         {
-            CursorContext[] hoverContexts = e.Control.GetHoverCursors();
+            CursorContext[] hoverContexts = e.Argument.GetHoverCursors();
             foreach (var hoverContext in hoverContexts)
-                e.Control.HandleCursorMove(new(new(-1024, -1024), hoverContext));
+                e.Argument.HandleCursorMove(new(new(-1024, -1024), hoverContext));
         }
 
         public abstract IReadOnlyControlCollection<TControl> GetChildControls();

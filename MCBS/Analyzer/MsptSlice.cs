@@ -29,9 +29,9 @@ namespace MCBS.Analyzer
 
         public QueueTimer Times6000Ticks { get; }
 
-        public event EventHandler<MsptSlice, TimeSpanEventArgs> TimeUpdated;
+        public event EventHandler<MsptSlice, EventArgs<TimeSpan>> TimeUpdated;
 
-        protected virtual void OnTimeUpdated(MsptSlice sender, TimeSpanEventArgs args) { }
+        protected virtual void OnTimeUpdated(MsptSlice sender, EventArgs<TimeSpan> args) { }
 
         internal void Update(TimeSpan time)
         {

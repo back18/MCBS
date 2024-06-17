@@ -25,11 +25,11 @@ namespace MCBS.BlockForms
 
         public QRCodeGenerator.ECCLevel ECCLevel { get; set; }
 
-        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
+        protected override void OnTextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
             base.OnTextChanged(sender, e);
 
-            QRCodeData data = _generator.CreateQrCode(e.NewText, ECCLevel);
+            QRCodeData data = _generator.CreateQrCode(e.NewValue, ECCLevel);
             BitmapByteQRCode code = new(data);
             byte[] bytes = code.GetGraphic(1);
             ResizeOptions options = OptionsUtil.CreateDefaultResizeOption();

@@ -1,7 +1,7 @@
 ﻿using MCBS.Application;
-using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
@@ -23,13 +23,13 @@ namespace MCBS.Forms
 
         public FormCollection Items { get; }
 
-        public event EventHandler<FormManager, FormContextEventArgs> AddedForm;
+        public event EventHandler<FormManager, EventArgs<FormContext>> AddedForm;
 
-        public event EventHandler<FormManager, FormContextEventArgs> RemovedForm;
+        public event EventHandler<FormManager, EventArgs<FormContext>> RemovedForm;
 
-        protected virtual void OnAddedForm(FormManager sender, FormContextEventArgs e) { }
+        protected virtual void OnAddedForm(FormManager sender, EventArgs<FormContext> e) { }
 
-        protected virtual void OnRemovedForm(FormManager sender, FormContextEventArgs e) { }
+        protected virtual void OnRemovedForm(FormManager sender, EventArgs<FormContext> e) { }
 
         public void OnTickUpdate(int tick)
         {

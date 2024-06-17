@@ -1,7 +1,6 @@
-﻿using MCBS.BlockForms.Utility;
-using MCBS.Events;
-using MCBS.UI;
+﻿using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +19,8 @@ namespace MCBS.BlockForms
 
         public abstract ControlCollection<T>? AsControlCollection<T>() where T : class, IControl;
 
-        public override event EventHandler<AbstractControlContainer<IControl>, ControlEventArgs<IControl>> AddedChildControl;
+        public override event EventHandler<AbstractControlContainer<IControl>, EventArgs<IControl>> AddedChildControl;
 
-        public override event EventHandler<AbstractControlContainer<IControl>, ControlEventArgs<IControl>> RemovedChildControl;
+        public override event EventHandler<AbstractControlContainer<IControl>, EventArgs<IControl>> RemovedChildControl;
     }
 }

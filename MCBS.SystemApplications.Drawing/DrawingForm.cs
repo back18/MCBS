@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace MCBS.SystemApplications.Drawing
 {
@@ -172,7 +171,7 @@ namespace MCBS.SystemApplications.Drawing
                 DrawingBox.SetImage(new Image<Rgba32>(DrawingBox.ClientSize.Width, DrawingBox.ClientSize.Height, DrawingBox.GetBlockColor<Rgba32>(BlockManager.Concrete.White)));
         }
 
-        private void ClientPanel_Resize(Control sender, SizeChangedEventArgs e)
+        private void ClientPanel_Resize(Control sender, ValueChangedEventArgs<Size> e)
         {
             DrawingBox.Size = new(Home_PagePanel.ClientSize.Width - Draw_Switch.Width - 3, Home_PagePanel.ClientSize.Height - 2);
         }

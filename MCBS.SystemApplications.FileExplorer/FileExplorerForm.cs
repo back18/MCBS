@@ -1,5 +1,4 @@
-﻿using QuanLib.IO;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -172,9 +171,9 @@ namespace MCBS.SystemApplications.FileExplorer
             Search_TextBox.Text = string.Empty;
         }
 
-        private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
+        private void Path_TextBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
-            SimpleFilesBox.Text = e.NewText;
+            SimpleFilesBox.Text = e.NewValue;
             Search_TextBox.Text = string.Empty;
 
             if (SR.DefaultFont.GetTotalSize(Path_TextBox.Text).Width > Path_TextBox.ClientSize.Width)
@@ -183,9 +182,9 @@ namespace MCBS.SystemApplications.FileExplorer
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
         }
 
-        private void Search_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
+        private void Search_TextBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
-            SimpleFilesBox.SearchText = e.NewText;
+            SimpleFilesBox.SearchText = e.NewValue;
 
             if (SR.DefaultFont.GetTotalSize(Search_TextBox.Text).Width > Search_TextBox.ClientSize.Width)
                 Search_TextBox.ContentAnchor = AnchorPosition.UpperRight;
@@ -193,14 +192,14 @@ namespace MCBS.SystemApplications.FileExplorer
                 Search_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
         }
 
-        private void SimpleFilesBox_TextChanged(Control sender, TextChangedEventArgs e)
+        private void SimpleFilesBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
             Path_TextBox.Text = SimpleFilesBox.Text;
         }
 
-        private void SimpleFilesBox_OpenFile(SimpleFilesBox sender, FIleInfoEventArgs e)
+        private void SimpleFilesBox_OpenFile(SimpleFilesBox sender, EventArgs<FileInfo> e)
         {
-            FileInfo fileInfo = e.FileInfo;
+            FileInfo fileInfo = e.Argument;
             string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
             if (ConfigManager.Registry.TryGetValue(extension, out var appID) && MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appID, out var applicationManifest))
             {
@@ -212,9 +211,9 @@ namespace MCBS.SystemApplications.FileExplorer
             }
         }
 
-        private void SimpleFilesBox_OpeningItemException(SimpleFilesBox sender, ExceptionEventArgs e)
+        private void SimpleFilesBox_OpeningItemException(SimpleFilesBox sender, EventArgs<Exception> e)
         {
-            _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，错误信息：\n{e.Exception.GetType().Name}: {e.Exception.Message}", MessageBoxButtons.OK);
+            _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，错误信息：\n{e.Argument.GetType().Name}: {e.Argument.Message}", MessageBoxButtons.OK);
         }
 
         private void SelectApplication(string[] args)

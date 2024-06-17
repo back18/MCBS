@@ -1,9 +1,9 @@
 ﻿using MCBS.Events;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
-using QuanLib.TickLoop.VideoPlayer.Events;
+using QuanLib.TickLoop.VideoPlayer;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +39,7 @@ namespace MCBS.BlockForms
                     throw new InvalidOperationException();
             }
 
-            private void VideoPlayer_VideoFrameChanged(VideoBox<TPixel> sender, VideoFrameChangedEventArgs<TPixel> e)
+            private void VideoPlayer_VideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
             {
                 RequestRendering();
                 Progress = _owner.VideoBox.CurrentPosition / _owner.VideoBox.TotalTime;

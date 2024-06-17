@@ -1,7 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Rendering;
 using MCBS.Rendering.Extensions;
-using MCBS.UI;
 using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ namespace MCBS.BlockForms
 {
     public abstract class TextControl : Control
     {
-        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
+        protected override void OnTextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
             base.OnTextChanged(sender, e);
 

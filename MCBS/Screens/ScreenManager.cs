@@ -1,6 +1,5 @@
 ﻿using static MCBS.Config.ConfigManager;
 using log4net.Core;
-using MCBS.Events;
 using QuanLib.Core;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using Newtonsoft.Json;
 using QuanLib.TickLoop;
 using QuanLib.Logging;
 using QuanLib.IO.Extensions;
+using QuanLib.Core.Events;
 
 namespace MCBS.Screens
 {
@@ -29,13 +29,13 @@ namespace MCBS.Screens
 
         public ScreenCollection Items { get; }
 
-        public event EventHandler<ScreenManager, ScreenContextEventArgs> AddedScreen;
+        public event EventHandler<ScreenManager, EventArgs<ScreenContext>> AddedScreen;
 
-        public event EventHandler<ScreenManager, ScreenContextEventArgs> RemovedScreen;
+        public event EventHandler<ScreenManager, EventArgs<ScreenContext>> RemovedScreen;
 
-        protected virtual void OnAddedScreen(ScreenManager sender, ScreenContextEventArgs e) { }
+        protected virtual void OnAddedScreen(ScreenManager sender, EventArgs<ScreenContext> e) { }
 
-        protected virtual void OnRemovedScreen(ScreenManager sender, ScreenContextEventArgs e) { }
+        protected virtual void OnRemovedScreen(ScreenManager sender, EventArgs<ScreenContext> e) { }
 
         public void Initialize()
         {

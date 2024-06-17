@@ -1,5 +1,5 @@
-﻿using MCBS.Events;
-using MCBS.Rendering;
+﻿using QuanLib.Core.Events;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +32,7 @@ namespace MCBS.BlockForms
 
         public Dictionary<string, PagePanel> PagePanels { get; }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             base.OnResize(sender, e);
 
@@ -40,7 +40,7 @@ namespace MCBS.BlockForms
             if (activePage is null)
                 return;
 
-            activePage.Size = e.NewSize;
+            activePage.Size = e.NewValue;
         }
 
         protected override void OnBeforeFrame(Control sender, EventArgs e)

@@ -1,7 +1,7 @@
 ﻿using log4net.Core;
-using MCBS.Events;
 using Newtonsoft.Json;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
@@ -32,13 +32,13 @@ namespace MCBS.Interaction
 
         public InteractionCollection Items { get; }
 
-        public event EventHandler<InteractionManager, InteractionEventArgs> AddedInteraction;
+        public event EventHandler<InteractionManager, EventArgs<InteractionContext>> AddedInteraction;
 
-        public event EventHandler<InteractionManager, InteractionEventArgs> RemovedInteraction;
+        public event EventHandler<InteractionManager, EventArgs<InteractionContext>> RemovedInteraction;
 
-        protected virtual void OnAddedInteraction(InteractionManager sender, InteractionEventArgs e) { }
+        protected virtual void OnAddedInteraction(InteractionManager sender, EventArgs<InteractionContext> e) { }
 
-        protected virtual void OnRemovedInteraction(InteractionManager sender, InteractionEventArgs e) { }
+        protected virtual void OnRemovedInteraction(InteractionManager sender, EventArgs<InteractionContext> e) { }
 
         public void Initialize()
         {

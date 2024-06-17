@@ -4,6 +4,7 @@ using MCBS.Events;
 using MCBS.Forms;
 using MCBS.UI;
 using MCBS.UI.Extensions;
+using QuanLib.Core.Events;
 using QuanLib.Game;
 using SixLabors.ImageSharp;
 using System;
@@ -37,11 +38,11 @@ namespace MCBS.SystemApplications.Services
                     throw new InvalidOperationException();
             }
 
-            protected override void OnResize(Control sender, SizeChangedEventArgs e)
+            protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
             {
                 base.OnResize(sender, e);
 
-                Size offset = e.NewSize - e.OldSize;
+                Size offset = e.NewValue - e.OldValue;
                 foreach (var form in ChildControls)
                     form.ClientSize += offset;
             }

@@ -77,11 +77,11 @@ namespace MCBS.BlockForms.Utility
 
         public Func<T?, string> ItemToStringFunc { get; set; }
 
-        public event EventHandler<ItemCollection<T>, IndexChangedEventArgs> SelectedItemIndexChanged;
+        public event EventHandler<ItemCollection<T>, ValueChangedEventArgs<int>> SelectedItemIndexChanged;
 
         public event EventHandler<ItemCollection<T>, ValueChangedEventArgs<T?>> SelectedItemChanged;
 
-        protected virtual void OnSelectedItemIndexChanged(ItemCollection<T> sender, IndexChangedEventArgs e) { }
+        protected virtual void OnSelectedItemIndexChanged(ItemCollection<T> sender, ValueChangedEventArgs<int> e) { }
 
         protected virtual void OnSelectedItemChanged(ItemCollection<T> sender, ValueChangedEventArgs<T?> e) { }
 

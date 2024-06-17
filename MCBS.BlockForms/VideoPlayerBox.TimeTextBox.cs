@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using QuanLib.TickLoop.VideoPlayer;
-using QuanLib.TickLoop.VideoPlayer.Events;
 
 namespace MCBS.BlockForms
 {
@@ -97,7 +97,7 @@ namespace MCBS.BlockForms
                 ActiveLayoutAll();
             }
 
-            private void VideoPlayer_VideoFrameChanged(VideoBox<TPixel> sender, VideoFrameChangedEventArgs<TPixel> e)
+            private void VideoPlayer_VideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
             {
                 RequestRendering();
                 ActiveLayoutAll();

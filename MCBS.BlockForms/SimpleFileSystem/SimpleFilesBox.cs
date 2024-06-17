@@ -1,9 +1,8 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Events;
-using Newtonsoft.Json.Linq;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.IO;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,22 +66,22 @@ namespace MCBS.BlockForms.SimpleFileSystem
         }
         private string _SearchText;
 
-        public event EventHandler<SimpleFilesBox, ExceptionEventArgs> OpeningItemException;
+        public event EventHandler<SimpleFilesBox, EventArgs<FileInfo>> OpenFile;
 
-        public event EventHandler<SimpleFilesBox, FIleInfoEventArgs> OpenFile;
+        public event EventHandler<SimpleFilesBox, EventArgs<Exception>> OpeningItemException;
 
-        protected virtual void OnOpenFile(SimpleFilesBox sender, FIleInfoEventArgs e) { }
+        protected virtual void OnOpenFile(SimpleFilesBox sender, EventArgs<FileInfo> e) { }
 
-        protected virtual void OnOpeningItemException(SimpleFilesBox sender, ExceptionEventArgs e) { }
+        protected virtual void OnOpeningItemException(SimpleFilesBox sender, EventArgs<Exception> e) { }
 
-        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
+        protected override void OnTextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
             base.OnTextChanged(sender, e);
 
             ActiveLayoutAll();
         }
 
-        protected override void OnLayoutAll(AbstractControlContainer<Control> sender, SizeChangedEventArgs e)
+        protected override void OnLayoutAll(AbstractControlContainer<Control> sender, ValueChangedEventArgs<Size> e)
         {
             ActiveLayoutAll();
         }

@@ -1,6 +1,5 @@
-﻿using MCBS.BlockForms;
-using MCBS.Events;
-using QuanLib.Core;
+﻿using QuanLib.Core;
+using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace MCBS.BlockForms.Utility
     /// </summary>
     public class LayoutSyncer
     {
-        public LayoutSyncer(Control target, EventHandler<Control, PositionChangedEventArgs> move, EventHandler<Control, SizeChangedEventArgs> resize)
+        public LayoutSyncer(Control target, EventHandler<Control, ValueChangedEventArgs<Point>> move, EventHandler<Control, ValueChangedEventArgs<Size>> resize)
         {
             ArgumentNullException.ThrowIfNull(target, nameof(target));
 
@@ -26,9 +25,9 @@ namespace MCBS.BlockForms.Utility
 
         public Control Target { get; }
 
-        public event EventHandler<Control, PositionChangedEventArgs> Move;
+        public event EventHandler<Control, ValueChangedEventArgs<Point>> Move;
 
-        public event EventHandler<Control, SizeChangedEventArgs> Resize;
+        public event EventHandler<Control, ValueChangedEventArgs<Size>> Resize;
 
         /// <summary>
         /// 绑定

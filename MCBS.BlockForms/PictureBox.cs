@@ -1,8 +1,8 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Events;
 using MCBS.Rendering;
 using MCBS.Rendering.Extensions;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -46,11 +46,11 @@ namespace MCBS.BlockForms
         }
         private Texture<TPixel> _Texture;
 
-        public event EventHandler<PictureBox<TPixel>, TextureChangedEventArgs<TPixel>> TextureChanged;
+        public event EventHandler<PictureBox<TPixel>, ValueChangedEventArgs<Texture<TPixel>>> TextureChanged;
 
-        protected virtual void OnTextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
+        protected virtual void OnTextureChanged(PictureBox<TPixel> sender, ValueChangedEventArgs<Texture<TPixel>> e)
         {
-            e.OldTexture.Dispose();
+            e.OldValue.Dispose();
 
             if (AutoSize)
                 AutoSetSize();

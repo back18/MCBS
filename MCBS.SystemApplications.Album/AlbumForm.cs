@@ -265,17 +265,17 @@ namespace MCBS.SystemApplications.Album
             NextImage_Button.Visible = false;
         }
 
-        private void ClientPanel_Resize(Control sender, SizeChangedEventArgs e)
+        private void ClientPanel_Resize(Control sender, ValueChangedEventArgs<Size> e)
         {
             ScalablePictureBox.ClientSize = Home_PagePanel.ClientSize;
         }
 
-        private void ScalablePictureBox_Resize(Control sender, SizeChangedEventArgs e)
+        private void ScalablePictureBox_Resize(Control sender, ValueChangedEventArgs<Size> e)
         {
             ScalablePictureBox.LayoutCentered(Home_PagePanel);
         }
 
-        private void ScalablePictureBox_TextureChanged(PictureBox<Rgba32> sender, TextureChangedEventArgs<Rgba32> e)
+        private void ScalablePictureBox_TextureChanged(PictureBox<Rgba32> sender, ValueChangedEventArgs<Texture<Rgba32>> e)
         {
             ScalablePictureBox.ClientSize = Home_PagePanel.ClientSize;
         }
@@ -293,21 +293,21 @@ namespace MCBS.SystemApplications.Album
             Home_PagePanel.ChildControls.Remove(Setting_ListMenuBox);
         }
 
-        private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
+        private void Path_TextBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
-            if (SR.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
+            if (SR.DefaultFont.GetTotalSize(e.NewValue).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
 
-            if (ScalablePictureBox.TryReadImageFile(e.NewText))
+            if (ScalablePictureBox.TryReadImageFile(e.NewValue))
             {
-                if (_images is null || !_images.Contains(e.NewText))
-                    _images = FileList.LoadFile(e.NewText, _extensions);
+                if (_images is null || !_images.Contains(e.NewValue))
+                    _images = FileList.LoadFile(e.NewValue, _extensions);
             }
             else
             {
-                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开图片文件：“{e.NewText}”", MessageBoxButtons.OK);
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开图片文件：“{e.NewValue}”", MessageBoxButtons.OK);
             }
         }
 

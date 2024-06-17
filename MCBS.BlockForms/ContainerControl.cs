@@ -2,11 +2,10 @@
 using MCBS.Events;
 using MCBS.UI.Extensions;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,13 +23,13 @@ namespace MCBS.BlockForms
 
         public abstract ControlCollection<T>? AsControlCollection<T>() where T : Control;
 
-        public override event EventHandler<AbstractControlContainer<Control>, ControlEventArgs<Control>> AddedChildControl;
+        public override event EventHandler<AbstractControlContainer<Control>, EventArgs<Control>> AddedChildControl;
 
-        public override event EventHandler<AbstractControlContainer<Control>, ControlEventArgs<Control>> RemovedChildControl;
+        public override event EventHandler<AbstractControlContainer<Control>, EventArgs<Control>> RemovedChildControl;
 
-        public event EventHandler<AbstractControlContainer<Control>, SizeChangedEventArgs> LayoutAll;
+        public event EventHandler<AbstractControlContainer<Control>, ValueChangedEventArgs<Size>> LayoutAll;
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             base.OnResize(sender, e);
 
@@ -42,7 +41,7 @@ namespace MCBS.BlockForms
 
         }
 
-        protected virtual void OnLayoutAll(AbstractControlContainer<Control> sender, SizeChangedEventArgs e)
+        protected virtual void OnLayoutAll(AbstractControlContainer<Control> sender, ValueChangedEventArgs<Size> e)
         {
             foreach (var control in GetChildControls())
             {

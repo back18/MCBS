@@ -8,7 +8,6 @@ using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Minecraft.Blocks;
 using QuanLib.Core.Events;
-using SixLabors.ImageSharp.PixelFormats;
 using QuanLib.Game;
 
 namespace MCBS.BlockForms
@@ -129,14 +128,14 @@ namespace MCBS.BlockForms
             }
         }
 
-        protected override void OnMove(Control sender, PositionChangedEventArgs e)
+        protected override void OnMove(Control sender, ValueChangedEventArgs<Point> e)
         {
             base.OnMove(sender, e);
 
             TitleBar_Control.UpdateMaximizeOrRestore();
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             base.OnResize(sender, e);
 

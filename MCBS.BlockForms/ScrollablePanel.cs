@@ -2,10 +2,10 @@
 using MCBS.Events;
 using MCBS.Rendering;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,13 +68,13 @@ namespace MCBS.BlockForms
         }
         private Size _PageSize;
 
-        public event EventHandler<ScrollablePanel, SizeChangedEventArgs> PageSizeChanged;
+        public event EventHandler<ScrollablePanel, ValueChangedEventArgs<Size>> PageSizeChanged;
 
-        protected virtual void OnPageSizeChanged(ScrollablePanel sender, SizeChangedEventArgs e)
+        protected virtual void OnPageSizeChanged(ScrollablePanel sender, ValueChangedEventArgs<Size> e)
         {
-            if (e.OldSize.Height != e.NewSize.Height)
+            if (e.OldValue.Height != e.NewValue.Height)
                 RefreshVerticalScrollBar();
-            if (e.OldSize.Width != e.NewSize.Width)
+            if (e.OldValue.Width != e.NewValue.Width)
                 RefreshHorizontalScrollBar();
         }
 
@@ -110,10 +110,10 @@ namespace MCBS.BlockForms
             return this.RenderingBackground(GetRenderingSize());
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
-            Size oldSize = e.OldSize;
-            Size newSize = e.NewSize;
+            Size oldSize = e.OldValue;
+            Size newSize = e.NewValue;
 
             int maxX = Math.Max(ClientSize.Width, PageSize.Width) - ClientSize.Width;
             int maxY = Math.Max(ClientSize.Height, PageSize.Height) - ClientSize.Height;
@@ -173,13 +173,13 @@ namespace MCBS.BlockForms
             OffsetPosition = offset;
         }
 
-        protected override void OnOffsetPositionChanged(Control sender, PositionChangedEventArgs e)
+        protected override void OnOffsetPositionChanged(Control sender, ValueChangedEventArgs<Point> e)
         {
             base.OnOffsetPositionChanged(sender, e);
 
-            if (e.OldPosition.Y != e.NewPosition.Y)
+            if (e.OldValue.Y != e.NewValue.Y)
                 RefreshVerticalScrollBar();
-            if (e.OldPosition.X != e.NewPosition.X)
+            if (e.OldValue.X != e.NewValue.X)
                 RefreshHorizontalScrollBar();
         }
 

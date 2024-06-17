@@ -1,5 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -132,20 +131,20 @@ namespace MCBS.SystemApplications.VideoPlayer
             Path_TextBox.Visible = false;
         }
 
-        private void Path_TextBox_TextChanged(Control sender, TextChangedEventArgs e)
+        private void Path_TextBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
-            if (SR.DefaultFont.GetTotalSize(e.NewText).Width > Path_TextBox.ClientSize.Width)
+            if (SR.DefaultFont.GetTotalSize(e.NewValue).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
 
-            if (VideoPlayer.VideoBox.TryReadMediaFile(e.NewText))
+            if (VideoPlayer.VideoBox.TryReadMediaFile(e.NewValue))
             {
                 VideoPlayer.VideoBox.MediaFilePlayer?.Play();
             }
             else
             {
-                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开视频文件：“{e.NewText}”", MessageBoxButtons.OK);
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开视频文件：“{e.NewValue}”", MessageBoxButtons.OK);
             }
         }
     }

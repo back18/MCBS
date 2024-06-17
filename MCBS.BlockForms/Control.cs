@@ -1,23 +1,17 @@
-﻿using Newtonsoft.Json.Linq;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp.PixelFormats;
 using QuanLib.Core;
-using QuanLib.Minecraft.ResourcePack.Block;
 using MCBS.UI;
 using MCBS.Screens;
 using MCBS.BlockForms.Utility;
 using MCBS.Processes;
 using MCBS.Events;
 using QuanLib.Core.Events;
-using QuanLib.Minecraft.Blocks;
 using MCBS.Cursor;
-using System.Diagnostics.CodeAnalysis;
 using MCBS.Rendering;
 using QuanLib.Game;
 using MCBS.UI.Extensions;
@@ -538,15 +532,15 @@ namespace MCBS.BlockForms
 
         public event EventHandler<Control, EventArgs> ControlDeselected;
 
-        public event EventHandler<Control, PositionChangedEventArgs> Move;
+        public event EventHandler<Control, ValueChangedEventArgs<Point>> Move;
 
-        public event EventHandler<Control, SizeChangedEventArgs> Resize;
+        public event EventHandler<Control, ValueChangedEventArgs<Size>> Resize;
 
-        public event EventHandler<Control, PositionChangedEventArgs> OffsetPositionChanged;
+        public event EventHandler<Control, ValueChangedEventArgs<Point>> OffsetPositionChanged;
 
-        public event EventHandler<Control, TextChangedEventArgs> TextChanged;
+        public event EventHandler<Control, ValueChangedEventArgs<string>> TextChanged;
 
-        public event EventHandler<Control, SizeChangedEventArgs> Layout;
+        public event EventHandler<Control, ValueChangedEventArgs<Size>> Layout;
 
         #endregion
 
@@ -582,23 +576,23 @@ namespace MCBS.BlockForms
 
         protected virtual void OnControlDeselected(Control sender, EventArgs e) { }
 
-        protected virtual void OnMove(Control sender, PositionChangedEventArgs e) { }
+        protected virtual void OnMove(Control sender, ValueChangedEventArgs<Point> e) { }
 
-        protected virtual void OnResize(Control sender, SizeChangedEventArgs e) { }
+        protected virtual void OnResize(Control sender, ValueChangedEventArgs<Size> e) { }
 
-        protected virtual void OnOffsetPositionChanged(Control sender, PositionChangedEventArgs e) { }
+        protected virtual void OnOffsetPositionChanged(Control sender, ValueChangedEventArgs<Point> e) { }
 
-        protected virtual void OnTextChanged(Control sender, TextChangedEventArgs e) { }
+        protected virtual void OnTextChanged(Control sender, ValueChangedEventArgs<string> e) { }
 
-        public virtual void OnLayout(Control sender, SizeChangedEventArgs e)
+        public virtual void OnLayout(Control sender, ValueChangedEventArgs<Size> e)
         {
-            Size offset = e.NewSize - e.OldSize;
+            Size offset = e.NewValue - e.OldValue;
             if (offset.Height != 0)
             {
                 if (Anchor.HasFlag(Direction.Top) && Anchor.HasFlag(Direction.Bottom))
                 {
-                    double proportion = (ClientLocation.Y + Height / 2.0) / e.OldSize.Height;
-                    ClientLocation = new(ClientLocation.X, (int)Math.Round(e.NewSize.Height * proportion - Height / 2.0));
+                    double proportion = (ClientLocation.Y + Height / 2.0) / e.OldValue.Height;
+                    ClientLocation = new(ClientLocation.X, (int)Math.Round(e.NewValue.Height * proportion - Height / 2.0));
                 }
                 else
                 {
@@ -613,8 +607,8 @@ namespace MCBS.BlockForms
             {
                 if (Anchor.HasFlag(Direction.Left) && Anchor.HasFlag(Direction.Right))
                 {
-                    double proportion = (ClientLocation.X + Width / 2.0) / e.OldSize.Width;
-                    ClientLocation = new((int)Math.Round(e.NewSize.Width * proportion - Width / 2.0), ClientLocation.Y);
+                    double proportion = (ClientLocation.X + Width / 2.0) / e.OldValue.Width;
+                    ClientLocation = new((int)Math.Round(e.NewValue.Width * proportion - Width / 2.0), ClientLocation.Y);
                 }
                 else
                 {
@@ -674,12 +668,12 @@ namespace MCBS.BlockForms
             AfterFrame.Invoke(this, e);
         }
 
-        protected virtual void HandleTextChanged(TextChangedEventArgs e)
+        protected virtual void HandleTextChanged(ValueChangedEventArgs<string> e)
         {
             TextChanged.Invoke(this, e);
         }
 
-        public virtual void HandleLayout(SizeChangedEventArgs e)
+        public virtual void HandleLayout(ValueChangedEventArgs<Size> e)
         {
             Layout.Invoke(this, e);
         }

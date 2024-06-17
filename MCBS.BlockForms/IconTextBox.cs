@@ -1,6 +1,5 @@
-﻿using MCBS;
-using MCBS.BlockForms.Utility;
-using MCBS.Events;
+﻿using MCBS.BlockForms.Utility;
+using MCBS.Rendering;
 using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -61,13 +60,13 @@ namespace MCBS.BlockForms
             ActiveLayoutAll();
         }
 
-        private void Icon_PictureBox_TextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
+        private void Icon_PictureBox_TextureChanged(PictureBox<TPixel> sender, ValueChangedEventArgs<Texture<TPixel>> e)
         {
             if (AutoSize)
                 AutoSetSize();
         }
 
-        private void Text_Label_TextChanged(Control sender, TextChangedEventArgs e)
+        private void Text_Label_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
             if (AutoSize)
                 AutoSetSize();

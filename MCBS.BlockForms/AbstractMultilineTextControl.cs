@@ -1,5 +1,4 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Events;
 using MCBS.Rendering;
 using QuanLib.BDF;
 using QuanLib.Core;
@@ -7,7 +6,6 @@ using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -178,7 +176,7 @@ namespace MCBS.BlockForms
             }
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             base.OnResize(sender, e);
 
@@ -186,7 +184,7 @@ namespace MCBS.BlockForms
                 UpdatePageSize();
         }
 
-        protected override void OnTextChanged(Control sender, TextChangedEventArgs e)
+        protected override void OnTextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
             base.OnTextChanged(sender, e);
 

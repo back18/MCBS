@@ -1,7 +1,9 @@
 ﻿using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using QuanLib.Core.Events;
 using QuanLib.Game;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +51,7 @@ namespace MCBS.SystemApplications.QRCodeGenerator
             QRCodeBox_Control.LayoutHorizontalCentered(Home_PagePanel, 2);
         }
 
-        private void ClientPanel_Control_Resize(Control sender, SizeChangedEventArgs e)
+        private void ClientPanel_Control_Resize(Control sender, ValueChangedEventArgs<Size> e)
         {
             QRCodeBox_Control.Size = new(Home_PagePanel.ClientSize.Height - 24, Home_PagePanel.ClientSize.Height - 24);
             QRCodeBox_Control.LayoutHorizontalCentered(Home_PagePanel, 2);

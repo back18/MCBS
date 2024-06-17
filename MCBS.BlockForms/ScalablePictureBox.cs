@@ -3,7 +3,7 @@ using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Rendering;
 using MCBS.Rendering.Extensions;
-using Newtonsoft.Json.Linq;
+using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -103,20 +103,20 @@ namespace MCBS.BlockForms
             }
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             Texture.CropRectangle = Texture.ImageSource.Bounds;
             UpdateTextureTexture();
 
-            if (Texture.GetOutputSize() == e.NewSize)
+            if (Texture.GetOutputSize() == e.NewValue)
                 return;
 
-            Texture.ResizeOptions.Size = e.NewSize;
+            Texture.ResizeOptions.Size = e.NewValue;
             if (AutoSize)
                 AutoSetSize();
         }
 
-        protected override void OnTextureChanged(PictureBox<TPixel> sender, TextureChangedEventArgs<TPixel> e)
+        protected override void OnTextureChanged(PictureBox<TPixel> sender, ValueChangedEventArgs<Texture<TPixel>> e)
         {
             base.OnTextureChanged(sender, e);
 

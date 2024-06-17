@@ -1,8 +1,8 @@
 ﻿using MCBS.Application;
 using MCBS.Config;
-using MCBS.Events;
 using MCBS.UI;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.TickLoop;
 using System;
 using System.Collections.Generic;
@@ -24,13 +24,13 @@ namespace MCBS.Processes
 
         public ProcessCollection Items { get; }
 
-        public event EventHandler<ProcessManager, ProcessEventArgs> AddedProcess;
+        public event EventHandler<ProcessManager, EventArgs<ProcessContext>> AddedProcess;
 
-        public event EventHandler<ProcessManager, ProcessEventArgs> RemovedProcess;
+        public event EventHandler<ProcessManager, EventArgs<ProcessContext>> RemovedProcess;
 
-        protected virtual void OnAddedProcess(ProcessManager sender, ProcessEventArgs e) { }
+        protected virtual void OnAddedProcess(ProcessManager sender, EventArgs<ProcessContext> e) { }
 
-        protected virtual void OnRemovedProcess(ProcessManager sender, ProcessEventArgs e) { }
+        protected virtual void OnRemovedProcess(ProcessManager sender, EventArgs<ProcessContext> e) { }
 
         public void OnTickUpdate(int tick)
         {

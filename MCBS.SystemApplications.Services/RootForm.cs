@@ -3,6 +3,7 @@ using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using MCBS.UI;
 using MCBS.UI.Extensions;
+using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -129,7 +130,7 @@ namespace MCBS.SystemApplications.Services
             ShowTaskBar_Button.InvokeExternalCursorMove = true;
             ShowTaskBar_Button.ClientSize = new(16, 16);
             ShowTaskBar_Button.LayoutSyncer = new(this, (sender, e) => { }, (sender, e) =>
-            ShowTaskBar_Button.LayoutLeft(this, e.NewSize.Height - ShowTaskBar_Button.Height, 0));
+            ShowTaskBar_Button.LayoutLeft(this, e.NewValue.Height - ShowTaskBar_Button.Height, 0));
             ShowTaskBar_Button.Anchor = Direction.Bottom | Direction.Right;
             ShowTaskBar_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Shrink"]);
             ShowTaskBar_Button.CursorEnter += ShowTaskBar_Button_CursorEnter;
@@ -155,7 +156,7 @@ namespace MCBS.SystemApplications.Services
             return base.HandleRightClick(e);
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             base.OnResize(sender, e);
 

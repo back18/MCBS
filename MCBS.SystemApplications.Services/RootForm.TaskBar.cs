@@ -6,6 +6,7 @@ using MCBS.Events;
 using MCBS.Forms;
 using MCBS.Screens;
 using MCBS.UI;
+using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -179,9 +180,9 @@ namespace MCBS.SystemApplications.Services
                 _owner.ChildControls.Remove(_owner.StartMenu_ListMenuBox);
             }
 
-            private void FormContainer_AddedChildControl(AbstractControlContainer<IControl> sender, ControlEventArgs<IControl> e)
+            private void FormContainer_AddedChildControl(AbstractControlContainer<IControl> sender, EventArgs<IControl> e)
             {
-                if (e.Control is not IForm form)
+                if (e.Argument is not IForm form)
                     return;
 
                 var applicationManifest = MinecraftBlockScreen.Instance.ProcessContextOf(form)?.Application;
@@ -206,9 +207,9 @@ namespace MCBS.SystemApplications.Services
                 }
             }
 
-            private void FormContainer_RemovedChildControl(AbstractControlContainer<IControl> sender, ControlEventArgs<IControl> e)
+            private void FormContainer_RemovedChildControl(AbstractControlContainer<IControl> sender, EventArgs<IControl> e)
             {
-                if (e.Control is not IForm form)
+                if (e.Argument is not IForm form)
                     return;
 
                 var context = MinecraftBlockScreen.Instance.FormContextOf(form);

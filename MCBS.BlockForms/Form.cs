@@ -4,10 +4,10 @@ using MCBS.Cursor;
 using MCBS.Cursor.Style;
 using MCBS.Events;
 using MCBS.Forms;
-using MCBS.Screens;
 using MCBS.UI;
 using MCBS.UI.Extensions;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -15,7 +15,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -188,7 +187,7 @@ namespace MCBS.BlockForms
             e.CursorContext.StyleType = GetCursorStyleType(borders);
         }
 
-        protected override void OnMove(Control sender, PositionChangedEventArgs e)
+        protected override void OnMove(Control sender, ValueChangedEventArgs<Point> e)
         {
             base.OnMove(sender, e);
 
@@ -199,7 +198,7 @@ namespace MCBS.BlockForms
             }
         }
 
-        protected override void OnResize(Control sender, SizeChangedEventArgs e)
+        protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             base.OnResize(sender, e);
 
