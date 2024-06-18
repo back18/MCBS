@@ -47,7 +47,7 @@ namespace MCBS.BlockForms
                 HighlightedCharacters.Add(newIndex);
 
             _indexs[e.CursorContext.PlayerName] = newIndex;
-            RequestRendering();
+            RequestRedraw();
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
@@ -61,7 +61,7 @@ namespace MCBS.BlockForms
             int index = PagePosToTextIndex(e.Position);
             HighlightedCharacters.Add(index);
             _indexs.Add(e.CursorContext.PlayerName, index);
-            RequestRendering();
+            RequestRedraw();
         }
 
         protected override void OnCursorLeave(Control sender, CursorEventArgs e)
@@ -74,7 +74,7 @@ namespace MCBS.BlockForms
             e.CursorContext.Visible = true;
             HighlightedCharacters.Remove(index);
             _indexs.Remove(e.CursorContext.PlayerName);
-            RequestRendering();
+            RequestRedraw();
         }
 
         protected override void OnTextEditorUpdate(Control sender, CursorEventArgs e)

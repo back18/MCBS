@@ -131,11 +131,11 @@ namespace MCBS.Screens
             Task.WaitAll(tasks.ToArray());
         }
 
-        public void HandleAllUIRendering()
+        public void HandleAllFrameDrawing()
         {
             List<Task> tasks = new();
             foreach (var screenContext in Items.Values)
-                tasks.Add(screenContext.HandleUIRenderingAsync());
+                tasks.Add(screenContext.HandleFrameDrawingAsync());
             Task.WaitAll(tasks.ToArray());
         }
 

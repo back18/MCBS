@@ -62,7 +62,7 @@ namespace MCBS.SystemApplications.Services
                 StartMenu_Switch.ClientSize = new(16, 16);
                 StartMenu_Switch.Anchor = Direction.Bottom | Direction.Left;
                 StartMenu_Switch.FirstHandleRightClick = true;
-                StartMenu_Switch.IsRenderingTransparencyTexture = false;
+                StartMenu_Switch.RequestDrawTransparencyTexture = false;
                 StartMenu_Switch.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Hover);
                 StartMenu_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.Orange, ControlState.Selected, ControlState.Hover | ControlState.Selected);
                 StartMenu_Switch.Skin.SetAllBackgroundTexture(TextureManager.Instance["Logo"]);
@@ -75,7 +75,7 @@ namespace MCBS.SystemApplications.Services
                 FullScreen_Button.LayoutLeft(this, 1, 0);
                 FullScreen_Button.Anchor = Direction.Bottom | Direction.Right;
                 FullScreen_Button.FirstHandleRightClick = true;
-                FullScreen_Button.IsRenderingTransparencyTexture = false;
+                FullScreen_Button.RequestDrawTransparencyTexture = false;
                 FullScreen_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 FullScreen_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 FullScreen_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Expand"]);

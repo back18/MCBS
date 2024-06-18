@@ -11,8 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Minecraft;
 using QuanLib.Core.Extensions;
-using MCBS.Rendering;
 using QuanLib.Core;
+using MCBS.Drawing;
 
 namespace MCBS.Cursor.Style
 {

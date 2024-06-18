@@ -37,7 +37,7 @@ namespace MCBS.BlockForms
                 if (_Spacing != value)
                 {
                     _Spacing = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }

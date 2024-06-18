@@ -1,7 +1,7 @@
 ﻿using MCBS.Cursor;
+using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using MCBS.Events;
-using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
 using MCBS.UI;
 using MCBS.UI.Extensions;
 using QuanLib.Core;
@@ -155,9 +155,9 @@ namespace MCBS.BlockForms
             base.HandleAfterFrame(e);
         }
 
-        public override async Task<BlockFrame> GetRenderingResultAsync()
+        public override async Task<BlockFrame> GetDrawResultAsync()
         {
-            Task<BlockFrame> baseTask = base.GetRenderingResultAsync();
+            Task<BlockFrame> baseTask = base.GetDrawResultAsync();
 
             List<IControl> childControls = new();
             List<Task<BlockFrame>> childTasks = new();
@@ -166,7 +166,7 @@ namespace MCBS.BlockForms
                 if (control.Visible && control.ClientSize.Width > 0 && control.ClientSize.Height > 0)
                 {
                     childControls.Add(control);
-                    childTasks.Add(control.GetRenderingResultAsync());
+                    childTasks.Add(control.GetDrawResultAsync());
                 }
             }
 
@@ -177,8 +177,8 @@ namespace MCBS.BlockForms
             {
                 Foreach.Start(childControls, childFrames, (control, frame) =>
                 {
-                    baseFrame.Overwrite(frame, control.ClientSize, control.GetRenderingLocation(), control.OffsetPosition);
-                    baseFrame.DrawBorder(control, control.GetRenderingLocation());
+                    baseFrame.Overwrite(frame, control.ClientSize, control.GetDrawingLocation(), control.OffsetPosition);
+                    baseFrame.DrawBorder(control, control.GetDrawingLocation());
                 });
             });
 

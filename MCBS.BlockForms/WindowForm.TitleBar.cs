@@ -1,6 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
+using MCBS.Drawing;
 using MCBS.Events;
-using MCBS.Rendering;
 using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.Minecraft.Blocks;
@@ -104,7 +104,7 @@ namespace MCBS.BlockForms
                 Close_Button.ClientSize = new(16, 16);
                 Close_Button.Anchor = Direction.Top | Direction.Right;
                 Close_Button.FirstHandleRightClick = true;
-                Close_Button.IsRenderingTransparencyTexture = false;
+                Close_Button.RequestDrawTransparencyTexture = false;
                 Close_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 Close_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Red, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 Close_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Close"]);
@@ -114,7 +114,7 @@ namespace MCBS.BlockForms
                 MaximizeOrRestore_Switch.ClientSize = new(16, 16);
                 MaximizeOrRestore_Switch.Anchor = Direction.Top | Direction.Right;
                 MaximizeOrRestore_Switch.FirstHandleRightClick = true;
-                MaximizeOrRestore_Switch.IsRenderingTransparencyTexture = false;
+                MaximizeOrRestore_Switch.RequestDrawTransparencyTexture = false;
                 MaximizeOrRestore_Switch.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 MaximizeOrRestore_Switch.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 MaximizeOrRestore_Switch.Skin.SetBackgroundTexture(TextureManager.Instance["Maximize"], new ControlState[] { ControlState.None, ControlState.Hover });
@@ -124,7 +124,7 @@ namespace MCBS.BlockForms
                 Minimize_Button.ClientSize = new(16, 16);
                 Minimize_Button.Anchor = Direction.Top | Direction.Right;
                 Minimize_Button.FirstHandleRightClick = true;
-                Minimize_Button.IsRenderingTransparencyTexture = false;
+                Minimize_Button.RequestDrawTransparencyTexture = false;
                 Minimize_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 Minimize_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 Minimize_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Minimize"]);
@@ -134,7 +134,7 @@ namespace MCBS.BlockForms
                 FullScreen_Button.ClientSize = new(16, 16);
                 FullScreen_Button.Anchor = Direction.Top | Direction.Right;
                 FullScreen_Button.FirstHandleRightClick = true;
-                FullScreen_Button.IsRenderingTransparencyTexture = false;
+                FullScreen_Button.RequestDrawTransparencyTexture = false;
                 FullScreen_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 FullScreen_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 FullScreen_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Expand"]);
@@ -144,7 +144,7 @@ namespace MCBS.BlockForms
                 Menu_Button.ClientSize = new(16, 16);
                 Menu_Button.Anchor = Direction.Top | Direction.Right;
                 Menu_Button.FirstHandleRightClick = true;
-                Menu_Button.IsRenderingTransparencyTexture = false;
+                Menu_Button.RequestDrawTransparencyTexture = false;
                 Menu_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 Menu_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 Menu_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Menu"]);
@@ -154,7 +154,7 @@ namespace MCBS.BlockForms
                 Home_Button.ClientSize = new(16, 16);
                 Home_Button.Anchor = Direction.Top | Direction.Right;
                 Home_Button.FirstHandleRightClick = true;
-                Home_Button.IsRenderingTransparencyTexture = false;
+                Home_Button.RequestDrawTransparencyTexture = false;
                 Home_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 Home_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 Home_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Home"]);
@@ -164,7 +164,7 @@ namespace MCBS.BlockForms
                 Back_Button.ClientSize = new(16, 16);
                 Back_Button.Anchor = Direction.Top | Direction.Right;
                 Back_Button.FirstHandleRightClick = true;
-                Back_Button.IsRenderingTransparencyTexture = false;
+                Back_Button.RequestDrawTransparencyTexture = false;
                 Back_Button.Skin.SetBackgroundColor(Skin.BackgroundColor, ControlState.None, ControlState.Selected);
                 Back_Button.Skin.SetBackgroundColor(BlockManager.Concrete.LightGray, ControlState.Hover, ControlState.Hover | ControlState.Selected);
                 Back_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Back"]);

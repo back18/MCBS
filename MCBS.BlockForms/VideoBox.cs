@@ -1,7 +1,7 @@
 ﻿using FFMediaToolkit.Decoding;
 using MCBS.BlockForms.Utility;
-using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
+using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.TickLoop.VideoPlayer;
@@ -54,7 +54,7 @@ namespace MCBS.BlockForms
 
         protected virtual void OnVideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
         {
-            RequestRendering();
+            RequestRedraw();
         }
 
         protected override void OnAfterFrame(Control sender, EventArgs e)
@@ -64,18 +64,18 @@ namespace MCBS.BlockForms
             MediaFilePlayer?.OnTickUpdate(MinecraftBlockScreen.Instance.SystemTick);
         }
 
-        protected override BlockFrame Rendering()
+        protected override BlockFrame Drawing()
         {
             VideoFrame<TPixel>? videoFrame = MediaFilePlayer?.CurrentVideoFrame;
             if (videoFrame is null)
-                return base.Rendering();
+                return base.Drawing();
 
             Texture<TPixel> texture = new(videoFrame.Image, DefaultResizeOptions);
             BlockFrame textureFrame = texture.CreateBlockFrame(ClientSize, GetScreenPlane().NormalFacing);
-            if (IsRenderingTransparencyTexture)
+            if (RequestDrawTransparencyTexture)
                 return textureFrame;
 
-            BlockFrame baseFrame = base.Rendering();
+            BlockFrame baseFrame = base.Drawing();
             baseFrame.Overwrite(textureFrame, Point.Empty);
             return baseFrame;
         }

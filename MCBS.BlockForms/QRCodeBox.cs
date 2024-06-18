@@ -1,4 +1,4 @@
-﻿using MCBS.Rendering;
+﻿using MCBS.Drawing;
 using QRCoder;
 using QuanLib.Core.Events;
 using SixLabors.ImageSharp;

@@ -1,8 +1,8 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Cursor;
+using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using MCBS.Events;
-using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -44,7 +44,7 @@ namespace MCBS.BlockForms
 
         public bool EnableDrag { get; set; }
 
-        protected override BlockFrame Rendering()
+        protected override BlockFrame Drawing()
         {
             int pixelLength = GetPixelLength();
             if (pixelLength >= PixelModeThreshold)
@@ -56,13 +56,13 @@ namespace MCBS.BlockForms
                 for (int y = textureFrame.Height - 1; y >= 0; y -= pixelLength)
                     textureFrame.DrawHorizontalLine(y, BlockManager.Concrete.Gray);
 
-                BlockFrame baseFrame = this.RenderingBackground(ClientSize);
+                BlockFrame baseFrame = this.DrawBackground(ClientSize);
                 baseFrame.Overwrite(textureFrame, Point.Empty);
                 return baseFrame;
             }
             else
             {
-                return base.Rendering();
+                return base.Drawing();
             }
         }
 
@@ -201,7 +201,7 @@ namespace MCBS.BlockForms
 
             Texture.CropRectangle = rectangle;
             UpdateTextureTexture();
-            RequestRendering();
+            RequestRedraw();
         }
 
         private Rectangle CorrectCropRectangle(Rectangle rectangle)

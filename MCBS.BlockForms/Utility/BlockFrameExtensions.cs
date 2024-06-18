@@ -1,6 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
+using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

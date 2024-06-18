@@ -41,7 +41,7 @@ namespace MCBS.BlockForms
 
             private void VideoPlayer_VideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
             {
-                RequestRendering();
+                RequestRedraw();
                 Progress = _owner.VideoBox.CurrentPosition / _owner.VideoBox.TotalTime;
             }
 

@@ -1,5 +1,5 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Rendering;
+using MCBS.Drawing;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -49,7 +49,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -65,7 +65,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -81,7 +81,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -97,7 +97,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor_Hover = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -113,7 +113,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor_Hover = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -129,7 +129,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor_Hover = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -145,7 +145,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor_Selected = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -161,7 +161,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor_Selected = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -177,7 +177,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor_Selected = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -193,7 +193,7 @@ namespace MCBS.BlockForms
 					{
 						_ForegroundColor_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -209,7 +209,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundColor_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -225,7 +225,7 @@ namespace MCBS.BlockForms
 					{
 						_BorderColor_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -241,7 +241,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundTexture = value;
 						if (_owner.ControlState == ControlState.None)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -256,7 +256,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundTexture_Selected = value;
 						if (_owner.ControlState == ControlState.Hover)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -272,7 +272,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundTexture_Hover = value;
 						if (_owner.ControlState == ControlState.Selected)
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}
@@ -288,7 +288,7 @@ namespace MCBS.BlockForms
 					{
 						_BackgroundTexture_Hover_Selected = value;
 						if (_owner.ControlState == (ControlState.Hover | ControlState.Selected))
-							_owner.RequestRendering();
+							_owner.RequestRedraw();
 					}
 				}
 			}

@@ -171,7 +171,7 @@ namespace MCBS
             }
 
             HandleBeforeFrame();
-            HandleUIRendering();
+            HandleFrameDrawing();
             HandleScreenOutput();
             HandleAfterFrame();
 
@@ -346,9 +346,9 @@ namespace MCBS
             HandleAndTimeing(ScreenManager.HandleAllBeforeFrame, SystemStage.HandleBeforeFrame);
         }
 
-        private void HandleUIRendering()
+        private void HandleFrameDrawing()
         {
-            HandleAndTimeing(ScreenManager.HandleAllUIRendering, SystemStage.HandleUIRendering);
+            HandleAndTimeing(ScreenManager.HandleAllFrameDrawing, SystemStage.HandleFrameDrawing);
         }
 
         private void HandleScreenOutput()

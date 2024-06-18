@@ -1,7 +1,7 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Cursor;
+using MCBS.Drawing;
 using MCBS.Events;
-using MCBS.Rendering;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -22,7 +22,7 @@ namespace MCBS.BlockForms
         public DrawingBox()
         {
             EnableDrag = false;
-            IsRenderingTransparencyTexture = false;
+            RequestDrawTransparencyTexture = false;
             Skin.SetAllBackgroundColor("minecraft:glass");
             _PenWidth = 1;
 
@@ -99,7 +99,7 @@ namespace MCBS.BlockForms
             }
 
             Texture.ImageSourceUpdated();
-            RequestRendering();
+            RequestRedraw();
         }
 
         protected override void OnCursorEnter(Control sender, CursorEventArgs e)
@@ -148,7 +148,7 @@ namespace MCBS.BlockForms
 
             Texture.ImageSource.Mutate(ctx => ctx.Fill(Color.FromPixel(color)));
             Texture.ImageSourceUpdated();
-            RequestRendering();
+            RequestRedraw();
         }
 
         public void Undo()
@@ -157,7 +157,7 @@ namespace MCBS.BlockForms
             {
                 _redos.Push(Texture.ImageSource);
                 Texture.ImageSourceUpdated(_undos.Pop(), false);
-                RequestRendering();
+                RequestRedraw();
             }
         }
 
@@ -167,7 +167,7 @@ namespace MCBS.BlockForms
             {
                 _undos.Push(Texture.ImageSource);
                 Texture.ImageSourceUpdated(_redos.Pop(), false);
-                RequestRendering();
+                RequestRedraw();
             }
         }
 

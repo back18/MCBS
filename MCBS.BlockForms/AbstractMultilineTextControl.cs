@@ -1,5 +1,5 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Rendering;
+using MCBS.Drawing;
 using QuanLib.BDF;
 using QuanLib.Core;
 using QuanLib.Core.Events;
@@ -79,9 +79,9 @@ namespace MCBS.BlockForms
         }
         private bool _AutoScroll;
 
-        protected override BlockFrame Rendering()
+        protected override BlockFrame Drawing()
         {
-            Size renderingSize = GetRenderingSize();
+            Size renderingSize = GetDrawingSize();
             HashBlockFrame baseFrame = new(renderingSize, ToBlockId(0));
             if (LineBuffer.Lines.Count == 0)
                 return baseFrame;

@@ -99,7 +99,7 @@ namespace MCBS.BlockForms
 
             private void VideoPlayer_VideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
             {
-                RequestRendering();
+                RequestRedraw();
                 ActiveLayoutAll();
             }
 

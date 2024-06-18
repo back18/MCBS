@@ -1,5 +1,4 @@
 ﻿using log4net.Core;
-using MCBS.Rendering;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.IO;
@@ -14,6 +13,7 @@ using System.Threading.Tasks;
 using QuanLib.Logging;
 using QuanLib.Game;
 using QuanLib.IO.Extensions;
+using MCBS.Drawing;
 
 namespace MCBS
 {

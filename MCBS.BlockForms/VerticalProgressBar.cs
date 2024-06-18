@@ -1,5 +1,5 @@
-﻿using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
+﻿using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -11,13 +11,13 @@ namespace MCBS.BlockForms
 {
     public class VerticalProgressBar : ProgressBar
     {
-        protected override BlockFrame Rendering()
+        protected override BlockFrame Drawing()
         {
             int length = (int)Math.Round(ClientSize.Height * Progress);
             if (length <= 0)
-                return base.Rendering();
+                return base.Drawing();
 
-            BlockFrame baseFrame = base.Rendering();
+            BlockFrame baseFrame = base.Drawing();
             baseFrame.Overwrite(new HashBlockFrame(ClientSize.Width, length, GetForegroundColor()), Point.Empty);
             return baseFrame;
         }

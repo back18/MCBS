@@ -1,6 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
+using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
@@ -35,12 +35,12 @@ namespace MCBS.BlockForms
             get => _Texture;
             set
             {
-                if (!MCBS.Rendering.Texture.Equals(_Texture, value))
+                if (!MCBS.Drawing.Texture.Equals(_Texture, value))
                 {
                     Texture<TPixel> temp = _Texture;
                     _Texture = value;
                     TextureChanged.Invoke(this, new(temp, _Texture));
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -56,13 +56,13 @@ namespace MCBS.BlockForms
                 AutoSetSize();
         }
 
-        protected override BlockFrame Rendering()
+        protected override BlockFrame Drawing()
         {
             BlockFrame textureFrame = Texture.CreateBlockFrame(ClientSize, GetScreenPlane().NormalFacing);
-            if (IsRenderingTransparencyTexture)
+            if (RequestDrawTransparencyTexture)
                 return textureFrame;
 
-            BlockFrame baseFrame =  base.Rendering();
+            BlockFrame baseFrame =  base.Drawing();
             baseFrame.Overwrite(textureFrame, Point.Empty);
             return baseFrame;
         }

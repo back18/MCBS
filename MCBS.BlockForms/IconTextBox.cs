@@ -1,5 +1,5 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Rendering;
+using MCBS.Drawing;
 using QuanLib.Core.Events;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -41,7 +41,7 @@ namespace MCBS.BlockForms
                 if (_Spacing != value)
                 {
                     _Spacing = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }

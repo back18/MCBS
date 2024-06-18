@@ -63,7 +63,7 @@ namespace MCBS.UI.Extensions
             return new(source.ClientLocation.X, source.ClientLocation.Y, source.ClientSize.Width + source.BorderWidth, source.ClientSize.Height + source.BorderWidth);
         }
 
-        public static Point GetRenderingLocation(this IControlRendering source)
+        public static Point GetDrawingLocation(this IControlDrawing source)
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
 

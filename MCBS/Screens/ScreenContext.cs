@@ -10,15 +10,15 @@ using MCBS.UI;
 using MCBS.Cursor.Style;
 using MCBS.Cursor;
 using QuanLib.Minecraft.NBT.Models;
-using MCBS.Rendering;
 using QuanLib.IO;
 using Newtonsoft.Json;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
 using QuanLib.Logging;
-using MCBS.Rendering.Extensions;
 using MCBS.UI.Extensions;
 using QuanLib.IO.Extensions;
+using MCBS.Drawing.Extensions;
+using MCBS.Drawing;
 
 namespace MCBS.Screens
 {
@@ -181,10 +181,10 @@ namespace MCBS.Screens
             await Task.Run(() => ScreenView.HandleBeforeFrame(EventArgs.Empty));
         }
 
-        public async Task HandleUIRenderingAsync()
+        public async Task HandleFrameDrawingAsync()
         {
             HashBlockFrame baseFrame = new(Screen.Width, Screen.Height, ScreenOutputHandler.ScreenDefaultBlock);
-            BlockFrame formFrame = await ScreenView.GetRenderingResultAsync();
+            BlockFrame formFrame = await ScreenView.GetDrawResultAsync();
             baseFrame.Overwrite(formFrame, ScreenView.ClientSize, ScreenView.ClientLocation, ScreenView.OffsetPosition);
             foreach (var cursorContext in _activeCursors)
             {
@@ -194,7 +194,7 @@ namespace MCBS.Screens
 
                     foreach (HoverControl hoverControl in cursorContext.HoverControls.Values)
                     {
-                        BlockFrame hoverFrame = await hoverControl.Control.GetRenderingResultAsync();
+                        BlockFrame hoverFrame = await hoverControl.Control.GetDrawResultAsync();
                         if (hoverFrame is not null)
                         {
                             Point offset = hoverControl.OffsetPosition;

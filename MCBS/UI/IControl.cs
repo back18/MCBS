@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.UI
 {
-    public interface IControl : IControlInitializeHandling, IControlEventHandling, IControlRendering, IComparable<IControl>
+    public interface IControl : IControlInitializeHandling, IControlEventHandling, IControlDrawing, IComparable<IControl>
     {
         public IContainerControl? GenericParentContainer { get; }
 

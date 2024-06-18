@@ -42,7 +42,7 @@ namespace MCBS.BlockForms
                 if (_Title != value)
                 {
                     _Title = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }

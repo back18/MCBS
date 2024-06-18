@@ -26,7 +26,7 @@ namespace MCBS
 
         HandleBeforeFrame,
 
-        HandleUIRendering,
+        HandleFrameDrawing,
 
         HandleScreenOutput,
 

@@ -12,9 +12,9 @@ using MCBS.Processes;
 using MCBS.Events;
 using QuanLib.Core.Events;
 using MCBS.Cursor;
-using MCBS.Rendering;
 using QuanLib.Game;
 using MCBS.UI.Extensions;
+using MCBS.Drawing;
 
 namespace MCBS.BlockForms
 {
@@ -32,7 +32,7 @@ namespace MCBS.BlockForms
             FirstHandleTextEditorUpdate = false;
             InvokeExternalCursorMove = false;
             KeepWhenClear = false;
-            IsRenderingTransparencyTexture = true;
+            RequestDrawTransparencyTexture = true;
             IsInitCompleted = false;
             IsReadOnly = false;
             _DisplayPriority = 0;
@@ -51,8 +51,8 @@ namespace MCBS.BlockForms
             _ControlState = ControlState.None;
             _LayoutSyncer = null;
 
-            _needRendering = true;
-            _renderingCache = null;
+            _requestRedraw = true;
+            _drawCache = null;
             _hoverCursors = new();
 
             CursorMove += OnCursorMove;
@@ -77,9 +77,9 @@ namespace MCBS.BlockForms
             Layout += OnLayout;
         }
 
-        private bool _needRendering;
+        private bool _requestRedraw;
 
-        private BlockFrame? _renderingCache;
+        private BlockFrame? _drawCache;
 
         private readonly List<CursorContext> _hoverCursors;
 
@@ -97,7 +97,7 @@ namespace MCBS.BlockForms
 
         public bool KeepWhenClear { get; set; }
 
-        public bool IsRenderingTransparencyTexture { get; set; }
+        public bool RequestDrawTransparencyTexture { get; set; }
 
         public bool IsInitCompleted { get; private set; }
 
@@ -119,7 +119,7 @@ namespace MCBS.BlockForms
                     string temp = _Text;
                     _Text = value;
                     HandleTextChanged(new(temp, _Text));
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -137,7 +137,7 @@ namespace MCBS.BlockForms
                     Point temp = _ClientLocation;
                     _ClientLocation = value;
                     Move.Invoke(this, new(temp, _ClientLocation));
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace MCBS.BlockForms
                     Size temp = _ClientSize;
                     _ClientSize = value;
                     Resize.Invoke(this, new(temp, _ClientSize));
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -169,7 +169,7 @@ namespace MCBS.BlockForms
                     Point temp = _OffsetPosition;
                     _OffsetPosition = value;
                     OffsetPositionChanged.Invoke(this, new(temp, _OffsetPosition));
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -240,7 +240,7 @@ namespace MCBS.BlockForms
                 if (_BorderWidth != value)
                 {
                     _BorderWidth = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -342,7 +342,7 @@ namespace MCBS.BlockForms
                     if (value)
                         AutoSetSize();
                     _AutoSize = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -360,7 +360,7 @@ namespace MCBS.BlockForms
                 if (_Visible != value)
                 {
                     _Visible = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -418,7 +418,7 @@ namespace MCBS.BlockForms
                 if (_ContentAnchor != value)
                 {
                     _ContentAnchor = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -436,7 +436,7 @@ namespace MCBS.BlockForms
                         !BlockPixel.Equals(Skin.GetBorderColor(_ControlState), Skin.GetBorderColor(value)) ||
                         !Texture.Equals(Skin.GetBackgroundTexture(_ControlState), Skin.GetBackgroundTexture(value)))
                     {
-                        RequestRendering();
+                        RequestRedraw();
                     }
                     _ControlState = value;
                 }
@@ -822,31 +822,31 @@ namespace MCBS.BlockForms
 
         #endregion
 
-        #region 帧渲染处理
+        #region 帧绘制处理
 
-        protected void RequestRendering()
+        protected void RequestRedraw()
         {
-            _needRendering = true;
-            ParentContainer?.RequestRendering();
+            _requestRedraw = true;
+            ParentContainer?.RequestRedraw();
         }
 
-        public virtual async Task<BlockFrame> GetRenderingResultAsync()
+        public virtual async Task<BlockFrame> GetDrawResultAsync()
         {
-            if (_needRendering || _renderingCache is null)
+            if (_requestRedraw || _drawCache is null)
             {
-                if (_renderingCache is IDisposable disposable)
+                if (_drawCache is IDisposable disposable)
                     disposable.Dispose();
 
-                _renderingCache = await Task.Run(() => Rendering());
-                _needRendering = false;
+                _drawCache = await Task.Run(() => Drawing());
+                _requestRedraw = false;
             }
 
-            return _renderingCache;
+            return _drawCache;
         }
 
-        protected virtual BlockFrame Rendering()
+        protected virtual BlockFrame Drawing()
         {
-            return this.RenderingBackground(ClientSize);
+            return this.DrawBackground(ClientSize);
         }
 
         public BlockPixel GetForegroundColor()

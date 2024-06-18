@@ -34,7 +34,7 @@ namespace MCBS.BlockForms
                 if (_SliderSize != value)
                 {
                     _SliderSize = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace MCBS.BlockForms
                 if (_SliderPosition != value)
                 {
                     _SliderPosition = value;
-                    RequestRendering();
+                    RequestRedraw();
                 }
             }
         }

@@ -84,7 +84,7 @@ namespace MCBS.BlockForms
                 {
                     _OffText = value;
                     if (!string.IsNullOrEmpty(_OffText) && !IsSelected)
-                        RequestRendering();
+                        RequestRedraw();
                     Text = OffText;
                 }
             }

@@ -1,5 +1,5 @@
-﻿using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
+﻿using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using MCBS.UI.Extensions;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;

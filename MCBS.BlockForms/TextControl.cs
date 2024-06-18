@@ -1,6 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
-using MCBS.Rendering;
-using MCBS.Rendering.Extensions;
+using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
@@ -20,9 +20,9 @@ namespace MCBS.BlockForms
                 AutoSetSize();
         }
 
-        protected override BlockFrame Rendering()
+        protected override BlockFrame Drawing()
         {
-            BlockFrame baseFrame = base.Rendering();
+            BlockFrame baseFrame = base.Drawing();
             if (string.IsNullOrEmpty(Text))
                 return baseFrame;
 
