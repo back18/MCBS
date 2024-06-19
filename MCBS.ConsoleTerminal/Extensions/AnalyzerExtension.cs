@@ -29,7 +29,7 @@ namespace MCBS.ConsoleTerminal.Extensions
                 stringBuilder.Append('\n');
             }
 
-            stringBuilder.AppendFormat("MSPT: {0}ms\nTPS: {1}", Math.Round(source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3), Math.Max(50, Math.Round(1000 / source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3)));
+            stringBuilder.AppendFormat("MSPT: {0}ms\nTPS: {1}", Math.Round(source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3), Math.Min(20, Math.Round(1000 / source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3)));
 
             return stringBuilder.ToString();
         }
