@@ -65,7 +65,7 @@ namespace MCBS
 
                 BuildInfo buildInfo = new()
                 {
-                    CacheType = enableCompressionCache ? nameof(ColorMappingCompressionCache) : nameof(ColorMappingCompressionCache),
+                    CacheType = enableCompressionCache ? nameof(ColorMappingCompressionCache) : nameof(ColorMappingFastCache),
                     CacheHash = HashUtil.GetHashString(bytes, HashType.SHA1),
                     Colors = colors.ToArray()
                 };
