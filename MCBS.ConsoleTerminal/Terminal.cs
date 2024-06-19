@@ -257,7 +257,7 @@ namespace MCBS.ConsoleTerminal
                 Console.WriteLine(
                     string.Format("Tick{0}: {1}ms",
                     MinecraftBlockScreen.Instance.SystemTick,
-                    Math.Round(MinecraftBlockScreen.Instance.MsptAnalyzer.StageTimes[stage].GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3)));
+                    MinecraftBlockScreen.Instance.MsptAnalyzer.StageTimes[stage].GetAverageTime(Ticks.Ticks20).TotalMilliseconds));
                 Thread.Sleep(50);
             }
             while (!((Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Enter)));

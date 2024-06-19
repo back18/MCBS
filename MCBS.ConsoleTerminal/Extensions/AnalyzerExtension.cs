@@ -15,7 +15,6 @@ namespace MCBS.ConsoleTerminal.Extensions
             ArgumentNullException.ThrowIfNull(source, nameof(source));
 
             StringBuilder stringBuilder = new();
-            string[] lines = Enum.GetNames<TStage>();
             TStage[] stages = Enum.GetValues<TStage>();
             int maxWidth = stages.Select(s => s.ToString()).Max(CharacterWidthMapping.Instance.GetWidth) + 4;
 
@@ -24,12 +23,12 @@ namespace MCBS.ConsoleTerminal.Extensions
                 string name = stage.ToString();
                 stringBuilder.Append(name);
                 stringBuilder.Append('-', maxWidth - CharacterWidthMapping.Instance.GetWidth(name));
-                stringBuilder.Append(Math.Round(source.StageTimes[stage].GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3));
+                stringBuilder.Append(source.StageTimes[stage].GetAverageTime(Ticks.Ticks20).TotalMilliseconds);
                 stringBuilder.Append("ms");
                 stringBuilder.Append('\n');
             }
 
-            stringBuilder.AppendFormat("MSPT: {0}ms\nTPS: {1}", Math.Round(source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3), Math.Min(20, Math.Round(1000 / source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 3)));
+            stringBuilder.AppendFormat("MSPT: {0}ms\nTPS: {1}", source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, Math.Min(1000 / source.TickTime.GetAverageTime(Ticks.Ticks20).TotalMilliseconds, 20));
 
             return stringBuilder.ToString();
         }
