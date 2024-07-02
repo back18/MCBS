@@ -24,10 +24,15 @@ namespace MCBS.Drawing
 
         private readonly int[] _hashs;
 
-        private HashPixelCollection(int[] pixels)
+        private HashPixelCollection(int width, int height, int[] pixels)
         {
+            ThrowHelper.ArgumentOutOfMin(1, width, nameof(width));
+            ThrowHelper.ArgumentOutOfMin(1, height, nameof(height));
             ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
+            ThrowHelper.ArrayLengthOutOfRange(width * height, pixels, nameof(pixels));
 
+            Width = width;
+            Height = height;
             _hashs = pixels;
         }
 
@@ -123,7 +128,7 @@ namespace MCBS.Drawing
 
         public HashPixelCollection Clone()
         {
-            return new(ToArray());
+            return new(Width, Height, ToArray());
         }
 
         private int ToIndex(int x, int y)
