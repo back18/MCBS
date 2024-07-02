@@ -9,8 +9,8 @@ namespace MCBS.Screens
 {
     public readonly struct ScreenBlock(Point position, string blockId)
     {
-        public Point Position { get; } = position;
+        public readonly Point Position = position;
 
-        public string BlockId { get; } = blockId;
+        public readonly string BlockId = blockId;
     }
 }
