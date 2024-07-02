@@ -20,7 +20,11 @@ namespace MCBS.UI
 
         public int BorderWidth { get; set; }
 
-        public Task<BlockFrame> GetDrawResultAsync();
+        public bool IsRequestRedraw { get; }
+
+        public void RequestRedraw();
+
+        public DrawResult GetDrawResult();
 
         public BlockPixel GetForegroundColor();
 

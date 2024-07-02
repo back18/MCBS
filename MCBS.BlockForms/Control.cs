@@ -15,6 +15,7 @@ using MCBS.Cursor;
 using QuanLib.Game;
 using MCBS.UI.Extensions;
 using MCBS.Drawing;
+using System.Diagnostics;
 
 namespace MCBS.BlockForms
 {
@@ -35,6 +36,7 @@ namespace MCBS.BlockForms
             RequestDrawTransparencyTexture = true;
             IsInitCompleted = false;
             IsReadOnly = false;
+            IsRequestRedraw = false;
             _DisplayPriority = 0;
             _MaxDisplayPriority = 512;
             _Text = string.Empty;
@@ -51,7 +53,6 @@ namespace MCBS.BlockForms
             _ControlState = ControlState.None;
             _LayoutSyncer = null;
 
-            _requestRedraw = true;
             _drawCache = null;
             _hoverCursors = new();
 
@@ -77,8 +78,6 @@ namespace MCBS.BlockForms
             Layout += OnLayout;
         }
 
-        private bool _requestRedraw;
-
         private BlockFrame? _drawCache;
 
         private readonly List<CursorContext> _hoverCursors;
@@ -102,6 +101,8 @@ namespace MCBS.BlockForms
         public bool IsInitCompleted { get; private set; }
 
         public bool IsReadOnly { get; set; }
+
+        public bool IsRequestRedraw { get; private set; }
 
         public IContainerControl? GenericParentContainer { get; private set; }
 
@@ -824,24 +825,28 @@ namespace MCBS.BlockForms
 
         #region 帧绘制处理
 
-        protected void RequestRedraw()
+        public void RequestRedraw()
         {
-            _requestRedraw = true;
-            ParentContainer?.RequestRedraw();
+            IsRequestRedraw = true;
+            GenericParentContainer?.RequestRedraw();
         }
 
-        public virtual async Task<BlockFrame> GetDrawResultAsync()
+        public virtual DrawResult GetDrawResult()
         {
-            if (_requestRedraw || _drawCache is null)
+            if (IsRequestRedraw || _drawCache is null)
             {
                 if (_drawCache is IDisposable disposable)
                     disposable.Dispose();
 
-                _drawCache = await Task.Run(() => Drawing());
-                _requestRedraw = false;
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                _drawCache = Drawing();
+                stopwatch.Stop();
+
+                IsRequestRedraw = false;
+                return new(this, _drawCache, true, stopwatch.Elapsed);
             }
 
-            return _drawCache;
+            return new(this, _drawCache, false, TimeSpan.Zero);
         }
 
         protected virtual BlockFrame Drawing()

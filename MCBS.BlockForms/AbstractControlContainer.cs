@@ -6,7 +6,11 @@ using MCBS.UI;
 using MCBS.UI.Extensions;
 using QuanLib.Core;
 using QuanLib.Core.Events;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -155,34 +159,34 @@ namespace MCBS.BlockForms
             base.HandleAfterFrame(e);
         }
 
-        public override async Task<BlockFrame> GetDrawResultAsync()
+        public override DrawResult GetDrawResult()
         {
-            Task<BlockFrame> baseTask = base.GetDrawResultAsync();
+            Task<DrawResult> drawingTask = Task.Run(() => base.GetDrawResult());
+            ConcurrentBag<DrawResult> childDrawResults = [];
+            IEnumerable<TControl> ChildControls =
+                GetChildControls()
+                .Where(w =>
+                w.Visible &&
+                w.ClientSize.Width > 0 &&
+                w.ClientSize.Height > 0);
 
-            List<IControl> childControls = new();
-            List<Task<BlockFrame>> childTasks = new();
-            foreach (var control in GetChildControls())
+            Parallel.ForEach(ChildControls, control => childDrawResults.Add(control.GetDrawResult()));
+            DrawResult drawResult = drawingTask.Result;
+
+            if (!drawResult.IsRedraw && !childDrawResults.Where(w => w.IsRedraw).Any())
+                return drawResult;
+
+            foreach (var control in ChildControls)
             {
-                if (control.Visible && control.ClientSize.Width > 0 && control.ClientSize.Height > 0)
-                {
-                    childControls.Add(control);
-                    childTasks.Add(control.GetDrawResultAsync());
-                }
+                DrawResult? drawResult1 = childDrawResults.FirstOrDefault(f => f.Control == control);
+                if (drawResult1 is null)
+                    continue;
+
+                drawResult.BlockFrame.Overwrite(drawResult1.BlockFrame, drawResult1.Control.ClientSize, drawResult1.Control.GetDrawingLocation(), drawResult1.Control.OffsetPosition);
+                drawResult.BlockFrame.DrawBorder(drawResult1.Control, drawResult1.Control.GetDrawingLocation());
             }
 
-            BlockFrame baseFrame = await baseTask;
-            BlockFrame[] childFrames = await Task.WhenAll(childTasks);
-
-            await Task.Run(() =>
-            {
-                Foreach.Start(childControls, childFrames, (control, frame) =>
-                {
-                    baseFrame.Overwrite(frame, control.ClientSize, control.GetDrawingLocation(), control.OffsetPosition);
-                    baseFrame.DrawBorder(control, control.GetDrawingLocation());
-                });
-            });
-
-            return baseFrame;
+            return drawResult;
         }
     }
 }

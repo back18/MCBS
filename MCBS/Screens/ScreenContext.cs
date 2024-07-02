@@ -19,6 +19,9 @@ using MCBS.UI.Extensions;
 using QuanLib.IO.Extensions;
 using MCBS.Drawing.Extensions;
 using MCBS.Drawing;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using QuanLib.Game;
 
 namespace MCBS.Screens
 {
@@ -183,24 +186,26 @@ namespace MCBS.Screens
 
         public async Task HandleFrameDrawingAsync()
         {
-            HashBlockFrame baseFrame = new(Screen.Width, Screen.Height, ScreenOutputHandler.ScreenDefaultBlock);
-            BlockFrame formFrame = await ScreenView.GetDrawResultAsync();
-            baseFrame.Overwrite(formFrame, ScreenView.ClientSize, ScreenView.ClientLocation, ScreenView.OffsetPosition);
-            foreach (var cursorContext in _activeCursors)
+            await Task.Run(() => HandleFrameDrawing());
+
+            void HandleFrameDrawing()
             {
-                if (cursorContext.ScreenContextOf == this)
+                DrawResult drawResult = ScreenView.GetDrawResult();
+                BlockFrame blockFrame = drawResult.BlockFrame.Clone();
+
+                foreach (var cursorContext in _activeCursors)
                 {
+                    if (cursorContext.ScreenContextOf != this)
+                        continue;
+
                     Point position = cursorContext.NewInputData.CursorPosition;
 
                     foreach (HoverControl hoverControl in cursorContext.HoverControls.Values)
                     {
-                        BlockFrame hoverFrame = await hoverControl.Control.GetDrawResultAsync();
-                        if (hoverFrame is not null)
-                        {
-                            Point offset = hoverControl.OffsetPosition;
-                            baseFrame.Overwrite(hoverFrame, hoverControl.Control.ClientSize, new(position.X - offset.X, position.Y - offset.Y));
-                            baseFrame.DrawBorder(hoverControl.Control, position, hoverControl.OffsetPosition);
-                        }
+                        BlockFrame hoverFrame = hoverControl.Control.GetDrawResult().BlockFrame;
+                        Point offset = hoverControl.OffsetPosition;
+                        blockFrame.Overwrite(hoverFrame, hoverControl.Control.ClientSize, new(position.X - offset.X, position.Y - offset.Y));
+                        blockFrame.DrawBorder(hoverControl.Control, position, hoverControl.OffsetPosition);
                     }
 
                     if (cursorContext.Visible)
@@ -208,11 +213,12 @@ namespace MCBS.Screens
                         if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursorStyle))
                             cursorStyle = SR.CursorStyleManager[CursorStyleType.Default];
                         Point offset = cursorStyle.Offset;
-                        baseFrame.Overwrite(cursorStyle.BlockFrame, new(position.X - offset.X, position.Y - offset.Y));
+                        blockFrame.Overwrite(cursorStyle.BlockFrame, new(position.X - offset.X, position.Y - offset.Y));
                     }
                 }
+
+                _frame = blockFrame;
             }
-            _frame = baseFrame;
         }
 
         public async Task HandleScreenOutputAsync()
