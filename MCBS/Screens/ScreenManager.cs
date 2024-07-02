@@ -134,7 +134,7 @@ namespace MCBS.Screens
         public void HandleAllFrameDrawing()
         {
             List<Task> tasks = new();
-            foreach (var screenContext in Items.Values)
+            foreach (var screenContext in Items.Values.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
                 tasks.Add(screenContext.HandleFrameDrawingAsync());
             Task.WaitAll(tasks.ToArray());
         }
@@ -142,7 +142,7 @@ namespace MCBS.Screens
         public async Task HandleAllScreenOutputAsync()
         {
             List<Task> tasks = new();
-            foreach (var screenContext in Items.Values)
+            foreach (var screenContext in Items.Values.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
                 tasks.Add(screenContext.HandleScreenOutputAsync());
             await Task.WhenAll(tasks);
         }
