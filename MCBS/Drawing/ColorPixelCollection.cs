@@ -98,15 +98,16 @@ namespace MCBS.Drawing
             _image.Mutate(ctx => ctx.Fill(Color.FromPixel(pixel)));
         }
 
-        public IDictionary<Point, TPixel> GetAllPixel()
+        public ScreenPixel<TPixel>[] GetAllPixel()
         {
             TPixel[] pixels = new TPixel[_image.Width * _image.Height];
             Span<TPixel> span = new(pixels);
             _image.CopyPixelDataTo(span);
             PositionEnumerable positions = new(_image.Width, _image.Height);
+            ScreenPixel<TPixel>[] result = new ScreenPixel<TPixel>[Count];
+            int index = 0;
 
-            Dictionary<Point, TPixel> result = new();
-            Foreach.Start(positions, pixels, (position, pixel) => result.Add(position, pixel));
+            Foreach.Start(positions, pixels, (position, pixel) => result[index++] = new(position, pixel));
 
             return result;
         }

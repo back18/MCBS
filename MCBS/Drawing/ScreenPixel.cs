@@ -7,18 +7,10 @@ using System.Threading.Tasks;
 
 namespace MCBS.Drawing
 {
-    public readonly struct ScreenPixel
+    public readonly struct ScreenPixel<T>(Point position, T pixel)
     {
-        public ScreenPixel(Point position, string blockId)
-        {
-            ArgumentNullException.ThrowIfNull(blockId, nameof(blockId));
+        public readonly Point Position = position;
 
-            Position = position;
-            BlockId = blockId;
-        }
-
-        public readonly Point Position;
-
-        public readonly string BlockId;
+        public readonly T Pixel = pixel;
     }
 }

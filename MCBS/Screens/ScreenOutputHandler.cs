@@ -43,26 +43,24 @@ namespace MCBS.Screens
         {
             ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
 
-            IDictionary<Point, string> pixels = GetDifferencesPixels(newFrame);
-            List<WorldBlock> blocks = ToSetBlockArguments(pixels, offset);
+            ScreenPixel<string>[] pixels = GetDifferencesPixels(newFrame);
+            WorldBlock[] blocks = ToSetBlockArguments(pixels, offset);
             _buffers[offset] = newFrame;
-            if (blocks.Count > 0)
-            {
+
+            if (blocks.Length > 0)
                 MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
-            }
         }
 
         public async Task HandleOutputAsync(BlockFrame newFrame, int offset = 0)
         {
             ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
 
-            IDictionary<Point, string> pixels = GetDifferencesPixels(newFrame);
-            List<WorldBlock> blocks = ToSetBlockArguments(pixels, offset);
+            ScreenPixel<string>[] pixels = GetDifferencesPixels(newFrame);
+            WorldBlock[] blocks = ToSetBlockArguments(pixels, offset);
             _buffers[offset] = newFrame;
-            if (blocks.Count > 0)
-            {
+
+            if (blocks.Length > 0)
                 await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
-            }
         }
 
         public void UpdateBuffer()
@@ -151,7 +149,7 @@ namespace MCBS.Screens
             return FillBlock(AIR_BLOCK, offset, false);
         }
 
-        private IDictionary<Point, string> GetDifferencesPixels(BlockFrame newFrame, int offset = 0)
+        private ScreenPixel<string>[] GetDifferencesPixels(BlockFrame newFrame, int offset = 0)
         {
             ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
             if (newFrame.Width != _owner.Screen.Width || newFrame.Height != _owner.Screen.Height)
@@ -159,18 +157,23 @@ namespace MCBS.Screens
 
             if (_buffers.TryGetValue(offset, out var blockFrame))
                 return BlockFrame.GetDifferencesPixel(blockFrame, newFrame);
-
-            return newFrame.GetAllPixel();
+            else
+                return newFrame.GetAllPixel();
         }
 
-        private List<WorldBlock> ToSetBlockArguments(IDictionary<Point, string> pixels, int offset = 0)
+        private WorldBlock[] ToSetBlockArguments(ScreenPixel<string>[] pixels, int offset = 0)
         {
             ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
-            List<WorldBlock> result = new(pixels.Count);
+            WorldBlock[] result = new WorldBlock[pixels.Length];
             Screen screen = _owner.Screen;
-            foreach (var pixel in pixels)
-                result.Add(new(screen.ScreenPos2WorldPos(pixel.Key, offset), pixel.Value));
+
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                ScreenPixel<string> pixel = pixels[i];
+                result[i] = new(screen.ScreenPos2WorldPos(pixel.Position, offset), pixel.Pixel);
+            }
+
             return result;
         }
     }

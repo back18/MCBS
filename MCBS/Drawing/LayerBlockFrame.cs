@@ -41,12 +41,13 @@ namespace MCBS.Drawing
             throw new NotSupportedException();
         }
 
-        public override IDictionary<Point, string> GetAllPixel()
+        public override ScreenPixel<string>[] GetAllPixel()
         {
             PositionEnumerable positions = new(Width, Height);
+            ScreenPixel<string>[] result = new ScreenPixel<string>[Count];
+            int index = 0;
 
-            Dictionary<Point, string> result = new();
-            Foreach.Start(positions, this, (position, pixel) => result.Add(position, pixel));
+            Foreach.Start(positions, this, (position, pixel) => result[index++] = new(position, pixel));
 
             return result;
         }

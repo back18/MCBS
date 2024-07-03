@@ -27,7 +27,7 @@ namespace MCBS.Drawing
 
         public virtual string TransparentPixel => string.Empty;
 
-        public static IDictionary<Point, string> GetDifferencesPixel(BlockFrame blockFrame1, BlockFrame blockFrame2)
+        public static ScreenPixel<string>[] GetDifferencesPixel(BlockFrame blockFrame1, BlockFrame blockFrame2)
         {
             ArgumentNullException.ThrowIfNull(blockFrame1, nameof(blockFrame1));
             ArgumentNullException.ThrowIfNull(blockFrame2, nameof(blockFrame2));
@@ -36,14 +36,14 @@ namespace MCBS.Drawing
 
             PositionEnumerable positions = new(blockFrame1.Width, blockFrame1.Height);
 
-            Dictionary<Point, string> result = new();
+            List<ScreenPixel<string>> result = [];
             Foreach.Start(positions, blockFrame1, blockFrame2, (position, pixel1, pixel2) =>
             {
                 if (pixel1 != pixel2)
-                    result.Add(position, pixel2);
+                    result.Add(new(position, pixel2));
             });
 
-            return result;
+            return result.ToArray();
         }
 
         public virtual OverwriteContext Overwrite(BlockFrame blockFrame, Size size, Point location, Point offset)
@@ -83,7 +83,7 @@ namespace MCBS.Drawing
 
         public abstract void Fill(string pixel);
 
-        public abstract IDictionary<Point, string> GetAllPixel();
+        public abstract ScreenPixel<string>[] GetAllPixel();
 
         public abstract string[] ToArray();
 

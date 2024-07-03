@@ -104,12 +104,13 @@ namespace MCBS.Drawing
             new Span<int>(_hashs).Fill(pixel);
         }
 
-        public IDictionary<Point, int> GetAllPixel()
+        public ScreenPixel<int>[] GetAllPixel()
         {
             PositionEnumerable positions = new(Width, Height);
+            ScreenPixel<int>[] result = new ScreenPixel<int>[Count];
+            int index = 0;
 
-            Dictionary<Point, int> result = new();
-            Foreach.Start(positions, _hashs, (position, pixel) => result.Add(position, pixel));
+            Foreach.Start(positions, _hashs, (position, pixel) => result[index++] = new(position, pixel));
 
             return result;
         }

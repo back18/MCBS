@@ -50,12 +50,13 @@ namespace MCBS.Drawing
             Pixels.Fill(BlockConverter[pixel]);
         }
 
-        public override IDictionary<Point, string> GetAllPixel()
+        public override ScreenPixel<string>[] GetAllPixel()
         {
             PositionEnumerable positions = new(Width, Height);
+            ScreenPixel<string>[] result = new ScreenPixel<string>[Count];
+            int index = 0;
 
-            Dictionary<Point, string> result = new();
-            Foreach.Start(positions, Pixels, (position, pixel) => result.Add(position, BlockConverter[pixel]));
+            Foreach.Start(positions, Pixels, (position, pixel) => result[index++] = new(position, BlockConverter[pixel]));
 
             return result;
         }

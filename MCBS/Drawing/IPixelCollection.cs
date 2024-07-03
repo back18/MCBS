@@ -20,7 +20,7 @@ namespace MCBS.Drawing
 
         public void Fill(TPixel pixel);
 
-        public IDictionary<Point, TPixel> GetAllPixel();
+        public ScreenPixel<TPixel>[] GetAllPixel();
 
         public TPixel[] ToArray();
 
