@@ -28,6 +28,8 @@ namespace MCBS
 
         HandleFrameDrawing,
 
+        HandleFrameUpdate,
+
         HandleScreenOutput,
 
         HandleAfterFrame

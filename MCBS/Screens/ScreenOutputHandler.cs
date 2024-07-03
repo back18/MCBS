@@ -30,6 +30,7 @@ namespace MCBS.Screens
 
             _owner = owner;
             _buffers = [];
+            _blocks = [];
             ScreenDefaultBlock = "minecraft:smooth_stone";
         }
 
@@ -37,30 +38,41 @@ namespace MCBS.Screens
 
         private readonly Dictionary<int, BlockFrame> _buffers;
 
+        private readonly List<WorldBlock> _blocks;
+
         public string ScreenDefaultBlock { get; set; }
 
-        public void HandleOutput(BlockFrame newFrame, int offset = 0)
+        public void HandleOutput()
         {
-            ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
+            if (_blocks.Count == 0)
+                return;
 
-            ScreenPixel<string>[] pixels = GetDifferencesPixels(newFrame);
-            WorldBlock[] blocks = ToSetBlockArguments(pixels, offset);
-            _buffers[offset] = newFrame;
-
-            if (blocks.Length > 0)
-                MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
+            WorldBlock[] blocks = _blocks.ToArray();
+            _blocks.Clear();
+            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
         }
 
-        public async Task HandleOutputAsync(BlockFrame newFrame, int offset = 0)
+        public async Task HandleOutputAsync()
         {
-            ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
+            if (_blocks.Count == 0)
+                return;
 
+            WorldBlock[] blocks = _blocks.ToArray();
+            _blocks.Clear();
+            await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
+        }
+
+        public void HandleFrameUpdate(BlockFrame newFrame, int offset = 0)
+        {
             ScreenPixel<string>[] pixels = GetDifferencesPixels(newFrame);
             WorldBlock[] blocks = ToSetBlockArguments(pixels, offset);
+            _blocks.AddRange(blocks);
             _buffers[offset] = newFrame;
+        }
 
-            if (blocks.Length > 0)
-                await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
+        public async Task HandleFrameUpdateAsync(BlockFrame newFrame, int offset = 0)
+        {
+            await Task.Run(() => HandleFrameUpdate(newFrame, offset));
         }
 
         public void UpdateBuffer()
@@ -125,7 +137,8 @@ namespace MCBS.Screens
             Size screenSize = formRectangle.Size + new Size(32);
             HashBlockFrame baseFrame = new(screenSize, AIR_BLOCK);
             baseFrame.Overwrite(new HashBlockFrame(formRectangle.Size, blockId), formRectangle.Location);
-            HandleOutput(baseFrame, offset);
+            HandleFrameUpdate(baseFrame, offset);
+            HandleOutput();
             return true;
         }
 

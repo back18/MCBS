@@ -139,6 +139,14 @@ namespace MCBS.Screens
             Task.WaitAll(tasks.ToArray());
         }
 
+        public void HandleAllFrameUpdate()
+        {
+            List<Task> tasks = new();
+            foreach (var screenContext in Items.Values.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
+                tasks.Add(screenContext.HandleFrameUpdateAsync());
+            Task.WaitAll(tasks.ToArray());
+        }
+
         public async Task HandleAllScreenOutputAsync()
         {
             List<Task> tasks = new();

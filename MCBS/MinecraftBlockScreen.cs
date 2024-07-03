@@ -172,6 +172,7 @@ namespace MCBS
 
             HandleBeforeFrame();
             HandleFrameDrawing();
+            HandleFrameUpdate();
             HandleScreenOutput();
             HandleAfterFrame();
 
@@ -349,6 +350,11 @@ namespace MCBS
         private void HandleFrameDrawing()
         {
             HandleAndTimeing(ScreenManager.HandleAllFrameDrawing, SystemStage.HandleFrameDrawing);
+        }
+
+        private void HandleFrameUpdate()
+        {
+            HandleAndTimeing(ScreenManager.HandleAllFrameUpdate, SystemStage.HandleFrameUpdate);
         }
 
         private void HandleScreenOutput()

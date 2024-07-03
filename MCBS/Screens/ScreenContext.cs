@@ -221,11 +221,17 @@ namespace MCBS.Screens
             }
         }
 
-        public async Task HandleScreenOutputAsync()
+        public async Task HandleFrameUpdateAsync()
         {
             if (_frame is null)
                 return;
-            await ScreenOutputHandler.HandleOutputAsync(_frame);
+
+            await ScreenOutputHandler.HandleFrameUpdateAsync(_frame);
+        }
+
+        public async Task HandleScreenOutputAsync()
+        {
+            await ScreenOutputHandler.HandleOutputAsync();
         }
 
         public async Task HandleAfterFrameAsync()
