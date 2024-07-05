@@ -43,7 +43,7 @@ namespace MCBS.Cursor
             }
             else
             {
-                if (MinecraftBlockScreen.Instance.RightClickObjectiveManager.Query(PlayerName))
+                if (MinecraftBlockScreen.Instance.ScoreboardManager.IsRightClick(PlayerName))
                 {
                     isRightClick = true;
                     RightClickTime = now;

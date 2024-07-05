@@ -10,11 +10,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.RightClickObjective
+namespace MCBS.Objective
 {
-    public class RightClickObjectiveContext : ITickUpdatable
+    public class ScoreboardContext : ITickUpdatable
     {
-        public RightClickObjectiveContext(string playerName)
+        public ScoreboardContext(string playerName)
         {
             ArgumentException.ThrowIfNullOrEmpty(playerName, nameof(playerName));
 

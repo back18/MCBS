@@ -16,7 +16,7 @@ namespace MCBS
 
         InteractionScheduling,
 
-        RightClickObjectiveScheduling,
+        ScoreboardScheduling,
 
         ScreenBuildScheduling,
 

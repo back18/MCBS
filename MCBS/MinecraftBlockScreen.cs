@@ -16,7 +16,7 @@ using MCBS.Application;
 using MCBS.Forms;
 using MCBS.Interaction;
 using MCBS.Cursor;
-using MCBS.RightClickObjective;
+using MCBS.Objective;
 using MCBS.Screens.Building;
 using QuanLib.Minecraft.Command;
 using QuanLib.IO;
@@ -46,7 +46,7 @@ namespace MCBS
             FormManager = new();
             ScreenBuildManager = new();
             InteractionManager = new();
-            RightClickObjectiveManager = new();
+            ScoreboardManager = new();
             CursorManager = new();
             AppComponents = new(appComponents.ToDictionary(item => item.ID, item => item));
 
@@ -90,7 +90,7 @@ namespace MCBS
 
         public InteractionManager InteractionManager { get; }
 
-        public RightClickObjectiveManager RightClickObjectiveManager { get; }
+        public ScoreboardManager ScoreboardManager { get; }
 
         public ScreenBuildManager ScreenBuildManager { get; }
 
@@ -131,7 +131,7 @@ namespace MCBS
             TaskManager.Initialize();
             ScreenManager.Initialize();
             InteractionManager.Initialize();
-            RightClickObjectiveManager.Initialize();
+            ScoreboardManager.Initialize();
             FileWriteQueue.Start("FileWrite Thread");
 
             LOGGER.Info("MCBS初始化完成");
@@ -324,7 +324,7 @@ namespace MCBS
 
         private void RightClickObjectiveScheduling()
         {
-            HandleAndTimeing(RightClickObjectiveManager.OnTickUpdate, SystemStage.RightClickObjectiveScheduling);
+            HandleAndTimeing(ScoreboardManager.OnTickUpdate, SystemStage.ScoreboardScheduling);
         }
 
         private void ScreenBuildScheduling()

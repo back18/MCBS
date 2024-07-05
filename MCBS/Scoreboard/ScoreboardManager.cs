@@ -10,16 +10,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.RightClickObjective
+namespace MCBS.Objective
 {
-    public class RightClickObjectiveManager : ITickUpdatable
+    public class ScoreboardManager : ITickUpdatable
     {
-        public RightClickObjectiveManager()
+        public ScoreboardManager()
         {
             _items = new();
         }
 
-        private readonly Dictionary<string, RightClickObjectiveContext> _items;
+        private readonly Dictionary<string, ScoreboardContext> _items;
 
 
         public void Initialize()
@@ -35,13 +35,13 @@ namespace MCBS.RightClickObjective
             _items.Clear();
             foreach (var player in playerList.List)
             {
-                RightClickObjectiveContext context = new(player);
+                ScoreboardContext context = new(player);
                 context.OnTickUpdate(tick);
                 _items.Add(player, context);
             }
         }
 
-        public bool Query(string player)
+        public bool IsRightClick(string player)
         {
             ArgumentException.ThrowIfNullOrEmpty(player, nameof(player));
 
