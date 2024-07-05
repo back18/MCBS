@@ -22,6 +22,7 @@ using MCBS.Drawing;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using QuanLib.Game;
+using MCBS.Screens.Drawing;
 
 namespace MCBS.Screens
 {
@@ -40,6 +41,7 @@ namespace MCBS.Screens
             Screen = screen;
             ScreenView = form;
             ScreenInputHandler = new(this);
+            ScreenDrawingHandler =new(this);
             ScreenOutputHandler = new(this);
             IsRestarting = false;
 
@@ -52,7 +54,7 @@ namespace MCBS.Screens
                 new(ScreenState.Unload, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, GotoUnloadState)
             });
 
-            _frame = null;
+            _blockFrame = null;
             _activeCursors = new();
             _offlineCursors = new();
 
@@ -61,7 +63,7 @@ namespace MCBS.Screens
             _savePath = mcbsDataPathManager.McbsData_Screens.FullName.PathCombine(GUID + ".json");
         }
 
-        private BlockFrame? _frame;
+        private BlockFrame? _blockFrame;
 
         private readonly List<CursorContext> _activeCursors;
 
@@ -82,6 +84,8 @@ namespace MCBS.Screens
         public IRootForm RootForm => ScreenView.RootForm;
 
         public ScreenInputHandler ScreenInputHandler { get; }
+
+        public ScreenDrawingHandler ScreenDrawingHandler { get; }
 
         public ScreenOutputHandler ScreenOutputHandler { get; }
 
@@ -186,47 +190,15 @@ namespace MCBS.Screens
 
         public async Task HandleFrameDrawingAsync()
         {
-            await Task.Run(() => HandleFrameDrawing());
-
-            void HandleFrameDrawing()
-            {
-                DrawResult drawResult = ScreenView.GetDrawResult();
-                BlockFrame blockFrame = drawResult.BlockFrame.Clone();
-
-                foreach (var cursorContext in _activeCursors)
-                {
-                    if (cursorContext.ScreenContextOf != this)
-                        continue;
-
-                    Point position = cursorContext.NewInputData.CursorPosition;
-
-                    foreach (HoverControl hoverControl in cursorContext.HoverControls.Values)
-                    {
-                        BlockFrame hoverFrame = hoverControl.Control.GetDrawResult().BlockFrame;
-                        Point offset = hoverControl.OffsetPosition;
-                        blockFrame.Overwrite(hoverFrame, hoverControl.Control.ClientSize, new(position.X - offset.X, position.Y - offset.Y));
-                        blockFrame.DrawBorder(hoverControl.Control, position, hoverControl.OffsetPosition);
-                    }
-
-                    if (cursorContext.Visible)
-                    {
-                        if (!SR.CursorStyleManager.TryGetValue(cursorContext.StyleType, out var cursorStyle))
-                            cursorStyle = SR.CursorStyleManager[CursorStyleType.Default];
-                        Point offset = cursorStyle.Offset;
-                        blockFrame.Overwrite(cursorStyle.BlockFrame, new(position.X - offset.X, position.Y - offset.Y));
-                    }
-                }
-
-                _frame = blockFrame;
-            }
+            _blockFrame = await ScreenDrawingHandler.HandleFrameDrawingAsync();
         }
 
         public async Task HandleFrameUpdateAsync()
         {
-            if (_frame is null)
+            if (_blockFrame is null)
                 return;
 
-            await ScreenOutputHandler.HandleFrameUpdateAsync(_frame);
+            await ScreenOutputHandler.HandleFrameUpdateAsync(_blockFrame);
         }
 
         public async Task HandleScreenOutputAsync()
@@ -264,6 +236,11 @@ namespace MCBS.Screens
         public void StopSleep()
         {
             StateMachine.Submit(ScreenState.Active);
+        }
+
+        public CursorContext[] GetCursors()
+        {
+            return _activeCursors.ToArray();
         }
 
         public Screen GetSubScreen()
