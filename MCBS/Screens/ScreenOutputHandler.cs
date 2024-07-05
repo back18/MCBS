@@ -64,6 +64,9 @@ namespace MCBS.Screens
 
         public void HandleFrameUpdate(BlockFrame newFrame, int offset = 0)
         {
+            if (_buffers.TryGetValue(offset, out var oldFrame) && oldFrame == newFrame)
+                return;
+
             ScreenPixel<string>[] pixels = GetDifferencesPixels(newFrame);
             WorldBlock[] blocks = ToSetBlockArguments(pixels, offset);
             _blocks.AddRange(blocks);
