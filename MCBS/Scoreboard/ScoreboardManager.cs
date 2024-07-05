@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Objective
+namespace MCBS.Scoreboard
 {
     public class ScoreboardManager : ITickUpdatable
     {

@@ -16,7 +16,7 @@ using MCBS.Application;
 using MCBS.Forms;
 using MCBS.Interaction;
 using MCBS.Cursor;
-using MCBS.Objective;
+using MCBS.Scoreboard;
 using MCBS.Screens.Building;
 using QuanLib.Minecraft.Command;
 using QuanLib.IO;
@@ -154,7 +154,7 @@ namespace MCBS
                 CommandManager.SnbtCache.Clear();
 
                 InteractionScheduling();
-                RightClickObjectiveScheduling();
+                ScoreboardScheduling();
                 ScreenBuildScheduling();
                 HandleScreenInput();
                 HandleScreenEvent();
@@ -164,7 +164,7 @@ namespace MCBS
                 //TaskManager.AddTempTask(() =>
                 //{
                 //    InteractionScheduling();
-                //    RightClickObjectiveScheduling();
+                //    ScoreboardScheduling();
                 //    ScreenBuildScheduling();
                 //    HandleScreenInput();
                 //});
@@ -322,7 +322,7 @@ namespace MCBS
             HandleAndTimeing(InteractionManager.OnTickUpdate, SystemStage.InteractionScheduling);
         }
 
-        private void RightClickObjectiveScheduling()
+        private void ScoreboardScheduling()
         {
             HandleAndTimeing(ScoreboardManager.OnTickUpdate, SystemStage.ScoreboardScheduling);
         }
