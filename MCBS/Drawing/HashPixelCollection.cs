@@ -57,7 +57,7 @@ namespace MCBS.Drawing
             ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), new(size.Width, size.Height), location, offset);
-            if (location == Point.Empty && size.Width == Width && size.Height == Height)
+            if (location == Point.Empty && offset == Point.Empty && pixels.Width == Width && pixels.Height == Height)
             {
                 if (pixels.SupportTransparent)
                 {
