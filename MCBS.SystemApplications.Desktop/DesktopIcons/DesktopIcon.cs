@@ -1,5 +1,4 @@
-﻿using MCBS.Application;
-using MCBS.BlockForms;
+﻿using MCBS.BlockForms;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using MCBS.Screens;
@@ -12,16 +11,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.SystemApplications.Desktop
+namespace MCBS.SystemApplications.Desktop.DesktopIcons
 {
-    public class DesktopIcon : ContainerControl<Control>
+    public abstract class DesktopIcon : ContainerControl<Control>
     {
-        public DesktopIcon(ApplicationManifest applicationManifest)
+        public DesktopIcon()
         {
-            ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
-
-            _applicationManifest = applicationManifest;
-
             Icon_PictureBox = new();
             Name_Label = new();
 
@@ -32,11 +27,17 @@ namespace MCBS.SystemApplications.Desktop
             Skin.SetBackgroundColor(BlockManager.Concrete.Blue, ControlState.Selected, ControlState.Hover | ControlState.Selected);
         }
 
-        private readonly ApplicationManifest _applicationManifest;
-
         private readonly PictureBox<Rgba32> Icon_PictureBox;
 
         private readonly Label Name_Label;
+
+        public abstract IconIdentifier GetIconIdentifier();
+
+        internal abstract string GetDisplayName();
+
+        internal abstract Image<Rgba32> GetIncnImage();
+
+        internal abstract void OpenIcon();
 
         public override void Initialize()
         {
@@ -46,10 +47,10 @@ namespace MCBS.SystemApplications.Desktop
             Icon_PictureBox.ClientLocation = new(3, 3);
             Icon_PictureBox.ClientSize = new(16, 16);
             Icon_PictureBox.DefaultResizeOptions.Size = Icon_PictureBox.ClientSize;
-            Icon_PictureBox.SetImage(_applicationManifest.GetIcon());
+            Icon_PictureBox.SetImage(GetIncnImage());
 
             Name_Label.BorderWidth = 1;
-            Name_Label.Text = _applicationManifest.Name;
+            Name_Label.Text = GetDisplayName();
             Name_Label.Skin.SetAllBackgroundColor(BlockManager.Concrete.White);
         }
 
@@ -98,14 +99,6 @@ namespace MCBS.SystemApplications.Desktop
             base.OnRightClick(sender, e);
 
             IsSelected = !IsSelected;
-        }
-
-        protected override void OnDoubleRightClick(Control sender, CursorEventArgs e)
-        {
-            base.OnDoubleRightClick(sender, e);
-
-            MinecraftBlockScreen.Instance.ProcessManager.StartProcess(_applicationManifest, GetForm());
-            ParentContainer?.AsControlCollection<Control>()?.ClearSelecteds();
         }
     }
 }

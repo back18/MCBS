@@ -8,12 +8,10 @@
 
   <ItemGroup>
     <None Remove="McbsApplication.json" />
-    <None Remove="SystemResource\DefaultWallpaper.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="McbsApplication.json" />
-    <EmbeddedResource Include="SystemResource\DefaultWallpaper.jpg" />
   </ItemGroup>
 
   <ItemGroup>
