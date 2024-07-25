@@ -9,7 +9,11 @@
   <ItemGroup>
     <None Remove="SystemResource\Textures\Back.png" />
     <None Remove="SystemResource\Textures\Close.png" />
+    <None Remove="SystemResource\Textures\DriverIcon.png" />
     <None Remove="SystemResource\Textures\Expand.png" />
+    <None Remove="SystemResource\Textures\FileErrorIcon.png" />
+    <None Remove="SystemResource\Textures\FileIcon.png" />
+    <None Remove="SystemResource\Textures\FolderIcon.png" />
     <None Remove="SystemResource\Textures\Home.png" />
     <None Remove="SystemResource\Textures\Logo.png" />
     <None Remove="SystemResource\Textures\Maximize.png" />
@@ -30,7 +34,11 @@
   <ItemGroup>
     <EmbeddedResource Include="SystemResource\Textures\Back.png" />
     <EmbeddedResource Include="SystemResource\Textures\Close.png" />
+    <EmbeddedResource Include="SystemResource\Textures\DriverIcon.png" />
     <EmbeddedResource Include="SystemResource\Textures\Expand.png" />
+    <EmbeddedResource Include="SystemResource\Textures\FileErrorIcon.png" />
+    <EmbeddedResource Include="SystemResource\Textures\FileIcon.png" />
+    <EmbeddedResource Include="SystemResource\Textures\FolderIcon.png" />
     <EmbeddedResource Include="SystemResource\Textures\Home.png" />
     <EmbeddedResource Include="SystemResource\Textures\Logo.png" />
     <EmbeddedResource Include="SystemResource\Textures\Maximize.png" />
