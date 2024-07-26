@@ -3,9 +3,11 @@ using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Drawing;
 using MCBS.Events;
+using MCBS.Screens;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Game;
+using QuanLib.IO.Extensions;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -327,11 +329,34 @@ namespace MCBS.SystemApplications.Album
 
         private void SetAsWallpaper_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            foreach (var context in MinecraftBlockScreen.Instance.FormManager.Items.Values)
+            ScreenContext? screenContext = GetScreenContext() ?? throw new InvalidOperationException("无法获取屏幕上下文");
+            DirectoryInfo wallpapersDirectory = McbsPathManager.MCBS_Applications.CombineDirectory("System.Desktop", "ScreenData", screenContext.GUID.ToString(), "Wallpapers");
+            wallpapersDirectory.CreateIfNotExists();
+            string sourcePath = Path_TextBox.Text;
+            string destPath = wallpapersDirectory.CombineFile("Wallpaper" + Path.GetExtension(sourcePath)).FullName;
+
+            if (!File.Exists(sourcePath))
             {
-                //if (context.Form is DesktopForm desktop)
-                //    desktop.SetAsWallpaper(ScalablePictureBox.ImageFrame.Image);
-                //TODO: 需要进一步完善应用程序依赖机制
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this,
+                    "警告",
+                    $"找不到源文件\"{sourcePath}\"",
+                    MessageBoxButtons.OK);
+                return;
+            }
+
+            try
+            {
+                string[] wallpapers = wallpapersDirectory.GetFilePaths();
+                foreach (string wallpaper in wallpapers)
+                    File.Delete(wallpaper);
+                File.Copy(sourcePath, destPath);
+            }
+            catch (Exception ex)
+            {
+                _ = DialogBoxHelper.OpenMessageBoxAsync(this,
+                    "警告",
+                    $"桌面壁纸设置失败，错误信息：\n{ex.GetType().Name}: {ex.Message}",
+                    MessageBoxButtons.OK);
             }
         }
 
