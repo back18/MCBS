@@ -15,6 +15,7 @@ using MCBS.SystemApplications.Desktop.DesktopIcons;
 using MCBS.BlockForms.DialogBox;
 using System.ComponentModel;
 using QuanLib.Core.Events;
+using System.Xml.Linq;
 
 namespace MCBS.SystemApplications.Desktop
 {
@@ -35,6 +36,7 @@ namespace MCBS.SystemApplications.Desktop
             Refresh_Button = new();
             Paste_Button = new();
             NewBuilt_Button = new();
+            EditMode_Switch = new();
             NewBuiltMenu_ListMenuBox = new();
             NewFolder_Button = new();
             NewTextDocument_Button = new();
@@ -63,6 +65,8 @@ namespace MCBS.SystemApplications.Desktop
         private readonly Button Paste_Button;
 
         private readonly Button NewBuilt_Button;
+
+        private readonly Switch EditMode_Switch;
 
         private readonly ListMenuBox<Control> NewBuiltMenu_ListMenuBox;
 
@@ -100,7 +104,7 @@ namespace MCBS.SystemApplications.Desktop
             IconTable_ScrollablePanel.DoubleRightClick += IconTable_ScrollablePanel_DoubleRightClick;
             IconTable_ScrollablePanel.Resize += IconTable_ScrollablePanel_Resize;
 
-            DesktopMenu_ListMenuBox.ClientSize = new(68, 18 * 3 + 4);
+            DesktopMenu_ListMenuBox.ClientSize = new(68, 18 * 4 + 5);
             DesktopMenu_ListMenuBox.MaxDisplayPriority = int.MaxValue;
             DesktopMenu_ListMenuBox.DisplayPriority = int.MaxValue - 1;
             DesktopMenu_ListMenuBox.Spacing = 1;
@@ -123,6 +127,12 @@ namespace MCBS.SystemApplications.Desktop
             NewBuilt_Button.RightClick += NewBuilt_Button_RightClick;
             NewBuilt_Button.RightClick += CloseDesktopMenu_RightClick;
             DesktopMenu_ListMenuBox.AddedChildControlAndLayout(NewBuilt_Button);
+
+            EditMode_Switch.Text = "编辑模式";
+            EditMode_Switch.ClientSize = new(64, 16);
+            EditMode_Switch.RightClick += EditMode_Switch_RightClick;
+            EditMode_Switch.RightClick += CloseDesktopMenu_RightClick;
+            DesktopMenu_ListMenuBox.AddedChildControlAndLayout(EditMode_Switch);
 
             NewBuiltMenu_ListMenuBox.ClientSize = new(68, 18 * 2 + 3);
             NewBuiltMenu_ListMenuBox.MaxDisplayPriority = int.MaxValue;
@@ -203,8 +213,103 @@ namespace MCBS.SystemApplications.Desktop
         private void IconTable_ScrollablePanel_RightClick(Control sender, CursorEventArgs e)
         {
             Point iconPos = ClientPos2IconPos(e.Position);
-            if (!_desktopIconTable.ContainsIcon(iconPos))
+            if (!_desktopIconTable.TryGetIcon(iconPos, out var desktopIcon))
+            {
                 IconTable_ScrollablePanel.ChildControls.ClearSelecteds();
+
+                DesktopIcon? hoverIcon = e.CursorContext.HoverControls.Keys.OfType<DesktopIcon>().FirstOrDefault();
+                if (hoverIcon is not null)
+                {
+                    if (IconTable_ScrollablePanel.ChildControls.Contains(hoverIcon))
+                    {
+                        e.CursorContext.HoverControls.TryRemove(hoverIcon, out _);
+                        Point hoverIconPos = ClientPos2IconPos(hoverIcon.ClientLocation);
+                        _desktopIconTable.MoveIcon(hoverIconPos, iconPos);
+                    }
+                    else
+                    {
+                        IconIdentifier hoverIconIdentifier = hoverIcon.GetIconIdentifier();
+                        Func<string, bool> existsHandler;
+                        Action<string, string> moveHandler;
+
+                        switch (hoverIconIdentifier.Type)
+                        {
+                            case DesktopFileIcon.ICON_TYPE:
+                                existsHandler = File.Exists;
+                                moveHandler = File.Move;
+                                break;
+                            case DesktopDirectoryIcon.ICON_TYPE:
+                                existsHandler = Directory.Exists;
+                                moveHandler = Directory.Move;
+                                break;
+                            case DesktopAppIcon.ICON_TYPE:
+                                e.CursorContext.HoverControls.TryRemove(hoverIcon, out _);
+                                _ = DialogBoxHelper.OpenMessageBoxAsync(this,
+                                    "警告",
+                                    $"无法跨屏移动内置应用程序\"{hoverIconIdentifier.Value}\"",
+                                    MessageBoxButtons.OK);
+                                return;
+                            default:
+                                throw new InvalidEnumArgumentException();
+                        }
+
+                        if (hoverIcon.GetForm() is not DesktopForm desktopForm)
+                            return;
+
+                        string sourceDesktopPath = desktopForm.GetScreenDataDirectory().CombineDirectory("Desktop").FullName;
+                        string destDesktopPath = GetScreenDataDirectory().CombineDirectory("Desktop").FullName;
+                        string sourcePath = Path.Combine(sourceDesktopPath, hoverIconIdentifier.Value);
+                        string destPath = Path.Combine(destDesktopPath, hoverIconIdentifier.Value);
+
+                        if (existsHandler.Invoke(destPath))
+                        {
+                            e.CursorContext.HoverControls.TryRemove(hoverIcon, out _);
+                            _ = DialogBoxHelper.OpenMessageBoxAsync(this,
+                                "警告",
+                                $"目标桌面已存在同名文件或目录\"{hoverIconIdentifier.Value}\"",
+                                MessageBoxButtons.OK);
+                            return;
+                        }
+
+                        if (!Directory.Exists(destDesktopPath))
+                            Directory.CreateDirectory(destDesktopPath);
+
+                        try
+                        {
+                            moveHandler.Invoke(sourcePath, destPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            e.CursorContext.HoverControls.TryRemove(hoverIcon, out _);
+                            _ = DialogBoxHelper.OpenMessageBoxAsync(this,
+                                "警告",
+                                $"图标移动失败，错误信息：\n{ex.GetType().Name}: {ex.Message}",
+                                MessageBoxButtons.OK);
+                            return;
+                        }
+
+                        Point hoverIconPos = ClientPos2IconPos(hoverIcon.ClientLocation);
+
+                        e.CursorContext.HoverControls.TryRemove(hoverIcon, out _);
+                        desktopForm._desktopIconTable.RemoveIcon(hoverIconPos);
+                        desktopForm.IconTable_ScrollablePanel.ChildControls.Remove(hoverIcon);
+                        _desktopIconTable.CreateIcon(iconPos, destDesktopPath, hoverIconIdentifier);
+                        IconTable_ScrollablePanel.ChildControls.Add(_desktopIconTable.GetIcon(iconPos));
+                    }
+                }
+            }
+            else if (EditMode_Switch.IsSelected)
+            {
+                if (e.CursorContext.HoverControls.Keys.OfType<DesktopIcon>().Any())
+                    return;
+
+                desktopIcon.IsSelected = true;
+                e.CursorContext.HoverControls.TryAdd(desktopIcon, out _);
+            }
+            else
+            {
+                desktopIcon.IsSelected = !desktopIcon.IsSelected;
+            }
         }
 
         private void IconTable_ScrollablePanel_DoubleRightClick(Control sender, CursorEventArgs e)
@@ -213,6 +318,10 @@ namespace MCBS.SystemApplications.Desktop
             {
                 OpenMenu(e.Position, DesktopMenu_ListMenuBox);
                 IconTable_ScrollablePanel.ChildControls.ClearSelecteds();
+            }
+            else if (EditMode_Switch.IsSelected)
+            {
+                return;
             }
             else if (desktopIcon.IsSelected)
             {
@@ -238,6 +347,11 @@ namespace MCBS.SystemApplications.Desktop
         private void NewBuilt_Button_RightClick(Control sender, CursorEventArgs e)
         {
             OpenMenu(_menuOpenPosition, NewBuiltMenu_ListMenuBox);
+        }
+
+        private void EditMode_Switch_RightClick(Control sender, CursorEventArgs e)
+        {
+
         }
 
         private void NewFolder_Button_RightClick(Control sender, CursorEventArgs e)

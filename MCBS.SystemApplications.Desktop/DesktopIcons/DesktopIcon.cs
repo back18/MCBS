@@ -93,12 +93,5 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
 
             e.CursorContext.HoverControls.TryRemove(Name_Label, out _);
         }
-
-        protected override void OnRightClick(Control sender, CursorEventArgs e)
-        {
-            base.OnRightClick(sender, e);
-
-            IsSelected = !IsSelected;
-        }
     }
 }
