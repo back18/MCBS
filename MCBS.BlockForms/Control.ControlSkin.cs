@@ -236,7 +236,6 @@ namespace MCBS.BlockForms
 				get => _BackgroundTexture;
 				set
 				{
-					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!Texture.Equals(_BackgroundTexture, value))
 					{
 						_BackgroundTexture = value;
@@ -267,7 +266,6 @@ namespace MCBS.BlockForms
 				get => _BackgroundTexture_Hover;
 				set
 				{
-					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!Texture.Equals(_BackgroundTexture_Hover, value))
 					{
 						_BackgroundTexture_Hover = value;
@@ -283,7 +281,6 @@ namespace MCBS.BlockForms
 				get => _BackgroundTexture_Hover_Selected;
 				set
 				{
-					ArgumentNullException.ThrowIfNull(value, nameof(value));
 					if (!Texture.Equals(_BackgroundTexture_Hover_Selected, value))
 					{
 						_BackgroundTexture_Hover_Selected = value;
