@@ -50,6 +50,8 @@ namespace MCBS.SystemApplications.Desktop
             _desktopIconTable = new();
         }
 
+        private static readonly HashSet<string> _wallpaperExtensions = [".jpg", ".jpeg", ".png", ".bmp", ".webp"];
+
         private Point _menuOpenPosition;
 
         private Task? _iconDataSaveTask;
@@ -194,6 +196,7 @@ namespace MCBS.SystemApplications.Desktop
             IconMeun_ListMenuBox.AddedChildControlAndLayout(Delete_Button);
 
             UpdateDesktopIconTable();
+            ReloadWallpaper();
         }
 
         private void IconTable_ScrollablePanel_Resize(Control sender, ValueChangedEventArgs<Size> e)
@@ -337,6 +340,7 @@ namespace MCBS.SystemApplications.Desktop
         private void Refresh_Button_RightClick(Control sender, CursorEventArgs e)
         {
             UpdateDesktopIconTable();
+            ReloadWallpaper();
         }
 
         private void Paste_Button_RightClick(Control sender, CursorEventArgs e)
@@ -612,6 +616,44 @@ namespace MCBS.SystemApplications.Desktop
                     if (_desktopIconTable.TryGetIcon(new(x, y), out var desktopIcon))
                         IconTable_ScrollablePanel.ChildControls.Add(desktopIcon);
                 }
+        }
+
+        private void ReloadWallpaper()
+        {
+            string? wallpaperPath = GetWallpaperPath();
+            if (wallpaperPath is not null)
+            {
+                try
+                {
+                    Image<Rgba32> wallpaper = Image.Load<Rgba32>(wallpaperPath);
+                    Skin.SetAllBackgroundTexture(wallpaper);
+                    return;
+                }
+                catch
+                {
+
+                }
+            }
+
+            Skin.SetAllBackgroundTexture(null);
+        }
+
+        private string? GetWallpaperPath()
+        {
+            DirectoryInfo wallpapersDirectory = GetScreenDataDirectory().CombineDirectory("Wallpapers");
+            if (!wallpapersDirectory.Exists)
+                return null;
+
+            string[] files = wallpapersDirectory.GetFilePaths();
+            foreach (string file in files)
+            {
+                string name = Path.GetFileNameWithoutExtension(file);
+                string extension = Path.GetExtension(file);
+                if (name == "Wallpaper" && _wallpaperExtensions.Contains(extension))
+                    return file;
+            }
+
+            return null;
         }
 
         private void SaveIconData()
