@@ -53,6 +53,7 @@ namespace MCBS.BlockForms
 
             ChildControls.Clear();
             ChildControls.Add(activePage);
+            activePage.Size = ClientSize;
         }
     }
 }
