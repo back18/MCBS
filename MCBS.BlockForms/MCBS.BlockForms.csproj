@@ -14,6 +14,7 @@
     <None Remove="SystemResource\Textures\FileErrorIcon.png" />
     <None Remove="SystemResource\Textures\FileIcon.png" />
     <None Remove="SystemResource\Textures\FolderIcon.png" />
+    <None Remove="SystemResource\Textures\HDD.png" />
     <None Remove="SystemResource\Textures\Home.png" />
     <None Remove="SystemResource\Textures\Logo.png" />
     <None Remove="SystemResource\Textures\Maximize.png" />
@@ -39,6 +40,7 @@
     <EmbeddedResource Include="SystemResource\Textures\FileErrorIcon.png" />
     <EmbeddedResource Include="SystemResource\Textures\FileIcon.png" />
     <EmbeddedResource Include="SystemResource\Textures\FolderIcon.png" />
+    <EmbeddedResource Include="SystemResource\Textures\HDD.png" />
     <EmbeddedResource Include="SystemResource\Textures\Home.png" />
     <EmbeddedResource Include="SystemResource\Textures\Logo.png" />
     <EmbeddedResource Include="SystemResource\Textures\Maximize.png" />
