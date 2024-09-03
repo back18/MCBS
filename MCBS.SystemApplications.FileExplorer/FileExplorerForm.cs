@@ -1,35 +1,31 @@
-﻿using SixLabors.ImageSharp;
+﻿using MCBS.BlockForms;
+using MCBS.BlockForms.DialogBox;
+using MCBS.BlockForms.FileSystem;
+using MCBS.BlockForms.Utility;
+using MCBS.Config;
+using MCBS.Events;
+using QuanLib.Core.Events;
+using QuanLib.Game;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.BlockForms.DialogBox;
-using MCBS.BlockForms.SimpleFileSystem;
-using MCBS.BlockForms;
-using MCBS.BlockForms.Utility;
-using MCBS.Config;
-using QuanLib.Core.Events;
-using MCBS.Events;
-using QuanLib.Minecraft.Blocks;
-using QuanLib.Game;
 
 namespace MCBS.SystemApplications.FileExplorer
 {
     public class FileExplorerForm : WindowForm
     {
-        public FileExplorerForm(string rootDirectory, string? path = null)
+        public FileExplorerForm(string? open)
         {
-            _open = path;
+            _open = open;
 
             Backward_Button = new();
             Forward_Button = new();
-            OK_Button = new();
-            Cancel_Button = new();
-            Clear_Button = new();
+            Menu_Button = new();
             Path_TextBox = new();
-            Search_TextBox = new();
-            SimpleFilesBox = new(rootDirectory);
+            FileBrowser_Box = new();
         }
 
         private readonly string? _open;
@@ -38,95 +34,48 @@ namespace MCBS.SystemApplications.FileExplorer
 
         private readonly Button Forward_Button;
 
-        private readonly Button OK_Button;
-
-        private readonly Button Cancel_Button;
-
-        private readonly Button Clear_Button;
+        private readonly Button Menu_Button;
 
         private readonly TextBox Path_TextBox;
 
-        private readonly TextBox Search_TextBox;
-
-        private readonly SimpleFilesBox SimpleFilesBox;
+        private readonly FileBrowserBox FileBrowser_Box;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            Home_PagePanel.PageSize = new(178, 85);
-            Size size1 = Home_PagePanel.ClientSize;
-            Size size2 = Home_PagePanel.ClientSize;
-            if (size1.Width < Home_PagePanel.PageSize.Width)
-                size1.Width = Home_PagePanel.PageSize.Width;
-            if (size1.Height < Home_PagePanel.PageSize.Height)
-                size1.Height = Home_PagePanel.PageSize.Height;
-            Home_PagePanel.ClientSize = size1;
-
-            int spacing = 2;
-            int start1 = 2;
-            int start2 = Home_PagePanel.ClientSize.Height - Cancel_Button.Height - 2;
-
             Home_PagePanel.ChildControls.Add(Backward_Button);
             Backward_Button.Text = "←";
             Backward_Button.ClientSize = new(16, 16);
-            Backward_Button.LayoutRight(Home_PagePanel, start1, spacing);
+            Backward_Button.LayoutRight(Home_PagePanel, 1, 1);
             Backward_Button.RightClick += Backward_Button_RightClick;
 
             Home_PagePanel.ChildControls.Add(Forward_Button);
             Forward_Button.Text = "→";
             Forward_Button.ClientSize = new(16, 16);
-            Forward_Button.LayoutRight(Home_PagePanel, Backward_Button, spacing);
+            Forward_Button.LayoutRight(Home_PagePanel, Backward_Button, 1);
             Forward_Button.RightClick += Forward_Button_RightClick;
 
+            Home_PagePanel.ChildControls.Add(Menu_Button);
+            Menu_Button.ClientSize = new(16, 16);
+            Menu_Button.RequestDrawTransparencyTexture = false;
+            Menu_Button.LayoutRight(Home_PagePanel, Forward_Button, 1);
+            Menu_Button.Skin.SetAllBackgroundTexture(TextureManager.Instance["Menu"]);
+            Menu_Button.RightClick += Menu_Button_RightClick;
+
             Home_PagePanel.ChildControls.Add(Path_TextBox);
-            Path_TextBox.LayoutRight(Home_PagePanel, Forward_Button, spacing);
-            Path_TextBox.Width = Home_PagePanel.ClientSize.Width - Backward_Button.Width - Forward_Button.Width - 8;
+            Path_TextBox.Width = Home_PagePanel.ClientSize.Width - Backward_Button.Width - Forward_Button.Width - Menu_Button.Width - 5;
+            Path_TextBox.LayoutRight(Home_PagePanel, Menu_Button, 1);
             Path_TextBox.Stretch = Direction.Right;
             Path_TextBox.TextChanged += Path_TextBox_TextChanged;
 
-            Home_PagePanel.ChildControls.Add(Cancel_Button);
-            Cancel_Button.Text = "取消";
-            Cancel_Button.ClientSize = new(32, 16);
-            Cancel_Button.LayoutLeft(this, start2, spacing);
-            Cancel_Button.Anchor = Direction.Bottom | Direction.Right;
-            Cancel_Button.RightClick += Cancel_Button_RightClick;
-
-            Home_PagePanel.ChildControls.Add(OK_Button);
-            OK_Button.Text = "确定";
-            OK_Button.ClientSize = new(32, 16);
-            OK_Button.LayoutLeft(this, Cancel_Button, spacing);
-            OK_Button.Anchor = Direction.Bottom | Direction.Right;
-            OK_Button.RightClick += OK_Button_RightClick;
-
-            Home_PagePanel.ChildControls.Add(Clear_Button);
-            Clear_Button.Text = "X";
-            Clear_Button.LayoutRight(Home_PagePanel, start2, spacing);
-            Clear_Button.ClientSize = new(16, 16);
-            Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Pink, ControlState.None);
-            Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Yellow, ControlState.Hover);
-            Clear_Button.Skin.SetBackgroundColor(BlockManager.Concrete.Red, ControlState.Selected, ControlState.Hover | ControlState.Selected);
-            Clear_Button.Anchor = Direction.Bottom | Direction.Left;
-            Clear_Button.RightClick += Clear_Button_RightClick;
-
-            Home_PagePanel.ChildControls.Add(Search_TextBox);
-            Search_TextBox.LayoutRight(Home_PagePanel, Clear_Button, spacing);
-            Search_TextBox.Width = Home_PagePanel.ClientSize.Width - Clear_Button.Width - Cancel_Button.Width - OK_Button.Width - 10;
-            Search_TextBox.Anchor = Direction.Bottom | Direction.Left;
-            Search_TextBox.Stretch = Direction.Right;
-            Search_TextBox.TextChanged += Search_TextBox_TextChanged;
-
-            Home_PagePanel.ChildControls.Add(SimpleFilesBox);
-            SimpleFilesBox.Width = Home_PagePanel.ClientSize.Width - 4;
-            SimpleFilesBox.Height = Home_PagePanel.ClientSize.Height - Backward_Button.Height - Cancel_Button.Height - 8;
-            SimpleFilesBox.LayoutDown(Home_PagePanel, Backward_Button, spacing);
-            SimpleFilesBox.Stretch = Direction.Bottom | Direction.Right;
-            SimpleFilesBox.Skin.SetAllBackgroundColor(BlockManager.Concrete.Lime);
-            SimpleFilesBox.TextChanged += SimpleFilesBox_TextChanged;
-            SimpleFilesBox.OpenFile += SimpleFilesBox_OpenFile;
-            SimpleFilesBox.OpeningItemException += SimpleFilesBox_OpeningItemException;
-
-            Home_PagePanel.ClientSize = size2;
+            Home_PagePanel.ChildControls.Add(FileBrowser_Box);
+            FileBrowser_Box.Size = new(Home_PagePanel.ClientSize.Width - 2, Home_PagePanel.ClientSize.Height - Path_TextBox.Height - 3);
+            FileBrowser_Box.LayoutDown(Home_PagePanel, Backward_Button, 1);
+            FileBrowser_Box.Stretch = Direction.Bottom | Direction.Right;
+            FileBrowser_Box.TextChanged += FileBrowser_Box_TextChanged;
+            FileBrowser_Box.OpenFile += FileBrowser_Box_OpenFile;
+            FileBrowser_Box.OpenDirectory += FileBrowser_Box_OpenDirectory;
         }
 
         public override void AfterInitialize()
@@ -136,96 +85,90 @@ namespace MCBS.SystemApplications.FileExplorer
             if (_open is not null)
                 Path_TextBox.Text = _open;
             else
-                Path_TextBox.Text = SimpleFilesBox.Text;
+                Path_TextBox.Text = FileBrowser_Box.Text;
         }
 
         private void Backward_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            SimpleFilesBox.Backward();
+            FileBrowser_Box.Backward();
         }
 
         private void Forward_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            SimpleFilesBox.Forward();
+            FileBrowser_Box.Forward();
         }
 
-        private void OK_Button_RightClick(Control sender, CursorEventArgs e)
+        private void Menu_Button_RightClick(Control sender, CursorEventArgs e)
         {
-            string[] args = SimpleFilesBox.GetSelecteds();
-            if (args.Length == 0)
-            {
-                _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", "请先选择文件或文件夹", MessageBoxButtons.OK);
-                return;
-            }
-
-            SelectApplication(args);
-        }
-
-        private void Cancel_Button_RightClick(Control sender, CursorEventArgs e)
-        {
-
-        }
-
-        private void Clear_Button_RightClick(Control sender, CursorEventArgs e)
-        {
-            Search_TextBox.Text = string.Empty;
+            if (FileBrowser_Box.ActivePage == FileBrowser_Box.FileList_Page)
+                FileBrowser_Box.ShowMenu();
+            else if (FileBrowser_Box.ActivePage == FileBrowser_Box.Menu_Page)
+                FileBrowser_Box.ShowFileList();
         }
 
         private void Path_TextBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
-            SimpleFilesBox.Text = e.NewValue;
-            Search_TextBox.Text = string.Empty;
+            string path = e.NewValue;
+            FileBrowser_Box.Text = path;
 
-            if (SR.DefaultFont.GetTotalSize(Path_TextBox.Text).Width > Path_TextBox.ClientSize.Width)
+            if (SR.DefaultFont.GetTotalSize(path).Width > Path_TextBox.ClientSize.Width)
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperRight;
             else
                 Path_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
         }
 
-        private void Search_TextBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
+        private void FileBrowser_Box_TextChanged(Control sender, ValueChangedEventArgs<string> e)
         {
-            SimpleFilesBox.SearchText = e.NewValue;
-
-            if (SR.DefaultFont.GetTotalSize(Search_TextBox.Text).Width > Search_TextBox.ClientSize.Width)
-                Search_TextBox.ContentAnchor = AnchorPosition.UpperRight;
-            else
-                Search_TextBox.ContentAnchor = AnchorPosition.UpperLeft;
+            string path = e.NewValue;
+            Path_TextBox.Text = path;
         }
 
-        private void SimpleFilesBox_TextChanged(Control sender, ValueChangedEventArgs<string> e)
-        {
-            Path_TextBox.Text = SimpleFilesBox.Text;
-        }
-
-        private void SimpleFilesBox_OpenFile(SimpleFilesBox sender, EventArgs<FileInfo> e)
+        private void FileBrowser_Box_OpenFile(FileBrowserBox sender, EventArgs<FileInfo> e)
         {
             FileInfo fileInfo = e.Argument;
-            string extension = Path.GetExtension(fileInfo.Name).TrimStart('.');
-            if (ConfigManager.Registry.TryGetValue(extension, out var appID) && MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appID, out var applicationManifest))
+            if (!fileInfo.Exists)
+                return;
+
+            string extension = fileInfo.Extension.TrimStart('.');
+            if (ConfigManager.Registry.TryGetValue(extension, out var appId) &&
+                MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appId, out var applicationManifest))
             {
-                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], this);
+                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], GetForm());
             }
             else
             {
-                SelectApplication([fileInfo.FullName]);
+                SelectApplication(fileInfo.FullName);
             }
         }
 
-        private void SimpleFilesBox_OpeningItemException(SimpleFilesBox sender, EventArgs<Exception> e)
+        private void FileBrowser_Box_OpenDirectory(FileBrowserBox sender, EventArgs<DirectoryInfo> e)
         {
-            _ = DialogBoxHelper.OpenMessageBoxAsync(this, "警告", $"无法打开文件或文件夹，错误信息：\n{e.Argument.GetType().Name}: {e.Argument.Message}", MessageBoxButtons.OK);
+            DirectoryInfo directoryInfo = e.Argument;
+            if (!directoryInfo.Exists)
+                return;
+
+            if (MinecraftBlockScreen.Instance.AppComponents.TryGetValue("System.FileExplorer", out var applicationManifest))
+            {
+                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [directoryInfo.FullName], GetForm());
+            }
+            else
+            {
+                SelectApplication(directoryInfo.FullName);
+            }
         }
 
-        private void SelectApplication(string[] args)
+        private void SelectApplication(params string[] args)
         {
             ArgumentNullException.ThrowIfNull(args, nameof(args));
 
-            _ = DialogBoxHelper.OpenApplicationListBoxAsync(this, "请选择应用程序", (appInfo) =>
+            Form? form = GetForm();
+            if (form is null)
+                return;
+
+            _ = DialogBoxHelper.OpenApplicationListBoxAsync(form, "请选择应用程序", (applicationManifest) =>
             {
-                if (appInfo is not null)
-                {
-                    MinecraftBlockScreen.Instance.ProcessManager.StartProcess(appInfo, args, this);
-                }
+                if (applicationManifest is not null)
+                    MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, args, form);
             });
         }
     }

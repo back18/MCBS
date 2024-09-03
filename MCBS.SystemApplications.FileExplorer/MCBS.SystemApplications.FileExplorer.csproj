@@ -7,13 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Config\Default\Config.toml" />
     <None Remove="McbsApplication.json" />
     <None Remove="SystemResource\Icon.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Config\Default\Config.toml" />
     <EmbeddedResource Include="McbsApplication.json" />
     <EmbeddedResource Include="SystemResource\Icon.png" />
   </ItemGroup>
