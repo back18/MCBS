@@ -50,5 +50,41 @@ namespace MCBS.BlockForms.Utility
                 previous = control;
             }
         }
+
+        public static void FillLayoutDown<T>(ContainerControl container, IEnumerable<T> controls, int spacing = 2) where T : Control
+        {
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(controls, nameof(controls));
+            ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
+
+            T? previous = null;
+            foreach(var control in controls)
+            {
+                if (previous is null)
+                    control.LayoutDown(container, spacing, spacing);
+                else
+                    control.LayoutDown(container, previous, spacing);
+
+                previous = control;
+            }
+        }
+
+        public static void FillLayoutRight<T>(ContainerControl container, IEnumerable<T> controls, int spacing = 2) where T : Control
+        {
+            ArgumentNullException.ThrowIfNull(container, nameof(container));
+            ArgumentNullException.ThrowIfNull(controls, nameof(controls));
+            ThrowHelper.ArgumentOutOfMin(0, spacing, nameof(spacing));
+
+            T? previous = null;
+            foreach(var control in controls)
+            {
+                if (previous is null)
+                    control.LayoutRight(container, spacing, spacing);
+                else
+                    control.LayoutRight(container, previous, spacing);
+
+                previous = control;
+            }
+        }
     }
 }
