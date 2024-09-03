@@ -1,0 +1,17 @@
+{
+  "MainClass": "MCBS.SystemApplications.FileMoveHandler.FileMoveHandlerApp",
+  "ID": "System.FileMoveHandler",
+  "Name": "文件移动处理程序",
+  "Version": "1.0.0",
+  "IsBackground": true,
+  "Icon": "MCBS.SystemApplications.FileMoveHandler.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
+}

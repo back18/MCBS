@@ -1,0 +1,17 @@
+{
+  "MainClass": "MCBS.SystemApplications.FileDeleteHandler.FileDeleteHandlerApp",
+  "ID": "System.FileDeleteHandler",
+  "Name": "文件删除处理程序",
+  "Version": "1.0.0",
+  "IsBackground": true,
+  "Icon": "MCBS.SystemApplications.FileDeleteHandler.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
+}

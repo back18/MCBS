@@ -14,7 +14,12 @@
     <ProjectReference Include="..\MCBS.SystemApplications.DataScreen\MCBS.SystemApplications.DataScreen.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.Desktop\MCBS.SystemApplications.Desktop.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.Drawing\MCBS.SystemApplications.Drawing.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.FileCopyHandler\MCBS.SystemApplications.FileCopyHandler.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.FileCreateHandler\MCBS.SystemApplications.FileCreateHandler.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.FileDeleteHandler\MCBS.SystemApplications.FileDeleteHandler.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.FileExplorer\MCBS.SystemApplications.FileExplorer.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.FileMoveHandler\MCBS.SystemApplications.FileMoveHandler.csproj" />
+    <ProjectReference Include="..\MCBS.SystemApplications.FileRenameHandler\MCBS.SystemApplications.FileRenameHandler.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.Notepad\MCBS.SystemApplications.Notepad.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.QRCodeGenerator\MCBS.SystemApplications.QRCodeGenerator.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.ScreenController\MCBS.SystemApplications.ScreenController.csproj" />

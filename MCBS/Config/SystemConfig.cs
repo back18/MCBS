@@ -92,7 +92,12 @@ namespace MCBS.Config
                     "MCBS.SystemApplications.Drawing",
                     "MCBS.SystemApplications.Notepad",
                     "MCBS.SystemApplications.QRCodeGenerator",
-                    "MCBS.SystemApplications.DataScreen"
+                    "MCBS.SystemApplications.DataScreen",
+                    "MCBS.SystemApplications.FileCreateHandler",
+                    "MCBS.SystemApplications.FileDeleteHandler",
+                    "MCBS.SystemApplications.FileCopyHandler",
+                    "MCBS.SystemApplications.FileMoveHandler",
+                    "MCBS.SystemApplications.FileRenameHandler"
                     ];
                 ServicesAppID = "System.Services";
                 StartupChecklist = ["System.Desktop"];

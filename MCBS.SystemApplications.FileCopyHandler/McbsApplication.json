@@ -1,0 +1,17 @@
+{
+  "MainClass": "MCBS.SystemApplications.FileCopyHandler.FileCopyHandlerApp",
+  "ID": "System.FileCopyHandler",
+  "Name": "文件复制处理程序",
+  "Version": "1.0.0",
+  "IsBackground": true,
+  "Icon": "MCBS.SystemApplications.FileCopyHandler.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
+}

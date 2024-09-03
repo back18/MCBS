@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="McbsApplication.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="McbsApplication.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCBS.BlockForms\MCBS.BlockForms.csproj" />
+  </ItemGroup>
+
+</Project>

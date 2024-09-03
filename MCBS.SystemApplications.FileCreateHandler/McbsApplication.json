@@ -1,0 +1,17 @@
+{
+  "MainClass": "MCBS.SystemApplications.FileCreateHandler.FileCreateHandlerApp",
+  "ID": "System.FileCreateHandler",
+  "Name": "文件新建处理程序",
+  "Version": "1.0.0",
+  "IsBackground": true,
+  "Icon": "MCBS.SystemApplications.FileCreateHandler.SystemResource.Icon.png",
+  "Environment": [
+    "WINDOWS",
+    "LINUX",
+    "MACOS"
+  ],
+  "Dependencies": [],
+  "Authors": [
+    "back18"
+  ]
+}
