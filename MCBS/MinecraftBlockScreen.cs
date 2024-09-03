@@ -25,6 +25,7 @@ using QuanLib.TickLoop;
 using QuanLib.Logging;
 using QuanLib.IO.Extensions;
 using MCBS.Analyzer;
+using QuanLib.Clipping;
 
 namespace MCBS
 {
@@ -38,6 +39,7 @@ namespace MCBS
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
 
             MinecraftInstance = minecraftInstance;
+            Clipboard = new();
             FileWriteQueue = new();
             MsptAnalyzer = new();
             TaskManager = new();
@@ -75,6 +77,8 @@ namespace MCBS
         public SystemStage SystemStage { get; private set; }
 
         public MinecraftInstance MinecraftInstance { get; }
+
+        public Clipboard Clipboard { get; }
 
         public FileWriteQueue FileWriteQueue { get; }
 
