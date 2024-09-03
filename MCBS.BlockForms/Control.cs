@@ -44,6 +44,8 @@ namespace MCBS.BlockForms
             _ClientLocation = new(0, 0);
             _ClientSize = new(SR.DefaultFont.HalfWidth * 4, SR.DefaultFont.Height);
             _OffsetPosition = new(0, 0);
+            MinSize = Size.Empty;
+            MaxSize = new(int.MaxValue, int.MaxValue);
             _AutoSize = false;
             _BorderWidth = 1;
             Skin = new(this);
@@ -175,6 +177,10 @@ namespace MCBS.BlockForms
             }
         }
         private Point _OffsetPosition;
+
+        public Size MinSize { get; set; }
+
+        public Size MaxSize { get; set; }
 
         public Point Location
         {
@@ -585,7 +591,7 @@ namespace MCBS.BlockForms
 
         protected virtual void OnTextChanged(Control sender, ValueChangedEventArgs<string> e) { }
 
-        public virtual void OnLayout(Control sender, ValueChangedEventArgs<Size> e)
+        protected virtual void OnLayout(Control sender, ValueChangedEventArgs<Size> e)
         {
             Size offset = e.NewValue - e.OldValue;
             if (offset.Height != 0)
@@ -597,6 +603,7 @@ namespace MCBS.BlockForms
                 }
                 else
                 {
+                    offset.Height = Math.Clamp(offset.Height, MinSize.Height - ClientSize.Height, MaxSize.Height - ClientSize.Height);
                     if (Anchor.HasFlag(Direction.Bottom))
                         ClientLocation = new(ClientLocation.X, ClientLocation.Y + offset.Height);
                     if (Stretch.HasFlag(Direction.Top) || Stretch.HasFlag(Direction.Bottom))
@@ -613,6 +620,7 @@ namespace MCBS.BlockForms
                 }
                 else
                 {
+                    offset.Width = Math.Clamp(offset.Width, MinSize.Width - ClientSize.Width, MaxSize.Width - ClientSize.Width);
                     if (Anchor.HasFlag(Direction.Right))
                         ClientLocation = new(ClientLocation.X + offset.Width, ClientLocation.Y);
                     if (Stretch.HasFlag(Direction.Left) || Stretch.HasFlag(Direction.Right))
