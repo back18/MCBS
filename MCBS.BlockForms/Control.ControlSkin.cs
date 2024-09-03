@@ -77,7 +77,7 @@ namespace MCBS.BlockForms
 				set
 				{
 					ArgumentNullException.ThrowIfNull(value, nameof(value));
-					if (!BlockPixel.Equals(BorderColor, value))
+					if (!BlockPixel.Equals(_BorderColor, value))
 					{
 						_BorderColor = value;
 						if (_owner.ControlState == ControlState.None)
@@ -109,7 +109,7 @@ namespace MCBS.BlockForms
 				set
 				{
 					ArgumentNullException.ThrowIfNull(value, nameof(value));
-					if (!BlockPixel.Equals(BackgroundColor_Hover, value))
+					if (!BlockPixel.Equals(_BackgroundColor_Hover, value))
 					{
 						_BackgroundColor_Hover = value;
 						if (_owner.ControlState == ControlState.Hover)
@@ -157,7 +157,7 @@ namespace MCBS.BlockForms
 				set
 				{
 					ArgumentNullException.ThrowIfNull(value, nameof(value));
-					if (!BlockPixel.Equals(_BorderColor_Selected, value))
+					if (!BlockPixel.Equals(_BackgroundColor_Selected, value))
 					{
 						_BackgroundColor_Selected = value;
 						if (_owner.ControlState == ControlState.Selected)
