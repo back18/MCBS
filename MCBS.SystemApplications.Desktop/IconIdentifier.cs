@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.SystemApplications.Desktop
 {
-    public readonly struct IconIdentifier(string type, string value) : IParsable<IconIdentifier>
+    public readonly struct IconIdentifier(string type, string value) : IEquatable<IconIdentifier>, IParsable<IconIdentifier>
     {
         public readonly string Type = type;
 
@@ -50,9 +50,34 @@ namespace MCBS.SystemApplications.Desktop
             return true;
         }
 
+        public bool Equals(IconIdentifier other)
+        {
+            return Type == other.Type && Value == other.Value;
+        }
+
+        public override bool Equals([NotNullWhen(true)] object? obj)
+        {
+            return obj is IconIdentifier other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Type, Value);
+        }
+
         public override string ToString()
         {
             return $"{Type}:{Value}";
+        }
+
+        public static bool operator ==(IconIdentifier left, IconIdentifier right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(IconIdentifier left, IconIdentifier right)
+        {
+            return !left.Equals(right);
         }
     }
 }
