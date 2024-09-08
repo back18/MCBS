@@ -8,16 +8,16 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
 {
     public static class DesktopIconFactory
     {
-        public static DesktopIcon CreateDesktopIcon(string desktopDirectory, IconIdentifier iconIdentifier)
+        public static DesktopIcon CreateDesktopIcon(string desktopPath, IconIdentifier iconIdentifier)
         {
-            ArgumentException.ThrowIfNullOrEmpty(desktopDirectory, nameof(desktopDirectory));
+            ArgumentException.ThrowIfNullOrEmpty(desktopPath, nameof(desktopPath));
 
             return iconIdentifier.Type switch
             {
                 DesktopAppIcon.ICON_TYPE => new DesktopAppIcon(iconIdentifier.Value),
-                DesktopFileIcon.ICON_TYPE => new DesktopFileIcon(Path.Combine(desktopDirectory, iconIdentifier.Value)),
-                DesktopDirectoryIcon.ICON_TYPE => new DesktopDirectoryIcon(Path.Combine(desktopDirectory, iconIdentifier.Value)),
-                _ => throw new InvalidOperationException("未知的图标类型：" + iconIdentifier.Value),
+                DesktopFileIcon.ICON_TYPE => new DesktopFileIcon(Path.Combine(desktopPath, iconIdentifier.Value)),
+                DesktopDirectoryIcon.ICON_TYPE => new DesktopDirectoryIcon(Path.Combine(desktopPath, iconIdentifier.Value)),
+                _ => throw new InvalidOperationException("未知的图标类型：" + iconIdentifier.Type),
             };
         }
     }
