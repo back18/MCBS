@@ -44,6 +44,7 @@ namespace MCBS.SystemApplications.FileMoveHandler
                         throw new AggregateException("目标文件夹是源文件夹的子文件夹");
                 }
 
+                CreateDirectoryIfNotExists(destDir);
                 foreach (IOPath directoryMovePath in directoryMovePaths)
                     CreateDirectoryIfNotExists(directoryMovePath.Destination);
             }

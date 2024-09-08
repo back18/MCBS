@@ -37,6 +37,7 @@ namespace MCBS.SystemApplications.FileCopyHandler
                 fileCopyPaths = GetFileCopyPaths(paths, destDir);
                 directoryCopyPaths = GetDirectoryCopyPaths(paths, destDir);
 
+                CreateDirectoryIfNotExists(destDir);
                 foreach (IOPath directoryCopyPath in directoryCopyPaths)
                     CreateDirectoryIfNotExists(directoryCopyPath.Destination);
             }
