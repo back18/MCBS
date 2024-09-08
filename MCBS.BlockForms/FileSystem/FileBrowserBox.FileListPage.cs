@@ -306,7 +306,9 @@ namespace MCBS.BlockForms.FileSystem
                 ArgumentNullException.ThrowIfNull(listMenuBox, nameof(listMenuBox));
 
                 ChildControls.TryAdd(listMenuBox);
-                listMenuBox.ClientLocation = new(Math.Clamp(position.X, 0, PageSize.Width - listMenuBox.Width), Math.Clamp(position.Y, 0, PageSize.Height - listMenuBox.Height));
+                listMenuBox.ClientLocation = new(
+                    Math.Min(position.X, ClientSize.Width + OffsetPosition.X - listMenuBox.Width),
+                    Math.Min(position.Y, ClientSize.Height + OffsetPosition.Y - listMenuBox.Height));
             }
 
             private FileBox? GetHoverFileBox(CursorEventArgs e)
