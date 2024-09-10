@@ -97,23 +97,22 @@ namespace MCBS
         {
             ArgumentNullException.ThrowIfNull(e, nameof(e));
 
-            BytesFormatter bytesFormatter = new(AbbreviationBytesFormatText.Default);
-            TimeFormatter timeFormatter = new(AbbreviationTimeFormatText.Default);
-            timeFormatter.MinUnit = TimeUnit.Second;
-            StringBuilder sb = new();
-            sb.Append(new ProgressBar((int)e.TotalBytesToReceive)
+            BytesFormatter bytesFormatter = new(AbbreviationBytesUnitText.Default);
+            TimeFormatter timeFormatter = new(AbbreviationTimeUnitText.Default);
+            StringBuilder stringBuilder = new();
+            stringBuilder.Append(new ProgressBar((int)e.TotalBytesToReceive)
             {
                 Current = (int)e.ReceivedBytesSize,
                 Length = 20
             });
-            sb.AppendFormat(
+            stringBuilder.AppendFormat(
                 " {0}/s - {1}/{2} - {3}",
                 bytesFormatter.Format((long)e.BytesPerSecondSpeed),
                 bytesFormatter.Format(e.ReceivedBytesSize),
                 bytesFormatter.Format(e.TotalBytesToReceive),
                 timeFormatter.Format(e.BytesPerSecondSpeed == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds((e.TotalBytesToReceive - e.ReceivedBytesSize) / e.BytesPerSecondSpeed)));
 
-            return sb.ToString();
+            return stringBuilder.ToString();
         }
     }
 }

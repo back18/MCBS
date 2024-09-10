@@ -35,7 +35,7 @@ namespace MCBS.BlockForms.FileSystem
             Size_Label = new();
         }
 
-        private static readonly BytesFormatter _bytesFormatter = new(AbbreviationBytesFormatText.Default);
+        private static readonly BytesFormatter _bytesFormatter = new(AbbreviationBytesUnitText.Default);
 
         private readonly IconSubtitleBox<Rgba32> FileName_IconSubtitleBox;
 

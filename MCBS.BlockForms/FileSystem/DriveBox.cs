@@ -30,7 +30,7 @@ namespace MCBS.BlockForms.FileSystem
             Capacity_Label = new();
         }
 
-        private static readonly BytesFormatter _bytesFormatter = new(AbbreviationBytesFormatText.Default);
+        private static readonly BytesFormatter _bytesFormatter = new(AbbreviationBytesUnitText.Default);
 
         private readonly PictureBox<Rgba32> Icon_PictureBox;
 

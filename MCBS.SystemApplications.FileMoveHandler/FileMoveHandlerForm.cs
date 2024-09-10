@@ -37,7 +37,7 @@ namespace MCBS.SystemApplications.FileMoveHandler
             Cancel_Button = new();
         }
 
-        private static readonly BytesFormatter _bytesFormatter = new(AbbreviationBytesFormatText.Default);
+        private static readonly BytesFormatter _bytesFormatter = new(AbbreviationBytesUnitText.Default);
 
         private ViewData _viewData;
 
