@@ -24,7 +24,15 @@ namespace MCBS.Drawing
 
         public override bool SupportTransparent => Pixels.SupportTransparent;
 
-        public override string TransparentPixel => BlockConverter[Pixels.TransparentPixel];
+        public override string TransparentPixel
+        {
+            get
+            {
+                _TransparentPixel ??= BlockConverter[Pixels.TransparentPixel];
+                return _TransparentPixel;
+            }
+        }
+        private string? _TransparentPixel;
 
         public abstract IBlockConverter<TPixel> BlockConverter { get; }
 

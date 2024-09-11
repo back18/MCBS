@@ -53,7 +53,7 @@ namespace MCBS
             else
             {
                 LOGGER.Info($"开始构建方块[{facing.ToEnglishString()}]面颜色映射表");
-                IColorMappingCache cache = BuildMappingCache(SR.Rgba32BlockMappings[facing].CreateColorMatcher<Rgba32>(), enableCompressionCache, 1000, (buildProgress) =>
+                IColorMappingCache cache = BuildMappingCache(SR.Rgba32BlockMappings[facing].CreateColorFinder(), enableCompressionCache, 1000, (buildProgress) =>
                 {
                     LOGGER.Info(FormatBuildProgress(buildProgress));
                 });
@@ -77,9 +77,9 @@ namespace MCBS
             }
         }
 
-        private static IColorMappingCache BuildMappingCache(ColorMatcher<Rgba32> colorMatcher, bool enableCompressionCache, int progressUpdateMilliseconds = 1000, Action<BuildProgress>? onProgress = null)
+        private static IColorMappingCache BuildMappingCache(IColorFinder colorFinder, bool enableCompressionCache, int progressUpdateMilliseconds = 1000, Action<BuildProgress>? onProgress = null)
         {
-            ArgumentNullException.ThrowIfNull(colorMatcher, nameof(colorMatcher));
+            ArgumentNullException.ThrowIfNull(colorFinder, nameof(colorFinder));
             ThrowHelper.ArgumentOutOfMin(0, progressUpdateMilliseconds, nameof(progressUpdateMilliseconds));
 
             BuildProgress totalProgress = new(256 * 256 * 256);
@@ -93,7 +93,7 @@ namespace MCBS
             {
                 int count = i;
                 BuildProgress threadProgress = new(countPerThread);
-                Thread thread = new(() => BuildRange(colorMatcher, mapping, countPerThread * count, countPerThread, threadProgress))
+                Thread thread = new(() => BuildRange(colorFinder, mapping, countPerThread * count, countPerThread, threadProgress))
                 {
                     Priority = ThreadPriority.Highest
                 };
@@ -132,12 +132,12 @@ namespace MCBS
             }
         }
 
-        private static void BuildRange(ColorMatcher<Rgba32> colorMatcher, Rgba32[] mapping, int startIndex, int count, BuildProgress buildProgress)
+        private static void BuildRange(IColorFinder colorFinder, Rgba32[] mapping, int startIndex, int count, BuildProgress buildProgress)
         {
             int endIndex = Math.Min(startIndex + count, mapping.Length);
             for (int i = startIndex; i < endIndex; i++)
             {
-                mapping[i] = colorMatcher.Find(ColorMappingFastCache.ToColor(i));
+                mapping[i] = colorFinder.Find(ColorMappingFastCache.ToColor(i));
                 buildProgress.CompletedCount++;
             }
         }

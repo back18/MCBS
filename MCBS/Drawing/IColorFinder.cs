@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace MCBS.Drawing
 {
-    public interface IColorMappingCache
+    public interface IColorFinder
     {
-        public bool IsSupportAlpha { get; }
+        public Rgba32 Find(Rgba32 rgba32);
 
-        public Rgba32 this[Rgba32 color] { get; }
-
-        public byte[] ToBytes();
+        public bool Contains(Rgba32 rgba32);
     }
 }

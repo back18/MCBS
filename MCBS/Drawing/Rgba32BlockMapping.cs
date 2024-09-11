@@ -74,10 +74,17 @@ namespace MCBS.Drawing
 
         public Facing Facing { get; }
 
+        public IColorFinder CreateColorFinder()
+        {
+            return new ColorFinder(Keys.ToArray());
+        }
+
         public ColorMatcher<TPixel> CreateColorMatcher<TPixel>() where TPixel : unmanaged, IPixel<TPixel>
         {
-            SR.ColorMappingCaches.TryGetValue(Facing, out var mappingCache);
-            return new(Keys.ToHashSet(), mappingCache);
+            IColorFinder colorFinder = CreateColorFinder();
+            if (!SR.ColorMappingCaches.TryGetValue(Facing, out var mappingCache))
+                mappingCache = new ColorMappingTempCache(colorFinder);
+            return new(colorFinder, mappingCache);
         }
 
         public bool ContainsKey(Rgba32 key)

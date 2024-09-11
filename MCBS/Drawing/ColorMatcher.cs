@@ -1,12 +1,8 @@
 ﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,66 +10,50 @@ namespace MCBS.Drawing
 {
     public class ColorMatcher<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
-        public ColorMatcher(ISet<Rgba32> colors, IColorMappingCache? mappingCache = null)
+        public ColorMatcher(IColorFinder colorFinder, IColorMappingCache mappingCache)
         {
-            ArgumentNullException.ThrowIfNull(colors, nameof(colors));
+            ArgumentNullException.ThrowIfNull(colorFinder, nameof(colorFinder));
+            ArgumentNullException.ThrowIfNull(mappingCache, nameof(mappingCache));
 
-            _colors = colors.ToArray();
+            _colorFinder = colorFinder;
             _mappingCache = mappingCache;
-            _tempCache = new();
         }
 
-        private readonly Rgba32[] _colors;
+        private readonly IColorFinder _colorFinder;
 
-        private readonly IColorMappingCache? _mappingCache;
-
-        private readonly ConcurrentDictionary<TPixel, Rgba32> _tempCache;
-
-        public Rgba32 Find(Rgba32 rgba32)
-        {
-            Rgba32 result = _colors.FirstOrDefault();
-            int distance = int.MaxValue;
-            foreach (var color in _colors)
-            {
-                int newDistance = RgbaVector.DistanceSquared(rgba32, color);
-                if (distance > newDistance)
-                {
-                    distance = newDistance;
-                    result = color;
-                }
-            }
-
-            return result;
-        }
+        private readonly IColorMappingCache _mappingCache;
 
         public Rgba32 Match(TPixel pixel)
         {
-            if (_tempCache.TryGetValue(pixel, out var result))
-                return result;
-
-            if (pixel is not Rgba32 rgba32)
-            {
-                rgba32 = default;
-                pixel.ToRgba32(ref rgba32);
-            }
-
-            if (_mappingCache is not null && rgba32.A == byte.MaxValue)
+            Rgba32 rgba32 = ToRgba32(pixel);
+            if (rgba32.A == byte.MaxValue || _mappingCache.IsSupportAlpha)
                 return _mappingCache[rgba32];
-
-            result = Find(rgba32);
-            _tempCache.TryAdd(pixel, result);
-            return result;
+            else if (_colorFinder.Contains(rgba32))
+                return rgba32;
+            else
+                return _colorFinder.Find(rgba32);
         }
 
         public async Task<Rgba32[]> MatchAsync(TPixel[] pixels)
         {
-            await BuildCacheAsync(pixels);
+            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
             return await Task.Run(() =>
             {
+                ColorMappingTempCache colorMapping = new(_colorFinder);
                 Rgba32[] result = new Rgba32[pixels.Length];
+
                 for (int i = 0; i < pixels.Length; i++)
-                    result[i] = _tempCache[pixels[i]];
+                {
+                    Rgba32 rgba32 = ToRgba32(pixels[i]);
+                    if (rgba32.A == byte.MaxValue || _mappingCache.IsSupportAlpha)
+                        result[i] = _mappingCache[rgba32];
+                    else if (_colorFinder.Contains(rgba32))
+                        result[i] = rgba32;
+                    else
+                        result[i] = colorMapping[rgba32];
+                }
+
                 return result;
             });
         }
@@ -87,48 +67,15 @@ namespace MCBS.Drawing
 
             return await Task.Run(() =>
             {
-                int index = 0;
                 Image<Rgba32> result = new(image.Width, image.Height);
+                int index = 0;
+
                 for (int y = 0; y < result.Width; y++)
-                {
                     for (int x = 0; x < result.Height; x++)
-                    {
                         result[x, y] = matchs[index++];
-                    }
-                }
+
                 return result;
             });
-        }
-
-        public async Task BuildCacheAsync(TPixel[] pixels)
-        {
-            ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
-
-            HashSet<TPixel> matchs = new();
-            await Task.Run(() =>
-            {
-                foreach (TPixel pixel in pixels)
-                {
-                    if (!matchs.Contains(pixel) && !_tempCache.ContainsKey(pixel))
-                        matchs.Add(pixel);
-                }
-
-                ParallelLoopResult parallelLoopResult = Parallel.ForEach(matchs, match =>
-                {
-                    Match(match);
-                });
-
-                if (!parallelLoopResult.IsCompleted)
-                    Thread.Yield();
-            });
-        }
-
-        public async Task BuildCacheAsync(Image<TPixel> image)
-        {
-            ArgumentNullException.ThrowIfNull(image, nameof(image));
-
-            TPixel[] pixels = await GetPixelsAsync(image);
-            await BuildCacheAsync(pixels);
         }
 
         private static async Task<TPixel[]> GetPixelsAsync(Image<TPixel> image)
@@ -144,51 +91,15 @@ namespace MCBS.Drawing
             });
         }
 
-        internal IReadOnlyDictionary<TPixel, Rgba32> GetCache()
+        private static Rgba32 ToRgba32(TPixel pixel)
         {
-            return _tempCache;
-        }
-
-        private struct RgbaVector
-        {
-            public RgbaVector(int r, int g, int b, int a)
+            if (pixel is not Rgba32 rgba32)
             {
-                R = r;
-                G = g;
-                B = b;
-                A = a;
+                rgba32 = default;
+                pixel.ToRgba32(ref rgba32);
             }
 
-            public RgbaVector(Rgba32 rgba32)
-            {
-                R = rgba32.R;
-                G = rgba32.G;
-                B = rgba32.B;
-                A = rgba32.A;
-            }
-
-            public int R;
-
-            public int G;
-
-            public int B;
-
-            public int A;
-
-            public static int DistanceSquared(Rgba32 value1, Rgba32 value2)
-            {
-                RgbaVector vector1 = new(value1);
-                RgbaVector vector2 = new(value2);
-                RgbaVector difference = new(
-                    vector1.R - vector2.R,
-                    vector1.G - vector2.G,
-                    vector1.B - vector2.B,
-                    vector1.A - vector2.A);
-                return difference.R * difference.R
-                     + difference.G * difference.G
-                     + difference.B * difference.B
-                     + difference.A * difference.A;
-            }
+            return rgba32;
         }
     }
 }

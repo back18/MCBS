@@ -37,6 +37,8 @@ namespace MCBS.Drawing
 
         public Rgba32 this[Rgba32 color] => this[ToIndex(color)];
 
+        public bool IsSupportAlpha => false;
+
         public byte[] ToBytes()
         {
             int index = 0;

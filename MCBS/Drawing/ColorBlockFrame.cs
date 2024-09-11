@@ -18,8 +18,6 @@ namespace MCBS.Drawing
 
             _blockConverter = new(facing);
             _pixelCollection = new(image);
-            if (!SR.ColorMappingCaches.ContainsKey(facing))
-                _ = BuildCacheAsync();
         }
 
         public ColorBlockFrame(int width, int height, string pixel = "", Facing facing = Facing.Zm)
@@ -57,12 +55,7 @@ namespace MCBS.Drawing
         public Facing Facing
         {
             get => _blockConverter.Facing;
-            set
-            {
-                _blockConverter.Facing = value;
-                if (!SR.ColorMappingCaches.ContainsKey(value))
-                    _ = BuildCacheAsync();
-            }
+            set => _blockConverter.Facing = value;
         }
 
         public override BlockFrame Clone()
@@ -74,12 +67,6 @@ namespace MCBS.Drawing
         {
             _pixelCollection.Dispose();
             GC.SuppressFinalize(this);
-        }
-
-        private async Task BuildCacheAsync()
-        {
-            TPixel[] pixels = await Task.Run(() => _pixelCollection.ToArray());
-            await _blockConverter.BuildCacheAsync(pixels);
         }
     }
 }

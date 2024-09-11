@@ -28,16 +28,11 @@ namespace MCBS.Drawing
 
         public TPixel this[string value] => new Color(_mapping[value]).ToPixel<TPixel>();
 
-        public IEnumerable<TPixel> Keys => _matcher.GetCache().Keys;
+        public IEnumerable<TPixel> Keys => [];
 
         public IEnumerable<string> Values => _mapping.Values;
 
         public int Count => _mapping.Count;
-
-        internal async Task BuildCacheAsync(TPixel[] pixels)
-        {
-            await _matcher.BuildCacheAsync(pixels);
-        }
 
         public bool ContainsKey(TPixel key)
         {
