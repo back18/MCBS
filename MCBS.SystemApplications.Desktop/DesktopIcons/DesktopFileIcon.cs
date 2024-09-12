@@ -2,6 +2,8 @@
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Config;
+using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Core;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -50,7 +52,7 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
             if (ConfigManager.Registry.TryGetValue(extension, out var appId) &&
                 MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appId, out var applicationManifest))
             {
-                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [_path], GetForm());
+                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [_path], this.GetForm());
             }
             else
             {
@@ -60,7 +62,7 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
 
         private void SelectApplication()
         {
-            Form? form = GetForm();
+            IForm? form = this.GetForm();
             if (form is null)
                 return;
 

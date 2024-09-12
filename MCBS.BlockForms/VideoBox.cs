@@ -2,6 +2,7 @@
 using MCBS.BlockForms.Utility;
 using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
+using MCBS.UI.Extensions;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.TickLoop.VideoPlayer;
@@ -71,7 +72,7 @@ namespace MCBS.BlockForms
                 return base.Drawing();
 
             Texture<TPixel> texture = new(videoFrame.Image, DefaultResizeOptions);
-            BlockFrame textureFrame = texture.CreateBlockFrame(ClientSize, GetScreenPlane().NormalFacing);
+            BlockFrame textureFrame = texture.CreateBlockFrame(ClientSize, this.GetNormalFacing());
             if (RequestDrawTransparencyTexture)
                 return textureFrame;
 

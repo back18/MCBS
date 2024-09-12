@@ -2,6 +2,8 @@
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Clipping;
 using QuanLib.Core.Events;
 using QuanLib.Core.Extensions;
@@ -247,7 +249,7 @@ namespace MCBS.BlockForms.FileSystem
 
             private void Rename_Button_RightClick(Control sender, CursorEventArgs e)
             {
-                Form? form = GetForm();
+                IForm? form = this.GetForm();
                 FileBox[] fileBoxes = GetSelectedFileBoxs();
 
                 if (fileBoxes.Length != 1)
@@ -283,7 +285,7 @@ namespace MCBS.BlockForms.FileSystem
 
             private void Delete_Button_RightClick(Control sender, CursorEventArgs e)
             {
-                Form? form = GetForm();
+                IForm? form = this.GetForm();
                 FileBox[] fileBoxes = GetSelectedFileBoxs();
                 string[] paths = fileBoxes.Select(s => s.FileSystemInfo.FullName).ToArray();
 

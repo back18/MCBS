@@ -1,6 +1,8 @@
 ﻿using MCBS.Application;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Clipping;
 using QuanLib.Core.Extensions;
 using QuanLib.Game;
@@ -187,7 +189,7 @@ namespace MCBS.BlockForms.FileSystem
                         return;
                 }
 
-                Form? form = GetForm();
+                IForm? form = this.GetForm();
                 string path = _owner.Text;
                 ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents[appId];
                 MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, fileDrop.RightAddend(path), form);
@@ -195,7 +197,7 @@ namespace MCBS.BlockForms.FileSystem
 
             private void NewFolder_Button_RightClick(Control sender, CursorEventArgs e)
             {
-                Form? form = GetForm();
+                IForm? form = this.GetForm();
                 string path = _owner.Text;
                 ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents["System.FileCreateHandler"];
 
@@ -204,7 +206,7 @@ namespace MCBS.BlockForms.FileSystem
 
             private void NewTextDocument_Button_RightClick(Control sender, CursorEventArgs e)
             {
-                Form? form = GetForm();
+                IForm? form = this.GetForm();
                 string path = _owner.Text;
                 ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents["System.FileCreateHandler"];
 

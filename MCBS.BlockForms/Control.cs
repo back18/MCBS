@@ -310,7 +310,7 @@ namespace MCBS.BlockForms
 
         public int BottomToBorder
         {
-            get => (ParentContainer?.Height - ParentBorderWidth ?? GetScreenPlane().Height) - (Location.Y + Height);
+            get => ParentContainer is null ? 0 : (ParentContainer.Height - ParentContainer.BorderWidth) - (Location.Y + Height);
             set
             {
                 int offset = BottomToBorder - value;
@@ -331,7 +331,7 @@ namespace MCBS.BlockForms
 
         public int RightToBorder
         {
-            get => (ParentContainer?.Width - ParentBorderWidth ?? GetScreenPlane().Width) - (Location.X + Width);
+            get => ParentContainer is null ? 0 : (ParentContainer.Width - ParentContainer.BorderWidth) - (Location.X + Width);
             set
             {
                 int offset = RightToBorder - value;
@@ -880,114 +880,6 @@ namespace MCBS.BlockForms
         public Texture? GetBackgroundTexture()
         {
             return Skin.GetBackgroundTexture(ControlState);
-        }
-
-        #endregion
-
-        #region 父级相关处理
-
-        public Control GetRootControl()
-        {
-            Control result = this;
-            while (true)
-            {
-                Control? parent = result.ParentContainer;
-                if (parent is null)
-                    return result;
-                else
-                    result = parent;
-            }
-        }
-
-        public IRootForm? GetRootForm()
-        {
-            IControl? result = this;
-            while (true)
-            {
-                if (result is null)
-                    return null;
-                else if (result is IRootForm form)
-                    return form;
-                else
-                    result = result.GenericParentContainer;
-            }
-        }
-
-        public Form? GetForm()
-        {
-            IControl? result = this;
-            while (true)
-            {
-                if (result is null)
-                    return null;
-                else if (result is Form form)
-                    return form;
-                else
-                    result = result.GenericParentContainer;
-            }
-        }
-
-        public ProcessContext? GetProcess()
-        {
-            Form? form = GetForm();
-            if (form is null)
-                return null;
-
-            return MinecraftBlockScreen.Instance.ProcessContextOf(form);
-        }
-
-        public ScreenContext? GetScreenContext()
-        {
-            Form? form = GetForm();
-            if (form is null)
-                return null;
-
-            return MinecraftBlockScreen.Instance.ScreenContextOf(form);
-        }
-
-        public Size GetFormContainerSize()
-        {
-            IRootForm? rootForm1 = GetRootForm();
-            if (rootForm1 is not null)
-                return rootForm1.FormContainerSize;
-
-            Form? form = GetForm();
-            if (form is not null)
-            {
-                IForm? initiator = MinecraftBlockScreen.Instance.ProcessContextOf(form)?.Initiator;
-                if (initiator is not null)
-                {
-                    if (initiator is IRootForm rootForm2)
-                        return rootForm2.FormContainerSize;
-
-                    IRootForm? rootForm3 = initiator.GetRootForm();
-                    if (rootForm3 is not null)
-                        return rootForm3.FormContainerSize;
-                }
-            }
-
-            return new Size(256, 126);
-        }
-
-        public IPlane GetScreenPlane()
-        {
-            Form? form = GetForm();
-            if (form is not null)
-            {
-                Screen? screen = MinecraftBlockScreen.Instance.ScreenContextOf(form)?.Screen;
-                if (screen is not null)
-                    return screen;
-
-                IForm? initiator = MinecraftBlockScreen.Instance.ProcessContextOf(form)?.Initiator;
-                if (initiator is not null)
-                {
-                    screen = MinecraftBlockScreen.Instance.ScreenContextOf(initiator)?.Screen;
-                    if (screen is not null)
-                        return screen;
-                }
-            }
-
-            return new Plane(256, 144, Facing.Zp);
         }
 
         #endregion

@@ -4,6 +4,8 @@ using MCBS.BlockForms.FileSystem;
 using MCBS.BlockForms.Utility;
 using MCBS.Config;
 using MCBS.Events;
+using MCBS.UI;
+using MCBS.UI.Extensions;
 using QuanLib.Core.Events;
 using QuanLib.Game;
 using System;
@@ -133,7 +135,7 @@ namespace MCBS.SystemApplications.FileExplorer
             if (ConfigManager.Registry.TryGetValue(extension, out var appId) &&
                 MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appId, out var applicationManifest))
             {
-                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], GetForm());
+                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], this.GetForm());
             }
             else
             {
@@ -149,7 +151,7 @@ namespace MCBS.SystemApplications.FileExplorer
 
             if (MinecraftBlockScreen.Instance.AppComponents.TryGetValue("System.FileExplorer", out var applicationManifest))
             {
-                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [directoryInfo.FullName], GetForm());
+                MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [directoryInfo.FullName], this.GetForm());
             }
             else
             {
@@ -161,7 +163,7 @@ namespace MCBS.SystemApplications.FileExplorer
         {
             ArgumentNullException.ThrowIfNull(args, nameof(args));
 
-            Form? form = GetForm();
+            IForm? form = this.GetForm();
             if (form is null)
                 return;
 

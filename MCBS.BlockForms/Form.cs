@@ -64,7 +64,7 @@ namespace MCBS.BlockForms
 
         public virtual Point MaximizeLocation => new(0, 0);
 
-        public virtual Size MaximizeSize => GetFormContainerSize();
+        public virtual Size MaximizeSize => GetMaximizeSize();
 
         public virtual Point RestoreLocation { get; protected set; }
 
@@ -297,6 +297,14 @@ namespace MCBS.BlockForms
                 Direction.Right | Direction.Top or Direction.Left | Direction.Bottom => CursorStyleType.RightObliqueResize,
                 _ => CursorStyleType.Default,
             };
+        }
+
+        private Size GetMaximizeSize()
+        {
+            if (this.GetRootForm() is IRootForm rootForm)
+                return rootForm.FormContainerSize;
+            else
+                return Size;
         }
     }
 }

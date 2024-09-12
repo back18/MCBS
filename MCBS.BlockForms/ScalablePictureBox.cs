@@ -3,6 +3,7 @@ using MCBS.Cursor;
 using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
 using MCBS.Events;
+using MCBS.UI.Extensions;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
@@ -49,7 +50,7 @@ namespace MCBS.BlockForms
             int pixelLength = GetPixelLength();
             if (pixelLength >= PixelModeThreshold)
             {
-                BlockFrame textureFrame = Texture.CreateBlockFrame(new(Texture.CropRectangle.Width * pixelLength, Texture.CropRectangle.Height * pixelLength), GetScreenPlane().NormalFacing);
+                BlockFrame textureFrame = Texture.CreateBlockFrame(new(Texture.CropRectangle.Width * pixelLength, Texture.CropRectangle.Height * pixelLength), this.GetNormalFacing());
 
                 for (int x = textureFrame.Width - 1; x >= 0; x -= pixelLength)
                     textureFrame.DrawVerticalLine(x, BlockManager.Concrete.Gray);

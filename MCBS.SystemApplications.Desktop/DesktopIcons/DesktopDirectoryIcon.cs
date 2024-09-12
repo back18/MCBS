@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Core;
+using MCBS.UI.Extensions;
 
 namespace MCBS.SystemApplications.Desktop.DesktopIcons
 {
@@ -43,7 +44,7 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
             if (!Directory.Exists(_path))
                 return;
 
-            MinecraftBlockScreen.Instance.ProcessManager.StartProcess(MinecraftBlockScreen.Instance.AppComponents["System.FileExplorer"], [_path], GetForm());
+            MinecraftBlockScreen.Instance.ProcessManager.StartProcess(MinecraftBlockScreen.Instance.AppComponents["System.FileExplorer"], [_path], this.GetForm());
         }
     }
 }

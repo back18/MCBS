@@ -1,5 +1,7 @@
 ﻿using MCBS.Events;
+using MCBS.Screens;
 using MCBS.UI.Extensions;
+using QuanLib.Game;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -28,32 +30,53 @@ namespace MCBS.UI.Extensions
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
 
-            IControl? result = source;
-            while (true)
-            {
-                if (result is null)
-                    return null;
-                else if (result is IForm form)
-                    return form;
-                else
-                    result = result.GenericParentContainer;
-            }
+            if (source is IForm result)
+                return result;
+
+            IControl? parent = source.GenericParentContainer;
+            if (parent is not null)
+                return GetForm(parent);
+
+            return null;
         }
 
         public static IRootForm? GetRootForm(this IControl source)
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
 
-            IControl? result = source;
-            while (true)
-            {
-                if (result is null)
-                    return null;
-                else if (result is IRootForm form)
-                    return form;
-                else
-                    result = result.GenericParentContainer;
-            }
+            if (source is IRootForm result)
+                return result;
+
+            IControl? parent = source.GenericParentContainer;
+            if (parent is not null)
+                return GetRootForm(parent);
+
+            return null;
+        }
+
+        public static IScreenView? GetScreenView(this IControl source)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            if (source is IScreenView result)
+                return result;
+
+            IControl? parent = source.GenericParentContainer;
+            if (parent is not null)
+                return GetScreenView(parent);
+
+            return null;
+        }
+
+        public static IControl GetRootControl(this IControl source)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            IControl? parent = source.GenericParentContainer;
+            if (parent is not null)
+                return GetRootControl(parent);
+
+            return source;
         }
 
         public static Rectangle GetRectangle(this IControl source)
@@ -61,6 +84,24 @@ namespace MCBS.UI.Extensions
             ArgumentNullException.ThrowIfNull(source, nameof(source));
 
             return new(source.ClientLocation.X, source.ClientLocation.Y, source.ClientSize.Width + source.BorderWidth, source.ClientSize.Height + source.BorderWidth);
+        }
+
+        public static Facing GetNormalFacing(this IControl source)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            return GetScreenContext(source)?.Screen.NormalFacing ?? Facing.Zm;
+        }
+
+        public static ScreenContext? GetScreenContext(this IControl source)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            IForm? form = GetForm(source);
+            if (form is null)
+                return null;
+
+            return MinecraftBlockScreen.Instance.ScreenContextOf(form);
         }
 
         public static Point GetDrawingLocation(this IControlDrawing source)

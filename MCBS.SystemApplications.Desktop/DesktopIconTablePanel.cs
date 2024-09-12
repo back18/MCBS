@@ -5,6 +5,7 @@ using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
 using MCBS.Events;
 using MCBS.SystemApplications.Desktop.DesktopIcons;
+using MCBS.UI.Extensions;
 using QuanLib.Clipping;
 using QuanLib.Core.Events;
 using QuanLib.Core.Extensions;

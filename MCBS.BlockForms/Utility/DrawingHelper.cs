@@ -1,5 +1,6 @@
 ﻿using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
+using MCBS.UI.Extensions;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace MCBS.BlockForms.Utility
             if (texture is null)
                 return new HashBlockFrame(size, source.GetBackgroundColor());
 
-            BlockFrame textureFrame = texture.CreateBlockFrame(size, source.GetScreenPlane().NormalFacing);
+            BlockFrame textureFrame = texture.CreateBlockFrame(size, source.GetNormalFacing());
             if (source.RequestDrawTransparencyTexture)
                 return textureFrame;
 

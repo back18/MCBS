@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MCBS.UI.Extensions;
 
 namespace MCBS.SystemApplications.Desktop
 {
@@ -37,7 +38,7 @@ namespace MCBS.SystemApplications.Desktop
             {
                 if (_DesktopPathManager is null)
                 {
-                    ScreenContext? screenContext = GetScreenContext() ?? throw new InvalidOperationException("无法获取屏幕上下文");
+                    ScreenContext? screenContext = this.GetScreenContext() ?? throw new InvalidOperationException("无法获取屏幕上下文");
                     DirectoryInfo appsDir = McbsPathManager.MCBS_Applications;
                     string basePath = Path.Combine(appsDir.FullName, DesktopApp.ID, "ScreenData", screenContext.GUID.ToString());
                     _DesktopPathManager = new(basePath);

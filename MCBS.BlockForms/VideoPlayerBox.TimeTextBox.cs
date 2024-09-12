@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using MCBS.UI.Extensions;
+using MCBS.UI;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
 using QuanLib.TickLoop.VideoPlayer;
@@ -79,11 +81,9 @@ namespace MCBS.BlockForms
                 if (mediaFilePlayer is null ||
                     !TimeSpan.TryParse(timeText, out var time))
                 {
-                    Form? form = GetForm();
+                    IForm? form = this.GetForm();
                     if (form is not null)
-                    {
                         _ = DialogBoxHelper.OpenMessageBoxAsync(form, "警告", $"无法跳转到：“{timeText}”", MessageBoxButtons.OK);
-                    }
                     return;
                 }
 

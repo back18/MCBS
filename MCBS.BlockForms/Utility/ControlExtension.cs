@@ -1,4 +1,5 @@
-﻿using QuanLib.Minecraft;
+﻿using MCBS.UI.Extensions;
+using QuanLib.Minecraft;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -16,7 +17,7 @@ namespace MCBS.BlockForms.Utility
             if (string.IsNullOrEmpty(blockId))
                 return default;
 
-            return new Color(SR.Rgba32BlockMappings[source.GetScreenPlane().NormalFacing][blockId]).ToPixel<TPixel>();
+            return new Color(SR.Rgba32BlockMappings[source.GetNormalFacing()][blockId]).ToPixel<TPixel>();
         }
 
         public static bool TryGetBlockColor<TPixel>(this Control source, string? blockId, out TPixel color) where TPixel : unmanaged, IPixel<TPixel>
@@ -27,7 +28,7 @@ namespace MCBS.BlockForms.Utility
                 return true;
             }
 
-            if (SR.Rgba32BlockMappings[source.GetScreenPlane().NormalFacing].TryGetKey(blockId, out var rgba32))
+            if (SR.Rgba32BlockMappings[source.GetNormalFacing()].TryGetKey(blockId, out var rgba32))
             {
                 color = new Color(rgba32).ToPixel<TPixel>();
                 return true;

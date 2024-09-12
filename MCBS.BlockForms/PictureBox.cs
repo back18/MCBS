@@ -1,6 +1,7 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
+using MCBS.UI.Extensions;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Minecraft.Blocks;
@@ -58,7 +59,7 @@ namespace MCBS.BlockForms
 
         protected override BlockFrame Drawing()
         {
-            BlockFrame textureFrame = Texture.CreateBlockFrame(ClientSize, GetScreenPlane().NormalFacing);
+            BlockFrame textureFrame = Texture.CreateBlockFrame(ClientSize, this.GetNormalFacing());
             if (RequestDrawTransparencyTexture)
                 return textureFrame;
 

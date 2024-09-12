@@ -1,6 +1,8 @@
 ﻿using MCBS.Application;
 using MCBS.BlockForms;
 using MCBS.BlockForms.DialogBox;
+using MCBS.UI.Extensions;
+using MCBS.UI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -47,7 +49,7 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
 
         internal override void OpenIcon()
         {
-            Form? form = GetForm();
+            IForm? form = this.GetForm();
             if (form is null)
                 return;
 
