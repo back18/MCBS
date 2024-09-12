@@ -43,9 +43,6 @@ namespace MCBS.BlockForms
             {
                 base.Initialize();
 
-                if (_owner != ParentContainer)
-                    throw new InvalidOperationException();
-
                 ChildControls.Add(CurrentTime_TextBox);
                 CurrentTime_TextBox.BorderWidth = 0;
                 CurrentTime_TextBox.AutoSize = true;

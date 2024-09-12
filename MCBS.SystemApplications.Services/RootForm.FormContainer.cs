@@ -30,14 +30,6 @@ namespace MCBS.SystemApplications.Services
 
             private readonly RootForm _owner;
 
-            public override void Initialize()
-            {
-                base.Initialize();
-
-                if (_owner != ParentContainer)
-                    throw new InvalidOperationException();
-            }
-
             protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
             {
                 base.OnResize(sender, e);

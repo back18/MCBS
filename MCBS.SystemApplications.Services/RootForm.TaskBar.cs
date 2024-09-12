@@ -53,9 +53,6 @@ namespace MCBS.SystemApplications.Services
             {
                 base.Initialize();
 
-                if (_owner != ParentContainer)
-                    throw new InvalidOperationException();
-
                 ChildControls.Add(StartMenu_Switch);
                 StartMenu_Switch.BorderWidth = 0;
                 StartMenu_Switch.ClientLocation = new(0, 1);

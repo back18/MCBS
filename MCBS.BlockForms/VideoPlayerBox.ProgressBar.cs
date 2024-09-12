@@ -31,14 +31,6 @@ namespace MCBS.BlockForms
 
             private readonly Label Time_Label;
 
-            public override void Initialize()
-            {
-                base.Initialize();
-
-                if (_owner != ParentContainer)
-                    throw new InvalidOperationException();
-            }
-
             private void VideoPlayer_VideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
             {
                 RequestRedraw();

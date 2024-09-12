@@ -11,7 +11,7 @@ namespace MCBS.UI
 {
     public interface IControl : IControlInitializeHandling, IControlEventHandling, IControlDrawing, IComparable<IControl>
     {
-        public IContainerControl? GenericParentContainer { get; }
+        public IContainerControl? ParentContainer { get; }
 
         public string Text { get; set; }
 
@@ -25,6 +25,6 @@ namespace MCBS.UI
 
         public CursorContext[] GetHoverCursors();
 
-        public void SetGenericContainerControl(IContainerControl? container);
+        public bool UpdateParentContainer(IContainerControl? parentContainer);
     }
 }

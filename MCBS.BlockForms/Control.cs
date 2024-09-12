@@ -6,9 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QuanLib.Core;
 using MCBS.UI;
-using MCBS.Screens;
 using MCBS.BlockForms.Utility;
-using MCBS.Processes;
 using MCBS.Events;
 using QuanLib.Core.Events;
 using MCBS.Cursor;
@@ -106,11 +104,9 @@ namespace MCBS.BlockForms
 
         public bool IsRequestRedraw { get; private set; }
 
-        public IContainerControl? GenericParentContainer { get; private set; }
+        public IContainerControl? ParentContainer { get; private set; }
 
-        public ContainerControl? ParentContainer { get; private set; }
-
-        public int Index => ParentContainer?.GetChildControls().IndexOf(this) ?? -1;
+        public int Index => GetParentContainer()?.GetChildControls().IndexOf(this) ?? -1;
 
         public virtual string Text
         {
@@ -253,7 +249,7 @@ namespace MCBS.BlockForms
         }
         private int _BorderWidth;
 
-        public int ParentBorderWidth => ParentContainer?.BorderWidth ?? 0;
+        public int ParentBorderWidth => GetParentContainer()?.BorderWidth ?? 0;
 
         public int TopLocation
         {
@@ -310,7 +306,7 @@ namespace MCBS.BlockForms
 
         public int BottomToBorder
         {
-            get => ParentContainer is null ? 0 : (ParentContainer.Height - ParentContainer.BorderWidth) - (Location.Y + Height);
+            get => GetParentContainer() is not ContainerControl containerControl ? 0 : (containerControl.Height - containerControl.BorderWidth) - (Location.Y + Height);
             set
             {
                 int offset = BottomToBorder - value;
@@ -331,7 +327,7 @@ namespace MCBS.BlockForms
 
         public int RightToBorder
         {
-            get => ParentContainer is null ? 0 : (ParentContainer.Width - ParentContainer.BorderWidth) - (Location.X + Width);
+            get => GetParentContainer() is not ContainerControl containerControl ? 0 : (containerControl.Width - containerControl.BorderWidth) - (Location.X + Width);
             set
             {
                 int offset = RightToBorder - value;
@@ -386,7 +382,7 @@ namespace MCBS.BlockForms
             {
                 _DisplayPriority = value;
                 if (!IsSelected)
-                    GenericParentContainer?.GetChildControls().Sort();
+                    ParentContainer?.GetChildControls().Sort();
             }
         }
         private int _DisplayPriority;
@@ -398,7 +394,7 @@ namespace MCBS.BlockForms
             {
                 _MaxDisplayPriority = value;
                 if (IsSelected)
-                    GenericParentContainer?.GetChildControls().Sort();
+                    ParentContainer?.GetChildControls().Sort();
             }
         }
         private int _MaxDisplayPriority;
@@ -487,7 +483,7 @@ namespace MCBS.BlockForms
                         ControlState ^= ControlState.Selected;
                         ControlDeselected.Invoke(this, EventArgs.Empty);
                     }
-                    GenericParentContainer?.GetChildControls().Sort();
+                    ParentContainer?.GetChildControls().Sort();
                 }
             }
         }
@@ -844,7 +840,7 @@ namespace MCBS.BlockForms
         public void RequestRedraw()
         {
             IsRequestRedraw = true;
-            GenericParentContainer?.RequestRedraw();
+            ParentContainer?.RequestRedraw();
         }
 
         public virtual DrawResult GetDrawResult()
@@ -921,6 +917,36 @@ namespace MCBS.BlockForms
             return _hoverCursors.ToArray();
         }
 
+        public bool UpdateParentContainer(IContainerControl? parentContainer)
+        {
+            if (parentContainer is null)
+            {
+                if (ParentContainer is null || !ParentContainer.GetChildControls().Contains(this))
+                {
+                    ParentContainer = null;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (parentContainer.GetChildControls().Contains(this))
+            {
+                ParentContainer = parentContainer;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public ContainerControl? GetParentContainer()
+        {
+            return ParentContainer as ContainerControl;
+        }
+
         public virtual void AutoSetSize()
         {
 
@@ -939,15 +965,6 @@ namespace MCBS.BlockForms
         public int CompareTo(IControl? other)
         {
             return DisplayPriority.CompareTo(other?.DisplayPriority);
-        }
-
-        void IControl.SetGenericContainerControl(IContainerControl? container)
-        {
-            GenericParentContainer = container;
-            if (container is null)
-                ParentContainer = null;
-            else if (container is ContainerControl containerControl)
-                ParentContainer = containerControl;
         }
     }
 }

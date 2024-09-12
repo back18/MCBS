@@ -33,7 +33,7 @@ namespace MCBS.UI.Extensions
             if (source is IForm result)
                 return result;
 
-            IControl? parent = source.GenericParentContainer;
+            IControl? parent = source.ParentContainer;
             if (parent is not null)
                 return GetForm(parent);
 
@@ -47,7 +47,7 @@ namespace MCBS.UI.Extensions
             if (source is IRootForm result)
                 return result;
 
-            IControl? parent = source.GenericParentContainer;
+            IControl? parent = source.ParentContainer;
             if (parent is not null)
                 return GetRootForm(parent);
 
@@ -61,7 +61,7 @@ namespace MCBS.UI.Extensions
             if (source is IScreenView result)
                 return result;
 
-            IControl? parent = source.GenericParentContainer;
+            IControl? parent = source.ParentContainer;
             if (parent is not null)
                 return GetScreenView(parent);
 
@@ -72,7 +72,7 @@ namespace MCBS.UI.Extensions
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
 
-            IControl? parent = source.GenericParentContainer;
+            IControl? parent = source.ParentContainer;
             if (parent is not null)
                 return GetRootControl(parent);
 

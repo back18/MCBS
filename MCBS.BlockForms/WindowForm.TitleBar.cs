@@ -90,9 +90,6 @@ namespace MCBS.BlockForms
             {
                 base.Initialize();
 
-                if (_owner != ParentContainer)
-                    throw new InvalidOperationException();
-
                 ChildControls.Add(Title_IconTextBox);
                 Title_IconTextBox.KeepWhenClear = true;
                 Title_IconTextBox.AutoSize = true;

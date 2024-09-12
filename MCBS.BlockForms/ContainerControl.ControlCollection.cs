@@ -38,7 +38,7 @@ namespace MCBS.BlockForms
 				if (!insert)
 					_items.Insert(0, item);
 
-				((IControl)item).SetGenericContainerControl(_owner);
+				item.UpdateParentContainer(_owner);
 				RecentlyAddedControl = item;
 				_owner.AddedChildControl.Invoke(_owner, new(item));
 				_owner.RequestRedraw();
@@ -51,7 +51,7 @@ namespace MCBS.BlockForms
 				if (!_items.Remove(item))
 					return false;
 
-				((IControl)item).SetGenericContainerControl(null);
+				item.UpdateParentContainer(null);
 				RecentlyRemovedControl = item;
 				_owner.RemovedChildControl.Invoke(_owner, new(item));
 				_owner.RequestRedraw();
