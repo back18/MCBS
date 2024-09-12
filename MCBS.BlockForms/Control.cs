@@ -587,7 +587,15 @@ namespace MCBS.BlockForms
 
         protected virtual void OnResize(Control sender, ValueChangedEventArgs<Size> e) { }
 
-        protected virtual void OnOffsetPositionChanged(Control sender, ValueChangedEventArgs<Point> e) { }
+        protected virtual void OnOffsetPositionChanged(Control sender, ValueChangedEventArgs<Point> e)
+        {
+            IScreenView? screenView = this.GetScreenView();
+            if (screenView is not null)
+            {
+                foreach (var cursorContext in _hoverCursors)
+                    screenView.HandleCursorMove(new(cursorContext.NewInputData.CursorPosition, cursorContext));
+            }
+        }
 
         protected virtual void OnTextChanged(Control sender, ValueChangedEventArgs<string> e) { }
 
