@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.BlockForms
+namespace MCBS.BlockForms.LatticeBlock
 {
     public abstract class LatticeMultilineTextControl : AbstractMultilineTextControl
     {

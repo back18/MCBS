@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MCBS.BlockForms\MCBS.BlockForms.csproj" />
+    <ProjectReference Include="..\MCBS.BlockForms.DialogBox\MCBS.BlockForms.DialogBox.csproj" />
   </ItemGroup>
 
 </Project>

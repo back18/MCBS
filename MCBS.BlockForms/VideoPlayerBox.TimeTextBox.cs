@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using MCBS.UI.Extensions;
@@ -75,14 +74,8 @@ namespace MCBS.BlockForms
                 }
 
                 MediaFilePlayer<TPixel>? mediaFilePlayer = _owner.VideoBox.MediaFilePlayer;
-                if (mediaFilePlayer is null ||
-                    !TimeSpan.TryParse(timeText, out var time))
-                {
-                    IForm? form = this.GetForm();
-                    if (form is not null)
-                        _ = DialogBoxHelper.OpenMessageBoxAsync(form, "警告", $"无法跳转到：“{timeText}”", MessageBoxButtons.OK);
+                if (mediaFilePlayer is null || !TimeSpan.TryParse(timeText, out var time))
                     return;
-                }
 
                 mediaFilePlayer.JumpToFrame(time);
             }
