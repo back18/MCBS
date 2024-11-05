@@ -1,5 +1,7 @@
 ﻿using MCBS.BlockForms;
 using MCBS.BlockForms.DialogBox;
+using MCBS.BlockForms.FileSystem;
+using MCBS.BlockForms.FileSystem.IO;
 using MCBS.BlockForms.Utility;
 using MCBS.Events;
 using QuanLib.Game;
@@ -15,12 +17,14 @@ namespace MCBS.SystemApplications.FileCopyHandler
 {
     public class FileCopyHandlerForm : WindowForm
     {
-        public FileCopyHandlerForm(FileCopyHandler fileCopyHandler, CancellationTokenSource cancellationTokenSource)
+        public FileCopyHandlerForm(FileCopyHandler fileCopyHandler, Task task, CancellationTokenSource cancellationTokenSource)
         {
             ArgumentNullException.ThrowIfNull(fileCopyHandler, nameof(fileCopyHandler));
-            ArgumentNullException.ThrowIfNull(fileCopyHandler, nameof(fileCopyHandler));
+            ArgumentNullException.ThrowIfNull(task, nameof(task));
+            ArgumentNullException.ThrowIfNull(cancellationTokenSource, nameof(cancellationTokenSource));
 
             _fileCopyHandler = fileCopyHandler;
+            _task = task;
             _cancellationTokenSource = cancellationTokenSource;
             _viewData = GetViewData(fileCopyHandler);
             _progressTimestamp = new(DateTime.MinValue, 0);
@@ -46,6 +50,8 @@ namespace MCBS.SystemApplications.FileCopyHandler
         private Throughput _throughput;
 
         private readonly FileCopyHandler _fileCopyHandler;
+
+        private readonly Task _task;
 
         private readonly CancellationTokenSource _cancellationTokenSource;
 
@@ -128,13 +134,17 @@ namespace MCBS.SystemApplications.FileCopyHandler
                 UpdateView();
             }
 
-            if (_viewData.FileCount.Completed == _viewData.FileCount.Total || _cancellationTokenSource.IsCancellationRequested)
+            if (_viewData.FileCount.Completed >= _viewData.FileCount.Total ||
+                _task.IsCompleted ||
+                _cancellationTokenSource.IsCancellationRequested)
                 CloseForm();
         }
 
         public override void CloseForm()
         {
-            if (_viewData.FileCount.Completed == _viewData.FileCount.Total || _cancellationTokenSource.IsCancellationRequested)
+            if (_viewData.FileCount.Completed >= _viewData.FileCount.Total ||
+                _task.IsCompleted ||
+                _cancellationTokenSource.IsCancellationRequested)
             {
                 base.CloseForm();
                 return;
@@ -168,7 +178,7 @@ namespace MCBS.SystemApplications.FileCopyHandler
             TotalProgress_Label.Text = $"整体进度：{_bytesFormatter.Format(_viewData.TotalFileBytes.Completed)}/{_bytesFormatter.Format(_viewData.TotalFileBytes.Total)} ({Math.Round(_viewData.TotalFileBytes.Progress * 100)}%)";
             TotalProgress_HorizontalProgressBar.Progress = _viewData.TotalFileBytes.Progress;
 
-            Copying_Label.Text = "正在复制：" + _fileCopyHandler.CurrentFile?.Source?.Name is string path ? Path.GetFileName(path) : "已完成";
+            Copying_Label.Text = "正在复制：" + (_fileCopyHandler.CurrentFile?.Source?.Name is string path ? Path.GetFileName(path) : "已完成");
             Speed_Label.Text = $"读写速度：{_bytesFormatter.Format(_throughput.SpeedPerSecond)}/s";
         }
 

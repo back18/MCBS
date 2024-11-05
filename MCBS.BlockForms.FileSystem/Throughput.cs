@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.SystemApplications.FileCopyHandler
+namespace MCBS.BlockForms.FileSystem
 {
     public readonly struct Throughput(TimeSpan timeSpan, long bytes)
     {

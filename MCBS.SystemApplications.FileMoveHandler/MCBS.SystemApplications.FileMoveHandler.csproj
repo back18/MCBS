@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MCBS.BlockForms.FileSystem\MCBS.BlockForms.FileSystem.csproj" />
+    <ProjectReference Include="..\MCBS.BlockForms.FileSystem.IO\MCBS.BlockForms.FileSystem.IO.csproj" />
   </ItemGroup>
 
 </Project>

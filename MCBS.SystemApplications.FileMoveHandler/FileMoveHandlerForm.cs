@@ -10,17 +10,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MCBS.BlockForms.Utility;
+using MCBS.BlockForms.FileSystem;
+using MCBS.BlockForms.FileSystem.IO;
 
 namespace MCBS.SystemApplications.FileMoveHandler
 {
     public class FileMoveHandlerForm : WindowForm
     {
-        public FileMoveHandlerForm(FileMoveHandler fileMoveHandler, CancellationTokenSource cancellationTokenSource)
+        public FileMoveHandlerForm(FileMoveHandler fileMoveHandler, Task task, CancellationTokenSource cancellationTokenSource)
         {
             ArgumentNullException.ThrowIfNull(fileMoveHandler, nameof(fileMoveHandler));
-            ArgumentNullException.ThrowIfNull(fileMoveHandler, nameof(fileMoveHandler));
+            ArgumentNullException.ThrowIfNull(task, nameof(task));
+            ArgumentNullException.ThrowIfNull(cancellationTokenSource, nameof(cancellationTokenSource));
 
             _fileMoveHandler = fileMoveHandler;
+            _task = task;
             _cancellationTokenSource = cancellationTokenSource;
             _viewData = GetViewData(fileMoveHandler);
             _progressTimestamp = new(DateTime.MinValue, 0);
@@ -46,6 +50,8 @@ namespace MCBS.SystemApplications.FileMoveHandler
         private Throughput _throughput;
 
         private readonly FileMoveHandler _fileMoveHandler;
+
+        private readonly Task _task;
 
         private readonly CancellationTokenSource _cancellationTokenSource;
 
@@ -128,13 +134,17 @@ namespace MCBS.SystemApplications.FileMoveHandler
                 UpdateView();
             }
 
-            if (_viewData.FileCount.Completed == _viewData.FileCount.Total || _cancellationTokenSource.IsCancellationRequested)
+            if (_viewData.FileCount.Completed >= _viewData.FileCount.Total ||
+                _task.IsCompleted ||
+                _cancellationTokenSource.IsCancellationRequested)
                 CloseForm();
         }
 
         public override void CloseForm()
         {
-            if (_viewData.FileCount.Completed == _viewData.FileCount.Total || _cancellationTokenSource.IsCancellationRequested)
+            if (_viewData.FileCount.Completed >= _viewData.FileCount.Total ||
+                _task.IsCompleted ||
+                _cancellationTokenSource.IsCancellationRequested)
             {
                 base.CloseForm();
                 return;
@@ -168,7 +178,7 @@ namespace MCBS.SystemApplications.FileMoveHandler
             TotalProgress_Label.Text = $"整体进度：{_bytesFormatter.Format(_viewData.TotalFileBytes.Completed)}/{_bytesFormatter.Format(_viewData.TotalFileBytes.Total)} ({Math.Round(_viewData.TotalFileBytes.Progress * 100)}%)";
             TotalProgress_HorizontalProgressBar.Progress = _viewData.TotalFileBytes.Progress;
 
-            Moveing_Label.Text = "正在移动：" + _fileMoveHandler.CurrentFile?.Source?.Name is string path ? Path.GetFileName(path) : "已完成";
+            Moveing_Label.Text = "正在移动：" + Path.GetFileName(_fileMoveHandler.CurrentFile);
             Speed_Label.Text = $"读写速度：{_bytesFormatter.Format(_throughput.SpeedPerSecond)}/s";
         }
 
@@ -179,10 +189,7 @@ namespace MCBS.SystemApplications.FileMoveHandler
             return new(
                 new(fileMoveHandler.TotalFiles, fileMoveHandler.CompletedFiles),
                 new(fileMoveHandler.TotalBytes, fileMoveHandler.CompletedBytes),
-                fileMoveHandler.CurrentFile is IOStream fileMoveStream &&
-                !fileMoveStream.Source.SafeFileHandle.IsClosed &&
-                !fileMoveStream.Destination.SafeFileHandle.IsClosed ?
-                new(fileMoveStream.Source.Length, fileMoveStream.Destination.Length) : new(0, 0));
+                new(fileMoveHandler.CurrentFileTotalBytes, fileMoveHandler.CurrentFileCompletedBytes));
         }
     }
 }

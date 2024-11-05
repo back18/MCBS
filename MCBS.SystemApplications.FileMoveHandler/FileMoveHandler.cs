@@ -1,4 +1,6 @@
-﻿using QuanLib.Core;
+﻿using MCBS.BlockForms.FileSystem;
+using MCBS.BlockForms.FileSystem.IO;
+using QuanLib.Core;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -18,6 +20,10 @@ namespace MCBS.SystemApplications.FileMoveHandler
 
             _fileMoveStreams = fileMoveStreams.AsReadOnly();
             TotalBytes = fileMoveStreams.Sum(s => s.Source.Length);
+            CompletedBytes = 0;
+            CurrentFile = string.Empty;
+            CurrentFileTotalBytes = 0;
+            CurrentFileCompletedBytes = 0;
         }
 
         private readonly ReadOnlyCollection<IOStream> _fileMoveStreams;
@@ -32,7 +38,11 @@ namespace MCBS.SystemApplications.FileMoveHandler
 
         public long CompletedBytes { get; private set; }
 
-        public IOStream? CurrentFile => CheckHelper.Range(0, _fileMoveStreams.Count - 1, _position) ? _fileMoveStreams[_position] : null;
+        public string CurrentFile { get; private set; }
+
+        public long CurrentFileTotalBytes { get; private set; }
+
+        public long CurrentFileCompletedBytes { get; private set; }
 
         public async Task StartAsync()
         {
@@ -44,26 +54,47 @@ namespace MCBS.SystemApplications.FileMoveHandler
             for (_position = 0; _position < _fileMoveStreams.Count; _position++)
             {
                 IOStream fileMoveStream = _fileMoveStreams[_position];
-                if (FileSystem.DriveEquals(fileMoveStream.Source.Name, fileMoveStream.Destination.Name))
+                CurrentFile = fileMoveStream.Source.Name;
+                CurrentFileTotalBytes = fileMoveStream.Source.Length;
+
+                if (FileSystemUtil.DriveEquals(fileMoveStream.Source.Name, fileMoveStream.Destination.Name))
                 {
                     long length = fileMoveStream.Source.Length;
                     fileMoveStream.Source.Close();
                     fileMoveStream.Destination.Close();
                     File.Move(fileMoveStream.Source.Name, fileMoveStream.Destination.Name, true);
                     CompletedBytes += length;
+                    CurrentFileCompletedBytes = length;
                 }
                 else
                 {
                     long completedBytes = CompletedBytes;
-                    Progress<long> progress = new((bytes) => CompletedBytes = completedBytes + bytes);
+                    Progress<long> progress = new((bytes) =>
+                    {
+                        CompletedBytes = completedBytes + bytes;
+                        CurrentFileCompletedBytes = bytes;
+                    });
+
                     await CopyAsync(fileMoveStream.Source, fileMoveStream.Destination, progress, cancellationToken);
                     fileMoveStream.Source.Close();
                     File.Delete(fileMoveStream.Source.Name);
                 }
 
                 if (cancellationToken.IsCancellationRequested)
-                    break;
+                    throw new TaskCanceledException();
             }
+        }
+
+        public IOStream[] GetCompleted()
+        {
+            if (_position <= 0)
+                return [];
+
+            IOStream[] result = new IOStream[_position];
+            for (int i = 0; i < _position; i++)
+                result[i] = _fileMoveStreams[i];
+
+            return result;
         }
 
         private static async Task CopyAsync(FileStream source, FileStream destination, IProgress<long> progress, CancellationToken cancellationToken)

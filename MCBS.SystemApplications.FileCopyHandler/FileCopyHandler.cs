@@ -1,4 +1,5 @@
-﻿using QuanLib.Core;
+﻿using MCBS.BlockForms.FileSystem.IO;
+using QuanLib.Core;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -45,7 +46,7 @@ namespace MCBS.SystemApplications.FileCopyHandler
                 await CopyAsync(fileCopyStream.Source, fileCopyStream.Destination, cancellationToken);
 
                 if (cancellationToken.IsCancellationRequested)
-                    break;
+                    throw new TaskCanceledException();
             }
         }
 

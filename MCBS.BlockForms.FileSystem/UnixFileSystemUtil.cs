@@ -7,11 +7,11 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.SystemApplications.FileMoveHandler
+namespace MCBS.BlockForms.FileSystem
 {
     [SupportedOSPlatform("Linux")]
     [SupportedOSPlatform("MacOS")]
-    public static class UnixFileSystem
+    public static class UnixFileSystemUtil
     {
         public static bool DriveEquals(string path1, string path2)
         {

@@ -222,7 +222,7 @@ namespace MCBS.BlockForms.FileSystem
                     return [];
                 }
 
-                return FileListUtil.Sort(directoryInfos, fileInfos, _owner.FileListSort, _owner.FileListSortDirection);
+                return FileSystemUtil.Sort(directoryInfos, fileInfos, _owner.FileListSort, _owner.FileListSortDirection);
             }
 
             private FileBox CreateFileBox(FileSystemInfo fileSystemInfo)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.SystemApplications.FileMoveHandler
+namespace MCBS.BlockForms.FileSystem.IO
 {
     public readonly struct IOPath(string source, string destination)
     {

@@ -35,8 +35,9 @@ namespace MCBS.SystemApplications.FileDeleteHandler
                 {
                     if (Directory.Exists(arg))
                     {
-                        files.AddRange(DirectoryUtil.GetAllFiles(arg));
                         directorys.Add(arg);
+                        directorys.AddRange(DirectoryUtil.GetAllDirectories(arg));
+                        files.AddRange(DirectoryUtil.GetAllFiles(arg));
                     }
                     else if (File.Exists(arg))
                     {
@@ -84,30 +85,31 @@ namespace MCBS.SystemApplications.FileDeleteHandler
                 if (DialogBoxHelper.OpenMessageBox(
                     initiator,
                     "是否跳过",
-                    e.Argument.ToString(),
+                    e.Argument.Message,
                     MessageBoxButtons.Yes | MessageBoxButtons.No)
                     == MessageBoxButtons.No)
                     cancellationTokenSource.Cancel();
             };
             Task deleteTask = fileDeleteHandler.StartAsync(cancellationTokenSource.Token);
 
-            if (!deleteTask.Wait(100))
-                this.RunForm(new FileDeleteHandlerForm(fileDeleteHandler, cancellationTokenSource));
-
-            if (!cancellationTokenSource.IsCancellationRequested)
+            try
             {
-                foreach (string directory in directorys)
-                {
-                    try
-                    {
-                        Directory.Delete(directory, true);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
+                if (!deleteTask.Wait(100))
+                    this.RunForm(new FileDeleteHandlerForm(fileDeleteHandler, deleteTask, cancellationTokenSource));
+                deleteTask.Wait();
             }
+            catch (AggregateException ex) when (ex.InnerException is TaskCanceledException)
+            {
+                DialogBoxHelper.OpenMessageBox(
+                    initiator,
+                    "提醒",
+                    "任务已取消",
+                    MessageBoxButtons.Yes);
+                return 0;
+            }
+
+            foreach (string directory in directorys.Order().OrderByDescending(i => i.Length))
+                FileSystemUtil.TryDeleteDirectory(directory, false);
 
             return 0;
         }

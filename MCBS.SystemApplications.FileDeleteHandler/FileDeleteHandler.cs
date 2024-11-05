@@ -52,13 +52,17 @@ namespace MCBS.SystemApplications.FileDeleteHandler
                 {
                     await DeleteAsync(_files[_position]);
                 }
-                catch (AggregateException ex)
+                catch (Exception ex)
                 {
+                    if (ex is AggregateException aex && aex.InnerException is not null)
+                        ex = aex.InnerException;
+
                     StringBuilder stringBuilder = new();
                     stringBuilder.AppendLine("文件删除时遇到了错误：");
-                    stringBuilder.AppendLine(ExceptionMessageFactory.GetLocalMessag(ex.InnerException ?? ex));
+                    stringBuilder.AppendLine(ExceptionMessageFactory.GetLocalMessag(ex));
                     stringBuilder.AppendLine("文件路径：");
-                    stringBuilder.Append(file);
+                    stringBuilder.AppendLine(file);
+                    stringBuilder.AppendLine("错误信息：");
                     aggregateException = new(stringBuilder.ToString(), ex);
                 }
 
@@ -66,7 +70,7 @@ namespace MCBS.SystemApplications.FileDeleteHandler
                     ThrowException.Invoke(this, new(aggregateException));
 
                 if (cancellationToken.IsCancellationRequested)
-                    break;
+                    throw new TaskCanceledException();
             }
         }
 

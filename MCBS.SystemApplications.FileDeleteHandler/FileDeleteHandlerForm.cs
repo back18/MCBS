@@ -15,12 +15,14 @@ namespace MCBS.SystemApplications.FileDeleteHandler
 {
     public class FileDeleteHandlerForm : WindowForm
     {
-        public FileDeleteHandlerForm(FileDeleteHandler fileDeleteHandler, CancellationTokenSource cancellationTokenSource)
+        public FileDeleteHandlerForm(FileDeleteHandler fileDeleteHandler, Task task, CancellationTokenSource cancellationTokenSource)
         {
             ArgumentNullException.ThrowIfNull(fileDeleteHandler, nameof(fileDeleteHandler));
+            ArgumentNullException.ThrowIfNull(task, nameof(task));
             ArgumentNullException.ThrowIfNull(cancellationTokenSource, nameof(cancellationTokenSource));
 
             _fileDeleteHandler = fileDeleteHandler;
+            _task = task;
             _cancellationTokenSource = cancellationTokenSource;
 
             FileCount_Label = new();
@@ -34,6 +36,8 @@ namespace MCBS.SystemApplications.FileDeleteHandler
         private ViewData _viewData;
 
         private readonly FileDeleteHandler _fileDeleteHandler;
+
+        private readonly Task _task;
 
         private readonly CancellationTokenSource _cancellationTokenSource;
 
@@ -82,13 +86,17 @@ namespace MCBS.SystemApplications.FileDeleteHandler
                 UpdateView();
             }
 
-            if (_viewData.FileCount.Completed == _viewData.FileCount.Total || _cancellationTokenSource.IsCancellationRequested)
+            if (_viewData.FileCount.Completed >= _viewData.FileCount.Total ||
+                _task.IsCompleted ||
+                _cancellationTokenSource.IsCancellationRequested)
                 CloseForm();
         }
 
         public override void CloseForm()
         {
-            if (_viewData.FileCount.Completed == _viewData.FileCount.Total || _cancellationTokenSource.IsCancellationRequested)
+            if (_viewData.FileCount.Completed >= _viewData.FileCount.Total ||
+                _task.IsCompleted ||
+                _cancellationTokenSource.IsCancellationRequested)
             {
                 base.CloseForm();
                 return;
