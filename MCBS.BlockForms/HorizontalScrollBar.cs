@@ -10,6 +10,14 @@ namespace MCBS.BlockForms
 {
     public class HorizontalScrollBar : ScrollBar
     {
+        public HorizontalScrollBar()
+        {
+            FirstHandleRightClick = true;
+
+            Skin.SetBorderColor(string.Empty, Utility.ControlState.None, Utility.ControlState.Selected);
+            Skin.SetBackgroundColor(string.Empty, Utility.ControlState.None, Utility.ControlState.Selected);
+        }
+
         protected override BlockFrame Drawing()
         {
             int position = (int)Math.Round(ClientSize.Width * SliderPosition);
@@ -18,7 +26,12 @@ namespace MCBS.BlockForms
                 length = 1;
 
             BlockFrame baseFrame = base.Drawing();
-            baseFrame.Overwrite(new HashBlockFrame(length, ClientSize.Height, GetForegroundColor()), new(position, 0));
+
+            if (ControlState.HasFlag(Utility.ControlState.Hover))
+                baseFrame.Overwrite(new HashBlockFrame(length, ClientSize.Height, GetForegroundColor()), new(position, 0));
+            else
+                baseFrame.DrawHorizontalLine(Height / 2, position, length, GetForegroundColor().ToBlockId());
+
             return baseFrame;
         }
     }

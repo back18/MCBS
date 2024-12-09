@@ -10,6 +10,14 @@ namespace MCBS.BlockForms
 {
     public class VerticalScrollBar : ScrollBar
     {
+        public VerticalScrollBar()
+        {
+            FirstHandleRightClick = true;
+
+            Skin.SetBorderColor(string.Empty, Utility.ControlState.None, Utility.ControlState.Selected);
+            Skin.SetBackgroundColor(string.Empty, Utility.ControlState.None, Utility.ControlState.Selected);
+        }
+
         protected override BlockFrame Drawing()
         {
             int position = (int)Math.Round(ClientSize.Height * SliderPosition);
@@ -18,7 +26,12 @@ namespace MCBS.BlockForms
                 length = 1;
 
             BlockFrame baseFrame = base.Drawing();
-            baseFrame.Overwrite(new HashBlockFrame(ClientSize.Width, length, GetForegroundColor()), new(0, position));
+
+            if (ControlState.HasFlag(Utility.ControlState.Hover))
+                baseFrame.Overwrite(new HashBlockFrame(ClientSize.Width, length, GetForegroundColor()), new(0, position));
+            else
+                baseFrame.DrawVerticalLine(Width / 2, position, length, GetForegroundColor().ToBlockId());
+
             return baseFrame;
         }
     }
