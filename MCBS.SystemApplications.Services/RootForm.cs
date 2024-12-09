@@ -138,14 +138,14 @@ namespace MCBS.SystemApplications.Services
             ShowTaskBar_Button.RightClick += ShowTaskBar_Button_RightClick;
         }
 
-        public override void HandleCursorMove(CursorEventArgs e)
+        public override bool HandleCursorMove(CursorEventArgs e)
         {
             UpdateHoverState(e);
 
             if (CursorIsBusy(e))
-                return;
+                return false;
 
-            base.HandleCursorMove(e);
+            return base.HandleCursorMove(e);
         }
 
         public override bool HandleRightClick(CursorEventArgs e)

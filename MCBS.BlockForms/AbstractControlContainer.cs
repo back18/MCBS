@@ -89,14 +89,14 @@ namespace MCBS.BlockForms
             }
         }
 
-        public override void HandleCursorMove(CursorEventArgs e)
+        public override bool HandleCursorMove(CursorEventArgs e)
         {
             foreach (var control in GetChildControls().ToArray())
             {
                 control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos));
             }
 
-            base.HandleCursorMove(e);
+            return base.HandleCursorMove(e);
         }
 
         public override bool HandleRightClick(CursorEventArgs e)

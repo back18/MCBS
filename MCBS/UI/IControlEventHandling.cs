@@ -9,7 +9,7 @@ namespace MCBS.UI
 {
     public interface IControlEventHandling
     {
-        public void HandleCursorMove(CursorEventArgs e);
+        public bool HandleCursorMove(CursorEventArgs e);
 
         public bool HandleRightClick(CursorEventArgs e);
 

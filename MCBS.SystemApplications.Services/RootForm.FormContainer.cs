@@ -39,25 +39,25 @@ namespace MCBS.SystemApplications.Services
                     form.ClientSize += offset;
             }
 
-            public override void HandleCursorMove(CursorEventArgs e)
+            public override bool HandleCursorMove(CursorEventArgs e)
             {
                 foreach (var control in GetChildControls().ToArray())
                     control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
                 UpdateHoverState(e);
 
                 if (CursorUtil.IsDragForming(e))
-                    return;
+                    return false;
 
                 IForm? firstSelectedForm = ChildControls.FirstSelected;
                 if (firstSelectedForm is null)
-                    return;
+                    return false;
 
                 if (MinecraftBlockScreen.Instance.FormContextOf(firstSelectedForm) is FormContext formContext &&
                     formContext.FormState == FormState.Stretching &&
                     formContext.StretchingContext?.CursorContext != e.CursorContext)
-                    return;
+                    return false;
 
-                firstSelectedForm.HandleCursorMove(e.Clone(firstSelectedForm.ParentPos2ChildPos));
+                return firstSelectedForm.HandleCursorMove(e.Clone(firstSelectedForm.ParentPos2ChildPos));
             }
 
             public override bool HandleRightClick(CursorEventArgs e)

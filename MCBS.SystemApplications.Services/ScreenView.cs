@@ -39,21 +39,21 @@ namespace MCBS.SystemApplications.Services
             RootForm_Control.ClientSize = ClientSize;
         }
 
-        public override void HandleCursorMove(CursorEventArgs e)
+        public override bool HandleCursorMove(CursorEventArgs e)
         {
             foreach (var control in GetChildControls().ToArray())
                 control.UpdateHoverState(e.Clone(control.ParentPos2ChildPos));
             UpdateHoverState(e);
 
             if (CursorUtil.IsDragForming(e))
-                return;
+                return false;
 
             if (MinecraftBlockScreen.Instance.FormContextOf(RootForm_Control) is FormContext formContext &&
                 formContext.FormState == FormState.Stretching &&
                 formContext.StretchingContext?.CursorContext != e.CursorContext)
-                return;
+                return false;
 
-            RootForm_Control.HandleCursorMove(e.Clone(RootForm_Control.ParentPos2ChildPos));
+            return RootForm_Control.HandleCursorMove(e.Clone(RootForm_Control.ParentPos2ChildPos));
         }
 
         public override bool HandleRightClick(CursorEventArgs e)

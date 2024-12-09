@@ -1,5 +1,6 @@
 ﻿using MCBS.BlockForms.Utility;
 using MCBS.Events;
+using MCBS.UI;
 using MCBS.UI.Extensions;
 using QuanLib.Core;
 using QuanLib.Core.Events;
@@ -48,6 +49,42 @@ namespace MCBS.BlockForms
                 if (control.LayoutMode == LayoutMode.Auto)
                     control.HandleLayout(e);
             }
+        }
+
+        public override bool HandleCursorMove(CursorEventArgs e)
+        {
+            UpdateHoverState(e);
+
+            var controls = GetChildControls().ToArray();
+            Control? handled = null;
+
+            foreach (var control in controls.Reverse())
+            {
+                if (control.FirstHandleCursorMove && control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos)))
+                {
+                    handled = control;
+                    goto end;
+                }
+            }
+
+            foreach (var control in controls)
+            {
+                if (!control.FirstHandleCursorMove)
+                    control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos));
+            }
+
+            end:
+
+            foreach (var control in controls)
+            {
+                if (control == handled)
+                    continue;
+
+                if (control.ControlState.HasFlag(ControlState.Hover))
+                    control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos));
+            }
+
+            return TryInvokeCursorMove(e);
         }
 
         public override bool HandleRightClick(CursorEventArgs e)

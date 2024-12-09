@@ -24,6 +24,7 @@ namespace MCBS.BlockForms
     {
         protected Control()
         {
+            FirstHandleCursorMove = true;
             FirstHandleRightClick = false;
             FirstHandleLeftClick = false;
             FirstHandleCursorSlotChanged = false;
@@ -81,6 +82,8 @@ namespace MCBS.BlockForms
         private BlockFrame? _drawCache;
 
         private readonly List<CursorContext> _hoverCursors;
+
+        public bool FirstHandleCursorMove { get; set; }
 
         public bool FirstHandleRightClick { get; set; }
 
@@ -588,7 +591,7 @@ namespace MCBS.BlockForms
             IScreenView? screenView = this.GetScreenView();
             if (screenView is not null)
             {
-                foreach (var cursorContext in _hoverCursors)
+                foreach (var cursorContext in _hoverCursors.ToArray())
                     screenView.HandleCursorMove(new(cursorContext.NewInputData.CursorPosition, cursorContext));
             }
         }
@@ -637,13 +640,10 @@ namespace MCBS.BlockForms
 
         #region 事件处理
 
-        public virtual void HandleCursorMove(CursorEventArgs e)
+        public virtual bool HandleCursorMove(CursorEventArgs e)
         {
             UpdateHoverState(e);
-            if (this.IncludedOnControl(e.Position) || InvokeExternalCursorMove)
-            {
-                CursorMove.Invoke(this, e);
-            }
+            return TryInvokeCursorMove(e);
         }
 
         public virtual bool HandleLeftClick(CursorEventArgs e)
@@ -692,6 +692,24 @@ namespace MCBS.BlockForms
         }
 
         #region TryInvoke
+
+        protected bool TryInvokeCursorMove(CursorEventArgs e)
+        {
+            if (this.IncludedOnControl(e.Position))
+            {
+                CursorMove.Invoke(this, e);
+                return true;
+            }
+            else if (InvokeExternalCursorMove)
+            {
+                CursorMove.Invoke(this, e);
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         protected bool TryInvokeLeftClick(CursorEventArgs e)
         {
