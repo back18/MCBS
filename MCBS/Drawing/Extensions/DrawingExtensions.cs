@@ -133,7 +133,8 @@ namespace MCBS.Drawing.Extensions
             ArgumentNullException.ThrowIfNull(source, nameof(source));
             ArgumentNullException.ThrowIfNull(rendering, nameof(rendering));
 
-            if (rendering.BorderWidth > 0)
+            string blockId = rendering.GetBorderColor().ToBlockId();
+            if (!string.IsNullOrEmpty(blockId) && rendering.BorderWidth > 0)
             {
                 int width = rendering.ClientSize.Width + rendering.BorderWidth * 2;
                 int heigth = rendering.ClientSize.Height + rendering.BorderWidth * 2;
@@ -146,8 +147,6 @@ namespace MCBS.Drawing.Extensions
                 int endBottom = location.Y + rendering.ClientSize.Height + rendering.BorderWidth - 1;
                 int endLeft = location.X - rendering.BorderWidth;
                 int endRight = location.X + rendering.ClientSize.Width + rendering.BorderWidth - 1;
-
-                string blockId = rendering.GetBorderColor().ToBlockId();
 
                 for (int y = startTop; y >= endTop; y--)
                     source.DrawHorizontalLine(y, endLeft, width, blockId);
