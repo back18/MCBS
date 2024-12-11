@@ -168,7 +168,11 @@ namespace MCBS.BlockForms
                 .Where(w =>
                 w.Visible &&
                 w.ClientSize.Width > 0 &&
-                w.ClientSize.Height > 0);
+                w.ClientSize.Height > 0 &&
+                w.ClientLocation.X + w.ClientSize.Width + w.BorderWidth > OffsetPosition.X &&
+                w.ClientLocation.Y + w.ClientSize.Height + w.BorderWidth > OffsetPosition.Y &&
+                w.ClientLocation.X - w.BorderWidth < ClientSize.Width + OffsetPosition.X &&
+                w.ClientLocation.Y - w.BorderWidth < ClientSize.Height + OffsetPosition.Y);
 
             Parallel.ForEach(ChildControls, control => childDrawResults.Add(control.GetDrawResult()));
             DrawResult drawResult = drawingTask.Result;
@@ -178,12 +182,12 @@ namespace MCBS.BlockForms
 
             foreach (var control in ChildControls)
             {
-                DrawResult? drawResult1 = childDrawResults.FirstOrDefault(f => f.Control == control);
-                if (drawResult1 is null)
+                DrawResult? drawResult2 = childDrawResults.FirstOrDefault(f => f.Control == control);
+                if (drawResult2 is null)
                     continue;
 
-                drawResult.BlockFrame.Overwrite(drawResult1.BlockFrame, drawResult1.Control.ClientSize, drawResult1.Control.GetDrawingLocation(), drawResult1.Control.OffsetPosition);
-                drawResult.BlockFrame.DrawBorder(drawResult1.Control, drawResult1.Control.GetDrawingLocation());
+                drawResult.BlockFrame.Overwrite(drawResult2.BlockFrame, drawResult2.Control.ClientSize, drawResult2.Control.GetDrawingLocation(), drawResult2.Control.OffsetPosition);
+                drawResult.BlockFrame.DrawBorder(drawResult2.Control, drawResult2.Control.GetDrawingLocation());
             }
 
             return drawResult;
