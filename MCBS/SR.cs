@@ -65,7 +65,7 @@ namespace MCBS
             };
 
             _Rgba32BlockMappings = mappings.AsReadOnly();
-            _HashBlockMapping = new();
+            _HashBlockMapping = new(blockTextureManager, ScreenConfig.ScreenBlockBlacklist);
 
             LOGGER.Info($"Minecraft方块纹理数据加载完成，成功加载 {blockTextureManager.Count} 个方块纹理数据");
         }

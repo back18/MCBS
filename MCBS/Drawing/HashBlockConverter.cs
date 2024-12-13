@@ -27,7 +27,7 @@ namespace MCBS.Drawing
             }
         }
 
-        public int this[string blockId] => _mapping.RegistrationHash(blockId);
+        public int this[string blockId] => _mapping.TryGetKey(blockId, out var hash) ? hash : string.Empty.GetHashCode();
 
         public IBlockMapping<int> BlockMapping => _mapping;
 
