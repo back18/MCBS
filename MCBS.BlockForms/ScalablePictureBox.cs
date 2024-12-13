@@ -236,7 +236,7 @@ namespace MCBS.BlockForms
         private void UpdateTextureTexture()
         {
             if (Texture.CropRectangle.Width > ClientSize.Width)
-                Texture.ResizeOptions.Sampler = KnownResamplers.Bicubic;
+                Texture.ResizeOptions.Sampler = KnownResamplers.Robidoux;
             else
                 Texture.ResizeOptions.Sampler = KnownResamplers.NearestNeighbor;
         }

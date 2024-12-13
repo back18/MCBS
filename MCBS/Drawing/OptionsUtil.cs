@@ -20,7 +20,7 @@ namespace MCBS.Drawing
                 Position = AnchorPositionMode.Center,
                 CenterCoordinates = null,
                 Size = Size.Empty,
-                Sampler = KnownResamplers.Bicubic,
+                Sampler = KnownResamplers.Robidoux,
                 Compand = false,
                 TargetRectangle = null,
                 PremultiplyAlpha = true,
