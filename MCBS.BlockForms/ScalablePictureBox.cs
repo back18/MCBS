@@ -26,6 +26,7 @@ namespace MCBS.BlockForms
             FirstHandleCursorSlotChanged = true;
             DefaultResizeOptions.Mode = ResizeMode.Max;
             ScalingRatio = 0.2;
+            AutoSampler = true;
             EnableZoom = false;
             EnableDrag = false;
 
@@ -40,6 +41,8 @@ namespace MCBS.BlockForms
         public bool PixelMode => GetPixelLength() >= PixelModeThreshold;
 
         public double ScalingRatio { get; set; }
+
+        public bool AutoSampler { get; set; }
 
         public bool EnableZoom { get; set; }
 
@@ -107,7 +110,8 @@ namespace MCBS.BlockForms
         protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
             Texture.CropRectangle = Texture.ImageSource.Bounds;
-            UpdateTextureTexture();
+            if (AutoSampler)
+                AutoUpdateSampler();
 
             if (Texture.GetOutputSize() == e.NewValue)
                 return;
@@ -121,7 +125,8 @@ namespace MCBS.BlockForms
         {
             base.OnTextureChanged(sender, e);
 
-            UpdateTextureTexture();
+            if (AutoSampler)
+                AutoUpdateSampler();
         }
 
         protected override void OnCursorSlotChanged(Control sender, CursorEventArgs e)
@@ -201,7 +206,8 @@ namespace MCBS.BlockForms
             rectangle = CorrectCropRectangle(rectangle);
 
             Texture.CropRectangle = rectangle;
-            UpdateTextureTexture();
+            if (AutoSampler)
+                AutoUpdateSampler();
             RequestRedraw();
         }
 
@@ -233,7 +239,7 @@ namespace MCBS.BlockForms
             return rectangle;
         }
 
-        private void UpdateTextureTexture()
+        private void AutoUpdateSampler()
         {
             if (Texture.CropRectangle.Width > ClientSize.Width)
                 Texture.ResizeOptions.Sampler = KnownResamplers.Robidoux;

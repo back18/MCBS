@@ -88,6 +88,7 @@ namespace MCBS.SystemApplications.Album
             Home_PagePanel.Resize += ClientPanel_Resize;
 
             Home_PagePanel.ChildControls.Add(ScalablePictureBox);
+            ScalablePictureBox.AutoSampler = false;
             ScalablePictureBox.EnableZoom = true;
             ScalablePictureBox.EnableDrag = true;
             ScalablePictureBox.BorderWidth = 0;
