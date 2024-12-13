@@ -33,6 +33,8 @@ namespace MCBS.BlockForms
             VideoFrameChanged += OnVideoFrameChanged;
         }
 
+        private BlockFrame? _preDrawFrame;
+
         public MediaOptions DefaultMediaOptions { get; }
 
         public ResizeOptions DefaultResizeOptions { get; }
@@ -55,6 +57,7 @@ namespace MCBS.BlockForms
 
         protected virtual void OnVideoFrameChanged(VideoBox<TPixel> sender, ValueChangedEventArgs<VideoFrame<TPixel>?> e)
         {
+            _preDrawFrame = PreDrawing();
             RequestRedraw();
         }
 
@@ -67,9 +70,17 @@ namespace MCBS.BlockForms
 
         protected override BlockFrame Drawing()
         {
+            if (_preDrawFrame is null)
+                return base.Drawing();
+
+            return _preDrawFrame;
+        }
+
+        private BlockFrame? PreDrawing()
+        {
             VideoFrame<TPixel>? videoFrame = MediaFilePlayer?.CurrentVideoFrame;
             if (videoFrame is null)
-                return base.Drawing();
+                return null;
 
             Texture<TPixel> texture = new(videoFrame.Image, DefaultResizeOptions);
             BlockFrame textureFrame = texture.CreateBlockFrame(ClientSize, this.GetNormalFacing());
