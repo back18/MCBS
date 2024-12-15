@@ -44,9 +44,21 @@ namespace MCBS.Drawing
                 if (isBlacklist)
                     continue;
 
+                TryAdd(blockId);
+            }
+
+            TryAdd("minecraft:air");
+            TryAdd(string.Empty);
+
+            bool TryAdd(string blockId)
+            {
+                if (_keys.ContainsKey(blockId))
+                    return false;
+
                 int hash = blockId.GetHashCode();
                 _keys.Add(blockId, hash);
                 _values.Add(hash, blockId);
+                return true;
             }
         }
 
