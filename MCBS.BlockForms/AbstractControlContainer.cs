@@ -12,6 +12,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -161,9 +162,9 @@ namespace MCBS.BlockForms
 
         public override DrawResult GetDrawResult()
         {
-            Task<DrawResult> drawingTask = Task.Run(() => base.GetDrawResult());
-            ConcurrentBag<DrawResult> childDrawResults = [];
-            IEnumerable<TControl> ChildControls =
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            TControl[] ChildControls =
                 GetChildControls()
                 .Where(w =>
                 w.Visible &&
@@ -172,25 +173,50 @@ namespace MCBS.BlockForms
                 w.ClientLocation.X + w.ClientSize.Width + w.BorderWidth > OffsetPosition.X &&
                 w.ClientLocation.Y + w.ClientSize.Height + w.BorderWidth > OffsetPosition.Y &&
                 w.ClientLocation.X - w.BorderWidth < ClientSize.Width + OffsetPosition.X &&
-                w.ClientLocation.Y - w.BorderWidth < ClientSize.Height + OffsetPosition.Y);
+                w.ClientLocation.Y - w.BorderWidth < ClientSize.Height + OffsetPosition.Y)
+                .ToArray();
 
+            if (ChildControls.Length == 0)
+                return base.GetDrawResult();
+
+            Task<DrawResult> drawingTask = Task.Run(() => base.GetDrawResult());
+            ConcurrentBag<DrawResult> childDrawResults = [];
+
+            Stopwatch stopwatch1 = Stopwatch.StartNew();
             Parallel.ForEach(ChildControls, control => childDrawResults.Add(control.GetDrawResult()));
-            DrawResult drawResult = drawingTask.Result;
+            stopwatch1.Stop();
 
-            if (!drawResult.IsRedraw && !childDrawResults.Where(w => w.IsRedraw).Any())
+            Stopwatch stopwatch2 = Stopwatch.StartNew();
+            DrawResult drawResult = drawingTask.Result;
+            stopwatch2.Stop();
+
+            if (!drawResult.IsRedraw && !childDrawResults.Any(w => w.IsRedraw))
                 return drawResult;
 
+            Stopwatch stopwatch3 = Stopwatch.StartNew();
             foreach (var control in ChildControls)
             {
-                DrawResult? drawResult2 = childDrawResults.FirstOrDefault(f => f.Control == control);
-                if (drawResult2 is null)
+                DrawResult? childDrawResult = childDrawResults.FirstOrDefault(f => f.Control == control);
+                if (childDrawResult is null)
                     continue;
 
-                drawResult.BlockFrame.Overwrite(drawResult2.BlockFrame, drawResult2.Control.ClientSize, drawResult2.Control.GetDrawingLocation(), drawResult2.Control.OffsetPosition);
-                drawResult.BlockFrame.DrawBorder(drawResult2.Control, drawResult2.Control.GetDrawingLocation());
+                BlockFrame background = drawResult.BlockFrame;
+                background.Overwrite(childDrawResult.BlockFrame, control.ClientSize, control.GetDrawingLocation(), control.OffsetPosition);
+                background.DrawBorder(control, control.GetDrawingLocation());
             }
+            stopwatch3.Stop();
 
-            return drawResult;
+            stopwatch.Stop();
+
+            return new ContainerDrawResult(
+                this,
+                drawResult.BlockFrame,
+                true,
+                stopwatch.Elapsed,
+                stopwatch2.Elapsed,
+                stopwatch1.Elapsed,
+                stopwatch3.Elapsed,
+                childDrawResults.ToArray());
         }
     }
 }
