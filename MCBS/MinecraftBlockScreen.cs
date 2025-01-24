@@ -152,11 +152,10 @@ namespace MCBS
             ProcessScheduling();
             FormScheduling();
 
+            _msptRecord.Clear();
             if (_query.IsCompleted)
             {
-                _msptRecord.Clear();
                 CommandManager.SnbtCache.Clear();
-
                 InteractionScheduling();
                 ScoreboardScheduling();
                 ScreenBuildScheduling();
