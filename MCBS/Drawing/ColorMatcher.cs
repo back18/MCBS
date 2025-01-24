@@ -28,7 +28,7 @@ namespace MCBS.Drawing
             Rgba32 rgba32 = ToRgba32(pixel);
             if (rgba32.A == byte.MaxValue || _mappingCache.IsSupportAlpha)
                 return _mappingCache[rgba32];
-            else if (_colorFinder.Contains(rgba32))
+            else if (rgba32 == default || _colorFinder.Contains(rgba32))
                 return rgba32;
             else
                 return _colorFinder.Find(rgba32);
