@@ -85,7 +85,7 @@ namespace MCBS.BlockForms
             Texture<TPixel> texture = new(videoFrame.Image, DefaultResizeOptions);
             BlockFrame textureFrame = texture.CreateBlockFrame(ClientSize, this.GetNormalFacing());
             if (RequestDrawTransparencyTexture)
-                return textureFrame;
+                return textureFrame.ToHashBlockFrame();
 
             BlockFrame baseFrame = base.Drawing();
             baseFrame.Overwrite(textureFrame, Point.Empty);
