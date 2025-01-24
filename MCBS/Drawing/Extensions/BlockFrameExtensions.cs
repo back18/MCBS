@@ -28,6 +28,18 @@ namespace MCBS.Drawing.Extensions
             return source.Overwrite(blockFrame, new(blockFrame.Width, blockFrame.Height), location, Point.Empty);
         }
 
+        public static HashBlockFrame ToHashBlockFrame(this BlockFrame source)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            if (source is HashBlockFrame hashBlockFrame)
+                return hashBlockFrame;
+
+            hashBlockFrame = new(source.Width, source.Height);
+            hashBlockFrame.Overwrite(source, new(0, 0));
+            return hashBlockFrame;
+        }
+
         public static Image<Rgba32> ToImage(this BlockFrame source, Facing facing)
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
