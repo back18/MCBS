@@ -70,10 +70,7 @@ namespace MCBS.Drawing
             }
             else
             {
-                foreach (var mapping in overwriteContext)
-                {
-                    this[mapping.BasePosition.X, mapping.BasePosition.Y] = pixels[mapping.OverwritePosition.X, mapping.OverwritePosition.Y];
-                }
+                Parallel.ForEach(overwriteContext, (mapping) => this[mapping.BasePosition.X, mapping.BasePosition.Y] = pixels[mapping.OverwritePosition.X, mapping.OverwritePosition.Y]);
             }
 
             return overwriteContext;
