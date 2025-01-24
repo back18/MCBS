@@ -19,7 +19,9 @@ namespace MCBS.Drawing
             Width = width;
             Height = height;
             _hashs = new int[width * height];
-            Fill(pixel);
+
+            if (pixel != 0)
+                Fill(pixel);
         }
 
         private readonly int[] _hashs;
