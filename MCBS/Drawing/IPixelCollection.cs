@@ -16,6 +16,12 @@ namespace MCBS.Drawing
 
         public TPixel TransparentPixel { get; }
 
+        public bool IsTransparentPixel(int index);
+
+        public bool IsTransparentPixel(int x, int y);
+
+        public bool CheckTransparentPixel();
+
         public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Size size, Point location, Point offset);
 
         public void Fill(TPixel pixel);

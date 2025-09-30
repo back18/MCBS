@@ -18,13 +18,12 @@ namespace MCBS.Drawing
 
             Width = width;
             Height = height;
+            TransparentPixel = string.Empty.GetHashCode();
             _hashs = new int[width * height];
 
             if (pixel != 0)
                 Fill(pixel);
         }
-
-        private readonly int[] _hashs;
 
         private HashPixelCollection(int width, int height, int[] pixels)
         {
@@ -35,12 +34,15 @@ namespace MCBS.Drawing
 
             Width = width;
             Height = height;
+            TransparentPixel = string.Empty.GetHashCode();
             _hashs = pixels;
         }
 
         public int this[int index] { get => _hashs[index]; set => _hashs[index] = value; }
 
         public int this[int x, int y] { get => _hashs[ToIndex(x, y)]; set => _hashs[ToIndex(x, y)] = value; }
+
+        private readonly int[] _hashs;
 
         public int Count => _hashs.Length;
 
@@ -52,7 +54,28 @@ namespace MCBS.Drawing
 
         public virtual bool SupportTransparent => true;
 
-        public int TransparentPixel => string.Empty.GetHashCode();
+        public int TransparentPixel { get; }
+
+        public bool IsTransparentPixel(int index)
+        {
+            return this[index] == TransparentPixel;
+        }
+
+        public bool IsTransparentPixel(int x, int y)
+        {
+            return this[x, y] == TransparentPixel;
+        }
+
+        public bool CheckTransparentPixel()
+        {
+            foreach (int hash in _hashs)
+            {
+                if (hash == TransparentPixel)
+                    return true;
+            }
+
+            return false;
+        }
 
         public OverwriteContext Overwrite(IPixelCollection<int> pixels, Size size, Point location, Point offset)
         {
@@ -127,6 +150,47 @@ namespace MCBS.Drawing
         public void CopyPixelDataTo(Span<int> destination)
         {
             new Span<int>(_hashs).CopyTo(destination);
+        }
+
+        public HashPixelCollection Crop(Rectangle rectangle)
+        {
+            if (rectangle.X < 0)
+            {
+                rectangle.Width += rectangle.X;
+                rectangle.X = 0;
+            }
+            if (rectangle.Y < 0)
+            {
+                rectangle.Height += rectangle.Y;
+                rectangle.Y = 0;
+            }
+
+            rectangle.Width = Math.Min(rectangle.Width, Width - rectangle.X);
+            rectangle.Height = Math.Min(rectangle.Height, Height - rectangle.Y);
+
+            int count = rectangle.Width * rectangle.Height;
+            if (count <= 0)
+                throw new InvalidOperationException();
+
+            int[] array = new int[count];
+            int index1 = rectangle.Y * Width + rectangle.X;
+            int index2 = 0;
+
+            if (rectangle.Width == Width)
+            {
+                Array.Copy(_hashs, index1, array, index2, count);
+            }
+            else
+            {
+                for (int i = 0; i < rectangle.Height; i++)
+                {
+                    Array.Copy(_hashs, index1, array, index2, rectangle.Width);
+                    index1 += Width;
+                    index2 += rectangle.Width;
+                }
+            }
+
+            return new(rectangle.Width, rectangle.Height, array);
         }
 
         public HashPixelCollection Clone()

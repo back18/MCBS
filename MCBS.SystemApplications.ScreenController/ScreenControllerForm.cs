@@ -39,7 +39,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlock();
+            screenContext.ScreenOutputHandler.FillAirBlockForAll();
             screenContext.Screen.UpRotate();
             screenContext.ScreenOutputHandler.ResetBuffer();
         }
@@ -50,7 +50,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlock();
+            screenContext.ScreenOutputHandler.FillAirBlockForAll();
             screenContext.Screen.DownRotate();
             screenContext.ScreenOutputHandler.ResetBuffer();
         }
@@ -61,7 +61,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlock();
+            screenContext.ScreenOutputHandler.FillAirBlockForAll();
             screenContext.Screen.LeftRotate();
             screenContext.ScreenOutputHandler.ResetBuffer();
         }
@@ -72,7 +72,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlock();
+            screenContext.ScreenOutputHandler.FillAirBlockForAll();
             screenContext.Screen.RightRotate();
             screenContext.ScreenOutputHandler.ResetBuffer();
         }
@@ -83,7 +83,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlock();
+            screenContext.ScreenOutputHandler.FillAirBlockForAll();
             screenContext.Screen.ClockwiseRotate();
             screenContext.ScreenOutputHandler.ResetBuffer();
         }

@@ -33,13 +33,13 @@ namespace MCBS.Screens
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
-        internal ScreenContext(Screen screen, IScreenView form, Guid guid = default)
+        internal ScreenContext(Screen screen, IScreenView screenView, Guid guid = default)
         {
             ArgumentNullException.ThrowIfNull(screen, nameof(screen));
-            ArgumentNullException.ThrowIfNull(form, nameof(form));
+            ArgumentNullException.ThrowIfNull(screenView, nameof(screenView));
 
             Screen = screen;
-            ScreenView = form;
+            ScreenView = screenView;
             ScreenInputHandler = new(this);
             ScreenDrawingHandler =new(this);
             ScreenOutputHandler = new(this);
@@ -54,16 +54,16 @@ namespace MCBS.Screens
                 new(ScreenState.Unload, new ScreenState[] { ScreenState.Active, ScreenState.Sleep }, GotoUnloadState)
             });
 
-            _blockFrame = null;
-            _activeCursors = new();
-            _offlineCursors = new();
+            _drawingContext = null;
+            _activeCursors = [];
+            _offlineCursors = [];
 
             DirectoryInfo? worldDirectory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftPathManager.GetActiveWorlds().FirstOrDefault() ?? throw new InvalidOperationException("无法定位存档文件夹");
             McbsDataPathManager mcbsDataPathManager = McbsDataPathManager.FromWorldDirectoryCreate(worldDirectory.FullName);
             _savePath = mcbsDataPathManager.McbsData_Screens.FullName.PathCombine(GUID + ".json");
         }
 
-        private BlockFrame? _blockFrame;
+        private ScreenDrawingContext? _drawingContext;
 
         private readonly List<CursorContext> _activeCursors;
 
@@ -133,7 +133,7 @@ namespace MCBS.Screens
                     forem.CloseForm();
             }
             RootForm.CloseForm();
-            ScreenOutputHandler.FillAirBlock();
+            ScreenOutputHandler.FillAirBlockForAll();
             DeleteJson();
             LOGGER.Info($"屏幕({Screen.StartPosition})已卸载");
             return true;
@@ -190,15 +190,16 @@ namespace MCBS.Screens
 
         public async Task HandleFrameDrawingAsync()
         {
-            _blockFrame = await ScreenDrawingHandler.HandleFrameDrawingAsync();
+            _drawingContext = await ScreenDrawingHandler.HandleFrameDrawingAsync();
         }
 
         public async Task HandleFrameUpdateAsync()
         {
-            if (_blockFrame is null)
+            if (_drawingContext is null)
                 return;
 
-            await ScreenOutputHandler.HandleFrameUpdateAsync(_blockFrame);
+            await ScreenOutputHandler.HandleFrameUpdateAsync(_drawingContext.BaseLayer, 0);
+            await ScreenOutputHandler.HandleFrameUpdateAsync(_drawingContext.CursorLayer, 1);
         }
 
         public async Task HandleScreenOutputAsync()
@@ -292,8 +293,7 @@ namespace MCBS.Screens
 
         private string ToJson()
         {
-            Screen screen = GetSubScreen();
-            Screen.DataModel model = screen.ToDataModel();
+            Screen.DataModel model = Screen.ToDataModel();
             return JsonConvert.SerializeObject(model);
         }
     }

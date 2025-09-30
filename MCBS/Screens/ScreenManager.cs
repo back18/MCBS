@@ -72,24 +72,26 @@ namespace MCBS.Screens
         {
             foreach (var item in Items)
             {
-                var state = item.Value.StateMachine;
+                ScreenContext screenContext = item.Value;
+                var stateMachine = screenContext.StateMachine;
 
-                if (state.CurrentState == ScreenState.Active)
+                if (stateMachine.CurrentState == ScreenState.Active)
                 {
                     if (ScreenConfig.ScreenIdleTimeout != -1 && item.Value.ScreenInputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
                     {
-                        item.Value.UnloadScreen();
+                        screenContext.UnloadScreen();
                         LOGGER.Warn($"屏幕({item.Value.Screen.StartPosition})已达到最大闲置时间，即将卸载");
                     }
                 }
 
-                item.Value.OnTickUpdate(tick);
+                screenContext.OnTickUpdate(tick);
 
-                if (state.CurrentState == ScreenState.Unload)
+                if (stateMachine.CurrentState == ScreenState.Unload)
                 {
-                    Items.TryRemove(item.Key, out _);
-                    if (item.Value.IsRestarting)
-                        MinecraftBlockScreen.Instance.BuildScreen(item.Value.GetSubScreen(), item.Key);
+                    Guid guid = item.Key;
+                    Items.TryRemove(guid, out _);
+                    if (screenContext.IsRestarting)
+                        MinecraftBlockScreen.Instance.BuildScreen(screenContext.Screen, guid);
                 }
             }
         }

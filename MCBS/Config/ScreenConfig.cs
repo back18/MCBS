@@ -122,8 +122,8 @@ namespace MCBS.Config
                 MaxLength = 512;
                 MinAltitude = -64;
                 MaxAltitude = 319;
-                InitialWidth = 128;
-                InitialHeight = 72;
+                InitialWidth = 128 + 32;
+                InitialHeight = 72 + 32;
                 ScreenIdleTimeout = -1;
                 RightClickObjective = "snowball_mouse";
                 RightClickCriterion = "minecraft.used:minecraft.snowball";

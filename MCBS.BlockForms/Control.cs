@@ -858,10 +858,9 @@ namespace MCBS.BlockForms
         public void RequestRedraw()
         {
             IsRequestRedraw = true;
-            ParentContainer?.RequestRedraw();
         }
 
-        public virtual DrawResult GetDrawResult()
+        public virtual DrawResult GetDrawResult(bool drawChildControls)
         {
             if (IsRequestRedraw || _drawCache is null)
             {

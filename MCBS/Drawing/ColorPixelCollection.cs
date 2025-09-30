@@ -51,7 +51,7 @@ namespace MCBS.Drawing
 
         private readonly Image<TPixel> _image;
 
-        public TPixel this[int index] { get => this[index / Width, index % Width]; set => this[index / Width, index % Width] = value; }
+        public TPixel this[int index] { get => this[index % Width, index / Width]; set => this[index % Width, index / Width] = value; }
 
         public TPixel this[int x, int y] { get => _image[x, y]; set => _image[x, y] = value; }
 
@@ -66,6 +66,37 @@ namespace MCBS.Drawing
         public virtual bool SupportTransparent { get; }
 
         public virtual TPixel TransparentPixel { get; }
+
+        public bool IsTransparentPixel(int index)
+        {
+            if (!SupportTransparent)
+                return false;
+
+            return TransparentPixel.Equals(this[index]);
+        }
+
+        public bool IsTransparentPixel(int x, int y)
+        {
+            if (!SupportTransparent)
+                return false;
+
+            return TransparentPixel.Equals(this[x, y]);
+        }
+
+        public bool CheckTransparentPixel()
+        {
+            TPixel[] pixels = new TPixel[_image.Width * _image.Height];
+            Span<TPixel> span = new(pixels);
+            _image.CopyPixelDataTo(span);
+
+            foreach (TPixel pixel in pixels)
+            {
+                if (TransparentPixel.Equals(pixel))
+                    return true;
+            }
+
+            return false;
+        }
 
         public OverwriteContext Overwrite(IPixelCollection<TPixel> pixels, Size size, Point location, Point offset)
         {
@@ -128,6 +159,27 @@ namespace MCBS.Drawing
         protected override void DisposeUnmanaged()
         {
             _image.Dispose();
+        }
+
+        public ColorPixelCollection<TPixel> Crop(Rectangle rectangle)
+        {
+            if (rectangle.X < 0)
+            {
+                rectangle.Width += rectangle.X;
+                rectangle.X = 0;
+            }
+            if (rectangle.Y < 0)
+            {
+                rectangle.Height += rectangle.Y;
+                rectangle.Y = 0;
+            }
+
+            rectangle.Width = Math.Min(rectangle.Width, Width);
+            rectangle.Height = Math.Min(rectangle.Height, Height);
+
+            Image<TPixel> image = _image.Clone();
+            image.Mutate(x => x.Crop(rectangle));
+            return new(image);
         }
 
         public ColorPixelCollection<TPixel> Clone()

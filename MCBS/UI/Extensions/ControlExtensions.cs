@@ -125,6 +125,19 @@ namespace MCBS.UI.Extensions
             return new(position.X + source.ClientLocation.X + source.OffsetPosition.X + source.BorderWidth, position.Y + source.ClientLocation.Y + source.OffsetPosition.Y + source.BorderWidth);
         }
 
+        public static Point ChildPos2RootPos(this IControl source, Point position)
+        {
+            IControl? control = source;
+            while (true)
+            {
+                position = ChildPos2ParentPos(control, position);
+                control = source.ParentContainer;
+                if (control is null)
+                    break;
+            }
+            return position;
+        }
+
         public static bool IncludedOnControl(this IControl source, Point position)
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -132,6 +145,33 @@ namespace MCBS.UI.Extensions
             position.X -= source.OffsetPosition.X;
             position.Y -= source.OffsetPosition.Y;
             return position.X >= 0 && position.Y >= 0 && position.X < source.ClientSize.Width && position.Y < source.ClientSize.Height;
+        }
+
+        public static IControl[] GetVisibleChildControls(this IContainerControl source, bool recursive = false)
+        {
+            IControl[] controls = source
+                .GetChildControls()
+                .Where(w =>
+                w.Visible &&
+                w.ClientSize.Width > 0 &&
+                w.ClientSize.Height > 0 &&
+                w.ClientLocation.X + w.ClientSize.Width + w.BorderWidth > source.OffsetPosition.X &&
+                w.ClientLocation.Y + w.ClientSize.Height + w.BorderWidth > source.OffsetPosition.Y &&
+                w.ClientLocation.X - w.BorderWidth < source.ClientSize.Width + source.OffsetPosition.X &&
+                w.ClientLocation.Y - w.BorderWidth < source.ClientSize.Height + source.OffsetPosition.Y)
+                .ToArray();
+
+            if (!recursive || controls.Length == 0)
+                return controls;
+
+            List<IControl> list = new(controls);
+            foreach (var control in controls)
+            {
+                if (control is IContainerControl containerControl)
+                    list.AddRange(GetVisibleChildControls(containerControl, true));
+            }
+
+            return list.ToArray();
         }
 
         public static void UpdateAllHoverState(this IContainerControl source, CursorEventArgs e)

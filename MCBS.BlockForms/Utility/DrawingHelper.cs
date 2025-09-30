@@ -19,7 +19,7 @@ namespace MCBS.BlockForms.Utility
                 return new HashBlockFrame(size, source.GetBackgroundColor());
 
             BlockFrame textureFrame = texture.CreateBlockFrame(size, source.GetNormalFacing());
-            if (source.RequestDrawTransparencyTexture)
+            if (!textureFrame.SupportTransparent || source.RequestDrawTransparencyTexture)
                 return textureFrame;
 
             HashBlockFrame baseFrame = new(size, source.GetBackgroundColor());

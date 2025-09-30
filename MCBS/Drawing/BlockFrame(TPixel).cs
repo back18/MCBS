@@ -38,6 +38,21 @@ namespace MCBS.Drawing
 
         public abstract IPixelCollection<TPixel> Pixels { get; }
 
+        public override bool IsTransparentPixel(int index)
+        {
+            return Pixels.IsTransparentPixel(index);
+        }
+
+        public override bool IsTransparentPixel(int x, int y)
+        {
+            return Pixels.IsTransparentPixel(x, y);
+        }
+
+        public override bool CheckTransparentPixel()
+        {
+            return Pixels.CheckTransparentPixel();
+        }
+
         public override OverwriteContext Overwrite(BlockFrame blockFrame, Size size, Point location, Point offset)
         {
             if (blockFrame is BlockFrame<TPixel> pixelBlockFrame)

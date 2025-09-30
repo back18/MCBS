@@ -28,6 +28,7 @@ namespace MCBS.Drawing
 
             _blockConverter = new(facing);
             _pixelCollection = new(width, height, _blockConverter[pixel]);
+            ContainsTransparent = string.IsNullOrEmpty(pixel);
         }
 
         private ColorBlockFrame(ColorPixelCollection<TPixel> pixelCollection, Facing facing)
@@ -56,6 +57,11 @@ namespace MCBS.Drawing
         {
             get => _blockConverter.Facing;
             set => _blockConverter.Facing = value;
+        }
+
+        public override BlockFrame Crop(Rectangle rectangle)
+        {
+            return new ColorBlockFrame<TPixel>(_pixelCollection.Crop(rectangle), Facing);
         }
 
         public override BlockFrame Clone()

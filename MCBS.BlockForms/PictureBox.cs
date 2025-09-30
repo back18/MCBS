@@ -60,7 +60,7 @@ namespace MCBS.BlockForms
         protected override BlockFrame Drawing()
         {
             BlockFrame textureFrame = Texture.CreateBlockFrame(ClientSize, this.GetNormalFacing());
-            if (RequestDrawTransparencyTexture)
+            if (!textureFrame.SupportTransparent || RequestDrawTransparencyTexture)
                 return textureFrame;
 
             BlockFrame baseFrame =  base.Drawing();

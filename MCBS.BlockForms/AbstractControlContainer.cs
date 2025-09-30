@@ -27,6 +27,8 @@ namespace MCBS.BlockForms
             RemovedChildControl += OnRemovedChildControl;
         }
 
+        private BlockFrame? _drawCache;
+
         public Type ChildControlType => typeof(TControl);
 
         public bool IsChildControlType<T>() => typeof(T) == ChildControlType;
@@ -160,63 +162,110 @@ namespace MCBS.BlockForms
             base.HandleAfterFrame(e);
         }
 
-        public override DrawResult GetDrawResult()
+        public override DrawResult GetDrawResult(bool drawChildControls)
         {
+            if (!drawChildControls)
+                return base.GetDrawResult(drawChildControls);
+
+            IControl[] childControls = this.GetVisibleChildControls(false);
+
+            if (childControls.Length == 0)
+                return base.GetDrawResult(drawChildControls);
+
+            if (this.GetVisibleChildControls(true).Any(w => w.IsRequestRedraw))
+            {
+                if (_drawCache is not LayerBlockFrame)
+                    RequestRedraw();
+            }
+            else
+            {
+                if (!IsRequestRedraw && _drawCache is not null)
+                    return new(this, _drawCache, false, TimeSpan.Zero);
+            }
+
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            TControl[] ChildControls =
-                GetChildControls()
-                .Where(w =>
-                w.Visible &&
-                w.ClientSize.Width > 0 &&
-                w.ClientSize.Height > 0 &&
-                w.ClientLocation.X + w.ClientSize.Width + w.BorderWidth > OffsetPosition.X &&
-                w.ClientLocation.Y + w.ClientSize.Height + w.BorderWidth > OffsetPosition.Y &&
-                w.ClientLocation.X - w.BorderWidth < ClientSize.Width + OffsetPosition.X &&
-                w.ClientLocation.Y - w.BorderWidth < ClientSize.Height + OffsetPosition.Y)
-                .ToArray();
-
-            if (ChildControls.Length == 0)
-                return base.GetDrawResult();
-
-            Task<DrawResult> drawingTask = Task.Run(() => base.GetDrawResult());
-            ConcurrentBag<DrawResult> childDrawResults = [];
+            Task<DrawResult> drawingTask = Task.Run(() => base.GetDrawResult(drawChildControls));
+            ConcurrentBag<DrawResult> childDrawResultBag = [];
 
             Stopwatch stopwatch1 = Stopwatch.StartNew();
-            Parallel.ForEach(ChildControls, control => childDrawResults.Add(control.GetDrawResult()));
+            Parallel.ForEach(childControls, control => childDrawResultBag.Add(control.GetDrawResult(drawChildControls)));
             stopwatch1.Stop();
 
             Stopwatch stopwatch2 = Stopwatch.StartNew();
             DrawResult drawResult = drawingTask.Result;
             stopwatch2.Stop();
 
-            if (!drawResult.IsRedraw && !childDrawResults.Any(w => w.IsRedraw))
-                return drawResult;
+            List<DrawResult> childDrawResults = [];
+            foreach (var control in childControls)
+            {
+                DrawResult? childDrawResult = childDrawResultBag.FirstOrDefault(f => f.Control == control);
+                if (childDrawResult is not null)
+                    childDrawResults.Add(childDrawResult);
+            }
 
             Stopwatch stopwatch3 = Stopwatch.StartNew();
-            foreach (var control in ChildControls)
-            {
-                DrawResult? childDrawResult = childDrawResults.FirstOrDefault(f => f.Control == control);
-                if (childDrawResult is null)
-                    continue;
-
-                BlockFrame background = drawResult.BlockFrame;
-                background.Overwrite(childDrawResult.BlockFrame, control.ClientSize, control.GetDrawingLocation(), control.OffsetPosition);
-                background.DrawBorder(control, control.GetDrawingLocation());
-            }
+            BlockFrame background = drawResult.BlockFrame;
+            int pixelTotal = background.Width * background.Height;
+            int pixelCount = childDrawResultBag.Sum(i => i.BlockFrame.Width * i.BlockFrame.Height);
+            _drawCache = pixelCount > pixelTotal / 2 ? MultiLayerOverwrite(background, GetBackgroundColor().ToBlockId(), childDrawResults) : SingleLayerOverwrite(background, childDrawResults);
             stopwatch3.Stop();
 
             stopwatch.Stop();
 
             return new ContainerDrawResult(
                 this,
-                drawResult.BlockFrame,
+                _drawCache,
                 true,
                 stopwatch.Elapsed,
                 stopwatch2.Elapsed,
                 stopwatch1.Elapsed,
                 stopwatch3.Elapsed,
-                childDrawResults.ToArray());
+                childDrawResultBag.ToArray());
+        }
+
+        private static BlockFrame SingleLayerOverwrite(BlockFrame background, IList<DrawResult> childDrawResults)
+        {
+            BlockFrame blockFrame = background.Clone();
+            foreach (var childDrawResult in childDrawResults)
+            {
+                IControl control = childDrawResult.Control;
+                blockFrame.Overwrite(childDrawResult.BlockFrame, control.ClientSize, control.GetDrawingLocation(), control.OffsetPosition);
+                blockFrame.DrawBorder(control, control.GetDrawingLocation());
+            }
+            return blockFrame;
+        }
+
+        private static BlockFrame MultiLayerOverwrite(BlockFrame background, string backgroundColor, IList<DrawResult> childDrawResults)
+        {
+            LayerManager layerManager = new(background.Width, background.Height, backgroundColor);
+            layerManager.AddLayer(background);
+
+            foreach (var childDrawResult in childDrawResults)
+            {
+                IControl control = childDrawResult.Control;
+                Point location = control.GetDrawingLocation();
+
+                BlockFrame blockFrame;
+                if (childDrawResult.Control.BorderWidth == 0 &&
+                    childDrawResult.BlockFrame.Width == background.Width &&
+                    childDrawResult.BlockFrame.Height == background.Height)
+                    blockFrame = childDrawResult.BlockFrame;
+                else
+                    blockFrame = new NestingBlockFrame(
+                        background.Width,
+                        background.Height,
+                        childDrawResult.BlockFrame,
+                        location,
+                        control.OffsetPosition,
+                        control.BorderWidth,
+                        string.Empty,
+                        control.GetBorderColor().ToBlockId());
+
+                layerManager.AddLayer(blockFrame);
+            }
+
+            return layerManager.AsBlockFrame();
         }
     }
 }

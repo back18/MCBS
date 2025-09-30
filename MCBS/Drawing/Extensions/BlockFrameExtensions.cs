@@ -28,16 +28,20 @@ namespace MCBS.Drawing.Extensions
             return source.Overwrite(blockFrame, new(blockFrame.Width, blockFrame.Height), location, Point.Empty);
         }
 
-        public static HashBlockFrame ToHashBlockFrame(this BlockFrame source)
+        public static LosslessBlockFrame ToLosslessBlockFrame(this BlockFrame source)
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
 
-            if (source is HashBlockFrame hashBlockFrame)
-                return hashBlockFrame;
+            if (source is LosslessBlockFrame losslessBlockFrame)
+                return losslessBlockFrame;
 
-            hashBlockFrame = new(source.Width, source.Height);
-            hashBlockFrame.Overwrite(source, new(0, 0));
-            return hashBlockFrame;
+            losslessBlockFrame = new(source.Width, source.Height);
+            int count = losslessBlockFrame.Count;
+
+            for (int i = 0; i < count; i++)
+                losslessBlockFrame[i] = source[i];
+
+            return losslessBlockFrame;
         }
 
         public static Image<Rgba32> ToImage(this BlockFrame source, Facing facing)

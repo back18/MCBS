@@ -36,7 +36,8 @@ namespace MCBS.SystemApplications.Services
             base.Initialize();
 
             ChildControls.Add(RootForm_Control);
-            RootForm_Control.ClientSize = ClientSize;
+            RootForm_Control.ClientSize = ClientSize - new Size(32);
+            RootForm_Control.Location = new Point(16, 16);
         }
 
         public override bool HandleCursorMove(CursorEventArgs e)

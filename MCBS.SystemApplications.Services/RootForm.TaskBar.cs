@@ -148,8 +148,8 @@ namespace MCBS.SystemApplications.Services
                 if (screenContext is null)
                     return;
 
-                screenContext.ScreenOutputHandler.FillAirBlock();
-                screenContext.Screen.OffsetPlaneCoordinate(e.InventorySlotDelta);
+                screenContext.ScreenOutputHandler.FillAirBlockForAll();
+                screenContext.Screen.ApplyAdvance(e.InventorySlotDelta);
                 screenContext.ScreenOutputHandler.ResetBuffer();
             }
 

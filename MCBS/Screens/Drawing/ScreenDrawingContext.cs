@@ -10,16 +10,20 @@ namespace MCBS.Screens.Drawing
 {
     public class ScreenDrawingContext
     {
-        public ScreenDrawingContext(BlockFrame blockFrame, IDictionary<string, CursorDrawingContext> cursorDrawingContexts)
+        public ScreenDrawingContext(BlockFrame baseLayer, BlockFrame cursorLayer, IDictionary<string, CursorDrawingContext> cursorDrawingContexts)
         {
-            ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
+            ArgumentNullException.ThrowIfNull(baseLayer, nameof(baseLayer));
+            ArgumentNullException.ThrowIfNull(cursorLayer, nameof(cursorLayer));
             ArgumentNullException.ThrowIfNull(cursorDrawingContexts, nameof(cursorDrawingContexts));
 
-            BlockFrame = blockFrame;
+            BaseLayer = baseLayer;
+            CursorLayer = cursorLayer;
             CursorDrawingContexts = cursorDrawingContexts.AsReadOnly();
         }
 
-        public BlockFrame BlockFrame { get; }
+        public BlockFrame BaseLayer { get; }
+
+        public BlockFrame CursorLayer { get; }
 
         public ReadOnlyDictionary<string, CursorDrawingContext> CursorDrawingContexts { get; }
     }

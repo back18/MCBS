@@ -11,6 +11,11 @@ namespace MCBS.Drawing
 {
     public abstract class BlockFrame : IPixelCollection<string>
     {
+        protected BlockFrame()
+        {
+            ContainsTransparent = true;
+        }
+
         public abstract string this[int index] { get; set; }
 
         public abstract string this[int x, int y] { get; set; }
@@ -25,9 +30,11 @@ namespace MCBS.Drawing
 
         public virtual bool SupportTransparent => true;
 
+        public virtual bool ContainsTransparent { get; set; }
+
         public virtual string TransparentPixel => string.Empty;
 
-        public static ScreenPixel<string>[] GetDifferencesPixel(BlockFrame blockFrame1, BlockFrame blockFrame2)
+        public static ScreenPixel<string>[] GetDifferencePixels(BlockFrame blockFrame1, BlockFrame blockFrame2)
         {
             ArgumentNullException.ThrowIfNull(blockFrame1, nameof(blockFrame1));
             ArgumentNullException.ThrowIfNull(blockFrame2, nameof(blockFrame2));
@@ -46,6 +53,36 @@ namespace MCBS.Drawing
             return result.ToArray();
         }
 
+        public virtual bool IsTransparentPixel(int index)
+        {
+            if (!SupportTransparent)
+                return false;
+
+            return this[index] == TransparentPixel;
+        }
+
+        public virtual bool IsTransparentPixel(int x, int y)
+        {
+            if (!SupportTransparent)
+                return false;
+
+            return this[x, y] == TransparentPixel;
+        }
+
+        public virtual bool CheckTransparentPixel()
+        {
+            if (!SupportTransparent)
+                return false;
+
+            foreach (string block in this)
+            {
+                if (block == TransparentPixel)
+                    return true;
+            }
+
+            return false;
+        }
+
         public virtual OverwriteContext Overwrite(BlockFrame blockFrame, Size size, Point location, Point offset)
         {
             ArgumentNullException.ThrowIfNull(blockFrame, nameof(blockFrame));
@@ -60,13 +97,12 @@ namespace MCBS.Drawing
             OverwriteContext overwriteContext = new(new(Width, Height), new(pixels.Width, pixels.Height), new(size.Width, size.Height), location, offset);
             if (pixels.SupportTransparent)
             {
-                string transparent = pixels.TransparentPixel;
-                foreach (var mapping in overwriteContext)
+                Parallel.ForEach(overwriteContext, (mapping) =>
                 {
-                    string pixel = pixels[mapping.OverwritePosition.X, mapping.OverwritePosition.Y];
-                    if (pixel != transparent)
-                        this[mapping.BasePosition.X, mapping.BasePosition.Y] = pixel;
-                }
+                    Point overwritePosition = mapping.OverwritePosition;
+                    if (!pixels.IsTransparentPixel(overwritePosition.X, overwritePosition.Y))
+                        this[mapping.BasePosition.X, mapping.BasePosition.Y] = pixels[overwritePosition.X, overwritePosition.Y];
+                });
             }
             else
             {
@@ -74,6 +110,34 @@ namespace MCBS.Drawing
             }
 
             return overwriteContext;
+        }
+
+        public virtual BlockFrame Crop(Rectangle rectangle)
+        {
+            if (rectangle.X < 0)
+            {
+                rectangle.Width += rectangle.X;
+                rectangle.X = 0;
+            }
+            if (rectangle.Y < 0)
+            {
+                rectangle.Height += rectangle.Y;
+                rectangle.Y = 0;
+            }
+
+            rectangle.Width = Math.Min(rectangle.Width, Width - rectangle.X);
+            rectangle.Height = Math.Min(rectangle.Height, Height - rectangle.Y);
+
+            int count = rectangle.Width * rectangle.Height;
+            if (count <= 0)
+                throw new InvalidOperationException();
+
+            LosslessBlockFrame losslessBlockFrame = new(rectangle.Width, rectangle.Height);
+            for (int y1 = rectangle.Y, y2 = 0; y1 < rectangle.Height; y1++, y2++)
+                for (int x1 = rectangle.X, x2 = 0; x1 < rectangle.Width; x1++, x2++)
+                    losslessBlockFrame[x2, y2] = this[x1, y1];
+
+            return losslessBlockFrame;
         }
 
         public abstract BlockFrame Clone();

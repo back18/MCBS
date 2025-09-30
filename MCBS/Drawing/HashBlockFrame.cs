@@ -18,6 +18,7 @@ namespace MCBS.Drawing
 
             _blockConverter = new();
             _pixelCollection = new(width, height, _blockConverter[pixel]);
+            ContainsTransparent = string.IsNullOrEmpty(pixel);
         }
 
         private HashBlockFrame(HashPixelCollection pixelCollection)
@@ -41,6 +42,11 @@ namespace MCBS.Drawing
         public override IBlockConverter<int> BlockConverter => _blockConverter;
 
         public override IPixelCollection<int> Pixels => _pixelCollection;
+
+        public override BlockFrame Crop(Rectangle rectangle)
+        {
+            return new HashBlockFrame(_pixelCollection.Crop(rectangle));
+        }
 
         public override BlockFrame Clone()
         {

@@ -1,14 +1,13 @@
 ﻿using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
 using MCBS.UI.Extensions;
+using QuanLib.Game;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
 using SixLabors.ImageSharp;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,48 +28,61 @@ namespace MCBS.Screens
             ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
             _owner = owner;
-            _buffers = [];
-            _blocks = [];
+            _frameCaches = [];
+            _outputBuffers = [];
+            _blockUpdateList = [];
             ScreenDefaultBlock = "minecraft:smooth_stone";
         }
 
         private readonly ScreenContext _owner;
 
-        private readonly Dictionary<int, BlockFrame> _buffers;
+        private readonly Dictionary<int, BlockFrame> _frameCaches;
 
-        private readonly List<WorldBlock> _blocks;
+        private readonly Dictionary<int, BlockFrame> _outputBuffers;
+
+        private readonly List<WorldBlock> _blockUpdateList;
 
         public string ScreenDefaultBlock { get; set; }
 
         public void HandleOutput()
         {
-            if (_blocks.Count == 0)
+            if (_blockUpdateList.Count == 0)
                 return;
 
-            WorldBlock[] blocks = _blocks.ToArray();
-            _blocks.Clear();
+            WorldBlock[] blocks = _blockUpdateList.ToArray();
+            _blockUpdateList.Clear();
             MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlock(blocks);
         }
 
         public async Task HandleOutputAsync()
         {
-            if (_blocks.Count == 0)
+            if (_blockUpdateList.Count == 0)
                 return;
 
-            WorldBlock[] blocks = _blocks.ToArray();
-            _blocks.Clear();
+            WorldBlock[] blocks = _blockUpdateList.ToArray();
+            _blockUpdateList.Clear();
             await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
         }
 
         public void HandleFrameUpdate(BlockFrame newFrame, int offset = 0)
         {
-            if (_buffers.TryGetValue(offset, out var oldFrame) && oldFrame == newFrame)
+            if (_frameCaches.TryGetValue(offset, out var frameCache) && frameCache == newFrame)
                 return;
 
-            ScreenPixel<string>[] pixels = GetDifferencesPixels(newFrame);
-            WorldBlock[] blocks = ToSetBlockArguments(pixels, offset);
-            _blocks.AddRange(blocks);
-            _buffers[offset] = newFrame;
+            ScreenPixel<string>[] pixels = GetDifferencePixels(newFrame, offset);
+
+            if (!_outputBuffers.TryGetValue(offset, out var outputBuffer))
+            {
+                outputBuffer = new LosslessBlockFrame(newFrame.Width, newFrame.Height, AIR_BLOCK);
+                _outputBuffers.Add(offset, outputBuffer);
+            }
+
+            foreach (var pixel in pixels)
+                outputBuffer[pixel.Position.X, pixel.Position.Y] = pixel.Pixel;
+
+            WorldBlock[] blocks = ToWorldBlocks(pixels, offset);
+            _blockUpdateList.AddRange(blocks);
+            _frameCaches[offset] = newFrame;
         }
 
         public async Task HandleFrameUpdateAsync(BlockFrame newFrame, int offset = 0)
@@ -84,16 +96,16 @@ namespace MCBS.Screens
             Size screenSize = formRectangle.Size + new Size(32);
             Point screenOffset = new(formRectangle.Location.X - 16, formRectangle.Location.Y - 16);
 
-            _owner.Screen.Width = screenSize.Width;
-            _owner.Screen.Height = screenSize.Height;
-            _owner.Screen.Translate(screenOffset);
+            _owner.Screen.SetSize(screenSize);
+            _owner.Screen.ApplyTranslate(screenOffset);
             _owner.ScreenView.ClientSize = screenSize;
             _owner.RootForm.ClientLocation = new(16, 16);
-            foreach (int offset in _buffers.Keys)
+            foreach (int offset in _outputBuffers.Keys)
             {
-                HashBlockFrame hashBlockFrame = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
-                hashBlockFrame.Overwrite(_buffers[offset], -screenOffset);
-                _buffers[offset] = hashBlockFrame;
+                LosslessBlockFrame outputBuffer = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
+                outputBuffer.Overwrite(_outputBuffers[offset], -screenOffset);
+                _outputBuffers[offset] = outputBuffer;
+                _frameCaches[offset] = outputBuffer;
             }
         }
 
@@ -101,10 +113,11 @@ namespace MCBS.Screens
         {
             Rectangle formRectangle = _owner.RootForm.GetRectangle();
             Size screenSize = formRectangle.Size + new Size(32);
-            foreach (int offset in _buffers.Keys)
+            foreach (int offset in _outputBuffers.Keys)
             {
-                HashBlockFrame hashBlockFrame = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
-                _buffers[offset] = hashBlockFrame;
+                LosslessBlockFrame outputBuffer = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
+                _outputBuffers[offset] = outputBuffer;
+                _frameCaches[offset] = outputBuffer;
             }
         }
 
@@ -129,6 +142,66 @@ namespace MCBS.Screens
             return CheckBlcok(AIR_BLOCK, offset);
         }
 
+        private static void SendFillCommand(int x1, int y1, int z1, int x2, int y2, int z2, string blockId)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
+
+            int maxSize = 32768;
+            int startX = Math.Min(x1, x2);
+            int startY = Math.Min(y1, y2);
+            int startZ = Math.Min(z1, z2);
+            int endX = Math.Max(x1, x2);
+            int endY = Math.Max(y1, y2);
+            int endZ = Math.Max(z1, z2);
+            int xLength = endX - startX + 1;
+            int yLength = endY - startY + 1;
+            int zLength = endZ - startZ + 1;
+            int totalSize = xLength * yLength * zLength;
+
+            if (totalSize <= maxSize)
+            {
+                MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
+                    $"fill {startX} {startY} {startZ} {endX} {endY} {endZ} {blockId}");
+                return;
+            }
+
+            int maxLength = new int[] { xLength, yLength, zLength }.Max();
+            int area = totalSize / maxLength;
+
+            if (area > maxSize)
+                throw new InvalidOperationException("区域过大，无法使用 fill 指令填充");
+
+            int step = maxSize / area;
+
+            if (maxLength == xLength)
+            {
+                for (int sx = startX; sx <= endX; sx += step)
+                {
+                    int ex = Math.Min(sx + step - 1, endX);
+                    MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
+                        $"fill {sx} {startY} {startZ} {ex} {endY} {endZ} {blockId}");
+                }
+            }
+            else if (maxLength == yLength)
+            {
+                for (int sy = startY; sy <= endY; sy += step)
+                {
+                    int ey = Math.Min(sy + step - 1, endY);
+                    MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
+                        $"fill {startX} {sy} {startZ} {endX} {ey} {endZ} {blockId}");
+                }
+            }
+            else
+            {
+                for (int sz = startZ; sz <= endZ; sz += step)
+                {
+                    int ez = Math.Min(sz + step - 1, endZ);
+                    MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
+                        $"fill {startX} {startY} {sz} {endX} {endY} {ez} {blockId}");
+                }
+            }
+        }
+
         public bool FillBlock(string blockId, int offset = 0, bool checkAirBlock = false)
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
@@ -136,13 +209,25 @@ namespace MCBS.Screens
             if (checkAirBlock && !CheckAirBlock(offset))
                 return false;
 
-            Rectangle formRectangle = _owner.RootForm.GetRectangle();
-            Size screenSize = formRectangle.Size + new Size(32);
-            HashBlockFrame baseFrame = new(screenSize, AIR_BLOCK);
-            baseFrame.Overwrite(new HashBlockFrame(formRectangle.Size, blockId), formRectangle.Location);
-            HandleFrameUpdate(baseFrame, offset);
-            HandleOutput();
+            Screen screen = _owner.Screen;
+            Vector3<int> start = screen.ScreenPos2WorldPos(Point.Empty, offset);
+            Vector3<int> end = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), offset);
+            SendFillCommand(start.X, start.Y, start.Z, end.X, end.Y, end.Z, blockId);
+
             return true;
+        }
+
+        public void FillBlockForAll(string blockId)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
+
+            if (_outputBuffers.Count == 0)
+                return;
+
+            Screen screen = _owner.Screen;
+            Vector3<int> start = screen.ScreenPos2WorldPos(Point.Empty, _outputBuffers.Keys.Min());
+            Vector3<int> end = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), _outputBuffers.Keys.Max());
+            SendFillCommand(start.X, start.Y, start.Z, end.X, end.Y, end.Z, blockId);
         }
 
         public bool FillDefaultBlock(int offset = 0, bool checkAirBlock = false)
@@ -150,9 +235,19 @@ namespace MCBS.Screens
             return FillBlock(ScreenDefaultBlock, offset, checkAirBlock);
         }
 
+        public void FillDefaultBlockForAll()
+        {
+            FillBlockForAll(ScreenDefaultBlock);
+        }
+
         public bool FillLightBlock(int offset = 0, bool checkAirBlock = false)
         {
             return FillBlock(LIGHT_BLOCK, offset, checkAirBlock);
+        }
+
+        public void FillLightBlockForAll()
+        {
+            FillBlockForAll(LIGHT_BLOCK);
         }
 
         public bool FillBarrierBlock(int offset = 0, bool checkAirBlock = false)
@@ -160,24 +255,110 @@ namespace MCBS.Screens
             return FillBlock(BARRIER_BLOCK, offset, checkAirBlock);
         }
 
+        public void FillBarrierBlockForAll()
+        {
+            FillBlockForAll(BARRIER_BLOCK);
+        }
+
         public bool FillAirBlock(int offset = 0)
         {
             return FillBlock(AIR_BLOCK, offset, false);
         }
 
-        private ScreenPixel<string>[] GetDifferencesPixels(BlockFrame newFrame, int offset = 0)
+        public void FillAirBlockForAll()
+        {
+            FillBlockForAll(AIR_BLOCK);
+        }
+
+        private ScreenPixel<string>[] GetDifferencePixels(BlockFrame newFrame, int offset = 0)
         {
             ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
             if (newFrame.Width != _owner.Screen.Width || newFrame.Height != _owner.Screen.Height)
                 throw new ArgumentException("帧尺寸不一致");
 
-            if (_buffers.TryGetValue(offset, out var blockFrame))
-                return BlockFrame.GetDifferencesPixel(blockFrame, newFrame);
-            else
+            if (!_outputBuffers.TryGetValue(offset, out var outputBuffer))
                 return newFrame.GetAllPixel();
+
+            _frameCaches.TryGetValue(offset, out var frameCache);
+
+            if (frameCache is LayerBlockFrame layerBlockFrame1 &&
+                newFrame is LayerBlockFrame layerBlockFrame2 &&
+                layerBlockFrame1.Width == layerBlockFrame2.Width &&
+                layerBlockFrame1.Height == layerBlockFrame2.Height)
+            {
+                var (location, differenceFrame1, differenceFrame2) = LayerBlockFrame.GetDifferenceLayer(layerBlockFrame1, layerBlockFrame2);
+
+                BlockFrame outputBufferFrame =
+                    differenceFrame2.Width == outputBuffer.Width &&
+                    differenceFrame2.Height == outputBuffer.Height &&
+                    location == Point.Empty ?
+                    outputBuffer :
+                    new NestingBlockFrame(differenceFrame2.Width, differenceFrame2.Height, outputBuffer, -location, Point.Empty, 0, string.Empty, AIR_BLOCK);
+
+                ScreenPixel<string>[] screenPixels = BlockFrame.GetDifferencePixels(outputBufferFrame, differenceFrame2);
+
+                if (location != Point.Empty)
+                {
+                    for (int i = 0; i < screenPixels.Length; i++)
+                    {
+                        ScreenPixel<string> screenPixel = screenPixels[i];
+                        screenPixels[i] = new(new(screenPixel.Position.X + location.X, screenPixel.Position.Y + location.Y), screenPixel.Pixel);
+                    }
+                }
+
+                return screenPixels;
+            }
+            else if (frameCache is NestingBlockFrame nestingBlockFrame1 &&
+                     newFrame is NestingBlockFrame nestingBlockFrame2 &&
+                     nestingBlockFrame1.BackgroundColor == nestingBlockFrame2.BackgroundColor &&
+                     nestingBlockFrame1.Width == nestingBlockFrame2.Width &&
+                     nestingBlockFrame1.Height == nestingBlockFrame2.Height)
+            {
+                Point start1 = nestingBlockFrame1.InnerPosition.BorderStartPosition;
+                Point start2 = nestingBlockFrame2.InnerPosition.BorderStartPosition;
+                Point end1 = nestingBlockFrame1.InnerPosition.BorderEndPosition;
+                Point end2 = nestingBlockFrame2.InnerPosition.BorderEndPosition;
+                Point start = new(Math.Min(start1.X, start2.X), Math.Min(start1.Y, start2.Y));
+                Point end = new(Math.Max(end1.X, end2.X), Math.Max(end1.Y, end2.Y));
+                Size size = new(end.X - start.X + 1, end.Y - start.Y + 1);
+
+                NestingBlockFrame reducedNestingBlockFrame1 = new(
+                    size.Width, size.Height,
+                    nestingBlockFrame1.InnerBlockFrame,
+                    nestingBlockFrame1.Location - new Size(start.X, start.Y),
+                    Point.Empty,
+                    0,
+                    nestingBlockFrame1.BackgroundColor,
+                    string.Empty);
+                NestingBlockFrame reducedNestingBlockFrame2 = new(
+                    size.Width, size.Height,
+                    nestingBlockFrame2.InnerBlockFrame,
+                    nestingBlockFrame2.Location - new Size(start.X, start.Y),
+                    Point.Empty,
+                    0,
+                    nestingBlockFrame2.BackgroundColor,
+                    string.Empty);
+
+                ScreenPixel<string>[] screenPixels = BlockFrame.GetDifferencePixels(reducedNestingBlockFrame1, reducedNestingBlockFrame2);
+
+                if (start != Point.Empty)
+                {
+                    for (int i = 0; i < screenPixels.Length; i++)
+                    {
+                        ScreenPixel<string> screenPixel = screenPixels[i];
+                        screenPixels[i] = new(new(screenPixel.Position.X + start.X, screenPixel.Position.Y + start.Y), screenPixel.Pixel);
+                    }
+                }
+
+                return screenPixels;
+            }
+            else
+            {
+                return BlockFrame.GetDifferencePixels(outputBuffer, newFrame);
+            }
         }
 
-        private WorldBlock[] ToSetBlockArguments(ScreenPixel<string>[] pixels, int offset = 0)
+        private WorldBlock[] ToWorldBlocks(ScreenPixel<string>[] pixels, int offset = 0)
         {
             ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 

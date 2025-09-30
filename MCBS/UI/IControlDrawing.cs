@@ -24,7 +24,7 @@ namespace MCBS.UI
 
         public void RequestRedraw();
 
-        public DrawResult GetDrawResult();
+        public DrawResult GetDrawResult(bool drawChildControls);
 
         public BlockPixel GetForegroundColor();
 
