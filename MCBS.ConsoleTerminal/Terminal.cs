@@ -4,6 +4,7 @@ using QuanLib.Commands;
 using QuanLib.Commands.CommandLine;
 using QuanLib.Consoles;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
@@ -130,18 +131,25 @@ namespace MCBS.ConsoleTerminal
 
             CommandManager.Register(
                 new CommandBuilder()
-                .On("analyzer mspt")
+                .On("mspt analyzer")
                 .Allow(PrivilegeLevel.User)
-                .Execute<Action>(MsptAnalysis)
+                .Execute(MsptAnalysis)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("mspt statistical")
+                .Allow(PrivilegeLevel.User)
+                .Execute<Action>(MsptStatisticalChart)
                 .Build());
 
             foreach (SystemStage stage in Enum.GetValues<SystemStage>())
             {
                 CommandManager.Register(
                     new CommandBuilder()
-                    .On(["analyzer", "mspt", stage.ToString()])
+                    .On(["mspt", "statistical", stage.ToString()])
                     .Allow(PrivilegeLevel.User)
-                    .Execute(() => MsptAnalysis(stage))
+                    .Execute(() => MsptStatisticalChart(stage))
                     .Build());
             }
         }
@@ -247,25 +255,64 @@ namespace MCBS.ConsoleTerminal
             LogManager.Instance.EnableConsoleOutput();
         }
 
-        private static void MsptAnalysis(SystemStage stage)
+        private static void MsptStatisticalChart()
+        {
+            MsptSlice msptSlice = MinecraftBlockScreen.Instance.MsptAnalyzer.TickTime;
+            MsptStatisticalChart(msptSlice);
+        }
+
+        private static void MsptStatisticalChart(SystemStage stage)
+        {
+            int tick = MinecraftBlockScreen.Instance.SystemTick;
+            MsptSlice msptSlice = MinecraftBlockScreen.Instance.MsptAnalyzer.StageTimes[stage];
+            MsptStatisticalChart(msptSlice);
+        }
+
+        #endregion
+
+        private static void MsptStatisticalChart(MsptSlice msptSlice)
         {
             LogManager.Instance.DisableConsoleOutput();
             Console.CursorVisible = false;
 
-            do
-            {
-                Console.WriteLine(
-                    string.Format("Tick{0}: {1}ms",
-                    MinecraftBlockScreen.Instance.SystemTick,
-                    MinecraftBlockScreen.Instance.MsptAnalyzer.StageTimes[stage].GetAverageTime(Ticks.Ticks20).TotalMilliseconds));
-                Thread.Sleep(50);
-            }
-            while (!((Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Enter)));
+            msptSlice.TimeUpdated += WriteText;
+            ConsoleUtil.WaitForInputKey(ConsoleKey.Enter, 10);
+            msptSlice.TimeUpdated -= WriteText;
 
             Console.CursorVisible = true;
             LogManager.Instance.EnableConsoleOutput();
-        }
 
-        #endregion
+            void WriteText(MsptSlice sender, EventArgs<TimeSpan> e)
+            {
+                int width = Console.BufferWidth;
+                double mspt = Math.Round(msptSlice.LatestTime.TotalMilliseconds, 2);
+                int tick = MinecraftBlockScreen.Instance.SystemTick;
+
+                string text = string.Format("|{0}ms/{1}t", mspt, tick);
+                StringBuilder stringBuilder = new();
+
+                int remaining = width - text.Length;
+                if (remaining > 0)
+                {
+                    int full = Math.Min((int)mspt, remaining);
+                    int empty = Math.Clamp(remaining - full, 0, Math.Max(0, 50 - full));
+
+                    stringBuilder.Append('=', full);
+                    stringBuilder.Append(' ', empty);
+                }
+
+                ConsoleColor color = Console.ForegroundColor;
+                if (mspt > 40)
+                    Console.ForegroundColor = ConsoleColor.Red;
+                else if (mspt > 30)
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                else
+                    Console.ForegroundColor = ConsoleColor.Green;
+
+                Console.Write(stringBuilder);
+                Console.ForegroundColor = color;
+                Console.WriteLine(text);
+            }
+        }
     }
 }

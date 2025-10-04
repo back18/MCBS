@@ -35,6 +35,7 @@ namespace MCBS.Analyzer
 
         internal void Update(TimeSpan time)
         {
+            LatestTime = time;
             Times20Ticks.Update(time);
             Times1200Ticks.Update(time);
             Times6000Ticks.Update(time);
