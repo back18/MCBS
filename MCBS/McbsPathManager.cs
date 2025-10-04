@@ -130,9 +130,9 @@ namespace MCBS
 
             public static readonly string MCBS_FFmpeg_Bin = MCBS_FFmpeg.PathCombine("Bin");
 
-            public static readonly string MCBS_FFmpeg_Win64ZipFile = MCBS_FFmpeg.PathCombine("ffmpeg-n6.1-latest-win64-gpl-shared-6.1.zip");
+            public static readonly string MCBS_FFmpeg_Win64ZipFile = MCBS_FFmpeg.PathCombine("ffmpeg-n7.1-latest-win64-gpl-shared-7.1.zip");
 
-            public static readonly string MCBS_FFmpeg_Win64IndexFile = MCBS_FFmpeg.PathCombine("ffmpeg-n6.1-latest-win64-gpl-shared-6.1.json");
+            public static readonly string MCBS_FFmpeg_Win64IndexFile = MCBS_FFmpeg.PathCombine("ffmpeg-n7.1-latest-win64-gpl-shared-7.1.json");
         }
 
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false, AllowMultiple = false)]

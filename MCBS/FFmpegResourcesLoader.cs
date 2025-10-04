@@ -7,6 +7,7 @@ using QuanLib.IO.Zip;
 using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ namespace MCBS
     public static class FFmpegResourcesLoader
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
-        private const string FFMPEG_DOWMLOAD_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n6.1-latest-win64-gpl-shared-6.1.zip";
-        private const string FFMPEG_BIN_DIR = "ffmpeg-n6.1-latest-win64-gpl-shared-6.1/bin/";
+        private const string FFMPEG_DOWMLOAD_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win64-gpl-shared-7.1.zip";
+        private const string FFMPEG_BIN_DIR = "ffmpeg-n7.1-latest-win64-gpl-shared-7.1/bin/";
 
         public static void LoadAll()
         {
@@ -75,7 +76,7 @@ namespace MCBS
             else
                 stream = await DownloadHelper.DownloadAsync(url, path);
 
-            return new(stream);
+            return new(stream, ZipArchiveMode.Read, Encoding.UTF8, false);
         }
 
         private static Dictionary<string, string> BuildFFmpegIndex(ZipPack zipPack, string path)
