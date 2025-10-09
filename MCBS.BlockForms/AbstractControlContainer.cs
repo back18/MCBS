@@ -229,9 +229,26 @@ namespace MCBS.BlockForms
             BlockFrame blockFrame = background.Clone();
             foreach (var childDrawResult in childDrawResults)
             {
-                IControl control = childDrawResult.Control;
-                blockFrame.Overwrite(childDrawResult.BlockFrame, control.ClientSize, control.GetDrawingLocation(), control.OffsetPosition);
-                blockFrame.DrawBorder(control, control.GetDrawingLocation());
+                IControl childControl = childDrawResult.Control;
+                BlockFrame childFrame = childDrawResult.BlockFrame;
+                Point location = childControl.GetDrawingLocation();
+                Size size = childControl.ClientSize;
+
+                if (childFrame.Width != size.Width || childFrame.Height != size.Height)
+                {
+                    childFrame = new NestingBlockFrame(
+                        size.Width,
+                        size.Height,
+                        childFrame,
+                        -childControl.OffsetPosition,
+                        Point.Empty,
+                        childControl.BorderWidth,
+                        string.Empty,
+                        childControl.GetBorderColor().ToBlockId());
+                }
+
+                blockFrame.Overwrite(childFrame, size, location);
+                blockFrame.DrawBorder(childControl, location);
             }
             return blockFrame;
         }
@@ -243,24 +260,39 @@ namespace MCBS.BlockForms
 
             foreach (var childDrawResult in childDrawResults)
             {
-                IControl control = childDrawResult.Control;
-                Point location = control.GetDrawingLocation();
+                IControl childControl = childDrawResult.Control;
+                BlockFrame childFrame = childDrawResult.BlockFrame;
+                Point location = childControl.GetDrawingLocation();
+                Size size = childControl.ClientSize;
+
+                if (childFrame.Width != size.Width || childFrame.Height != size.Height)
+                {
+                    childFrame = new NestingBlockFrame(
+                        size.Width,
+                        size.Height,
+                        childFrame,
+                        -childControl.OffsetPosition,
+                        Point.Empty,
+                        childControl.BorderWidth,
+                        string.Empty,
+                        childControl.GetBorderColor().ToBlockId());
+                }
 
                 BlockFrame blockFrame;
                 if (childDrawResult.Control.BorderWidth == 0 &&
-                    childDrawResult.BlockFrame.Width == background.Width &&
-                    childDrawResult.BlockFrame.Height == background.Height)
-                    blockFrame = childDrawResult.BlockFrame;
+                    childFrame.Width == background.Width &&
+                    childFrame.Height == background.Height)
+                    blockFrame = childFrame;
                 else
                     blockFrame = new NestingBlockFrame(
                         background.Width,
                         background.Height,
-                        childDrawResult.BlockFrame,
+                        childFrame,
                         location,
-                        control.OffsetPosition,
-                        control.BorderWidth,
+                        Point.Empty,
+                        childControl.BorderWidth,
                         string.Empty,
-                        control.GetBorderColor().ToBlockId());
+                        childControl.GetBorderColor().ToBlockId());
 
                 layerManager.AddLayer(blockFrame);
             }
