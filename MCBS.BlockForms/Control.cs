@@ -366,7 +366,11 @@ namespace MCBS.BlockForms
                 if (_Visible != value)
                 {
                     _Visible = value;
-                    RequestRedraw();
+
+                    if (value)
+                        RequestRedraw();
+                    else
+                        ParentContainer?.RequestRedraw();
                 }
             }
         }
@@ -610,7 +614,6 @@ namespace MCBS.BlockForms
                 }
                 else
                 {
-                    offset.Height = Math.Clamp(offset.Height, MinSize.Height - ClientSize.Height, MaxSize.Height - ClientSize.Height);
                     if (Anchor.HasFlag(Direction.Bottom))
                         ClientLocation = new(ClientLocation.X, ClientLocation.Y + offset.Height);
                     if (Stretch.HasFlag(Direction.Top) || Stretch.HasFlag(Direction.Bottom))
@@ -627,7 +630,6 @@ namespace MCBS.BlockForms
                 }
                 else
                 {
-                    offset.Width = Math.Clamp(offset.Width, MinSize.Width - ClientSize.Width, MaxSize.Width - ClientSize.Width);
                     if (Anchor.HasFlag(Direction.Right))
                         ClientLocation = new(ClientLocation.X + offset.Width, ClientLocation.Y);
                     if (Stretch.HasFlag(Direction.Left) || Stretch.HasFlag(Direction.Right))

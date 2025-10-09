@@ -131,7 +131,7 @@ namespace MCBS.BlockForms
             }
             else
             {
-                HideScrollBar();
+                VerticalScrollBar.Visible = false;
             }
 
             if (newSize.Width < PageSize.Width)
@@ -141,7 +141,7 @@ namespace MCBS.BlockForms
             }
             else
             {
-                HideScrollBar();
+                HorizontalScrollBar.Visible = false;
             }
 
             base.OnResize(sender, new(oldSize, newSize));
