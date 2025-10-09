@@ -11,10 +11,10 @@ namespace MCBS.BlockForms
         protected MenuBox()
         {
             Spacing = 1;
-            _items = new();
+            _items = [];
         }
 
-        protected List<T> _items;
+        protected readonly List<T> _items;
 
         protected T? PreviousChildControl
         {
