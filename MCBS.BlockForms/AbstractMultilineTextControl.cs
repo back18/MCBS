@@ -178,10 +178,10 @@ namespace MCBS.BlockForms
 
         protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
         {
-            base.OnResize(sender, e);
-
             if (AutoSize || WordWrap)
                 UpdatePageSize();
+
+            base.OnResize(sender, e);
         }
 
         protected override void OnTextChanged(Control sender, ValueChangedEventArgs<string> e)

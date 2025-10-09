@@ -308,10 +308,10 @@ namespace MCBS.SystemApplications.Desktop
 
             protected override void OnResize(Control sender, ValueChangedEventArgs<Size> e)
             {
-                base.OnResize(sender, e);
-
                 UpdateTableMaxSize();
                 PageSize = _desktopIconManager.MaxSize * 24;
+
+                base.OnResize(sender, e);
             }
 
             protected override void OnAfterFrame(Control sender, EventArgs e)
