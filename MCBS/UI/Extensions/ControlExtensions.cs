@@ -111,6 +111,13 @@ namespace MCBS.UI.Extensions
             return new(source.ClientLocation.X + source.BorderWidth, source.ClientLocation.Y + source.BorderWidth);
         }
 
+        public static Size GetDrawingSize(this IControlDrawing source)
+        {
+            ArgumentNullException.ThrowIfNull(source, nameof(source));
+
+            return new(source.ClientSize.Width + source.BorderWidth * 2, source.ClientSize.Height + source.BorderWidth * 2);
+        }
+
         public static Point ParentPos2ChildPos(this IControl source, Point position)
         {
             ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -144,7 +151,38 @@ namespace MCBS.UI.Extensions
 
             position.X -= source.OffsetPosition.X;
             position.Y -= source.OffsetPosition.Y;
-            return position.X >= 0 && position.Y >= 0 && position.X < source.ClientSize.Width && position.Y < source.ClientSize.Height;
+
+            IContainerControl? parentContainer = source.ParentContainer;
+
+            Point start = Point.Empty;
+            Point end = new(source.ClientSize.Width - 1, source.ClientSize.Height - 1);
+
+            if (parentContainer is not null)
+            {
+                Point startOffset = new(
+                    source.ClientLocation.X + source.BorderWidth - parentContainer.OffsetPosition.X,
+                    source.ClientLocation.Y + source.BorderWidth - parentContainer.OffsetPosition.Y);
+
+                if (startOffset.X < 0)
+                    start.X -= startOffset.X;
+                if (startOffset.Y < 0)
+                    start.Y -= startOffset.Y;
+
+                Point endOffset = new(
+                    parentContainer.ClientSize.Width - (source.ClientLocation.X + source.ClientSize.Width + source.BorderWidth) + parentContainer.OffsetPosition.X,
+                    parentContainer.ClientSize.Height - (source.ClientLocation.Y + source.ClientSize.Height + source.BorderWidth) + parentContainer.OffsetPosition.Y);
+
+                if (endOffset.X < 0)
+                    end.X += endOffset.X;
+                if (endOffset.Y < 0)
+                    end.Y += endOffset.Y;
+            }
+
+            return
+                position.X >= start.X &&
+                position.Y >= start.Y &&
+                position.X <= end.X &&
+                position.Y <= end.Y;
         }
 
         public static IControl[] GetVisibleChildControls(this IContainerControl source, bool recursive = false)

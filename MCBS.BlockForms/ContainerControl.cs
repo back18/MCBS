@@ -60,7 +60,7 @@ namespace MCBS.BlockForms
 
             foreach (var control in controls.Reverse())
             {
-                if (control.FirstHandleCursorMove && control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos)))
+                if (control.Visible && control.FirstHandleCursorMove && control.HandleCursorMove(e.Clone(control.ParentPos2ChildPos)))
                 {
                     handled = control;
                     goto end;
