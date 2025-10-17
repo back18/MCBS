@@ -142,66 +142,6 @@ namespace MCBS.Screens
             return CheckBlcok(AIR_BLOCK, offset);
         }
 
-        private static void SendFillCommand(int x1, int y1, int z1, int x2, int y2, int z2, string blockId)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
-
-            int maxSize = 32768;
-            int startX = Math.Min(x1, x2);
-            int startY = Math.Min(y1, y2);
-            int startZ = Math.Min(z1, z2);
-            int endX = Math.Max(x1, x2);
-            int endY = Math.Max(y1, y2);
-            int endZ = Math.Max(z1, z2);
-            int xLength = endX - startX + 1;
-            int yLength = endY - startY + 1;
-            int zLength = endZ - startZ + 1;
-            int totalSize = xLength * yLength * zLength;
-
-            if (totalSize <= maxSize)
-            {
-                MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
-                    $"fill {startX} {startY} {startZ} {endX} {endY} {endZ} {blockId}");
-                return;
-            }
-
-            int maxLength = new int[] { xLength, yLength, zLength }.Max();
-            int area = totalSize / maxLength;
-
-            if (area > maxSize)
-                throw new InvalidOperationException("区域过大，无法使用 fill 指令填充");
-
-            int step = maxSize / area;
-
-            if (maxLength == xLength)
-            {
-                for (int sx = startX; sx <= endX; sx += step)
-                {
-                    int ex = Math.Min(sx + step - 1, endX);
-                    MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
-                        $"fill {sx} {startY} {startZ} {ex} {endY} {endZ} {blockId}");
-                }
-            }
-            else if (maxLength == yLength)
-            {
-                for (int sy = startY; sy <= endY; sy += step)
-                {
-                    int ey = Math.Min(sy + step - 1, endY);
-                    MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
-                        $"fill {startX} {sy} {startZ} {endX} {ey} {endZ} {blockId}");
-                }
-            }
-            else
-            {
-                for (int sz = startZ; sz <= endZ; sz += step)
-                {
-                    int ez = Math.Min(sz + step - 1, endZ);
-                    MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.SendCommand(
-                        $"fill {startX} {startY} {sz} {endX} {endY} {ez} {blockId}");
-                }
-            }
-        }
-
         public bool FillBlock(string blockId, int offset = 0, bool checkAirBlock = false)
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
@@ -210,9 +150,9 @@ namespace MCBS.Screens
                 return false;
 
             Screen screen = _owner.Screen;
-            Vector3<int> start = screen.ScreenPos2WorldPos(Point.Empty, offset);
-            Vector3<int> end = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), offset);
-            SendFillCommand(start.X, start.Y, start.Z, end.X, end.Y, end.Z, blockId);
+            Vector3<int> startPos = screen.ScreenPos2WorldPos(Point.Empty, offset);
+            Vector3<int> endPos = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), offset);
+            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.Fill(startPos, endPos, AIR_BLOCK, true);
 
             return true;
         }
@@ -225,9 +165,9 @@ namespace MCBS.Screens
                 return;
 
             Screen screen = _owner.Screen;
-            Vector3<int> start = screen.ScreenPos2WorldPos(Point.Empty, _outputBuffers.Keys.Min());
-            Vector3<int> end = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), _outputBuffers.Keys.Max());
-            SendFillCommand(start.X, start.Y, start.Z, end.X, end.Y, end.Z, blockId);
+            Vector3<int> startPos = screen.ScreenPos2WorldPos(Point.Empty, _outputBuffers.Keys.Min());
+            Vector3<int> endPos = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), _outputBuffers.Keys.Max());
+            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.Fill(startPos, endPos, AIR_BLOCK, true);
         }
 
         public bool FillDefaultBlock(int offset = 0, bool checkAirBlock = false)
