@@ -94,7 +94,7 @@ namespace MCBS.Interaction
             if (!sender.TryGetEntityPosition(playerUUID.ToString(), out var position))
                 return false;
 
-            if (sender.ConditionalEntity($"@e[limit=1,type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..1,sort=nearest]"))
+            if (sender.CheckEntity($"@e[limit=1,type=minecraft:interaction,x={position.X},y={position.Y},z={position.Z},distance=..1,sort=nearest]"))
                 return false;
 
             if (!sender.SummonEntity(position, INTERACTION_ID, INTERACTION_NBT))
@@ -148,7 +148,7 @@ namespace MCBS.Interaction
         public bool ConditionalEntity()
         {
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
-            return sender.ConditionalEntity(PlayerUUID.ToString()) && sender.ConditionalEntity(EntityUUID.ToString());
+            return sender.CheckEntity(PlayerUUID.ToString()) && sender.CheckEntity(EntityUUID.ToString());
         }
 
         public bool SyncPosition()

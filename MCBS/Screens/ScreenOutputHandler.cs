@@ -121,25 +121,19 @@ namespace MCBS.Screens
             }
         }
 
-        public bool CheckBlcok(string blockId, int offset = 0)
+        public bool CheckBlock(string blockId, int offset = 0)
         {
             ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
 
-            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
             Screen screen = _owner.Screen;
-            for (int y = 0; y < screen.Height; y++)
-                for (int x = 0; x < screen.Width; x++)
-                {
-                    if (!sender.ConditionalBlock(screen.ScreenPos2WorldPos(new(x, y), offset), blockId))
-                        return false;
-                }
-
-            return true;
+            Vector3<int> startPos = screen.ScreenPos2WorldPos(Point.Empty, offset);
+            Vector3<int> endPos = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), offset);
+            return MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.CheckRangeBlock(startPos, endPos, AIR_BLOCK);
         }
 
         public bool CheckAirBlock(int offset = 0)
         {
-            return CheckBlcok(AIR_BLOCK, offset);
+            return CheckBlock(AIR_BLOCK, offset);
         }
 
         public bool FillBlock(string blockId, int offset = 0, bool checkAirBlock = false)
