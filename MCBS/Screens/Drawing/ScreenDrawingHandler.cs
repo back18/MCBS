@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using MCBS.UI.Extensions;
+using QuanLib.Minecraft.Blocks;
 
 namespace MCBS.Screens.Drawing
 {
@@ -21,10 +22,9 @@ namespace MCBS.Screens.Drawing
             ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
             _owner = owner;
-            Size screenSize = new Size(owner.Screen.Width, owner.Screen.Height) + new Size(32);
             _drawingContext = new(
-                new HashBlockFrame(screenSize, AIR_BLOCK),
-                new HashBlockFrame(screenSize, AIR_BLOCK),
+                new HashBlockFrame(1, 1, AIR_BLOCK),
+                new HashBlockFrame(1, 1, AIR_BLOCK),
                 new Dictionary<string, CursorDrawingContext>());
         }
 

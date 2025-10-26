@@ -39,9 +39,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlockForAll();
-            screenContext.Screen.UpRotate();
-            screenContext.ScreenOutputHandler.ResetBuffer();
+            screenContext.ScreenController.UpRotate();
         }
 
         private void Down_Button_RightClick(Control sender, CursorEventArgs e)
@@ -50,9 +48,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlockForAll();
-            screenContext.Screen.DownRotate();
-            screenContext.ScreenOutputHandler.ResetBuffer();
+            screenContext.ScreenController.DownRotate();
         }
 
         private void Left_Button_RightClick(Control sender, CursorEventArgs e)
@@ -61,9 +57,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlockForAll();
-            screenContext.Screen.LeftRotate();
-            screenContext.ScreenOutputHandler.ResetBuffer();
+            screenContext.ScreenController.LeftRotate();
         }
 
         private void Right_Button_RightClick(Control sender, CursorEventArgs e)
@@ -72,9 +66,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlockForAll();
-            screenContext.Screen.RightRotate();
-            screenContext.ScreenOutputHandler.ResetBuffer();
+            screenContext.ScreenController.RightRotate();
         }
 
         private void Center_Button_RightClick(Control sender, CursorEventArgs e)
@@ -83,9 +75,7 @@ namespace MCBS.SystemApplications.ScreenController
             if (screenContext is null)
                 return;
 
-            screenContext.ScreenOutputHandler.FillAirBlockForAll();
-            screenContext.Screen.ClockwiseRotate();
-            screenContext.ScreenOutputHandler.ResetBuffer();
+            screenContext.ScreenController.ClockwiseRotate();
         }
     }
 }

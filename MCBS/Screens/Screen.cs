@@ -1,5 +1,4 @@
 ﻿using QuanLib.Core;
-using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using QuanLib.Game;
 using SixLabors.ImageSharp;
@@ -16,7 +15,7 @@ namespace MCBS.Screens
     /// <summary>
     /// 屏幕
     /// </summary>
-    public class Screen : IPlane, IDataModelOwner<Screen, Screen.DataModel>
+    public struct Screen : IPlane, IEquatable<Screen>, IDataModelOwner<Screen, Screen.DataModel>
     {
         public Screen(DataModel model)
         {
@@ -24,18 +23,11 @@ namespace MCBS.Screens
             ThrowHelper.ArgumentOutOfRange(1, 512, model.Width, "model.Width");
             ThrowHelper.ArgumentOutOfRange(1, 512, model.Height, "model.Height");
 
-            _StartPosition = new(model.StartPosition[0], model.StartPosition[1], model.StartPosition[2]);
+            StartPosition = new(model.StartPosition[0], model.StartPosition[1], model.StartPosition[2]);
             Width = model.Width;
             Height = model.Height;
             XFacing = (Facing)model.XFacing;
             YFacing = (Facing)model.YFacing;
-
-            Move += OnMove;
-            Translate += OnTranslate;
-            Advance += OnAdvance;
-            Resize += OnResize;
-            PlaneFacingChanged += OnPlaneFacingChanged;
-            NormalFacingChanged += OnNormalFacingChanged;
         }
 
         public Screen(Vector3<int> startPosition, int width, int height, Facing xFacing, Facing yFacing)
@@ -43,48 +35,18 @@ namespace MCBS.Screens
             ThrowHelper.ArgumentOutOfRange(1, 512, width, nameof(width));
             ThrowHelper.ArgumentOutOfRange(1, 512, height, nameof(height));
 
-            _StartPosition = startPosition;
+            StartPosition = startPosition;
             Width = width;
             Height = height;
             XFacing = xFacing;
             YFacing = yFacing;
-
-            Move += OnMove;
-            Translate += OnTranslate;
-            Advance += OnAdvance;
-            Resize += OnResize;
-            PlaneFacingChanged += OnPlaneFacingChanged;
-            NormalFacingChanged += OnNormalFacingChanged;
         }
 
-        public Vector3<int> StartPosition
-        {
-            get => _StartPosition;
-            set
-            {
-                if (_StartPosition != value)
-                {
-                    Vector3<int> temp = _StartPosition;
-                    _StartPosition = value;
-                    Move.Invoke(this, new(temp, value));
+        public Vector3<int> StartPosition { get; private set; }
 
-                    int xFacingIndex = Math.Abs((int)XFacing) - 1;
-                    int yFacingIndex = Math.Abs((int)YFacing) - 1;
-                    int normalFacingIndex = 3 - xFacingIndex - yFacingIndex;
+        public readonly Vector3<int> EndPosition => ScreenPos2WorldPos(new(Width - 1, Height - 1));
 
-                    if (temp[xFacingIndex] != value[xFacingIndex] || temp[yFacingIndex] != value[yFacingIndex])
-                        Translate.Invoke(this, new(new(temp[xFacingIndex], temp[yFacingIndex]), new(value[xFacingIndex], value[yFacingIndex])));
-
-                    if (temp[normalFacingIndex] != value[normalFacingIndex])
-                        Advance.Invoke(this, new(temp[normalFacingIndex], value[normalFacingIndex]));
-                }
-            }
-        }
-        private Vector3<int> _StartPosition;
-
-        public Vector3<int> EndPosition => ScreenPos2WorldPos(new(Width - 1, Height - 1));
-
-        public Vector3<int> CenterPosition => ScreenPos2WorldPos(new(Width / 2, Height / 2));
+        public readonly Vector3<int> CenterPosition => ScreenPos2WorldPos(new(Width / 2, Height / 2));
 
         public int Width { get; private set; }
 
@@ -94,9 +56,9 @@ namespace MCBS.Screens
 
         public Facing YFacing { get; private set; }
 
-        public Facing NormalFacing => new PlaneFacing(XFacing, YFacing).NormalFacing;
+        public readonly Facing NormalFacing => new PlaneFacing(XFacing, YFacing).NormalFacing;
 
-        public PlaneAxis PlaneAxis
+        public readonly PlaneAxis PlaneAxis
         {
             get
             {
@@ -110,7 +72,7 @@ namespace MCBS.Screens
             }
         }
 
-        public int PlaneCoordinate
+        public readonly int PlaneCoordinate
         {
             get
             {
@@ -124,120 +86,125 @@ namespace MCBS.Screens
             }
         }
 
-        public int TotalPixels => Width * Height;
+        public readonly int TotalPixels => Width * Height;
 
-        public event EventHandler<Screen, ValueChangedEventArgs<Vector3<int>>> Move;
-
-        public event EventHandler<Screen, ValueChangedEventArgs<Point>> Translate;
-
-        public event EventHandler<Screen, ValueChangedEventArgs<int>> Advance;
-
-        public event EventHandler<Screen, ValueChangedEventArgs<Size>> Resize;
-
-        public event EventHandler<Screen, ValueChangedEventArgs<PlaneFacing>> PlaneFacingChanged;
-
-        public event EventHandler<Screen, ValueChangedEventArgs<Facing>> NormalFacingChanged;
-
-        protected virtual void OnMove(Screen screen, ValueChangedEventArgs<Vector3<int>> e) { }
-
-        protected virtual void OnTranslate(Screen screen, ValueChangedEventArgs<Point> e) { }
-
-        protected virtual void OnAdvance(Screen screen, ValueChangedEventArgs<int> e) { }
-
-        protected virtual void OnResize(Screen screen, ValueChangedEventArgs<Size> e) { }
-
-        protected virtual void OnPlaneFacingChanged(Screen screen, ValueChangedEventArgs<PlaneFacing> e) { }
-
-        protected virtual void OnNormalFacingChanged(Screen screen, ValueChangedEventArgs<Facing> e) { }
-
-        public void SetSize(int width, int height) => SetSize(new(width, height));
-
-        public void SetSize(Size size)
+        public Screen SetPosition(Vector3<int> position)
         {
-            ThrowHelper.ArgumentOutOfRange(1, 512, size.Width, "size.Width");
-            ThrowHelper.ArgumentOutOfRange(1, 512, size.Height, "size.Height");
-
-            Size temp = new(Width, Height);
-            if (temp == size)
-                return;
-
-            Width = size.Width;
-            Height = size.Height;
-            Resize.Invoke(this, new(temp, size));
+            StartPosition = position;
+            return this;
         }
 
-        public void UpRotate()
+        public Screen SetPosition(int x, int y, int z) => SetPosition(new(x, y, z));
+
+        public Screen SetSize(int width, int height)
         {
-            ApplyRotate(new PlaneFacing(XFacing, YFacing).UpRotate());
+            ThrowHelper.ArgumentOutOfMin(1, width, nameof(width));
+            ThrowHelper.ArgumentOutOfMin(1, height, nameof(height));
+
+            Width = width;
+            Height = height;
+            return this;
         }
 
-        public void DownRotate()
+        public Screen SetSize(Size size) => SetSize(size.Width, size.Height);
+
+        public Screen UpRotate()
         {
-            ApplyRotate(new PlaneFacing(XFacing, YFacing).DownRotate());
+            return ApplyRotate(new PlaneFacing(XFacing, YFacing).UpRotate());
         }
 
-        public void LeftRotate()
+        public Screen DownRotate()
         {
-            ApplyRotate(new PlaneFacing(XFacing, YFacing).LeftRotate());
+            return ApplyRotate(new PlaneFacing(XFacing, YFacing).DownRotate());
         }
 
-        public void RightRotate()
+        public Screen LeftRotate()
         {
-            ApplyRotate(new PlaneFacing(XFacing, YFacing).RightRotate());
+            return ApplyRotate(new PlaneFacing(XFacing, YFacing).LeftRotate());
         }
 
-        public void ClockwiseRotate()
+        public Screen RightRotate()
         {
-            ApplyRotate(new PlaneFacing(XFacing, YFacing).ClockwiseRotate());
+            return ApplyRotate(new PlaneFacing(XFacing, YFacing).RightRotate());
         }
 
-        public void CounterclockwiseRotate()
+        public Screen ClockwiseRotate()
         {
-            ApplyRotate(new PlaneFacing(XFacing, YFacing).CounterclockwiseRotate());
+            return ApplyRotate(new PlaneFacing(XFacing, YFacing).ClockwiseRotate());
         }
 
-        private void ApplyRotate(PlaneFacing planeFacing)
+        public Screen CounterclockwiseRotate()
+        {
+            return ApplyRotate(new PlaneFacing(XFacing, YFacing).CounterclockwiseRotate());
+        }
+
+        private Screen ApplyRotate(PlaneFacing planeFacing)
         {
             if (planeFacing.XFacing == XFacing && planeFacing.YFacing == YFacing)
-                return;
-
-            Facing oldXFacing = XFacing;
-            Facing oldYFacing = YFacing;
-            Facing oldNormalFacing = NormalFacing;
+                return this;
 
             Vector3<int> oldPos = CenterPosition;
             XFacing = planeFacing.XFacing;
             YFacing = planeFacing.YFacing;
             Vector3<int> newPos = CenterPosition;
 
-            PlaneFacingChanged.Invoke(this, new(new(oldXFacing, oldYFacing), new(XFacing, YFacing)));
-
-            if (oldNormalFacing != NormalFacing)
-                NormalFacingChanged.Invoke(this, new(oldNormalFacing, NormalFacing));
-
             Vector3<int> offset = newPos - oldPos;
             StartPosition -= offset;
+
+            return this;
         }
 
-        public void ApplyTranslate(Point offset)
-        {
-            ApplyTranslate(offset.X, offset.Y);
-        }
-
-        public void ApplyTranslate(int dx, int dy)
+        public Screen ApplyTranslate(int dx, int dy)
         {
             Vector3<int> position = StartPosition;
             position = position.Offset(XFacing, dx);
             position = position.Offset(YFacing, dy);
             StartPosition = position;
+            return this;
         }
 
-        public void ApplyAdvance(int offset)
+        public Screen ApplyTranslate(Point offset) => ApplyTranslate(offset.X, offset.Y);
+
+        public Screen ApplyAdvance(int offset)
         {
             StartPosition = StartPosition.Offset(NormalFacing, offset);
+            return this;
         }
 
-        public bool InAltitudeRange(int min, int max)
+        public readonly CubeRange GetRange(int maxBackLayers = 0, int maxFrontLayers = 0)
+        {
+            ThrowHelper.ArgumentOutOfMin(0, maxBackLayers, nameof(maxBackLayers));
+            ThrowHelper.ArgumentOutOfMin(0, maxFrontLayers, nameof(maxFrontLayers));
+
+            Vector3<int> startPos = ScreenPos2WorldPos(Point.Empty);
+            Vector3<int> endPos = ScreenPos2WorldPos(new(Width - 1, Height - 1));
+
+            if (maxBackLayers == 0 && maxFrontLayers == 0)
+                return new(startPos, endPos);
+
+            int index = Math.Abs((int)NormalFacing) - 1;
+            switch (NormalFacing)
+            {
+                case Facing.Xp:
+                case Facing.Yp:
+                case Facing.Zp:
+                    endPos[index] += maxFrontLayers;
+                    startPos[index] -= maxBackLayers;
+                    break;
+                case Facing.Xm:
+                case Facing.Ym:
+                case Facing.Zm:
+                    startPos[index] -= maxFrontLayers;
+                    endPos[index] += maxBackLayers;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            return new(startPos, endPos);
+        }
+
+        public readonly bool InAltitudeRange(int min, int max)
         {
             Vector3<int> position1 = ScreenPos2WorldPos(new(0, 0));
             Vector3<int> position2 = ScreenPos2WorldPos(new(Width - 1, 0));
@@ -251,16 +218,16 @@ namespace MCBS.Screens
                 CheckHelper.Range(min, max, position4.Y);
         }
 
-        public Screen SubScreen(Rectangle rectangle) => SubScreen(rectangle.Location, rectangle.Size);
+        public readonly Screen SubScreen(Rectangle rectangle) => SubScreen(rectangle.Location, rectangle.Size);
 
-        public Screen SubScreen(Point startPosition, Size size) => SubScreen(startPosition, size.Width, size.Height);
+        public readonly Screen SubScreen(Point startPosition, Size size) => SubScreen(startPosition, size.Width, size.Height);
 
-        public Screen SubScreen(Point startPosition, int width, int height)
+        public readonly Screen SubScreen(Point startPosition, int width, int height)
         {
             return new(ScreenPos2WorldPos(startPosition), width, height, XFacing, YFacing);
         }
 
-        public Vector3<int> ScreenPos2WorldPos(Point position, int offset = 0)
+        public readonly Vector3<int> ScreenPos2WorldPos(Point position, int layer = 0)
         {
             int x = 0;
             int y = 0;
@@ -317,22 +284,22 @@ namespace MCBS.Screens
             switch (NormalFacing)
             {
                 case Facing.Xp:
-                    x = StartPosition.X + offset;
+                    x = StartPosition.X + layer;
                     break;
                 case Facing.Xm:
-                    x = StartPosition.X - offset;
+                    x = StartPosition.X - layer;
                     break;
                 case Facing.Yp:
-                    y = StartPosition.Y + offset;
+                    y = StartPosition.Y + layer;
                     break;
                 case Facing.Ym:
-                    y = StartPosition.Y - offset;
+                    y = StartPosition.Y - layer;
                     break;
                 case Facing.Zp:
-                    z = StartPosition.Z + offset;
+                    z = StartPosition.Z + layer;
                     break;
                 case Facing.Zm:
-                    z = StartPosition.Z - offset;
+                    z = StartPosition.Z - layer;
                     break;
                 default:
                     break;
@@ -341,7 +308,7 @@ namespace MCBS.Screens
             return new(x, y, z);
         }
 
-        public Point WorldPos2ScreenPos(Vector3<int> position)
+        public readonly Point WorldPos2ScreenPos(Vector3<int> position)
         {
             var x = XFacing switch
             {
@@ -367,7 +334,7 @@ namespace MCBS.Screens
             return new(x, y);
         }
 
-        public double GetPlaneDistance<T>(T position) where T : IVector3<double>
+        public readonly double GetPlaneDistance<T>(T position) where T : IVector3<double>
         {
             ArgumentNullException.ThrowIfNull(position, nameof(position));
 
@@ -383,12 +350,12 @@ namespace MCBS.Screens
             };
         }
 
-        public bool IncludedOnScreen(Point position)
+        public readonly bool IncludedOnScreen(Point position)
         {
             return position.X >= 0 && position.Y >= 0 && position.X < Width && position.Y < Height;
         }
 
-        public bool IncludedOnScreen(Vector3<int> position)
+        public readonly bool IncludedOnScreen(Vector3<int> position)
         {
             bool isScreenPlane = NormalFacing switch
             {
@@ -400,12 +367,27 @@ namespace MCBS.Screens
             return isScreenPlane && IncludedOnScreen(WorldPos2ScreenPos(position));
         }
 
-        public override string ToString()
+        public readonly bool Equals(Screen other)
+        {
+            return this == other;
+        }
+
+        public override readonly bool Equals([NotNullWhen(true)] object? obj)
+        {
+            return obj is Screen other && Equals(other);
+        }
+
+        public readonly override int GetHashCode()
+        {
+            return HashCode.Combine(StartPosition.X, StartPosition.Y, StartPosition.Z, Width, Height, XFacing, YFacing);
+        }
+
+        public override readonly string ToString()
         {
             return $"StartPosition={StartPosition}, Width={Width}, Height={Height}, XFacing={XFacing}, YFacing={YFacing}";
         }
 
-        public DataModel ToDataModel()
+        public readonly DataModel ToDataModel()
         {
             return new()
             {
@@ -662,13 +644,27 @@ namespace MCBS.Screens
             return new(startPosition, width, height, xFacing, yFacing);
         }
 
+        public static bool operator ==(Screen left, Screen right)
+        {
+            return  left.StartPosition == right.StartPosition &&
+                    left.Width == right.Width &&
+                    left.Height == right.Height &&
+                    left.XFacing == right.XFacing &&
+                    left.YFacing == right.YFacing;
+        }
+
+        public static bool operator !=(Screen left, Screen right)
+        {
+            return !(left == right);
+        }
+
         public class DataModel : IDataModel<DataModel>
         {
             public DataModel()
             {
-                StartPosition = [0, 143, 0];
-                Width = 256;
-                Height = 144;
+                StartPosition = [0, 0, 0];
+                Width = 128 + 32;
+                Height = 72 + 32;
                 XFacing = -1;
                 YFacing = -2;
             }

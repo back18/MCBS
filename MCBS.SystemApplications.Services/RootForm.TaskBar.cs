@@ -148,9 +148,7 @@ namespace MCBS.SystemApplications.Services
                 if (screenContext is null)
                     return;
 
-                screenContext.ScreenOutputHandler.FillAirBlockForAll();
-                screenContext.Screen.ApplyAdvance(e.InventorySlotDelta);
-                screenContext.ScreenOutputHandler.ResetBuffer();
+                screenContext.ScreenController.ApplyAdvance(e.InventorySlotDelta);
             }
 
             public void SwitchSelectedForm(IForm form)

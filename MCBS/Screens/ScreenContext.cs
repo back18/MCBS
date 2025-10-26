@@ -38,8 +38,8 @@ namespace MCBS.Screens
             ArgumentNullException.ThrowIfNull(screen, nameof(screen));
             ArgumentNullException.ThrowIfNull(screenView, nameof(screenView));
 
-            Screen = screen;
             ScreenView = screenView;
+            ScreenController = new(this, screen, 0, 1);
             ScreenInputHandler = new(this);
             ScreenDrawingHandler =new(this);
             ScreenOutputHandler = new(this);
@@ -77,7 +77,7 @@ namespace MCBS.Screens
 
         public ScreenState ScreenState => StateMachine.CurrentState;
 
-        public Screen Screen { get; }
+        public Screen Screen => ScreenController.GetScreen();
 
         public IScreenView ScreenView { get; }
 
@@ -88,6 +88,12 @@ namespace MCBS.Screens
         public ScreenDrawingHandler ScreenDrawingHandler { get; }
 
         public ScreenOutputHandler ScreenOutputHandler { get; }
+
+        public ScreenController ScreenController { get; }
+
+        public int MaxBackLayers => ScreenController.GetMaxBackLayers();
+
+        public int MaxFrontLayers => ScreenController.GetMaxFrontLayers();
 
         public bool IsRestarting { get; private set; }
 
@@ -133,7 +139,7 @@ namespace MCBS.Screens
                     forem.CloseForm();
             }
             RootForm.CloseForm();
-            ScreenOutputHandler.FillAirBlockForAll();
+            ScreenController.ClearScreenRange();
             DeleteJson();
             LOGGER.Info($"屏幕({Screen.StartPosition})已卸载");
             return true;
@@ -141,6 +147,7 @@ namespace MCBS.Screens
 
         protected virtual void ActiveStateUpdate(int tick)
         {
+            ScreenController.OnTickUpdate(tick);
             SaveJson();
         }
 

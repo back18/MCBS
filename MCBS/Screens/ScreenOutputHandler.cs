@@ -1,10 +1,9 @@
 ﻿using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
-using MCBS.UI.Extensions;
+using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.Minecraft;
-using QuanLib.Minecraft.Command;
-using QuanLib.Minecraft.Command.Senders;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -31,7 +30,11 @@ namespace MCBS.Screens
             _frameCaches = [];
             _outputBuffers = [];
             _blockUpdateList = [];
-            ScreenDefaultBlock = "minecraft:smooth_stone";
+
+            _owner.ScreenController.Move += ScreenController_Move;
+            _owner.ScreenController.Translate += ScreenController_Translate;
+            _owner.ScreenController.Resize += ScreenController_Resize;
+            _owner.ScreenController.PlaneFacingChanged += ScreenController_PlaneFacingChanged;
         }
 
         private readonly ScreenContext _owner;
@@ -41,8 +44,6 @@ namespace MCBS.Screens
         private readonly Dictionary<int, BlockFrame> _outputBuffers;
 
         private readonly List<WorldBlock> _blockUpdateList;
-
-        public string ScreenDefaultBlock { get; set; }
 
         public void HandleOutput()
         {
@@ -64,156 +65,46 @@ namespace MCBS.Screens
             await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
         }
 
-        public void HandleFrameUpdate(BlockFrame newFrame, int offset = 0)
+        public void HandleFrameUpdate(BlockFrame newFrame, int layer = 0)
         {
-            if (_frameCaches.TryGetValue(offset, out var frameCache) && frameCache == newFrame)
+            ThrowHelper.ArgumentOutOfRange(-_owner.MaxBackLayers, _owner.MaxFrontLayers, layer, nameof(layer));
+
+            if (_frameCaches.TryGetValue(layer, out var frameCache) && frameCache == newFrame)
                 return;
 
-            ScreenPixel<string>[] pixels = GetDifferencePixels(newFrame, offset);
+            ScreenPixel<string>[] pixels = GetDifferencePixels(newFrame, layer);
 
-            if (!_outputBuffers.TryGetValue(offset, out var outputBuffer))
+            if (!_outputBuffers.TryGetValue(layer, out var outputBuffer))
             {
                 outputBuffer = new LosslessBlockFrame(newFrame.Width, newFrame.Height, AIR_BLOCK);
-                _outputBuffers.Add(offset, outputBuffer);
+                _outputBuffers.Add(layer, outputBuffer);
             }
 
             foreach (var pixel in pixels)
                 outputBuffer[pixel.Position.X, pixel.Position.Y] = pixel.Pixel;
 
-            WorldBlock[] blocks = ToWorldBlocks(pixels, offset);
+            WorldBlock[] blocks = ToWorldBlocks(pixels, layer);
             _blockUpdateList.AddRange(blocks);
-            _frameCaches[offset] = newFrame;
+            _frameCaches[layer] = newFrame;
         }
 
-        public async Task HandleFrameUpdateAsync(BlockFrame newFrame, int offset = 0)
+        public async Task HandleFrameUpdateAsync(BlockFrame newFrame, int layer = 0)
         {
-            await Task.Run(() => HandleFrameUpdate(newFrame, offset));
+            await Task.Run(() => HandleFrameUpdate(newFrame, layer));
         }
 
-        public void UpdateBuffer()
-        {
-            Rectangle formRectangle = _owner.RootForm.GetRectangle();
-            Size screenSize = formRectangle.Size + new Size(32);
-            Point screenOffset = new(formRectangle.Location.X - 16, formRectangle.Location.Y - 16);
-
-            _owner.Screen.SetSize(screenSize);
-            _owner.Screen.ApplyTranslate(screenOffset);
-            _owner.ScreenView.ClientSize = screenSize;
-            _owner.RootForm.ClientLocation = new(16, 16);
-            foreach (int offset in _outputBuffers.Keys)
-            {
-                LosslessBlockFrame outputBuffer = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
-                outputBuffer.Overwrite(_outputBuffers[offset], -screenOffset);
-                _outputBuffers[offset] = outputBuffer;
-                _frameCaches[offset] = outputBuffer;
-            }
-        }
-
-        public void ResetBuffer()
-        {
-            Rectangle formRectangle = _owner.RootForm.GetRectangle();
-            Size screenSize = formRectangle.Size + new Size(32);
-            foreach (int offset in _outputBuffers.Keys)
-            {
-                LosslessBlockFrame outputBuffer = new(screenSize.Width, screenSize.Height, AIR_BLOCK);
-                _outputBuffers[offset] = outputBuffer;
-                _frameCaches[offset] = outputBuffer;
-            }
-        }
-
-        public bool CheckBlock(string blockId, int offset = 0)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
-
-            Screen screen = _owner.Screen;
-            Vector3<int> startPos = screen.ScreenPos2WorldPos(Point.Empty, offset);
-            Vector3<int> endPos = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), offset);
-            return MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.CheckRangeBlock(startPos, endPos, AIR_BLOCK);
-        }
-
-        public bool CheckAirBlock(int offset = 0)
-        {
-            return CheckBlock(AIR_BLOCK, offset);
-        }
-
-        public bool FillBlock(string blockId, int offset = 0, bool checkAirBlock = false)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
-
-            if (checkAirBlock && !CheckAirBlock(offset))
-                return false;
-
-            Screen screen = _owner.Screen;
-            Vector3<int> startPos = screen.ScreenPos2WorldPos(Point.Empty, offset);
-            Vector3<int> endPos = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), offset);
-            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.Fill(startPos, endPos, AIR_BLOCK, true);
-
-            return true;
-        }
-
-        public void FillBlockForAll(string blockId)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(blockId, nameof(blockId));
-
-            if (_outputBuffers.Count == 0)
-                return;
-
-            Screen screen = _owner.Screen;
-            Vector3<int> startPos = screen.ScreenPos2WorldPos(Point.Empty, _outputBuffers.Keys.Min());
-            Vector3<int> endPos = screen.ScreenPos2WorldPos(new(screen.Width - 1, screen.Height - 1), _outputBuffers.Keys.Max());
-            MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.Fill(startPos, endPos, AIR_BLOCK, true);
-        }
-
-        public bool FillDefaultBlock(int offset = 0, bool checkAirBlock = false)
-        {
-            return FillBlock(ScreenDefaultBlock, offset, checkAirBlock);
-        }
-
-        public void FillDefaultBlockForAll()
-        {
-            FillBlockForAll(ScreenDefaultBlock);
-        }
-
-        public bool FillLightBlock(int offset = 0, bool checkAirBlock = false)
-        {
-            return FillBlock(LIGHT_BLOCK, offset, checkAirBlock);
-        }
-
-        public void FillLightBlockForAll()
-        {
-            FillBlockForAll(LIGHT_BLOCK);
-        }
-
-        public bool FillBarrierBlock(int offset = 0, bool checkAirBlock = false)
-        {
-            return FillBlock(BARRIER_BLOCK, offset, checkAirBlock);
-        }
-
-        public void FillBarrierBlockForAll()
-        {
-            FillBlockForAll(BARRIER_BLOCK);
-        }
-
-        public bool FillAirBlock(int offset = 0)
-        {
-            return FillBlock(AIR_BLOCK, offset, false);
-        }
-
-        public void FillAirBlockForAll()
-        {
-            FillBlockForAll(AIR_BLOCK);
-        }
-
-        private ScreenPixel<string>[] GetDifferencePixels(BlockFrame newFrame, int offset = 0)
+        private ScreenPixel<string>[] GetDifferencePixels(BlockFrame newFrame, int layer = 0)
         {
             ArgumentNullException.ThrowIfNull(newFrame, nameof(newFrame));
+            ThrowHelper.ArgumentOutOfRange(-_owner.MaxBackLayers, _owner.MaxFrontLayers, layer, nameof(layer));
+
             if (newFrame.Width != _owner.Screen.Width || newFrame.Height != _owner.Screen.Height)
                 throw new ArgumentException("帧尺寸不一致");
 
-            if (!_outputBuffers.TryGetValue(offset, out var outputBuffer))
+            if (!_outputBuffers.TryGetValue(layer, out var outputBuffer))
                 return newFrame.GetAllPixel();
 
-            _frameCaches.TryGetValue(offset, out var frameCache);
+            _frameCaches.TryGetValue(layer, out var frameCache);
 
             if (frameCache is LayerBlockFrame layerBlockFrame1 &&
                 newFrame is LayerBlockFrame layerBlockFrame2 &&
@@ -292,7 +183,7 @@ namespace MCBS.Screens
             }
         }
 
-        private WorldBlock[] ToWorldBlocks(ScreenPixel<string>[] pixels, int offset = 0)
+        private WorldBlock[] ToWorldBlocks(ScreenPixel<string>[] pixels, int layer = 0)
         {
             ArgumentNullException.ThrowIfNull(pixels, nameof(pixels));
 
@@ -302,10 +193,75 @@ namespace MCBS.Screens
             for (int i = 0; i < pixels.Length; i++)
             {
                 ScreenPixel<string> pixel = pixels[i];
-                result[i] = new(screen.ScreenPos2WorldPos(pixel.Position, offset), pixel.Pixel);
+                result[i] = new(screen.ScreenPos2WorldPos(pixel.Position, layer), pixel.Pixel);
             }
 
             return result;
+        }
+
+        private void ResetBuffer()
+        {
+            Screen screen = _owner.Screen;
+            _owner.ScreenController.ClearScreenRange();
+
+            foreach (int offset in _outputBuffers.Keys)
+            {
+                LosslessBlockFrame outputBuffer = new(screen.Width, screen.Height, AIR_BLOCK);
+                _outputBuffers[offset] = outputBuffer;
+                _frameCaches[offset] = outputBuffer;
+            }
+        }
+
+        private void ScreenController_Move(ScreenController sender, ValueChangedEventArgs<Vector3<int>> e)
+        {
+            _owner.RootForm.ClientLocation = new(16, 16);
+
+            Screen screen = _owner.Screen;
+            int normalFacingIndex = Math.Abs((int)screen.NormalFacing) - 1;
+
+            if (e.OldValue[normalFacingIndex] != e.NewValue[normalFacingIndex])
+                ResetBuffer();
+        }
+
+        private void ScreenController_Translate(ScreenController sender, EventArgs<Point> e)
+        {
+            Screen screen = _owner.Screen;
+            Point offset = e.Argument;
+
+            foreach (int layer in _outputBuffers.Keys)
+            {
+                LosslessBlockFrame outputBuffer = new(screen.Width, screen.Height, AIR_BLOCK);
+                outputBuffer.Overwrite(_outputBuffers[layer], -offset);
+                _outputBuffers[layer] = outputBuffer;
+                _frameCaches[layer] = outputBuffer;
+            }
+        }
+
+        private void ScreenController_Resize(ScreenController sender, ValueChangedEventArgs<Size> e)
+        {
+            Size size = e.NewValue;
+            _owner.ScreenView.ClientSize = size - new Size(_owner.ScreenView.BorderWidth * 2);
+
+            BlockFrame? defaultOutputBuffer = _outputBuffers.Values.FirstOrDefault();
+            if (defaultOutputBuffer is null)
+                return;
+
+            foreach (int layer in _outputBuffers.Keys)
+            {
+                if (_outputBuffers[layer].Width == size.Width && _outputBuffers[layer].Height == size.Height)
+                    continue;
+
+                LosslessBlockFrame outputBuffer = new(size.Width, size.Height, AIR_BLOCK);
+                outputBuffer.Overwrite(_outputBuffers[layer], Point.Empty);
+                _outputBuffers[layer] = outputBuffer;
+                _frameCaches[layer] = outputBuffer;
+            }
+        }
+
+        private void ScreenController_PlaneFacingChanged(ScreenController sender, ValueChangedEventArgs<PlaneFacing> e)
+        {
+            if (e.OldValue.NormalFacing == e.NewValue.NormalFacing)
+                ResetBuffer();
         }
     }
 }

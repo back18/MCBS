@@ -1,9 +1,14 @@
 ﻿using MCBS.BlockForms;
+using MCBS.Drawing;
+using MCBS.Drawing.Extensions;
 using MCBS.Events;
 using MCBS.Forms;
+using MCBS.Screens;
 using MCBS.UI;
 using MCBS.UI.Extensions;
+using QuanLib.Core.Events;
 using QuanLib.Game;
+using QuanLib.Minecraft.Blocks;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -22,10 +27,13 @@ namespace MCBS.SystemApplications.Services
 
             RootForm_Control = new();
 
-            _rectangle = Rectangle.Empty;
+            _isBoundController = false;
+            _failedFacings = [];
         }
 
-        private Rectangle _rectangle;
+        private bool _isBoundController;
+
+        private readonly HashSet<Facing> _failedFacings;
 
         private readonly RootForm RootForm_Control;
 
@@ -38,6 +46,14 @@ namespace MCBS.SystemApplications.Services
             ChildControls.Add(RootForm_Control);
             RootForm_Control.ClientSize = ClientSize - new Size(32);
             RootForm_Control.Location = new Point(16, 16);
+
+            if (MinecraftBlockScreen.Instance.ScreenContextOf(RootForm) is ScreenContext screenContext)
+            {
+                screenContext.ScreenController.CheckRangeFailed += ScreenController_CheckRangeFailed;
+                screenContext.ScreenController.Move += ScreenController_Move;
+                screenContext.ScreenController.Resize += ScreenController_Resize;
+                _isBoundController = true;
+            }
         }
 
         public override bool HandleCursorMove(CursorEventArgs e)
@@ -104,15 +120,93 @@ namespace MCBS.SystemApplications.Services
             if (!IsInitCompleted)
                 return;
 
+            if (!_isBoundController)
+                return;
+
             Rectangle rectangle = RootForm_Control.GetRectangle();
-            if (rectangle == _rectangle)
+            Rectangle standardRectangle = GetStandardRectangle();
+            if (rectangle == standardRectangle)
                 return;
 
-            if (rectangle.Location == new Point(16, 16) && rectangle.Size == _rectangle.Size)
+            ScreenController? screenController = MinecraftBlockScreen.Instance.ScreenContextOf(RootForm_Control)?.ScreenController;
+            if (screenController is null)
                 return;
 
-            _rectangle = rectangle;
-            MinecraftBlockScreen.Instance.ScreenContextOf(RootForm_Control)?.ScreenOutputHandler.UpdateBuffer();
+            Screen screen = screenController.GetScreen();
+            Point posOffset = new(rectangle.X - standardRectangle.X, rectangle.Y - standardRectangle.Y);
+            Size sizeOffset = new(rectangle.Width - standardRectangle.Width, rectangle.Height - standardRectangle.Height);
+
+            if (_failedFacings.Count > 0)
+            {
+                if (posOffset.X + sizeOffset.Width > 0)
+                {
+                    if (_failedFacings.Contains(screen.XFacing))
+                        return;
+                }
+
+                if (posOffset.Y + sizeOffset.Height > 0)
+                {
+                    if (_failedFacings.Contains(screen.YFacing))
+                        return;
+                }
+
+                if (posOffset.X < 0)
+                {
+                    if (_failedFacings.Contains(screen.XFacing.Reverse()))
+                        return;
+                }
+
+                if (posOffset.Y < 0)
+                {
+                    if (_failedFacings.Contains(screen.YFacing.Reverse()))
+                        return;
+                }
+            }
+
+            screenController.ApplyTranslate(posOffset);
+            screenController.SetSize(rectangle.Width + 32, rectangle.Height + 32);
+        }
+
+        protected override BlockFrame Drawing()
+        {
+            if (_failedFacings.Count == 0)
+                return base.Drawing();
+
+            BlockFrame background = base.Drawing();
+            background.DrawHorizontalLine(0, BlockManager.Concrete.Red);
+            background.DrawHorizontalLine(background.Height - 1, BlockManager.Concrete.Red);
+            background.DrawVerticalLine(0, BlockManager.Concrete.Red);
+            background.DrawVerticalLine(background.Width - 1, BlockManager.Concrete.Red);
+            return background;
+        }
+
+        private void ScreenController_CheckRangeFailed(ScreenController sender, EventArgs<ScreenController.FacingRange> e)
+        {
+            _failedFacings.Add(e.Argument.Facing);
+            RequestRedraw();
+        }
+
+        private void ScreenController_Move(ScreenController sender, ValueChangedEventArgs<Vector3<int>> e)
+        {
+            if (_failedFacings.Count > 0)
+            {
+                _failedFacings.Clear();
+                RequestRedraw();
+            }
+        }
+
+        private void ScreenController_Resize(ScreenController sender, ValueChangedEventArgs<Size> e)
+        {
+            if (_failedFacings.Count > 0)
+            {
+                _failedFacings.Clear();
+                RequestRedraw();
+            }
+        }
+
+        private Rectangle GetStandardRectangle()
+        {
+            return new(16, 16, Size.Width - 32, Size.Height - 32);
         }
     }
 }

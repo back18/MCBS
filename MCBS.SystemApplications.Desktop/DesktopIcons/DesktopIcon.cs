@@ -61,9 +61,10 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
             if (!e.CursorContext.HoverControls.TryGetValue(Name_Label, out var hoverControl))
                 return;
 
-            Screen? screen = e.CursorContext.ScreenContextOf?.Screen;
-            if (screen is null)
+            ScreenContext? screenContext = e.CursorContext.ScreenContextOf;
+            if (screenContext is null)
                 return;
+            Screen screen = screenContext.Screen;
 
             Point position = e.CursorContext.NewInputData.CursorPosition;
             Point offset = new(-Name_Label.BorderWidth, -Name_Label.BorderWidth);
