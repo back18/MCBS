@@ -1,8 +1,11 @@
-﻿using QuanLib.Core;
+﻿using MCBS.Config;
+using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Game;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.Versions;
+using QuanLib.Minecraft.Versions.Extensions;
 using QuanLib.TickLoop;
 using SixLabors.ImageSharp;
 using System;
@@ -25,6 +28,13 @@ namespace MCBS.Screens
             _owner = owner;
             _oldSnapshot = _newSnapshot = new(screen, maxBackLayers, maxFrontLayers);
 
+            ScreenConfig config = ConfigManager.ScreenConfig;
+            MinecraftVersion version = SR.CurrentMinecraftVersion;
+            MinLength = config.MinLength;
+            MaxLength = config.MaxLength;
+            MinAltitude = Math.Max(config.MinAltitude, version.GetOverworldMinBuildingHeight());
+            MaxAltitude = Math.Min(config.MaxAltitude, version.GetOverworldMaxBuildingHeight());
+
             Move += OnMove;
             Translate += OnTranslate;
             Advance += OnAdvance;
@@ -43,6 +53,14 @@ namespace MCBS.Screens
         private ScreenSnapshot _oldSnapshot;
 
         private ScreenSnapshot _newSnapshot;
+
+        public int MinLength { get; }
+
+        public int MaxLength { get; }
+
+        public int MinAltitude { get; }
+
+        public int MaxAltitude { get; }
 
         public event EventHandler<ScreenController, ValueChangedEventArgs<Vector3<int>>> Move;
 
@@ -143,7 +161,7 @@ namespace MCBS.Screens
                             case Facing.Zm:
                                 x = -x;
                                 break;
-                        };
+                        }
 
                         switch (newFacing.YFacing)
                         {
@@ -152,7 +170,7 @@ namespace MCBS.Screens
                             case Facing.Zm:
                                 y = -y;
                                 break;
-                        };
+                        }
 
                         Translate.Invoke(this, new(new(x, y)));
                     }
@@ -170,7 +188,7 @@ namespace MCBS.Screens
                             case Facing.Zm:
                                 offset = -offset;
                                 break;
-                        };
+                        }
 
                         Advance.Invoke(this, new(offset));
                     }
@@ -193,6 +211,14 @@ namespace MCBS.Screens
             }
         }
 
+        private void HandleCheckRangeFailed(IList<FacingRange> facingRanges)
+        {
+            ArgumentNullException.ThrowIfNull(facingRanges, nameof(facingRanges));
+
+            foreach (FacingRange facingRange in facingRanges)
+                CheckRangeFailed.Invoke(this, new(facingRange));
+        }
+
         public void OnTickUpdate(int tick)
         {
             if (_oldSnapshot == _newSnapshot)
@@ -202,29 +228,112 @@ namespace MCBS.Screens
             ScreenSnapshot newSnapshot = _newSnapshot;
             CubeRange oldRange = oldSnapshot.ScreenRange.Normalize();
             CubeRange newRange = newSnapshot.ScreenRange.Normalize();
+            Vector3<int> size = newRange.Range;
+            Facing normalFacing = newSnapshot.Screen.NormalFacing;
             CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
 
-            List<FacingRange> checkAirFailed = [];
             FacingRange[] additionRanges = GetAdditionRanges(oldRange, newRange);
-
-            foreach (FacingRange facingRange in additionRanges)
+            if (additionRanges.Length > 0)
             {
-                if (!sender.CheckRangeBlock(facingRange.Range.StartPosition, facingRange.Range.EndPosition, AIR_BLOCK))
-                    checkAirFailed.Add(facingRange);
-            }
+                List<FacingRange> checkRangeFailed = [];
+                Dictionary<Facing, FacingRange> mapping = additionRanges.ToDictionary(item => item.Facing, item => item);
 
-            if (checkAirFailed.Count != 0)
-            {
-                foreach (FacingRange facingRange in checkAirFailed)
-                    CheckRangeFailed.Invoke(this, new(facingRange));
+                if (newRange.StartPosition.Y < MinAltitude)
+                {
+                    if (mapping.TryGetValue(Facing.Ym, out var facingRange))
+                        checkRangeFailed.Add(facingRange);
+                }
+                if (newRange.EndPosition.Y > MaxAltitude)
+                {
+                    if (mapping.TryGetValue(Facing.Yp, out var facingRange))
+                        checkRangeFailed.Add(facingRange);
+                }
 
-                _newSnapshot = oldSnapshot;
-                return;
+                foreach (FacingRange facingRange in additionRanges)
+                {
+                    if (facingRange.Facing == normalFacing ||
+                        facingRange.Facing == normalFacing.Reverse())
+                        continue;
+
+                    switch (facingRange.Facing)
+                    {
+                        case Facing.Xp:
+                        case Facing.Xm:
+                            if (size.X > MaxLength)
+                                checkRangeFailed.Add(facingRange);
+                            break;
+                        case Facing.Yp:
+                        case Facing.Ym:
+                            if (size.Y > MaxLength && checkRangeFailed.Any(s => s.Facing == facingRange.Facing))
+                                checkRangeFailed.Add(facingRange);
+                            break;
+                        case Facing.Zp:
+                        case Facing.Zm:
+                            if (size.Z > MaxLength)
+                                checkRangeFailed.Add(facingRange);
+                            break;
+                    }
+                }
+
+                foreach (FacingRange facingRange in additionRanges)
+                {
+                    if (checkRangeFailed.Any(s => s.Facing == facingRange.Facing))
+                        continue;
+
+                    if (!sender.CheckRangeBlock(facingRange.Range.StartPosition, facingRange.Range.EndPosition, AIR_BLOCK))
+                        checkRangeFailed.Add(facingRange);
+                }
+
+                if (checkRangeFailed.Count != 0)
+                {
+                    HandleCheckRangeFailed(checkRangeFailed);
+
+                    _newSnapshot = oldSnapshot;
+                    return;
+                }
             }
 
             FacingRange[] reductionRanges = GetReductionRanges(oldRange, newRange);
+            if (reductionRanges.Length > 0)
+            {
+                List<FacingRange> checkRangeFailed = [];
 
-            foreach(FacingRange facingRange in reductionRanges)
+                foreach (FacingRange facingRange in reductionRanges)
+                {
+                    if (facingRange.Facing == normalFacing ||
+                        facingRange.Facing == normalFacing.Reverse())
+                        continue;
+
+                    switch (facingRange.Facing)
+                    {
+                        case Facing.Xp:
+                        case Facing.Xm:
+                            if (size.X < MinLength)
+                                checkRangeFailed.Add(facingRange);
+                            break;
+                        case Facing.Yp:
+                        case Facing.Ym:
+                            if (size.Y < MinLength)
+                                checkRangeFailed.Add(facingRange);
+                            break;
+                        case Facing.Zp:
+                        case Facing.Zm:
+                            if (size.Z < MinLength)
+                                checkRangeFailed.Add(facingRange);
+                            break;
+                    }
+                }
+
+                if (checkRangeFailed.Count != 0)
+                {
+                    HandleCheckRangeFailed(checkRangeFailed);
+
+                    _newSnapshot = oldSnapshot;
+                    return;
+                }
+            }
+
+            foreach (FacingRange facingRange in reductionRanges)
                 sender.Fill(facingRange.Range.StartPosition, facingRange.Range.EndPosition, AIR_BLOCK, true);
 
             _oldSnapshot = newSnapshot;

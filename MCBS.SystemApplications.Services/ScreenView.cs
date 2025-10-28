@@ -33,6 +33,8 @@ namespace MCBS.SystemApplications.Services
 
         private bool _isBoundController;
 
+        private Rectangle _oldRectangle;
+
         private readonly HashSet<Facing> _failedFacings;
 
         private readonly RootForm RootForm_Control;
@@ -128,43 +130,17 @@ namespace MCBS.SystemApplications.Services
             if (rectangle == standardRectangle)
                 return;
 
+            if (rectangle == _oldRectangle)
+                return;
+
             ScreenController? screenController = MinecraftBlockScreen.Instance.ScreenContextOf(RootForm_Control)?.ScreenController;
             if (screenController is null)
                 return;
 
-            Screen screen = screenController.GetScreen();
             Point posOffset = new(rectangle.X - standardRectangle.X, rectangle.Y - standardRectangle.Y);
-            Size sizeOffset = new(rectangle.Width - standardRectangle.Width, rectangle.Height - standardRectangle.Height);
-
-            if (_failedFacings.Count > 0)
-            {
-                if (posOffset.X + sizeOffset.Width > 0)
-                {
-                    if (_failedFacings.Contains(screen.XFacing))
-                        return;
-                }
-
-                if (posOffset.Y + sizeOffset.Height > 0)
-                {
-                    if (_failedFacings.Contains(screen.YFacing))
-                        return;
-                }
-
-                if (posOffset.X < 0)
-                {
-                    if (_failedFacings.Contains(screen.XFacing.Reverse()))
-                        return;
-                }
-
-                if (posOffset.Y < 0)
-                {
-                    if (_failedFacings.Contains(screen.YFacing.Reverse()))
-                        return;
-                }
-            }
-
             screenController.ApplyTranslate(posOffset);
             screenController.SetSize(rectangle.Width + 32, rectangle.Height + 32);
+            _oldRectangle = rectangle;
         }
 
         protected override BlockFrame Drawing()

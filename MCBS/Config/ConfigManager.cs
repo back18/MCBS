@@ -9,6 +9,7 @@ using QuanLib.Logging;
 using QuanLib.TomlConfig;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -29,16 +30,17 @@ namespace MCBS.Config
         public static ScreenConfig ScreenConfig => _ScreenConfig ?? throw new InvalidOperationException("配置文件未加载");
         private static ScreenConfig? _ScreenConfig;
 
-        public static IReadOnlyDictionary<string, string> Registry => _Registry ?? throw new InvalidOperationException("配置文件未加载");
-        private static Dictionary<string, string>? _Registry;
+        public static ReadOnlyDictionary<string, string> Registry => _Registry ?? throw new InvalidOperationException("配置文件未加载");
+        private static ReadOnlyDictionary<string, string>? _Registry;
+        private static Dictionary<string, string>? _registry;
 
         public static void CreateIfNotExists()
         {
             CreateLog4NetConfig(McbsPathManager.MCBS_Configs_Log4NetConfig.FullName);
             CreateRegistryConfig(McbsPathManager.MCBS_Configs_RegistryConfig.FullName);
-            CreateTomlConfig(McbsPathManager.MCBS_Configs_MinecraftConfig.FullName, MinecraftConfig.Model.CreateDefault());
-            CreateTomlConfig(McbsPathManager.MCBS_Configs_SystemConfig.FullName, SystemConfig.Model.CreateDefault());
-            CreateTomlConfig(McbsPathManager.MCBS_Configs_ScreenConfig.FullName, ScreenConfig.Model.CreateDefault());
+            CreateTomlConfig<MinecraftConfig.Model>(McbsPathManager.MCBS_Configs_MinecraftConfig.FullName);
+            CreateTomlConfig<SystemConfig.Model>(McbsPathManager.MCBS_Configs_SystemConfig.FullName);
+            CreateTomlConfig<ScreenConfig.Model>(McbsPathManager.MCBS_Configs_ScreenConfig.FullName);
         }
 
         public static void LoadAll()
@@ -46,9 +48,19 @@ namespace MCBS.Config
             _MinecraftConfig = MinecraftConfig.Load(McbsPathManager.MCBS_Configs_MinecraftConfig.FullName);
             _SystemConfig = SystemConfig.Load(McbsPathManager.MCBS_Configs_SystemConfig.FullName);
             _ScreenConfig = ScreenConfig.Load(McbsPathManager.MCBS_Configs_ScreenConfig.FullName);
-            _Registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(McbsPathManager.MCBS_Configs_RegistryConfig.FullName)) ?? throw new FormatException();
+            _Registry = LoadRegistry(McbsPathManager.MCBS_Configs_RegistryConfig.FullName);
 
             LOGGER.Info("配置文件加载完成");
+        }
+
+        private static ReadOnlyDictionary<string, string> LoadRegistry(string path)
+        {
+            ThrowHelper.FileNotFound(path);
+
+            string json = File.ReadAllText(path);
+            _registry = JsonConvert.DeserializeObject<Dictionary<string, string>>(json) ?? throw new FormatException();
+
+            return _registry.AsReadOnly();
         }
 
         private static void CreateLog4NetConfig(string path)
@@ -94,15 +106,14 @@ namespace MCBS.Config
             File.WriteAllText(path, json);
         }
 
-        private static void CreateTomlConfig(string path, object model)
+        private static void CreateTomlConfig<T>(string path) where T : IDataModel<T>
         {
             ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-            ArgumentNullException.ThrowIfNull(model, nameof(model));
 
             if (File.Exists(path))
                 return;
 
-            TomlTable tomlTable = TomlConfigBuilder.Build(model);
+            TomlTable tomlTable = TomlConfigBuilder.Build(T.CreateDefault());
             string toml = tomlTable.ToString();
             File.WriteAllText(path, toml);
         }

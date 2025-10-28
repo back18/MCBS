@@ -15,12 +15,22 @@ using System.Collections.ObjectModel;
 using QuanLib.Logging;
 using QuanLib.Game;
 using MCBS.Drawing;
+using QuanLib.Minecraft.Versions;
 
 namespace MCBS
 {
     public static class SR
     {
         private static LogImpl LOGGER => LogManager.Instance.GetLogger();
+
+        public static VersionList MinecraftVersionList => _MinecraftVersionList ?? throw new InvalidOperationException();
+        private static VersionList? _MinecraftVersionList;
+
+        public static MinecraftVersion CurrentMinecraftVersion => _CurrentMinecraftVersion ?? throw new InvalidOperationException();
+        private static MinecraftVersion? _CurrentMinecraftVersion;
+
+        public static LanguageManager MinecraftLanguage => _MinecraftLanguage ?? throw new InvalidOperationException();
+        private static LanguageManager? _MinecraftLanguage;
 
         public static ReadOnlyDictionary<Facing, Rgba32BlockMapping> Rgba32BlockMappings => _Rgba32BlockMappings ?? new(new Dictionary<Facing, Rgba32BlockMapping>());
         private static ReadOnlyDictionary<Facing, Rgba32BlockMapping>? _Rgba32BlockMappings;
@@ -30,9 +40,6 @@ namespace MCBS
 
         public static ReadOnlyDictionary<Facing, IColorMappingCache> ColorMappingCaches => _ColorMappingCaches ?? new(new Dictionary<Facing, IColorMappingCache>());
         private static ReadOnlyDictionary<Facing, IColorMappingCache>? _ColorMappingCaches;
-
-        public static LanguageManager LanguageManager => _LanguageManager ?? throw new InvalidOperationException();
-        private static LanguageManager? _LanguageManager;
 
         public static BdfFont DefaultFont => _DefaultFont ?? throw new InvalidOperationException();
         private static BdfFont? _DefaultFont;
@@ -44,11 +51,27 @@ namespace MCBS
         {
             ArgumentNullException.ThrowIfNull(resources, nameof(resources));
 
+            LoadMinecraftVersionList(resources);
+            LoadMinecraftLanguage(resources);
             LoadBlockTextureManager(resources);
             BuildColorMappingCache(resources);
-            LoadMinecraftLanguage(resources);
             LoadFontFile(resources);
             LoadCursorFile(resources);
+        }
+
+        private static void LoadMinecraftVersionList(ResourceEntryManager resources)
+        {
+            _MinecraftVersionList = VersionList.LoadInstance(QuanLib.Core.InstantiateArgs.Empty);
+            _CurrentMinecraftVersion = _MinecraftVersionList.GetVersion(MinecraftConfig.MinecraftVersion);
+
+            LOGGER.Info("Minecraft版本数据加载完成");
+        }
+
+        private static void LoadMinecraftLanguage(ResourceEntryManager resources)
+        {
+            _MinecraftLanguage = LanguageManager.LoadInstance(new(resources, MinecraftConfig.Language));
+
+            LOGGER.Info($"Minecraft语言数据加载完成，语言:{MinecraftConfig.Language} 条目数量:{_MinecraftLanguage.Count}");
         }
 
         private static void LoadBlockTextureManager(ResourceEntryManager resources)
@@ -91,13 +114,6 @@ namespace MCBS
             _ColorMappingCaches = new(caches);
 
             LOGGER.Info("Minecraft方块颜色映射表缓存构建完成");
-        }
-
-        private static void LoadMinecraftLanguage(ResourceEntryManager resources)
-        {
-            _LanguageManager = LanguageManager.LoadInstance(new(resources, MinecraftConfig.Language));
-
-            LOGGER.Info($"Minecraft语言数据加载完成，语言:{MinecraftConfig.Language} 条目数量:{_LanguageManager.Count}");
         }
 
         private static void LoadFontFile(ResourceEntryManager resources)

@@ -118,7 +118,7 @@ namespace MCBS.Config
             public Model()
             {
                 MaxCount = 8;
-                MinLength = 32;
+                MinLength = 64;
                 MaxLength = 512;
                 MinAltitude = -64;
                 MaxAltitude = 319;
@@ -186,11 +186,11 @@ namespace MCBS.Config
             public int MaxLength { get; set; }
 
             [Display(Name = "屏幕的位置在主世界中的最小高度")]
-            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
+            [Range(-64, 319, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int MinAltitude { get; set; }
 
             [Display(Name = "屏幕的位置在主世界中的最大高度")]
-            [Range(-2048, 2048, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
+            [Range(-64, 319, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             [GreaterThan(nameof(MinAltitude), ErrorMessage = ErrorMessageHelper.GreaterThanAttribute)]
             public int MaxAltitude { get; set; }
 
