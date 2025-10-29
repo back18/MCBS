@@ -26,6 +26,7 @@ using QuanLib.Logging;
 using QuanLib.IO.Extensions;
 using MCBS.Analyzer;
 using QuanLib.Clipping;
+using MCBS.Events;
 
 namespace MCBS
 {
@@ -55,10 +56,13 @@ namespace MCBS
             GameTick = 0;
             SystemStage = SystemStage.ScreenScheduling;
 
-            _msptRecord = new();
-            _query = Task.Run(() => 0);
-
             CreateAppComponentsDirectory();
+
+            SystemStageSatrt += OnSystemStageSatrt;
+            SystemStageEnd += OnSystemStageEnd;
+
+            _msptRecord = new(this);
+            _query = Task.Run(() => 0);
         }
 
         private static readonly object _slock = new();
@@ -68,7 +72,7 @@ namespace MCBS
         public static MinecraftBlockScreen Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static MinecraftBlockScreen? _Instance;
 
-        private readonly MsptRecord<SystemStage> _msptRecord;
+        private readonly SystemStageRecord _msptRecord;
 
         private Task<int> _query;
 
@@ -101,6 +105,14 @@ namespace MCBS
         public CursorManager CursorManager { get; }
 
         public ReadOnlyDictionary<string, ApplicationManifest> AppComponents { get; }
+
+        public event ValueEventHandler<MinecraftBlockScreen, TickStageEventArgs> SystemStageSatrt;
+
+        public event ValueEventHandler<MinecraftBlockScreen, TickStageEventArgs> SystemStageEnd;
+
+        protected virtual void OnSystemStageSatrt(MinecraftBlockScreen sender, TickStageEventArgs e) { }
+
+        protected virtual void OnSystemStageEnd(MinecraftBlockScreen sender, TickStageEventArgs e) { }
 
         public static MinecraftBlockScreen LoadInstance(InstantiateArgs instantiateArgs)
         {
@@ -141,50 +153,38 @@ namespace MCBS
             LOGGER.Info("MCBS初始化完成");
         }
 
-        public override void OnBeforeTick()
+        protected override void OnTickStart(int tick)
         {
-
+            _msptRecord.Reset();
         }
 
         public override void OnTickUpdate(int tick)
         {
-            ScreenScheduling();
-            ProcessScheduling();
-            FormScheduling();
+            ScreenScheduling(tick);
+            ProcessScheduling(tick);
+            FormScheduling(tick);
 
-            _msptRecord.Clear();
             if (_query.IsCompleted)
             {
                 CommandManager.SnbtCache.Clear();
-                InteractionScheduling();
-                ScoreboardScheduling();
-                ScreenBuildScheduling();
-                HandleScreenInput();
-                HandleScreenEvent();
-            }
-            else
-            {
-                //TaskManager.AddTempTask(() =>
-                //{
-                //    InteractionScheduling();
-                //    ScoreboardScheduling();
-                //    ScreenBuildScheduling();
-                //    HandleScreenInput();
-                //});
+                InteractionScheduling(tick);
+                ScoreboardScheduling(tick);
+                ScreenBuildScheduling(tick);
+                HandleScreenInput(tick);
+                HandleScreenEvent(tick);
             }
 
-            HandleBeforeFrame();
-            HandleFrameDrawing();
-            HandleFrameUpdate();
-            HandleScreenOutput();
-            HandleAfterFrame();
-
-            MsptAnalyzer.Update(_msptRecord);
+            HandleBeforeFrame(tick);
+            HandleFrameDrawing(tick);
+            HandleFrameUpdate(tick);
+            HandleScreenOutput(tick);
+            HandleAfterFrame(tick);
         }
 
-        public override void OnAfterTick()
+        protected override void OnTickEnd(int tick)
         {
-
+            _msptRecord.Stop();
+            MsptAnalyzer.Update(_msptRecord);
         }
 
         protected override void Run()
@@ -272,10 +272,11 @@ namespace MCBS
                         interaction.CloseInteraction();
                 }
 
-                ScreenScheduling();
-                ProcessScheduling();
-                FormScheduling();
-                InteractionScheduling();
+                int tick = SystemTick + 1;
+                ScreenScheduling(tick);
+                ProcessScheduling(tick);
+                FormScheduling(tick);
+                InteractionScheduling(tick);
                 Thread.Sleep(1000);
 
                 LOGGER.Info("系统资源均已释放完成");
@@ -291,92 +292,139 @@ namespace MCBS
             LOGGER.Info("已和Minecraft实例断开连接");
         }
 
-        private void HandleAndTimeing(TickUpdateHandler tickUpdateHandler, SystemStage stage)
+        private void ScreenScheduling(int tick)
         {
-            ArgumentNullException.ThrowIfNull(tickUpdateHandler, nameof(tickUpdateHandler));
-            HandleAndTimeing(() => tickUpdateHandler.Invoke(SystemTick), stage);
+            SystemStage = SystemStage.ScreenScheduling;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.ScreenScheduling));
+
+            ScreenManager.OnTickUpdate(tick);
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.ScreenScheduling));
         }
 
-        private void HandleAndTimeing(Action action, SystemStage stage)
+        private void ProcessScheduling(int tick)
         {
-            ArgumentNullException.ThrowIfNull(action, nameof(action));
+            SystemStage = SystemStage.ProcessScheduling;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.ProcessScheduling));
 
-            SystemStage = stage;
-            _msptRecord.Execute(action, stage);
+            ProcessManager.OnTickUpdate(tick);
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.ProcessScheduling));
         }
 
-        private void ScreenScheduling()
+        private void FormScheduling(int tick)
         {
-            HandleAndTimeing(ScreenManager.OnTickUpdate, SystemStage.ScreenScheduling);
+            SystemStage = SystemStage.FormScheduling;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.FormScheduling));
+
+            FormManager.OnTickUpdate(tick);
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.FormScheduling));
         }
 
-        private void ProcessScheduling()
+        private void InteractionScheduling(int tick)
         {
-            HandleAndTimeing(ProcessManager.OnTickUpdate, SystemStage.ProcessScheduling);
+            SystemStage = SystemStage.InteractionScheduling;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.InteractionScheduling));
+
+            InteractionManager.OnTickUpdate(tick);
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.InteractionScheduling));
         }
 
-        private void FormScheduling()
+        private void ScoreboardScheduling(int tick)
         {
-            HandleAndTimeing(FormManager.OnTickUpdate, SystemStage.FormScheduling);
+            SystemStage = SystemStage.ScoreboardScheduling;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.ScoreboardScheduling));
+
+            ScoreboardManager.OnTickUpdate(tick);
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.ScoreboardScheduling));
         }
 
-        private void InteractionScheduling()
+        private void ScreenBuildScheduling(int tick)
         {
-            HandleAndTimeing(InteractionManager.OnTickUpdate, SystemStage.InteractionScheduling);
+            SystemStage = SystemStage.ScreenBuildScheduling;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.ScreenBuildScheduling));
+
+            ScreenBuildManager.OnTickUpdate(tick);
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.ScreenBuildScheduling));
         }
 
-        private void ScoreboardScheduling()
+        private void HandleScreenInput(int tick)
         {
-            HandleAndTimeing(ScoreboardManager.OnTickUpdate, SystemStage.ScoreboardScheduling);
+            SystemStage = SystemStage.HandleScreenInput;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleScreenInput));
+
+            ScreenManager.HandleAllScreenInput();
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleScreenInput));
         }
 
-        private void ScreenBuildScheduling()
+        private void HandleScreenEvent(int tick)
         {
-            HandleAndTimeing(ScreenBuildManager.OnTickUpdate, SystemStage.ScreenBuildScheduling);
+            SystemStage = SystemStage.HandleScreenEvent;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleScreenEvent));
+
+            ScreenManager.HandleAllScreenEvent();
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleScreenEvent));
         }
 
-        private void HandleScreenInput()
+        private void HandleBeforeFrame(int tick)
         {
-            HandleAndTimeing(ScreenManager.HandleAllScreenInput, SystemStage.HandleScreenInput);
+            SystemStage = SystemStage.HandleBeforeFrame;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleBeforeFrame));
+
+            ScreenManager.HandleAllBeforeFrame();
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleBeforeFrame));
         }
 
-        private void HandleScreenEvent()
+        private void HandleFrameDrawing(int tick)
         {
-            HandleAndTimeing(ScreenManager.HandleAllScreenEvent, SystemStage.HandleScreenEvent);
+            SystemStage = SystemStage.HandleFrameDrawing;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleFrameDrawing));
+
+            ScreenManager.HandleAllFrameDrawing();
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleFrameDrawing));
         }
 
-        private void HandleBeforeFrame()
+        private void HandleFrameUpdate(int tick)
         {
-            HandleAndTimeing(ScreenManager.HandleAllBeforeFrame, SystemStage.HandleBeforeFrame);
+            SystemStage = SystemStage.HandleFrameUpdate;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleFrameUpdate));
+
+            ScreenManager.HandleAllFrameUpdate();
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleFrameUpdate));
         }
 
-        private void HandleFrameDrawing()
+        private void HandleScreenOutput(int tick)
         {
-            HandleAndTimeing(ScreenManager.HandleAllFrameDrawing, SystemStage.HandleFrameDrawing);
+            SystemStage = SystemStage.HandleScreenOutput;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleScreenOutput));
+
+            TaskManager.ResetCurrentMainTask();
+            Task task = ScreenManager.HandleAllScreenOutputAsync();
+            TaskManager.SetCurrentMainTask(task);
+            TaskManager.WaitForPreviousMainTask();
+            GameTick = _query.Result;
+            _query = GetGameTickAsync();
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleScreenOutput));
         }
 
-        private void HandleFrameUpdate()
+        public void HandleAfterFrame(int tick)
         {
-            HandleAndTimeing(ScreenManager.HandleAllFrameUpdate, SystemStage.HandleFrameUpdate);
-        }
+            SystemStage = SystemStage.HandleAfterFrame;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleAfterFrame));
 
-        private void HandleScreenOutput()
-        {
-            HandleAndTimeing(() =>
-            {
-                TaskManager.ResetCurrentMainTask();
-                Task task = ScreenManager.HandleAllScreenOutputAsync();
-                TaskManager.SetCurrentMainTask(task);
-                TaskManager.WaitForPreviousMainTask();
-                GameTick = _query.Result;
-                _query = GetGameTickAsync();
-            },
-            SystemStage.HandleScreenOutput);
-        }
+            ScreenManager.HandleAllAfterFrame();
 
-        public void HandleAfterFrame()
-        {
-            HandleAndTimeing(ScreenManager.HandleAllAfterFrame, SystemStage.HandleAfterFrame);
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleAfterFrame));
         }
 
         public ScreenContext? ScreenContextOf(IForm form)

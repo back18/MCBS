@@ -13,34 +13,26 @@ namespace MCBS.Analyzer
         {
             _stages = Enum.GetValues<TStage>();
 
-            Dictionary<TStage, MsptSlice> stageTimes = [];
-            foreach (TStage stage in _stages)
-                stageTimes.Add(stage, new());
-
-            StageTimes = stageTimes.AsReadOnly();
-            TickTime = new();
+            TickTime = new MsptSlice();
+            StageTimes = _stages.ToDictionary(item => item, item => new MsptSlice()).AsReadOnly();
         }
 
         private readonly TStage[] _stages;
 
-        public ReadOnlyDictionary<TStage, MsptSlice> StageTimes { get; }
-
         public MsptSlice TickTime { get; }
+
+        public ReadOnlyDictionary<TStage, MsptSlice> StageTimes { get; }
 
         internal void Update(MsptRecord<TStage> msptRecord)
         {
             ArgumentNullException.ThrowIfNull(msptRecord, nameof(msptRecord));
 
-            TimeSpan total = TimeSpan.Zero;
-
+            TickTime.Update(msptRecord.GetTickTime());
             foreach (TStage stage in _stages)
             {
-                TimeSpan time = msptRecord.GetTime(stage);
-                total += time;
+                TimeSpan time = msptRecord.GetStageTime(stage);
                 StageTimes[stage].Update(time);
             }
-
-            TickTime.Update(total);
         }
     }
 }

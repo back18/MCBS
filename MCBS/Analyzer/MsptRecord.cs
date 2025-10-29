@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -9,38 +10,56 @@ namespace MCBS.Analyzer
 {
     public class MsptRecord<TStage> where TStage : struct, Enum
     {
-        public MsptRecord()
+        public MsptRecord(MinecraftBlockScreen owner)
         {
-            _stages = Enum.GetValues<TStage>();
-            _stageTimes = [];
-            foreach (TStage stage in _stages)
-                _stageTimes.Add(stage, TimeSpan.Zero);
+            ArgumentNullException.ThrowIfNull(owner, nameof(owner));
+
+            Stages = Enum.GetValues<TStage>();
+            TickStopwatch = new Stopwatch();
+            StageStopwatchs = Stages.ToDictionary(item => item, item => new Stopwatch()).AsReadOnly();
+
+            owner.TickStart += MCBS_TickStart;
+            owner.TickEnd += MCBS_TickEnd;
         }
 
-        private readonly TStage[] _stages;
+        protected readonly TStage[] Stages;
 
-        private readonly Dictionary<TStage, TimeSpan> _stageTimes;
+        protected readonly Stopwatch TickStopwatch;
 
-        public TimeSpan GetTime(TStage stage)
+        protected readonly ReadOnlyDictionary<TStage, Stopwatch> StageStopwatchs;
+
+        public TimeSpan GetStageTime(TStage stage)
         {
-            return _stageTimes[stage];
+            return StageStopwatchs[stage].Elapsed;
         }
 
-        public void Execute(Action action, TStage stage)
+        public TimeSpan GetTickTime()
         {
-            ArgumentNullException.ThrowIfNull(action, nameof(action));
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            action.Invoke();
-            stopwatch.Stop();
-
-            _stageTimes[stage] += stopwatch.Elapsed;
+            return TickStopwatch.Elapsed;
         }
 
-        public void Clear()
+        public void Reset()
         {
-            foreach (TStage stage in _stages)
-                _stageTimes[stage] = TimeSpan.Zero;
+            TickStopwatch.Reset();
+            foreach (TStage stage in Stages)
+                StageStopwatchs[stage].Reset();
+        }
+
+        public void Stop()
+        {
+            TickStopwatch.Stop();
+            foreach (TStage stage in Stages)
+                StageStopwatchs[stage].Stop();
+        }
+
+        private void MCBS_TickStart(int tick)
+        {
+            TickStopwatch.Restart();
+        }
+
+        private void MCBS_TickEnd(int tick)
+        {
+            TickStopwatch.Stop();
         }
     }
 }
