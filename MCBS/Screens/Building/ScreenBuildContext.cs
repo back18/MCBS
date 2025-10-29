@@ -19,14 +19,23 @@ namespace MCBS.Screens.Building
             ArgumentException.ThrowIfNullOrEmpty(playerName, nameof(playerName));
 
             PlayerName = playerName;
+
+            _screen = default;
         }
+
+        private Screen _screen;
 
         public string PlayerName { get; }
 
         public ScreenBuildState BuildState { get; private set; }
 
-        public Screen Screen => _Screen ?? throw new InvalidOperationException("屏幕未被初始化");
-        private Screen? _Screen;
+        public Screen GetScreen()
+        {
+            if (BuildState != ScreenBuildState.Completed)
+                throw new InvalidOperationException("屏幕未被初始化");
+
+            return _screen;
+        }
 
         public void OnTickUpdate(int tick)
         {
@@ -47,9 +56,33 @@ namespace MCBS.Screens.Building
                 return;
             }
 
-            position.Y += 1.625;
+            Screen screen = CreateScreen(position, rotation, ScreenConfig.InitialWidth, ScreenConfig.InitialHeight);
+            CubeRange range = screen.GetRange(0, 1).Normalize();
+
+            if (range.StartPosition.Y < ScreenConfig.MinAltitude ||
+                range.EndPosition.Y > ScreenConfig.MaxAltitude)
+            {
+                sender.ShowTitle(PlayerName, 0, 10, 10, $"屏幕超出了世界建筑高度", TextColor.Red);
+                sender.ShowSubTitle(PlayerName, 0, 10, 10, $"最小高度:{ScreenConfig.MinAltitude} 最大高度:{ScreenConfig.MaxAltitude}");
+                return;
+            }
+
+            _screen = screen;
+            sender.ShowTitle(PlayerName, 0, 10, 10, "屏幕构建器");
+            sender.ShowSubTitle(PlayerName, 0, 10, 10, $"方向:{screen.NormalFacing.ToChineseString()} 位置:{screen.StartPosition.Offset(screen.YFacing, ScreenConfig.InitialHeight + 1)} 尺寸:[{ScreenConfig.InitialWidth}, {ScreenConfig.InitialHeight}]");
+
+            if (MinecraftBlockScreen.Instance.CursorManager.GetOrCreate(PlayerName).ClickReader.ReadClick().IsRightClick)
+            {
+                BuildState = ScreenBuildState.Completed;
+                return;
+            }
+        }
+
+        private static Screen CreateScreen(Vector3<double> position, Rotation rotation, int width, int height)
+        {
             Facing playerFacing = (rotation.Pitch <= -80 || rotation.Pitch >= 80) ? rotation.PitchFacing : rotation.YawFacing;
-            Vector3<int> anchorPosition = position.ToIntVector3().Offset(playerFacing, 1);
+            Vector3<int> anchorPosition = position.Offset(Facing.Yp, 1.625).ToIntVector3().Offset(playerFacing, 2);
+
             if (playerFacing == Facing.Ym)
                 anchorPosition.Y -= 1;
 
@@ -76,24 +109,7 @@ namespace MCBS.Screens.Building
             }
 
             Vector3<int> startPosition = anchorPosition.Offset(yFacing, -ScreenConfig.InitialHeight + 1);
-            Screen screen = new(startPosition, ScreenConfig.InitialWidth, ScreenConfig.InitialHeight, xFacing, yFacing);
-
-            if (!screen.InAltitudeRange(ScreenConfig.MinAltitude, ScreenConfig.MaxAltitude))
-            {
-                sender.ShowTitle(PlayerName, 0, 10, 10, $"屏幕位置超出了高度范围", TextColor.Red);
-                sender.ShowSubTitle(PlayerName, 0, 10, 10, $"最小高度:{ScreenConfig.MinAltitude} 最大高度:{ScreenConfig.MaxAltitude}");
-                return;
-            }
-
-            _Screen = screen;
-            sender.ShowTitle(PlayerName, 0, 10, 10, "屏幕构建器");
-            sender.ShowSubTitle(PlayerName, 0, 10, 10, $"方向:{playerFacing.ToChineseString()} 位置:{anchorPosition} 尺寸:[{ScreenConfig.InitialWidth}, {ScreenConfig.InitialHeight}]");
-
-            if (MinecraftBlockScreen.Instance.CursorManager.GetOrCreate(PlayerName).ClickReader.ReadClick().IsRightClick)
-            {
-                BuildState = ScreenBuildState.Completed;
-                return;
-            }
+            return new Screen(startPosition, width, height, xFacing, yFacing);
         }
     }
 }
