@@ -22,12 +22,15 @@ namespace MCBS.Screens
         public ScreenManager()
         {
             Items = new(this);
+            ScreenOutputHandler = new(this);
 
             AddedScreen += OnAddedScreen;
             RemovedScreen += OnRemovedScreen;
         }
 
         public ScreenCollection Items { get; }
+
+        public ScreenOutputHandler ScreenOutputHandler { get; }
 
         public event EventHandler<ScreenManager, EventArgs<ScreenContext>> AddedScreen;
 
@@ -151,10 +154,7 @@ namespace MCBS.Screens
 
         public async Task HandleAllScreenOutputAsync()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
-                tasks.Add(screenContext.HandleScreenOutputAsync());
-            await Task.WhenAll(tasks);
+            await ScreenOutputHandler.HandleOutputAsync();
         }
 
         public void HandleAllAfterFrame()

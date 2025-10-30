@@ -1,13 +1,11 @@
 ﻿using static MCBS.Config.ConfigManager;
 using log4net.Core;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MCBS.UI;
-using MCBS.Cursor.Style;
 using MCBS.Cursor;
 using QuanLib.Minecraft.NBT.Models;
 using QuanLib.IO;
@@ -17,11 +15,6 @@ using QuanLib.TickLoop.StateMachine;
 using QuanLib.Logging;
 using MCBS.UI.Extensions;
 using QuanLib.IO.Extensions;
-using MCBS.Drawing.Extensions;
-using MCBS.Drawing;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
-using QuanLib.Game;
 using MCBS.Screens.Drawing;
 
 namespace MCBS.Screens
@@ -41,8 +34,8 @@ namespace MCBS.Screens
             ScreenView = screenView;
             ScreenController = new(this, screen, 0, 1);
             ScreenInputHandler = new(this);
-            ScreenDrawingHandler =new(this);
-            ScreenOutputHandler = new(this);
+            ScreenDrawingHandler = new(this);
+            ScreenUpdateHandler = new(this);
             IsRestarting = false;
 
             GUID = guid != default ? guid : Guid.NewGuid();
@@ -87,7 +80,7 @@ namespace MCBS.Screens
 
         public ScreenDrawingHandler ScreenDrawingHandler { get; }
 
-        public ScreenOutputHandler ScreenOutputHandler { get; }
+        public ScreenUpdateHandler ScreenUpdateHandler { get; }
 
         public ScreenController ScreenController { get; }
 
@@ -205,13 +198,8 @@ namespace MCBS.Screens
             if (_drawingContext is null)
                 return;
 
-            await ScreenOutputHandler.HandleFrameUpdateAsync(_drawingContext.BaseLayer, 0);
-            await ScreenOutputHandler.HandleFrameUpdateAsync(_drawingContext.CursorLayer, 1);
-        }
-
-        public async Task HandleScreenOutputAsync()
-        {
-            await ScreenOutputHandler.HandleOutputAsync();
+            await ScreenUpdateHandler.HandleFrameUpdateAsync(_drawingContext.BaseLayer, 0);
+            await ScreenUpdateHandler.HandleFrameUpdateAsync(_drawingContext.CursorLayer, 1);
         }
 
         public async Task HandleAfterFrameAsync()
