@@ -10,7 +10,6 @@ using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Events;
-using QuanLib.Minecraft.Command.Senders;
 using QuanLib.Minecraft.Instance;
 using QuanLib.Minecraft.ResourcePack;
 using System.Text;
@@ -29,8 +28,8 @@ namespace MCBS.ConsoleTerminal
             LoadLogManager();
             LoadCharacterWidthMapping();
             Terminal = new AdvancedTerminal(new("SYSTEM", PrivilegeLevel.Root));
-            CommandLogger = new();
-            CommandLogger.IsWriteToFile = true;
+            CommandLogger = new(McbsPathManager.MCBS_Logs.CombineFile("Command.log").FullName) { IsWriteToFile = true };
+            CommandLogger.AddBlacklist("time query gametime");
         }
 
         public static Terminal Terminal { get; }
@@ -67,6 +66,7 @@ namespace MCBS.ConsoleTerminal
             MinecraftBlockScreen.Instance.Start("System Thread");
             Terminal.Start("Terminal Thread");
             CommandLogger.Start("CommandLogger Thread");
+            minecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
 
             MinecraftBlockScreen.Instance.WaitForStop();
 
@@ -146,7 +146,13 @@ namespace MCBS.ConsoleTerminal
             {
                 CharacterWidthMapping characterWidthMapping = CharacterWidthMapping.LoadInstance(new(null));
                 File.WriteAllBytes(fileInfo.FullName, characterWidthMapping.BuildCacheBytes());
-            }    
+            }
+        }
+
+        private static void CommandSender_CommandSent(QuanLib.Minecraft.Command.Senders.CommandSender sender, CommandInfoEventArgs e)
+        {
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
+            CommandLogger.Submit(new(e.CommandInfo, mcbs.GameTick, mcbs.SystemTick, mcbs.SystemStage));
         }
 
         public static void Exit(int exitCode)

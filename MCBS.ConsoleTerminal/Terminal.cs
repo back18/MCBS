@@ -5,6 +5,7 @@ using QuanLib.Commands.CommandLine;
 using QuanLib.Consoles;
 using QuanLib.Core;
 using QuanLib.Core.Events;
+using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using System;
 using System.Collections.Generic;
@@ -152,6 +153,20 @@ namespace MCBS.ConsoleTerminal
                     .Execute(() => MsptStatisticalChart(stage))
                     .Build());
             }
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("commandlog domp")
+                .Allow(PrivilegeLevel.User)
+                .Execute<Func<string>>(DumpCommandLog)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
+                .On("commandlog domps")
+                .Allow(PrivilegeLevel.User)
+                .Execute<Func<int, string>>(DumpCommandLog)
+                .Build());
         }
 
         #region commands
@@ -266,6 +281,22 @@ namespace MCBS.ConsoleTerminal
             int tick = MinecraftBlockScreen.Instance.SystemTick;
             MsptSlice msptSlice = MinecraftBlockScreen.Instance.MsptAnalyzer.StageTimes[stage];
             MsptStatisticalChart(msptSlice);
+        }
+
+        private static string DumpCommandLog()
+        {
+            FileInfo fileInfo = McbsPathManager.MCBS_Logs.CombineFile($"Command-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log");
+            using FileStream fileStream = fileInfo.Create();
+            Program.CommandLogger.Dump(fileStream);
+            return $"命令日志已保存到“{fileInfo.FullName}”";
+        }
+
+        private static string DumpCommandLog(int maxLogCount)
+        {
+            FileInfo fileInfo = McbsPathManager.MCBS_Logs.CombineFile($"Command-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log");
+            using FileStream fileStream = fileInfo.Create();
+            Program.CommandLogger.Dump(fileStream, maxLogCount);
+            return $"命令日志已保存到“{fileInfo.FullName}”";
         }
 
         #endregion

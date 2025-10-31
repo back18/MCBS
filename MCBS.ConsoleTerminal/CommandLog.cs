@@ -8,28 +8,14 @@ using System.Threading.Tasks;
 
 namespace MCBS.ConsoleTerminal
 {
-    public class CommandLog
+    public readonly struct CommandLog(CommandInfo commandInfo, int gameTick, int systemTick, SystemStage systemStage)
     {
-        public CommandLog(CommandInfo info, int gameTick, int systemTick, SystemStage systemStage, string threadName)
-        {
-            ArgumentNullException.ThrowIfNull(info, nameof(info));
-            ArgumentException.ThrowIfNullOrEmpty(threadName, nameof(threadName));
+        public readonly CommandInfo CommandInfo = commandInfo;
 
-            Info = info;
-            GameTick = gameTick;
-            SystemTick = systemTick;
-            SystemStage = systemStage;
-            ThreadName = threadName;
-        }
+        public readonly int GameTick = gameTick;
 
-        public CommandInfo Info { get; }
+        public readonly int SystemTick = systemTick;
 
-        public int GameTick { get; private set; }
-
-        public int SystemTick { get; private set; }
-
-        public SystemStage SystemStage { get; private set; }
-
-        public string ThreadName { get; }
+        public readonly SystemStage SystemStage = systemStage;
     }
 }
