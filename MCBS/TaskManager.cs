@@ -1,9 +1,7 @@
-﻿using QuanLib.Minecraft.Command.Senders;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,116 +12,84 @@ namespace MCBS
     {
         public TaskManager()
         {
-            _tasks = new();
+            _stopwatch = new();
+            _normalTasks = new();
             _tempTasks = new();
         }
 
-        private readonly ConcurrentQueue<Action> _tasks;
+        private readonly Stopwatch _stopwatch;
+
+        private Task? _mainTask;
+
+        private readonly ConcurrentQueue<Action> _normalTasks;
 
         private readonly ConcurrentQueue<Action> _tempTasks;
 
-        private Task? _previous;
+        public bool IsCompletedMainTask => _mainTask?.IsCompleted ?? true;
 
-        private Task? _current;
-
-        public bool IsHandled { get; private set; }
-
-        public bool IsCompletedPreviousMainTask => _previous?.IsCompleted ?? true;
-
-        public bool IsCompletedCurrentMainTask => _current?.IsCompleted ?? true;
+        public TimeSpan MainTaskRuntime => _stopwatch.Elapsed;
 
         public void Initialize()
         {
-            //var twowayCommandSender = MCOS.Instance.MinecraftInstance.CommandSender.TwowaySender;
-            //var onewayCommandSender = MCOS.Instance.MinecraftInstance.CommandSender.OnewaySender;
-            //if (twowayCommandSender == onewayCommandSender)
-            //{
-            //    onewayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
-            //}
-            //else
-            //{
-            //    twowayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
-            //    onewayCommandSender.WaitForResponseCallback += CommandSender_WaitForResponseCallback;
-            //}
-        }
-
-        private void CommandSender_WaitForResponseCallback(ICommandSender sender, EventArgs e)
-        {
-            HandleAllTask();
+            //TODO
         }
 
         public void HandleAllTask()
         {
-            lock (this)
-            {
-                if (IsHandled)
-                    return;
-                IsHandled = true;
-
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                _previous?.Wait();
-                stopwatch.Stop();
-
-                while (_tasks.TryDequeue(out var task))
-                    task.Invoke();
-
-                if (stopwatch.ElapsedMilliseconds > 50)
-                {
-                    _tempTasks.Clear();
-                }
-                else
-                {
-                    while (_tempTasks.TryDequeue(out var task))
-                        task.Invoke();
-                }
-            }
+            //TODO
         }
 
-        public void WaitForPreviousMainTask()
+        public void WaitForMainTask()
         {
-            _previous?.Wait();
+            _mainTask?.Wait();
         }
 
-        public void WaitForCurrentMainTask()
+        public async Task WaitForMainTaskAsync()
         {
-            _current?.Wait();
+            if (_mainTask is null)
+                return;
+
+            await _mainTask;
         }
 
-        internal void ResetCurrentMainTask()
-        {
-            _previous = _current;
-            IsHandled = false;
-        }
-
-        internal void SetCurrentMainTask(Task mainTask)
-        {
-            ArgumentNullException.ThrowIfNull(mainTask, nameof(mainTask));
-
-            if (_current != mainTask)
-                _current = mainTask;
-            else
-                _current = null;
-        }
-
-        public void AddTask(Action task)
+        internal void SetMainTask(Task task)
         {
             ArgumentNullException.ThrowIfNull(task, nameof(task));
 
-            _tasks.Enqueue(task);
+            _stopwatch.Restart();
+            _mainTask = task.ContinueWith((t) => _stopwatch.Stop());
+        }
+
+        internal void SetMainTask(Func<Task> task)
+        {
+            ArgumentNullException.ThrowIfNull(task, nameof(task));
+
+            _stopwatch.Restart();
+            _mainTask = task.Invoke().ContinueWith((t) => _stopwatch.Stop());
+        }
+
+        public void AddNormalTask(Action task)
+        {
+            throw new NotSupportedException();
+
+            //ArgumentNullException.ThrowIfNull(task, nameof(task));
+
+            //_normalTasks.Enqueue(task);
         }
 
         public void AddTempTask(Action task)
         {
-            ArgumentNullException.ThrowIfNull(task, nameof(task));
+            throw new NotSupportedException();
 
-            _tempTasks.Enqueue(task);
+            //ArgumentNullException.ThrowIfNull(task, nameof(task));
+
+            //_tempTasks.Enqueue(task);
         }
 
         public void Clear()
         {
-            _previous = null;
-            _current = null;
-            _tasks.Clear();
+            _mainTask = null;
+            _normalTasks.Clear();
             _tempTasks.Clear();
         }
     }

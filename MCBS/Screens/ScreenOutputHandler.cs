@@ -17,9 +17,14 @@ namespace MCBS.Screens
             ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
             _owner = owner;
+            _semaphore = new(0);
         }
 
         private readonly ScreenManager _owner;
+
+        private readonly SemaphoreSlim _semaphore;
+
+        public bool IsDelaying => _semaphore.CurrentCount > 0;
 
         public void HandleOutput()
         {
@@ -40,6 +45,23 @@ namespace MCBS.Screens
             await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayBatchSetBlockAsync(blocks);
         }
 
+        public async Task HandleDelayOutputAsync()
+        {
+            Task delay = WaitSemaphoreAsync();
+            List<WorldBlock> blocks = GetBlockUpdateList();
+
+            if (blocks.Count == 0)
+                return;
+
+            await Task.Yield();
+            await MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender.OnewaySender.SendOnewayDelayBatchSetBlockAsync(blocks, delay);
+        }
+
+        public void ReleaseSemaphore()
+        {
+            _semaphore.Release();
+        }
+
         private List<WorldBlock> GetBlockUpdateList()
         {
             List<WorldBlock> blocks = [];
@@ -48,6 +70,11 @@ namespace MCBS.Screens
                 blocks.AddRange(screenContext.ScreenUpdateHandler.GetBlockUpdateList());
 
             return blocks;
+        }
+
+        private async Task WaitSemaphoreAsync()
+        {
+            await _semaphore.WaitAsync();
         }
     }
 }

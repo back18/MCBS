@@ -1,32 +1,32 @@
-﻿using System;
+﻿using log4net.Core;
+using MCBS.Analyzer;
+using MCBS.Application;
+using MCBS.Config;
+using MCBS.Cursor;
+using MCBS.Events;
+using MCBS.Forms;
+using MCBS.Interaction;
+using MCBS.Processes;
+using MCBS.Scoreboard;
+using MCBS.Screens;
+using MCBS.Screens.Building;
+using MCBS.UI;
+using QuanLib.Clipping;
+using QuanLib.Core;
+using QuanLib.IO;
+using QuanLib.IO.Extensions;
+using QuanLib.Logging;
+using QuanLib.Minecraft.Command;
+using QuanLib.Minecraft.Instance;
+using QuanLib.TickLoop;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using log4net.Core;
-using QuanLib.Core;
-using QuanLib.Minecraft.Instance;
-using MCBS.Screens;
-using MCBS.UI;
-using MCBS.Config;
-using MCBS.Processes;
-using MCBS.Application;
-using MCBS.Forms;
-using MCBS.Interaction;
-using MCBS.Cursor;
-using MCBS.Scoreboard;
-using MCBS.Screens.Building;
-using QuanLib.Minecraft.Command;
-using QuanLib.IO;
-using QuanLib.Minecraft.Command.Models;
-using QuanLib.TickLoop;
-using QuanLib.Logging;
-using QuanLib.IO.Extensions;
-using MCBS.Analyzer;
-using QuanLib.Clipping;
-using MCBS.Events;
 
 namespace MCBS
 {
@@ -53,8 +53,10 @@ namespace MCBS
             CursorManager = new();
             AppComponents = new(appComponents.ToDictionary(item => item.ID, item => item));
 
-            GameTick = 0;
+            GameTick = -1;
             SystemStage = SystemStage.ScreenScheduling;
+            TimestampForCommandHandle = SystemRunningTime;
+            MaxDelayForCommandHandle = TimeSpan.FromSeconds(1);
 
             CreateAppComponentsDirectory();
 
@@ -62,7 +64,7 @@ namespace MCBS
             SystemStageEnd += OnSystemStageEnd;
 
             _msptRecord = new(this);
-            _query = Task.Run(() => 0);
+            _gtQuery = Task.FromResult(-1);
         }
 
         private static readonly object _slock = new();
@@ -74,11 +76,15 @@ namespace MCBS
 
         private readonly SystemStageRecord _msptRecord;
 
-        private Task<int> _query;
+        private Task<int> _gtQuery;
 
         public int GameTick { get; private set; }
 
         public SystemStage SystemStage { get; private set; }
+
+        public TimeSpan TimestampForCommandHandle { get; private set; }
+
+        public TimeSpan MaxDelayForCommandHandle { get; }
 
         public MinecraftInstance MinecraftInstance { get; }
 
@@ -142,8 +148,8 @@ namespace MCBS
         {
             LOGGER.Info("MCBS开始初始化");
 
-            _query = GetGameTickAsync();
-            GameTick = _query.Result;
+            QueryGameTick();
+            UpdateGameTick();
             TaskManager.Initialize();
             ScreenManager.Initialize();
             InteractionManager.Initialize();
@@ -164,7 +170,16 @@ namespace MCBS
             ProcessScheduling(tick);
             FormScheduling(tick);
 
-            if (_query.IsCompleted)
+            bool isCompleted = TaskManager.IsCompletedMainTask;
+            TimeSpan delay = SystemRunningTime - TimestampForCommandHandle;
+            if (!isCompleted && delay > MaxDelayForCommandHandle)
+            {
+                LOGGER.Warn($"命令总线已持续繁忙超过{(int)delay.TotalMilliseconds}ms，将强制等待处理命令");
+                TaskManager.WaitForMainTask();
+                isCompleted = true;
+            }    
+
+            if (isCompleted)
             {
                 CommandManager.SnbtCache.Clear();
                 InteractionScheduling(tick);
@@ -172,6 +187,11 @@ namespace MCBS
                 ScreenBuildScheduling(tick);
                 HandleScreenInput(tick);
                 HandleScreenEvent(tick);
+                TimestampForCommandHandle = SystemRunningTime;
+            }
+            else
+            {
+                //LOGGER.Debug($"命令总线繁忙，当前Tick({SystemTick})已跳过命令处理");
             }
 
             HandleBeforeFrame(tick);
@@ -240,7 +260,7 @@ namespace MCBS
                 LOGGER.Info("开始释放系统资源");
 
                 LOGGER.Info("正在等待主任务完成...");
-                TaskManager.WaitForCurrentMainTask();
+                TaskManager.WaitForMainTask();
 
                 if (IsRunning)
                 {
@@ -264,7 +284,7 @@ namespace MCBS
                     foreach (var context in ScreenManager.Items.Values)
                         context.UnloadScreen();
                 }
-               
+
                 if (InteractionManager.Items.Count > 0)
                 {
                     LOGGER.Info($"即将回收所有交互实体，共计{InteractionManager.Items.Count}个");
@@ -407,12 +427,31 @@ namespace MCBS
             SystemStage = SystemStage.HandleScreenOutput;
             SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleScreenOutput));
 
-            TaskManager.ResetCurrentMainTask();
-            Task task = ScreenManager.HandleAllScreenOutputAsync();
-            TaskManager.SetCurrentMainTask(task);
-            TaskManager.WaitForPreviousMainTask();
-            GameTick = _query.Result;
-            _query = GetGameTickAsync();
+            ScreenOutputHandler screenOutputHandler = ScreenManager.ScreenOutputHandler;
+
+            if (TaskManager.IsCompletedMainTask)
+            {
+                QueryGameTick();
+                TaskManager.SetMainTask(screenOutputHandler.HandleOutputAsync);
+                UpdateGameTick();
+            }
+            else
+            {
+                while (screenOutputHandler.IsDelaying)
+                    Thread.Yield();
+
+                Task task = screenOutputHandler.HandleDelayOutputAsync();
+                TaskManager.WaitForMainTask();
+                QueryGameTick();
+
+                int ms = (int)TaskManager.MainTaskRuntime.TotalMilliseconds;
+                if (ms > TickMaxTime.TotalMilliseconds * 2)
+                    LOGGER.Warn($"当前Tick({SystemTick})命令总线处理速度严重滞后，总耗时{ms}ms");
+
+                UpdateGameTick();
+                screenOutputHandler.ReleaseSemaphore();
+                TaskManager.SetMainTask(task);
+            }
 
             SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleScreenOutput));
         }
@@ -480,28 +519,45 @@ namespace MCBS
             return ScreenManager.LoadScreen(screen, screenView, guid);
         }
 
+        private async Task<int> GetGameTickAsync()
+        {
+            string outputPattern = CommandManager.TimeQueryGametimeCommand.Output.PatternText;
+            string output;
+
+            try
+            {
+                output = await MinecraftInstance.CommandSender.SendCommandAsync("time query gametime");
+            }
+            catch
+            {
+                return -1;
+            }
+
+            Match match = Regex.Match(output, outputPattern);
+            if (!match.Success)
+                return -1;
+
+            string arg = match.Groups[1].Value;
+            if (!int.TryParse(arg, out var result))
+                return -1;
+
+            return result;
+        }
+
+        private void QueryGameTick()
+        {
+            _gtQuery = GetGameTickAsync();
+        }
+
+        private void UpdateGameTick()
+        {
+            GameTick = _gtQuery.Result;
+        }
+
         private void CreateAppComponentsDirectory()
         {
             foreach (var appId in AppComponents.Keys)
                 McbsPathManager.MCBS_Applications.CombineDirectory(appId).CreateIfNotExists();
-        }
-
-        public async Task<int> GetGameTickAsync()
-        {
-            TimeQueryGametimeCommand command = CommandManager.TimeQueryGametimeCommand;
-
-            if (!command.Input.TryFormat([], out var input))
-                return 0;
-
-            string output = await MinecraftInstance.CommandSender.SendCommandAsync(input);
-
-            if (!command.Output.TryMatch(output, out var outargs))
-                return 0;
-
-            if (outargs is null || outargs.Length != 1 || !int.TryParse(outargs[0], out var result))
-                return 0;
-
-            return result;
         }
 
         public class InstantiateArgs : QuanLib.Core.InstantiateArgs
