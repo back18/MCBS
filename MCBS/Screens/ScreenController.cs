@@ -17,7 +17,10 @@ using System.Threading.Tasks;
 
 namespace MCBS.Screens
 {
-    public class ScreenController : ITickUpdatable
+    /// <summary>
+    /// 屏幕控制器
+    /// </summary>
+    public class ScreenController
     {
         private const string AIR_BLOCK = "minecraft:air";
 
@@ -219,7 +222,7 @@ namespace MCBS.Screens
                 CheckRangeFailed.Invoke(this, new(facingRange));
         }
 
-        public void OnTickUpdate(int tick)
+        public void HandleScreenControl()
         {
             if (_oldSnapshot == _newSnapshot)
                 return;

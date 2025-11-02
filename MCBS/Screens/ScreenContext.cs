@@ -140,13 +140,17 @@ namespace MCBS.Screens
 
         protected virtual void ActiveStateUpdate(int tick)
         {
-            ScreenController.OnTickUpdate(tick);
             SaveJson();
         }
 
         public void OnTickUpdate(int tick)
         {
             StateMachine.OnTickUpdate(tick);
+        }
+
+        public async Task HandleScreenControlAsync()
+        {
+            await Task.Run(() => ScreenController.HandleScreenControl());
         }
 
         public async Task HandleScreenInputAsync()

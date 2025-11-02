@@ -185,6 +185,7 @@ namespace MCBS
                 InteractionScheduling(tick);
                 ScoreboardScheduling(tick);
                 ScreenBuildScheduling(tick);
+                HandleScreenControl(tick);
                 HandleScreenInput(tick);
                 HandleScreenEvent(tick);
                 TimestampForCommandHandle = SystemRunningTime;
@@ -370,6 +371,16 @@ namespace MCBS
             ScreenBuildManager.OnTickUpdate(tick);
 
             SystemStageEnd.Invoke(this, new(tick, SystemStage.ScreenBuildScheduling));
+        }
+
+        private void HandleScreenControl(int tick)
+        {
+            SystemStage = SystemStage.HandleScreenControl;
+            SystemStageSatrt.Invoke(this, new(tick, SystemStage.HandleScreenControl));
+
+            ScreenManager.HandleAllScreenControl();
+
+            SystemStageEnd.Invoke(this, new(tick, SystemStage.HandleScreenControl));
         }
 
         private void HandleScreenInput(int tick)

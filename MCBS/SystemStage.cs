@@ -20,6 +20,8 @@ namespace MCBS
 
         ScreenBuildScheduling,
 
+        HandleScreenControl,
+
         HandleScreenInput,
 
         HandleScreenEvent,

@@ -112,6 +112,14 @@ namespace MCBS.Screens
             return screenContext;
         }
 
+        public void HandleAllScreenControl()
+        {
+            List<Task> tasks = new();
+            foreach (var screenContext in Items.Values)
+                tasks.Add(screenContext.HandleScreenControlAsync());
+            Task.WaitAll(tasks.ToArray());
+        }
+
         public void HandleAllScreenInput()
         {
             List<Task> tasks = new();
