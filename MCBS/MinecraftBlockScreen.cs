@@ -137,8 +137,18 @@ namespace MCBS
         private void ConnectMinecraft()
         {
             LOGGER.Info($"正在等待位于“{MinecraftInstance.MinecraftPathManager.Minecraft.FullName}”的Minecraft实例启动...");
-            MinecraftInstance.WaitForConnection();
-            MinecraftInstance.Start("MinecraftInstance Thread");
+
+            if (MinecraftInstance.IsSubprocess)
+            {
+                MinecraftInstance.Start("MinecraftInstance Thread");
+                MinecraftInstance.WaitForConnection();
+            }
+            else
+            {
+                MinecraftInstance.WaitForConnection();
+                MinecraftInstance.Start("MinecraftInstance Thread");
+            }
+
             Thread.Sleep(1000);
 
             LOGGER.Info("成功连接到Minecraft实例");
