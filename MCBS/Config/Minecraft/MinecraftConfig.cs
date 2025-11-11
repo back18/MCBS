@@ -24,7 +24,7 @@ namespace MCBS.Config.Minecraft
 
             MinecraftPath = model.MinecraftPath;
             MinecraftVersion = model.MinecraftVersion;
-            MinecraftType = model.MinecraftType;
+            IsClient = model.IsClient;
             ServerAddress = model.ServerAddress;
             ServerPort = (ushort)model.ServerPort;
             Language = model.Language;
@@ -40,7 +40,7 @@ namespace MCBS.Config.Minecraft
 
         public string MinecraftVersion { get; }
 
-        public string MinecraftType { get; }
+        public bool IsClient { get; }
 
         public string ServerAddress { get; }
 
@@ -71,7 +71,7 @@ namespace MCBS.Config.Minecraft
             {
                 MinecraftPath = MinecraftPath,
                 MinecraftVersion = MinecraftVersion,
-                MinecraftType = MinecraftType,
+                IsClient = IsClient,
                 ServerAddress = ServerAddress,
                 ServerPort = ServerPort,
                 Language = Language,
@@ -118,7 +118,7 @@ namespace MCBS.Config.Minecraft
             {
                 MinecraftPath = "";
                 MinecraftVersion = "1.20.1";
-                MinecraftType = MinecraftTypes.CLIENT;
+                IsClient = true;
                 ServerAddress = "localhost";
                 ServerPort = 25565;
                 Language = "zh_cn";
@@ -141,15 +141,14 @@ namespace MCBS.Config.Minecraft
 
             [Display(Name = "Minecraft类型", Description = "用于确定Minecraft是服务端还是客户端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            [NewAllowedValues(MinecraftTypes.CLIENT, MinecraftTypes.SERVER, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
-            public string MinecraftType { get; set; }
+            public bool IsClient { get; set; }
 
             [Display(Name = "Minecraft服务器地址", Description = "也作为RCON地址以及MCAPI地址\n由于一般情况下MCBS与Minecraft均运行在同一台主机\n因此将其设置为localhost即可")]
-            [RequiredIf(nameof(MinecraftType), CompareOperator.Equal, MinecraftTypes.SERVER, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [RequiredIf(nameof(IsClient), CompareOperator.Equal, false, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string ServerAddress { get; set; }
 
             [Display(Name = "Minecraft服务器端口")]
-            [RequiredIf(nameof(MinecraftType), CompareOperator.Equal, MinecraftTypes.SERVER, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [RequiredIf(nameof(IsClient), CompareOperator.Equal, false, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int ServerPort { get; set; }
 
@@ -169,7 +168,7 @@ namespace MCBS.Config.Minecraft
             [Display(Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信，支持服务端和客户端\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             [NewAllowedValues(CommunicationModes.MCAPI, CommunicationModes.RCON, CommunicationModes.CONSOLE, CommunicationModes.HYBRID, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
-            [AllowedValuesIf(nameof(MinecraftType), CompareOperator.Equal, MinecraftTypes.CLIENT, CommunicationModes.MCAPI)]
+            [AllowedValuesIf(nameof(IsClient), CompareOperator.Equal, true, CommunicationModes.MCAPI)]
             public string CommunicationMode { get; set; }
 
             [Display(Name = "MCAPI模式配置")]

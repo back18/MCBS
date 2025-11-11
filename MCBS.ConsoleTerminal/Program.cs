@@ -6,12 +6,14 @@ using MCBS.Config.Constants;
 using MCBS.Config.Minecraft;
 using QuanLib.Commands;
 using QuanLib.Consoles;
+using QuanLib.Core;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Events;
 using QuanLib.Minecraft.Instance;
 using QuanLib.Minecraft.ResourcePack;
+using System.Diagnostics;
 using System.Text;
 
 namespace MCBS.ConsoleTerminal
@@ -42,33 +44,22 @@ namespace MCBS.ConsoleTerminal
 
             Initialize();
 
-            LOGGER.Info($"将以 {ConfigManager.MinecraftConfig.CommunicationMode} 模式绑定到位于“{ConfigManager.MinecraftConfig.MinecraftPath}”的Minecraft实例");
-
-            MinecraftInstance minecraftInstance = BindingMinecraft();
-
             MinecraftConfig config = ConfigManager.MinecraftConfig;
-            if (minecraftInstance is McapiMinecraftClient mcapiMinecraftClient)
-                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft客户端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{mcapiMinecraftClient.McapiAddress} 端口:{mcapiMinecraftClient.McapiPort}");
-            else if (minecraftInstance is McapiMinecraftServer mcapiMinecraftServer)
-                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{mcapiMinecraftServer.ServerAddress} 端口:{mcapiMinecraftServer.McapiPort}");
-            else if (minecraftInstance is RconMinecraftServer rconMinecraftServer)
-                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{rconMinecraftServer.ServerAddress} 端口:{rconMinecraftServer.RconPort}");
-            else if (minecraftInstance is ConsoleMinecraftServer consoleMinecraftServer)
-                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} Java路径:{consoleMinecraftServer.ServerProcess.LaunchArguments.JavaPath} 启动参数:{consoleMinecraftServer.ServerProcess.LaunchArguments.GetArguments()}");
-            else if (minecraftInstance is HybridMinecraftServer hybridMinecraftServer)
-                LOGGER.Info($"成功绑定到基于 {minecraftInstance.InstanceKey} 的Minecraft服务端，游戏路径:{minecraftInstance.MinecraftPath} 地址:{hybridMinecraftServer.ServerAddress} 端口:{hybridMinecraftServer.RconPort} Java路径:{hybridMinecraftServer.ServerProcess.LaunchArguments.JavaPath} 启动参数:{hybridMinecraftServer.ServerProcess.LaunchArguments.GetArguments()}");
-            else
-                throw new InvalidOperationException();
+            LOGGER.Info($"将以 {config.CommunicationMode} 模式绑定到位于“{config.MinecraftPath}”的Minecraft实例");
+
+            MinecraftInstance minecraftInstance = CreateMinecraftInstance(config, LogManager.Instance.LoggerGetter);
+            LOGGER.Info(GetMinecraftInstanceInfo(minecraftInstance));
 
             ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
-            MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
 
-            MinecraftBlockScreen.Instance.Start("System Thread");
+            mcbs.Start("System Thread");
             Terminal.Start("Terminal Thread");
             CommandLogger.Start("CommandLogger Thread");
+
             minecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
 
-            MinecraftBlockScreen.Instance.WaitForStop();
+            mcbs.WaitForStop();
 
             Exit(0);
         }
@@ -95,37 +86,100 @@ namespace MCBS.ConsoleTerminal
             }
         }
 
-        private static MinecraftInstance BindingMinecraft()
+        private static MinecraftInstance CreateMinecraftInstance(MinecraftConfig config, ILoggerGetter loggerGetter)
         {
             try
             {
-                MinecraftConfig config = ConfigManager.MinecraftConfig;
-                switch (config.MinecraftType)
+                if (config.IsClient)
                 {
-                    case MinecraftTypes.CLIENT:
-                        if (config.CommunicationMode == CommunicationModes.MCAPI)
-                            return new McapiMinecraftClient(config.MinecraftPath, config.McapiModeConfig.Address, config.McapiModeConfig.Port, config.McapiModeConfig.Password, LogManager.Instance.LoggerGetter);
-                        else
-                            throw new InvalidOperationException();
-                    case MinecraftTypes.SERVER:
-                        return config.CommunicationMode switch
-                        {
-                            CommunicationModes.MCAPI => new McapiMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, config.McapiModeConfig.Port, config.McapiModeConfig.Password, LogManager.Instance.LoggerGetter),
-                            CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, config.RconModeConfig.Port, config.RconModeConfig.Password, LogManager.Instance.LoggerGetter),
-                            CommunicationModes.CONSOLE => new ConsoleMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, new GenericServerLaunchArguments(config.ConsoleModeConfig.JavaPath, config.ConsoleModeConfig.LaunchArguments), LogManager.Instance.LoggerGetter),
-                            CommunicationModes.HYBRID => new HybridMinecraftServer(config.MinecraftPath, config.ServerAddress, config.ServerPort, config.RconModeConfig.Port, config.RconModeConfig.Password, new GenericServerLaunchArguments(config.ConsoleModeConfig.JavaPath, config.ConsoleModeConfig.LaunchArguments), LogManager.Instance.LoggerGetter),
-                            _ => throw new InvalidOperationException(),
-                        };
-                    default:
+                    if (config.CommunicationMode == CommunicationModes.MCAPI)
+                        return new McapiMinecraftClient(
+                            config.MinecraftPath,
+                            config.McapiModeConfig.Address,
+                            config.McapiModeConfig.Port,
+                            config.McapiModeConfig.Password,
+                            loggerGetter);
+                    else
                         throw new InvalidOperationException();
+                }
+                else
+                {
+                    return config.CommunicationMode switch
+                    {
+                        CommunicationModes.MCAPI => new McapiMinecraftServer(
+                            config.MinecraftPath,
+                            config.ServerAddress,
+                            config.ServerPort,
+                            config.McapiModeConfig.Port,
+                            config.McapiModeConfig.Password,
+                            loggerGetter),
+                        CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath,
+                            config.ServerAddress,
+                            config.ServerPort,
+                            config.RconModeConfig.Port,
+                            config.RconModeConfig.Password,
+                            loggerGetter),
+                        CommunicationModes.CONSOLE => new ConsoleMinecraftServer(
+                            config.MinecraftPath,
+                            config.ServerAddress,
+                            config.ServerPort,
+                            new GenericServerLaunchArguments(
+                                config.ConsoleModeConfig.JavaPath,
+                                config.ConsoleModeConfig.LaunchArguments),
+                            config.ConsoleModeConfig.MclogRegexFilter,
+                            loggerGetter),
+                        CommunicationModes.HYBRID => new HybridMinecraftServer(
+                            config.MinecraftPath,
+                            config.ServerAddress,
+                            config.ServerPort,
+                            config.RconModeConfig.Port,
+                            config.RconModeConfig.Password,
+                            new GenericServerLaunchArguments(
+                                config.ConsoleModeConfig.JavaPath,
+                                config.ConsoleModeConfig.LaunchArguments),
+                            config.ConsoleModeConfig.MclogRegexFilter,
+                            loggerGetter),
+                        _ => throw new InvalidOperationException(),
+                    };
                 }
             }
             catch (Exception ex)
             {
-                LOGGER.Fatal("无法绑定到Minecraft实例", ex);
+                LOGGER.Fatal("无法创建Minecraft实例", ex);
                 Exit(-1);
                 throw new InvalidOperationException();
             }
+        }
+
+        public static string GetMinecraftInstanceInfo(MinecraftInstance minecraftInstance)
+        {
+            string farmat = "    - {0}：{1}" + Environment.NewLine;
+            StringBuilder stringBuilder = new();
+
+            stringBuilder.AppendLine("成功创建Minecraft实例");
+            stringBuilder.AppendFormat(farmat, "通信模式", minecraftInstance.Identifier);
+            stringBuilder.AppendFormat(farmat, "游戏路径", minecraftInstance.MinecraftPath);
+
+            if (minecraftInstance is MinecraftServer minecraftServer)
+            {
+                stringBuilder.AppendFormat(farmat, "服务器地址", minecraftServer.ServerAddress);
+                stringBuilder.AppendFormat(farmat, "服务器端口", minecraftServer.ServerPort);
+            }
+
+            if (minecraftInstance is IRconCapable rconCapable)
+                stringBuilder.AppendFormat(farmat, "RCON端口", rconCapable.RconPort);
+
+            if (minecraftInstance is IMcapiCapable mcapiCapable)
+                stringBuilder.AppendFormat(farmat, "MCAPI端口", mcapiCapable.McapiPort);
+
+            if (minecraftInstance is IConsoleCapable consoleCapable)
+            {
+                ProcessStartInfo startInfo = consoleCapable.ServerProcess.Process.StartInfo;
+                stringBuilder.AppendFormat(farmat, "Java路径", startInfo.FileName);
+                stringBuilder.AppendFormat(farmat, "启动参数", startInfo.Arguments);
+            }
+
+            return stringBuilder.ToString();
         }
 
         private static void LoadLogManager()

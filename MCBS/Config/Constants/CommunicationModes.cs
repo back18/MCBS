@@ -9,12 +9,12 @@ namespace MCBS.Config.Constants
 {
     public static class CommunicationModes
     {
-        public const string MCAPI = IMcapiInstance.INSTANCE_KEY;
+        public const string MCAPI = IMcapiInstance.IDENTIFIER;
 
-        public const string RCON = IRconInstance.INSTANCE_KEY;
+        public const string RCON = IRconInstance.IDENTIFIER;
 
-        public const string CONSOLE = IConsoleInstance.INSTANCE_KEY;
+        public const string CONSOLE = IConsoleInstance.IDENTIFIER;
 
-        public const string HYBRID = IHybridInstance.INSTANCE_KEY;
+        public const string HYBRID = IHybridInstance.IDENTIFIER;
     }
 }
