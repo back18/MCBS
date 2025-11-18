@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Processes
 {
-    public partial class ProcessManager : ITickUpdatable
+    public partial class ProcessManager : UnmanagedBase, ITickUpdatable
     {
         public ProcessManager()
         {
@@ -84,6 +84,25 @@ namespace MCBS.Processes
         public ProcessContext StartServicesProcess()
         {
             return StartServicesProcess(Array.Empty<string>());
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            List<Guid> guids = [];
+            List<Task> tasks = [];
+            foreach (var item in Items)
+            {
+                Guid guid = item.Key;
+                ProcessContext processContext = item.Value;
+
+                guids.Add(guid);
+                tasks.Add(Task.Run(processContext.Stop));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            foreach (Guid guid in guids)
+                Items.TryRemove(guid, out _);
         }
     }
 }

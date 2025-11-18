@@ -82,17 +82,6 @@ namespace MCBS.Processes
 
         protected virtual bool GotoStoppedState(ProcessState sourceState, ProcessState targetState)
         {
-            if (Thread is not null && Thread.IsAlive)
-            {
-                try
-                {
-                    Thread.Abort();
-                }
-                catch
-                {
-
-                }
-            }
             Stop();
             return true;
         }
@@ -107,11 +96,11 @@ namespace MCBS.Processes
             string args = _args.Length == 0 ? "empty" : string.Join(", ", _args.Select(arg => $"\"{arg}\""));
             FormContext ? formContext = Initiator is null ? null : MinecraftBlockScreen.Instance.FormContextOf(Initiator);
             if (formContext is null)
-                LOGGER.Info($"进程({Application.ID})已启动，启动参数为 {args}");
+                LOGGER.Info($"进程({Application.ID})启动参数为 {args}");
             else
-                LOGGER.Info($"进程({Application.ID})已被窗体({formContext.Form.Text})启动，启动参数为 {args}");
+                LOGGER.Info($"进程({Application.ID})启动参数为 {args}，从窗体({formContext.Form.Text})");
             object? result = Program.Main(_args);
-            LOGGER.Info($"进程({Application.ID})已停止，返回值为 {result ?? "null"}");
+            LOGGER.Info($"进程({Application.ID})返回值为 {result ?? "null"}");
         }
 
         public ProcessContext StartProcess()

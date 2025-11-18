@@ -1,28 +1,29 @@
-﻿using static MCBS.Config.ConfigManager;
-using log4net.Core;
+﻿using log4net.Core;
+using MCBS.Cursor;
+using MCBS.Screens.Drawing;
+using MCBS.UI;
+using MCBS.UI.Extensions;
+using Newtonsoft.Json;
+using QuanLib.Core;
+using QuanLib.IO;
+using QuanLib.IO.Extensions;
+using QuanLib.Logging;
+using QuanLib.Minecraft.NBT.Models;
+using QuanLib.TickLoop;
+using QuanLib.TickLoop.StateMachine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MCBS.UI;
-using MCBS.Cursor;
-using QuanLib.Minecraft.NBT.Models;
-using QuanLib.IO;
-using Newtonsoft.Json;
-using QuanLib.TickLoop;
-using QuanLib.TickLoop.StateMachine;
-using QuanLib.Logging;
-using MCBS.UI.Extensions;
-using QuanLib.IO.Extensions;
-using MCBS.Screens.Drawing;
+using static MCBS.Config.ConfigManager;
 
 namespace MCBS.Screens
 {
     /// <summary>
     /// 屏幕运行时上下文
     /// </summary>
-    public class ScreenContext : ITickUpdatable
+    public class ScreenContext : UnmanagedBase, ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
@@ -294,6 +295,18 @@ namespace MCBS.Screens
         {
             Screen.DataModel model = Screen.ToDataModel();
             return JsonConvert.SerializeObject(model);
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            if (ScreenState != ScreenState.Active && ScreenState != ScreenState.Sleep)
+                return;
+
+            if (!MinecraftBlockScreen.Instance.MinecraftInstance.TestConnectivity())
+                return;
+
+            ScreenController.ClearScreenRange();
+            LOGGER.Info($"屏幕({Screen.StartPosition})已清除");
         }
     }
 }

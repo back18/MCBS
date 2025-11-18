@@ -15,7 +15,7 @@ using QuanLib.Core.Events;
 
 namespace MCBS.Screens
 {
-    public partial class ScreenManager : ITickUpdatable
+    public partial class ScreenManager : UnmanagedBase, ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
@@ -171,6 +171,20 @@ namespace MCBS.Screens
             foreach (var screenContext in Items.Values)
                 tasks.Add(screenContext.HandleAfterFrameAsync());
             Task.WaitAll(tasks.ToArray());
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            Guid[] guids = Items.Keys.ToArray();
+            for (int i = 0; i < guids.Length; i++)
+            {
+                Guid guid = guids[i];
+                if (Items.TryGetValue(guid, out var screenContext))
+                {
+                    screenContext.Dispose();
+                    Items.TryRemove(guid, out screenContext);
+                }
+            }
         }
     }
 }

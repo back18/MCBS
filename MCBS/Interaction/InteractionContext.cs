@@ -1,5 +1,4 @@
-﻿using FFmpeg.AutoGen;
-using log4net.Core;
+﻿using log4net.Core;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Game;
@@ -8,6 +7,7 @@ using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
+using QuanLib.Minecraft.Instance;
 using QuanLib.TickLoop;
 using QuanLib.TickLoop.StateMachine;
 using System;
@@ -205,7 +205,14 @@ namespace MCBS.Interaction
 
         protected override void DisposeUnmanaged()
         {
-            CommandSender sender = MinecraftBlockScreen.Instance.MinecraftInstance.CommandSender;
+            if (InteractionState != InteractionState.Active && InteractionState != InteractionState.Offline)
+                return;
+
+            MinecraftInstance minecraftInstance = MinecraftBlockScreen.Instance.MinecraftInstance;
+            if (!minecraftInstance.TestConnectivity())
+                return;
+
+            CommandSender sender = minecraftInstance.CommandSender;
             Vector3<int> blockPos = Position.ToIntVector3();
             sender.AddForceloadChunk(blockPos);
             sender.KillEntity(EntityUUID.ToString());

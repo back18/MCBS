@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Interaction
 {
-    public class InteractionManager : ITickUpdatable
+    public class InteractionManager : UnmanagedBase, ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
@@ -80,6 +80,20 @@ namespace MCBS.Interaction
                 item.Value.OnTickUpdate(tick);
                 if (item.Value.InteractionState == InteractionState.Closed)
                     Items.Remove(item.Key);
+            }
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            string[] players = Items.Keys.ToArray();
+            for (int i = 0; i < players.Length; i++)
+            {
+                string player = players[i];
+                if (Items.TryGetValue(player, out var screenContext))
+                {
+                    screenContext.Dispose();
+                    Items.Remove(player);
+                }
             }
         }
 

@@ -1,11 +1,10 @@
 ﻿using log4net.Core;
-using log4net.Repository.Hierarchy;
 using MCBS.Application;
 using MCBS.Cursor;
-using MCBS.Cursor.Style;
 using MCBS.Processes;
 using MCBS.Screens;
 using MCBS.UI;
+using QuanLib.Core;
 using QuanLib.Game;
 using QuanLib.Logging;
 using QuanLib.TickLoop;
@@ -23,7 +22,7 @@ namespace MCBS.Forms
     /// <summary>
     /// 窗体运行时上下文
     /// </summary>
-    public class FormContext : ITickUpdatable
+    public class FormContext : UnmanagedBase, ITickUpdatable
     {
         private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
 
@@ -41,8 +40,8 @@ namespace MCBS.Forms
             }
             else
             {
-                MinecraftBlockScreen os = MinecraftBlockScreen.Instance;
-                IForm? initiator = os.ProcessContextOf(Program)?.Initiator;
+                MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
+                IForm? initiator = mcbs.ProcessContextOf(Program)?.Initiator;
                 if (initiator is IRootForm rootForm2)
                 {
                     RootForm = rootForm2;
@@ -51,12 +50,12 @@ namespace MCBS.Forms
                 {
                     ScreenContext? screenContext = null;
                     if (initiator is not null)
-                        screenContext = os.ScreenContextOf(initiator);
+                        screenContext = mcbs.ScreenContextOf(initiator);
 
                     if (screenContext is not null)
                         RootForm = screenContext.RootForm;
-                    else if (os.ScreenManager.Items.Any())
-                        RootForm = os.ScreenManager.Items.FirstOrDefault().Value.RootForm;
+                    else if (mcbs.ScreenManager.Items.Count != 0)
+                        RootForm = mcbs.ScreenManager.Items.FirstOrDefault().Value.RootForm;
                     else
                         throw new InvalidOperationException();
                 }
@@ -66,20 +65,17 @@ namespace MCBS.Forms
             StateMachine = new(FormState.NotLoaded, new StateContext<FormState>[]
             {
                 new(FormState.NotLoaded, Array.Empty<FormState>(), GotoNotLoadedState),
-                new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize, FormState.Dragging, FormState.Stretching }, ActiveStateUpdate),
+                new(FormState.Active, new FormState[] { FormState.NotLoaded, FormState.Minimize, FormState.Dragging, FormState.Stretching }, GotoActiveState),
                 new(FormState.Minimize, new FormState[] { FormState.Active }, GotoMinimizeState),
                 new(FormState.Dragging, new FormState[] { FormState.Active }, GotoDraggingState),
                 new(FormState.Stretching, new FormState[] { FormState.Active }, GotoStretchingState),
                 new(FormState.Closed, new FormState[] { FormState.Active, FormState.Minimize }, GotoClosedState)
             });
 
-            _closeSemaphore = new(0);
-            _closeTask = GetCloseTask();
+            _closeSemaphore = new();
         }
 
-        private readonly SemaphoreSlim _closeSemaphore;
-
-        private readonly Task _closeTask;
+        private readonly TaskSemaphore _closeSemaphore;
 
         public Guid GUID { get; }
 
@@ -102,7 +98,7 @@ namespace MCBS.Forms
             return false;
         }
 
-        protected virtual bool ActiveStateUpdate(FormState sourceState, FormState targetState)
+        protected virtual bool GotoActiveState(FormState sourceState, FormState targetState)
         {
             switch (sourceState)
             {
@@ -159,6 +155,7 @@ namespace MCBS.Forms
             LOGGER.Info($"窗体({Form.Text})已最小化");
             return true;
         }
+
         protected virtual bool GotoDraggingState(FormState sourceState, FormState targetState)
         {
             if (Form is IRootForm rootForm && !rootForm.AllowDrag)
@@ -185,11 +182,7 @@ namespace MCBS.Forms
 
         protected virtual bool GotoClosedState(FormState sourceState, FormState targetState)
         {
-            if (Form is not IRootForm && RootForm.ContainsForm(Form))
-                RootForm.RemoveForm(Form);
-            Form.HandleFormClose(EventArgs.Empty);
-            LOGGER.Info($"窗体({Form.Text})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
-            _closeSemaphore.Release();
+            Dispose();
             return true;
         }
 
@@ -255,12 +248,12 @@ namespace MCBS.Forms
 
         public void WaitForClose()
         {
-            _closeTask.Wait();
+            _closeSemaphore.Wait();
         }
 
-        public async Task WaitForCloseAsync()
+        public Task WaitForCloseAsync()
         {
-            await _closeTask;
+            return _closeSemaphore.WaitAsync();
         }
 
         public override string ToString()
@@ -268,9 +261,26 @@ namespace MCBS.Forms
             return $"GUID={GUID} State={StateMachine.CurrentState} Title={Form.Text} Position=[{Form.ClientLocation.X},{Form.ClientLocation.Y}] Size=({Form.ClientSize.Width},{Form.ClientSize.Height})";
         }
 
-        private async Task GetCloseTask()
+        protected override void DisposeUnmanaged()
         {
-            await _closeSemaphore.WaitAsync();
+            if (FormState == FormState.Closed || FormState == FormState.NotLoaded)
+                return;
+
+            if (FormState == FormState.Dragging && DraggingContext is not null)
+            {
+                DraggingContext.CursorContext.HoverControls.TryRemove(Form, out _);
+                DraggingContext = null;
+            }
+
+            if (FormState == FormState.Stretching)
+                StretchingContext = null;
+
+            if (Form is not IRootForm && RootForm.ContainsForm(Form))
+                RootForm.RemoveForm(Form);
+
+            Form.HandleFormClose(EventArgs.Empty);
+            LOGGER.Info($"窗体({Form.Text})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
+            _closeSemaphore.Release();
         }
     }
 }

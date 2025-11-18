@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Forms
 {
-    public partial class FormManager : ITickUpdatable
+    public partial class FormManager : UnmanagedBase, ITickUpdatable
     {
         public FormManager()
         {
@@ -52,6 +52,20 @@ namespace MCBS.Forms
 
             formContext.LoadForm();
             return formContext;
+        }
+
+        protected override void DisposeUnmanaged()
+        {
+            Guid[] guids = Items.Keys.ToArray();
+            for (int i = 0; i < guids.Length; i++)
+            {
+                Guid guid = guids[i];
+                if (Items.TryGetValue(guid, out var formContext))
+                {
+                    formContext.Dispose();
+                    Items.TryRemove(guid, out _);
+                }
+            }
         }
     }
 }

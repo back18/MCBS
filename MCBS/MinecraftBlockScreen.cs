@@ -1,7 +1,5 @@
-﻿using log4net.Core;
-using MCBS.Analyzer;
+﻿using MCBS.Analyzer;
 using MCBS.Application;
-using MCBS.Config;
 using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Forms;
@@ -32,8 +30,6 @@ namespace MCBS
 {
     public class MinecraftBlockScreen : TickLoopSystem, ISingleton<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
-
         private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), LogManager.Instance.LoggerGetter)
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
@@ -41,7 +37,6 @@ namespace MCBS
 
             MinecraftInstance = minecraftInstance;
             Clipboard = new();
-            FileWriteQueue = new();
             MsptAnalyzer = new();
             TaskManager = new();
             ScreenManager = new();
@@ -58,10 +53,15 @@ namespace MCBS
             TimestampForCommandHandle = SystemRunningTime;
             MaxDelayForCommandHandle = TimeSpan.FromSeconds(1);
 
+            FileWriteQueue = new(LogManager.Instance.LoggerGetter);
+            FileWriteQueue.SetDefaultThreadName("FileWrite Thread");
+            AddSubtask(FileWriteQueue);
+
             CreateAppComponentsDirectory();
 
             SystemStageSatrt += OnSystemStageSatrt;
             SystemStageEnd += OnSystemStageEnd;
+            MinecraftInstance.Stopped += MinecraftInstance_Stopped;
 
             _msptRecord = new(this);
             _gtQuery = Task.FromResult(-1);
@@ -120,6 +120,15 @@ namespace MCBS
 
         protected virtual void OnSystemStageEnd(MinecraftBlockScreen sender, TickStageEventArgs e) { }
 
+        private void MinecraftInstance_Stopped(IRunnable sender, EventArgs e)
+        {
+            if (!IsRunning)
+                return;
+
+            Logger?.Warn("Minecraft实例意外断开连接，系统即将终止");
+            IsRunning = false;
+        }
+
         public static MinecraftBlockScreen LoadInstance(InstantiateArgs instantiateArgs)
         {
             ArgumentNullException.ThrowIfNull(instantiateArgs, nameof(instantiateArgs));
@@ -134,10 +143,8 @@ namespace MCBS
             }
         }
 
-        private void ConnectMinecraft()
+        private bool ConnectToMinecraft()
         {
-            LOGGER.Info($"正在等待位于“{MinecraftInstance.MinecraftPathManager.Minecraft.FullName}”的Minecraft实例启动...");
-
             if (MinecraftInstance.IsSubprocess)
             {
                 MinecraftInstance.Start("MinecraftInstance Thread");
@@ -151,12 +158,12 @@ namespace MCBS
 
             Thread.Sleep(1000);
 
-            LOGGER.Info("成功连接到Minecraft实例");
+            return MinecraftInstance.IsRunning;
         }
 
         private void Initialize()
         {
-            LOGGER.Info("MCBS开始初始化");
+            Logger?.Info("MCBS开始初始化");
 
             QueryGameTick();
             UpdateGameTick();
@@ -164,9 +171,8 @@ namespace MCBS
             ScreenManager.Initialize();
             InteractionManager.Initialize();
             ScoreboardManager.Initialize();
-            FileWriteQueue.Start("FileWrite Thread");
 
-            LOGGER.Info("MCBS初始化完成");
+            Logger?.Info("MCBS初始化完成");
         }
 
         protected override void OnTickStart(int tick)
@@ -184,10 +190,10 @@ namespace MCBS
             TimeSpan delay = SystemRunningTime - TimestampForCommandHandle;
             if (!isCompleted && delay > MaxDelayForCommandHandle)
             {
-                LOGGER.Warn($"命令总线已持续繁忙超过{(int)delay.TotalMilliseconds}ms，将强制等待处理命令");
+                Logger?.Warn($"命令总线已持续繁忙超过{(int)delay.TotalMilliseconds}ms，将强制等待处理命令");
                 TaskManager.WaitForMainTask();
                 isCompleted = true;
-            }    
+            }
 
             if (isCompleted)
             {
@@ -202,7 +208,7 @@ namespace MCBS
             }
             else
             {
-                //LOGGER.Debug($"命令总线繁忙，当前Tick({SystemTick})已跳过命令处理");
+                //Logger?.Debug($"命令总线繁忙，当前Tick({SystemTick})已跳过命令处理");
             }
 
             HandleBeforeFrame(tick);
@@ -220,107 +226,77 @@ namespace MCBS
 
         protected override void Run()
         {
-            ConnectMinecraft();
+            Logger?.Info($"正在等待位于“{MinecraftInstance.MinecraftPathManager.Minecraft.FullName}”的Minecraft实例启动...");
+
+            bool connection = ConnectToMinecraft();
+
+            if (connection)
+            {
+                Logger?.Info("成功连接到Minecraft实例");
+            }
+            else
+            {
+                Logger?.Error("由于Minecraft实例启动失败，系统即将终止");
+                return;
+            }
+
             Initialize();
 
-            LOGGER.Info("MCBS已开始运行");
-
-            run:
+            Logger?.Info("MCBS已开始运行");
 
             try
             {
                 base.Run();
             }
+            catch (ThreadInterruptedException ex)
+            {
+                Logger?.Warn("MCBS系统线程被外部强行中断，系统即将终止", ex);
+            }
             catch (Exception ex)
             {
-                bool connection = MinecraftInstance.TestConnectivity();
-
-                if (!connection)
-                {
-                    LOGGER.Fatal("MCBS运行时引发了异常，并且与Minecraft实例断开了连接，系统即将终止", ex);
-                }
-                else if (ConfigManager.SystemConfig.CrashAutoRestart)
-                {
-                    foreach (var context in ScreenManager.Items.Values)
-                    {
-                        context.RestartScreen();
-                    }
-                    LOGGER.Error("MCBS运行时引发了异常，已启用自动重启，系统即将在3秒后重启", ex);
-                    for (int i = 3; i >= 1; i--)
-                    {
-                        LOGGER.Info($"将在{i}秒后自动重启...");
-                        Thread.Sleep(1000);
-                    }
-                    TaskManager.Clear();
-                    LOGGER.Info("开始重启...");
-                    goto run;
-                }
-                else
-                {
-                    LOGGER.Fatal("MCBS运行时引发了异常，并且未启用自动重启，系统即将终止", ex);
-                }
+                Logger?.Fatal("MCBS运行时引发了异常，系统即将终止", ex);
             }
 
-            LOGGER.Info("MCBS已终止运行");
+            Logger?.Info("MCBS系统正在停止...");
+
+            IsRunning = false;
+            DisposeMinecraftResource();
+
+            Logger?.Info("MCBS已终止运行");
         }
 
         protected override void DisposeUnmanaged()
         {
+            base.DisposeUnmanaged();
+
+            MinecraftInstance.Dispose();
+        }
+
+        private void DisposeMinecraftResource()
+        {
+            if (!MinecraftInstance.TestConnectivity())
+            {
+                Logger?.Warn("提前与Minecraft实例断开连接，托管在Minecraft的资源可能无法回收");
+                return;
+            }
+
             try
             {
-                LOGGER.Info("开始释放系统资源");
+                FormManager.Dispose();
+                ProcessManager.Dispose();
+                ScreenManager.Dispose();
+                InteractionManager.Dispose();
 
-                LOGGER.Info("正在等待主任务完成...");
-                TaskManager.WaitForMainTask();
-
-                if (IsRunning)
-                {
-                    StopSubTasks();
-                    Task task = WaitForStopAsync();
-                    LOGGER.Info("正在等待MCBS终止运行...");
-                    IsRunning = false;
-                    task.Wait();
-                }
-
-                bool connection = MinecraftInstance.TestConnectivity();
-                if (!connection)
-                {
-                    LOGGER.Warn("由于无法继续连接到Minecraft实例，部分系统资源可能无法回收");
-                    goto end;
-                }
-
-                if (ScreenManager.Items.Count > 0)
-                {
-                    LOGGER.Info($"即将卸载所有屏幕，共计{ScreenManager.Items.Count}个");
-                    foreach (var context in ScreenManager.Items.Values)
-                        context.UnloadScreen();
-                }
-
-                if (InteractionManager.Items.Count > 0)
-                {
-                    LOGGER.Info($"即将回收所有交互实体，共计{InteractionManager.Items.Count}个");
-                    foreach (var interaction in InteractionManager.Items.Values)
-                        interaction.CloseInteraction();
-                }
-
-                int tick = SystemTick + 1;
-                ScreenScheduling(tick);
-                ProcessScheduling(tick);
-                FormScheduling(tick);
-                InteractionScheduling(tick);
-                Thread.Sleep(1000);
-
-                LOGGER.Info("系统资源均已释放完成");
+                Logger?.Info("Minecraft托管资源已完成回收");
             }
             catch (Exception ex)
             {
-                LOGGER.Error("释放系统资源时引发了异常", ex);
+                Logger?.Error("释放托管在Minecraft的资源时引发了异常，部分资源可能无法回收", ex);
             }
-
-            end:
-            FileWriteQueue.Stop();
-            MinecraftInstance.Stop();
-            LOGGER.Info("已和Minecraft实例断开连接");
+            finally
+            {
+                MinecraftInstance.Stop();
+            }
         }
 
         private void ScreenScheduling(int tick)
@@ -467,7 +443,7 @@ namespace MCBS
 
                 int ms = (int)TaskManager.MainTaskRuntime.TotalMilliseconds;
                 if (ms > TickMaxTime.TotalMilliseconds * 2)
-                    LOGGER.Warn($"当前Tick({SystemTick})命令总线处理速度严重滞后，总耗时{ms}ms");
+                    Logger?.Warn($"当前Tick({SystemTick})命令总线处理速度严重滞后，总耗时{ms}ms");
 
                 UpdateGameTick();
                 screenOutputHandler.ReleaseSemaphore();
@@ -572,7 +548,7 @@ namespace MCBS
 
         private void UpdateGameTick()
         {
-            GameTick = _gtQuery.Result;
+            GameTick = _gtQuery.ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private void CreateAppComponentsDirectory()
