@@ -24,7 +24,7 @@ namespace MCBS
         {
             try
             {
-                BuildResourcesAsync().Wait();
+                BuildResourcesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                 LOGGER.Info("FFmpeg资源文件构建完成");
 
                 FFmpegLoader.LoadFFmpeg();

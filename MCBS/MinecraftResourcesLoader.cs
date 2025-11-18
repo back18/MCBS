@@ -28,7 +28,7 @@ namespace MCBS
 
         public static ResourceEntryManager LoadAll()
         {
-            BuildResourcesAsync().Wait();
+            BuildResourcesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             LOGGER.Info("Minecraft资源文件构建完成");
 
             string[] resourcePacks = GetResourcePacks();
@@ -102,6 +102,9 @@ namespace MCBS
 
             NetworkAssetIndex indexFileAssetIndex = versionJson.GetIndexFile() ?? throw new InvalidOperationException("在版本Json文件找不到索引文件的资源索引");
             AssetList assetList = await LoadAssetListAsync(McbsPathManager.MCBS_Minecraft_Vanilla_Version_IndexFile.FullName, indexFileAssetIndex, downloadProvider);
+
+            if (MinecraftConfig.Language == "en_us")
+                return;
 
             string langFileName = MinecraftConfig.Language + ".json";
             string langFilePath = McbsPathManager.MCBS_Minecraft_Vanilla_Version_Languages.CombineFile(langFileName).FullName;

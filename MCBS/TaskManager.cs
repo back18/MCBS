@@ -41,7 +41,7 @@ namespace MCBS
 
         public void WaitForMainTask()
         {
-            _mainTask?.Wait();
+            _mainTask?.ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public async Task WaitForMainTaskAsync()
