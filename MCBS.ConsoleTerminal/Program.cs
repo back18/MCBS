@@ -179,6 +179,7 @@ namespace MCBS.ConsoleTerminal
                 stringBuilder.AppendFormat(farmat, "启动参数", startInfo.Arguments);
             }
 
+            stringBuilder.Length -= Environment.NewLine.Length;
             return stringBuilder.ToString();
         }
 
@@ -211,11 +212,9 @@ namespace MCBS.ConsoleTerminal
 
         public static void Exit(int exitCode)
         {
-            Task terminal = Terminal.WaitForStopAsync();
-            Task commandLogger = CommandLogger.WaitForStopAsync();
-            Terminal.Stop();
             CommandLogger.Stop();
-            Task.WaitAll(terminal, commandLogger);
+            CommandLogger.WaitForStop();
+            Terminal.Stop();
 
             for (int i = 10; i >= 1; i--)
             {

@@ -30,15 +30,15 @@ namespace MCBS.ConsoleTerminal
 
         public CommandManager CommandManager { get; }
 
-        protected abstract CommandReaderResult ReadCommand();
+        protected abstract CommandReaderResult? ReadCommand();
 
         protected override void Run()
         {
             while (IsRunning)
             {
-                CommandReaderResult result = ReadCommand();
+                CommandReaderResult? result = ReadCommand();
 
-                if (!IsRunning)
+                if (!IsRunning || result is null)
                 {
                     break;
                 }
@@ -132,6 +132,13 @@ namespace MCBS.ConsoleTerminal
 
             CommandManager.Register(
                 new CommandBuilder()
+                .On("mcbs stop")
+                .Allow(PrivilegeLevel.User)
+                .Execute(StopMCBS)
+                .Build());
+
+            CommandManager.Register(
+                new CommandBuilder()
                 .On("mspt analyzer")
                 .Allow(PrivilegeLevel.User)
                 .Execute(MsptAnalysis)
@@ -173,68 +180,86 @@ namespace MCBS.ConsoleTerminal
 
         private static string GetApplicationList()
         {
-            var list = MinecraftBlockScreen.Instance.AppComponents;
-
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
             StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine($"当前已加载{list.Count}个应用程序，应用程序列表：");
-            foreach (var applicationManifest in list.Values)
-                stringBuilder.AppendLine(applicationManifest.ToString());
-            stringBuilder.Length -= Environment.NewLine.Length;
+
+            mcbs.SubmitAndWait(() =>
+            {
+                stringBuilder.AppendLine($"当前已加载{mcbs.AppComponents.Count}个应用程序，应用程序列表：");
+                foreach (var applicationManifest in mcbs.AppComponents.Values)
+                    stringBuilder.AppendLine(applicationManifest.ToString());
+                stringBuilder.Length -= Environment.NewLine.Length;
+            });
 
             return stringBuilder.ToString();
         }
 
         private static string GetScreenList()
         {
-            var list = MinecraftBlockScreen.Instance.ScreenManager.Items;
-
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
             StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
-            foreach (var context in list.Values)
-                stringBuilder.AppendLine(context.ToString());
-            stringBuilder.Length -= Environment.NewLine.Length;
+
+            mcbs.SubmitAndWait(() =>
+            {
+                var list = mcbs.ScreenManager.Items;
+                stringBuilder.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
+                foreach (var context in list.Values)
+                    stringBuilder.AppendLine(context.ToString());
+                stringBuilder.Length -= Environment.NewLine.Length;
+            });
 
             return stringBuilder.ToString();
         }
 
         private static string GetProcessList()
         {
-            var list = MinecraftBlockScreen.Instance.ProcessManager.Items;
-
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
             StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
-            foreach (var context in list.Values)
-                stringBuilder.AppendLine(context.ToString());
-            stringBuilder.Length -= Environment.NewLine.Length;
+
+            mcbs.SubmitAndWait(() =>
+            {
+                var list = mcbs.ProcessManager.Items;
+                stringBuilder.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
+                foreach (var context in list.Values)
+                    stringBuilder.AppendLine(context.ToString());
+                stringBuilder.Length -= Environment.NewLine.Length;
+            });
 
             return stringBuilder.ToString();
         }
 
         private static string GetFormList()
         {
-            var list = MinecraftBlockScreen.Instance.FormManager.Items;
-
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
             StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
-            foreach (var context in list.Values)
-                stringBuilder.AppendLine(context.ToString());
-            stringBuilder.Length -= Environment.NewLine.Length;
+
+            mcbs.SubmitAndWait(() =>
+            {
+                var list = mcbs.FormManager.Items;
+                stringBuilder.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
+                foreach (var context in list.Values)
+                    stringBuilder.AppendLine(context.ToString());
+                stringBuilder.Length -= Environment.NewLine.Length;
+            });
 
             return stringBuilder.ToString();
         }
 
-        private static string GetFormsOfScreen(Guid screenGUID)
+        private static string GetFormsOfScreen(Guid screenGuid)
         {
-            if (!MinecraftBlockScreen.Instance.ScreenManager.Items.TryGetValue(screenGUID, out var screenContext))
-                return $"找不到GUID为 {screenGUID} 的屏幕";
-
-            var list = MinecraftBlockScreen.Instance.FormManager.Items.Values.Where(s => s.RootForm == screenContext.RootForm);
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
+            if (!mcbs.ScreenManager.Items.TryGetValue(screenGuid, out var screenContext))
+                return $"找不到GUID为 {screenGuid} 的屏幕";
 
             StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine($"屏幕({screenGUID})当前已打开{list.Count()}个窗体，窗体列表：");
-            foreach (var context in list)
-                stringBuilder.AppendLine(context.ToString());
-            stringBuilder.Length -= Environment.NewLine.Length;
+            mcbs.SubmitAndWait(() =>
+            {
+                var list = mcbs.FormManager.Items.Values.Where(s => s.RootForm == screenContext.RootForm);
+                stringBuilder.AppendLine($"屏幕({screenGuid})当前已打开{list.Count()}个窗体，窗体列表：");
+                foreach (var context in list)
+                    stringBuilder.AppendLine(context.ToString());
+                stringBuilder.Length -= Environment.NewLine.Length;
+            });
 
             return stringBuilder.ToString();
         }
@@ -254,6 +279,11 @@ namespace MCBS.ConsoleTerminal
         private static string GetSystemTick()
         {
             return $"MCBS已运行{MinecraftBlockScreen.Instance.SystemTick}个Tick";
+        }
+
+        private static void StopMCBS()
+        {
+            MinecraftBlockScreen.Instance.Stop();
         }
 
         private static void MsptAnalysis()

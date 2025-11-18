@@ -17,11 +17,25 @@ namespace MCBS.ConsoleTerminal
 
         private readonly ConsoleCommandReader _consoleCommandReader;
 
-        protected override CommandReaderResult ReadCommand()
+        protected override CommandReaderResult? ReadCommand()
         {
             _consoleCommandReader.Start();
             _consoleCommandReader.WaitForStop();
-            return _consoleCommandReader.GetResult();
+
+            try
+            {
+                return _consoleCommandReader.GetResult();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public override void Stop()
+        {
+            _consoleCommandReader.Stop();
+            base.Stop();
         }
     }
 }
