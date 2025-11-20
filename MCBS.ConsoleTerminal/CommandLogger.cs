@@ -1,5 +1,4 @@
 ﻿using QuanLib.Core;
-using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Command;
 using System;
@@ -13,7 +12,7 @@ namespace MCBS.ConsoleTerminal
 {
     public class CommandLogger : UnmanagedRunnable
     {
-        public CommandLogger(string logFilePath, int maxCacheCount = 10000, bool deduplication = true) : base(LogManager.Instance.LoggerGetter)
+        public CommandLogger(string logFilePath, int maxCacheCount = 10000, bool deduplication = true) : base(Log4NetManager.Instance.GetProvider())
         {
             ArgumentException.ThrowIfNullOrEmpty(logFilePath, nameof(logFilePath));
             ThrowHelper.ArgumentOutOfMin(1, maxCacheCount, nameof(maxCacheCount));

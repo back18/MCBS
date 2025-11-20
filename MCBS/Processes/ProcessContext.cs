@@ -1,6 +1,4 @@
-﻿using FFmpeg.AutoGen;
-using log4net.Core;
-using MCBS.Application;
+﻿using MCBS.Application;
 using MCBS.Forms;
 using MCBS.UI;
 using QuanLib.Core;
@@ -18,9 +16,9 @@ namespace MCBS.Processes
 {
     public class ProcessContext : RunnableBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
-        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(LogManager.Instance.LoggerGetter)
+        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(Log4NetManager.Instance.GetProvider())
         {
             ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
             ArgumentNullException.ThrowIfNull(args, nameof(args));

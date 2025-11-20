@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using MCBS.Cursor;
+﻿using MCBS.Cursor;
 using MCBS.Screens.Drawing;
 using MCBS.UI;
 using MCBS.UI.Extensions;
@@ -25,7 +24,7 @@ namespace MCBS.Screens
     /// </summary>
     public class ScreenContext : UnmanagedBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         internal ScreenContext(Screen screen, IScreenView screenView, Guid guid = default)
         {

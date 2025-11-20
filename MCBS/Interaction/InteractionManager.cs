@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.Game;
@@ -21,7 +20,7 @@ namespace MCBS.Interaction
 {
     public class InteractionManager : UnmanagedBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public InteractionManager()
         {

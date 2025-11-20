@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using log4net.Core;
 using Downloader;
 using QuanLib.IO;
 using System.Diagnostics.CodeAnalysis;
@@ -16,7 +15,7 @@ namespace MCBS
 {
     public static class DownloadHelper
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public static bool ReadIfValid(string path, string hash, HashType hashType, [MaybeNullWhen(false)] out FileStream result)
         {

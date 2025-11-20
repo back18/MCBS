@@ -17,7 +17,7 @@ namespace MCBS.ConsoleTerminal
 {
     public abstract class Terminal : RunnableBase
     {
-        public Terminal(CommandSender commandSender) : base(LogManager.Instance.LoggerGetter)
+        public Terminal(CommandSender commandSender, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
         {
             ArgumentNullException.ThrowIfNull(commandSender, nameof(commandSender));
 
@@ -288,7 +288,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void MsptAnalysis()
         {
-            LogManager.Instance.DisableConsoleOutput();
+            Log4NetManager.Instance.DisableConsoleOutput();
             Console.CursorVisible = false;
 
             ConsoleDynamicViwe consoleDynamicViwe = new(MinecraftBlockScreen.Instance.MsptAnalyzer.ToConsoleViwe, 50);
@@ -297,7 +297,7 @@ namespace MCBS.ConsoleTerminal
             consoleDynamicViwe.Stop();
 
             Console.CursorVisible = true;
-            LogManager.Instance.EnableConsoleOutput();
+            Log4NetManager.Instance.ResumeConsoleOutput();
         }
 
         private static void MsptStatisticalChart()
@@ -333,7 +333,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void MsptStatisticalChart(MsptSlice msptSlice)
         {
-            LogManager.Instance.DisableConsoleOutput();
+            Log4NetManager.Instance.DisableConsoleOutput();
             Console.CursorVisible = false;
 
             msptSlice.TimeUpdated += WriteText;
@@ -341,7 +341,7 @@ namespace MCBS.ConsoleTerminal
             msptSlice.TimeUpdated -= WriteText;
 
             Console.CursorVisible = true;
-            LogManager.Instance.EnableConsoleOutput();
+            Log4NetManager.Instance.ResumeConsoleOutput();
 
             void WriteText(MsptSlice sender, EventArgs<TimeSpan> e)
             {

@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using MCBS.Application;
+﻿using MCBS.Application;
 using MCBS.BlockForms.Utility;
 using MCBS.Config;
 using MCBS.Config.Constants;
@@ -20,7 +19,7 @@ namespace MCBS.ConsoleTerminal
 {
     public static class Program
     {
-        private static LogImpl LOGGER => LogManager.Instance.GetLogger();
+        private static ILogger LOGGER => Log4NetManager.Instance.GetLogger(typeof(Program));
 
         static Program()
         {
@@ -29,7 +28,7 @@ namespace MCBS.ConsoleTerminal
             ConfigManager.CreateIfNotExists();
             LoadLogManager();
             LoadCharacterWidthMapping();
-            Terminal = new AdvancedTerminal(new("SYSTEM", PrivilegeLevel.Root));
+            Terminal = new AdvancedTerminal(new("SYSTEM", PrivilegeLevel.Root), Log4NetManager.Instance.GetProvider());
             CommandLogger = new(McbsPathManager.MCBS_Logs.CombineFile("Command.log").FullName) { IsWriteToFile = true };
             CommandLogger.AddBlacklist("time query gametime");
         }
@@ -47,7 +46,7 @@ namespace MCBS.ConsoleTerminal
             MinecraftConfig config = ConfigManager.MinecraftConfig;
             LOGGER.Info($"将以 {config.CommunicationMode} 模式绑定到位于“{config.MinecraftPath}”的Minecraft实例");
 
-            MinecraftInstance minecraftInstance = CreateMinecraftInstance(config, LogManager.Instance.LoggerGetter);
+            MinecraftInstance minecraftInstance = CreateMinecraftInstance(config, Log4NetManager.Instance.GetProvider());
             LOGGER.Info(GetMinecraftInstanceInfo(minecraftInstance));
 
             ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
@@ -86,7 +85,7 @@ namespace MCBS.ConsoleTerminal
             }
         }
 
-        private static MinecraftInstance CreateMinecraftInstance(MinecraftConfig config, ILoggerGetter loggerGetter)
+        private static MinecraftInstance CreateMinecraftInstance(MinecraftConfig config, ILoggerProvider loggerProvider)
         {
             try
             {
@@ -98,7 +97,7 @@ namespace MCBS.ConsoleTerminal
                             config.McapiModeConfig.Address,
                             config.McapiModeConfig.Port,
                             config.McapiModeConfig.Password,
-                            loggerGetter);
+                            loggerProvider);
                     else
                         throw new InvalidOperationException();
                 }
@@ -112,13 +111,13 @@ namespace MCBS.ConsoleTerminal
                             config.ServerPort,
                             config.McapiModeConfig.Port,
                             config.McapiModeConfig.Password,
-                            loggerGetter),
+                            loggerProvider),
                         CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath,
                             config.ServerAddress,
                             config.ServerPort,
                             config.RconModeConfig.Port,
                             config.RconModeConfig.Password,
-                            loggerGetter),
+                            loggerProvider),
                         CommunicationModes.CONSOLE => new ConsoleMinecraftServer(
                             config.MinecraftPath,
                             config.ServerAddress,
@@ -127,7 +126,7 @@ namespace MCBS.ConsoleTerminal
                                 config.ConsoleModeConfig.JavaPath,
                                 config.ConsoleModeConfig.LaunchArguments),
                             config.ConsoleModeConfig.MclogRegexFilter,
-                            loggerGetter),
+                            loggerProvider),
                         CommunicationModes.HYBRID => new HybridMinecraftServer(
                             config.MinecraftPath,
                             config.ServerAddress,
@@ -138,7 +137,7 @@ namespace MCBS.ConsoleTerminal
                                 config.ConsoleModeConfig.JavaPath,
                                 config.ConsoleModeConfig.LaunchArguments),
                             config.ConsoleModeConfig.MclogRegexFilter,
-                            loggerGetter),
+                            loggerProvider),
                         _ => throw new InvalidOperationException(),
                     };
                 }
@@ -185,8 +184,9 @@ namespace MCBS.ConsoleTerminal
 
         private static void LoadLogManager()
         {
-            using FileStream fileStream = File.OpenRead(McbsPathManager.MCBS_Configs_Log4NetConfig.FullName);
-            LogManager.LoadInstance(new("[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n", McbsPathManager.MCBS_Logs_LatestLog.FullName, Encoding.UTF8, fileStream, true));
+            using FileStream fileStream = McbsPathManager.MCBS_Configs_Log4NetConfig.OpenRead();
+            Log4NetProvider provider = new(McbsPathManager.MCBS_Logs_LatestLog.FullName, fileStream, true);
+            Log4NetManager.LoadInstance(new(provider));
         }
 
         private static void LoadCharacterWidthMapping()

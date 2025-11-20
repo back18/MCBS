@@ -21,6 +21,7 @@
     <None Remove="SystemResource\Cursors\VerticalResize.png" />
     <None Remove="SystemResource\DefaultFont.bdf" />
     <None Remove="SystemResource\DefaultIcon.png" />
+    <None Remove="SystemResource\log4net.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +33,7 @@
     <EmbeddedResource Include="SystemResource\Cursors\VerticalResize.png" />
     <EmbeddedResource Include="SystemResource\DefaultFont.bdf" />
     <EmbeddedResource Include="SystemResource\DefaultIcon.png" />
+    <EmbeddedResource Include="SystemResource\log4net.xml" />
   </ItemGroup>
 
   <ItemGroup>

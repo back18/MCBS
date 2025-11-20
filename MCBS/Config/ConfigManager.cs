@@ -1,7 +1,4 @@
-﻿using log4net.Core;
-using log4net.Repository.Hierarchy;
-using MCBS;
-using MCBS.Config.Minecraft;
+﻿using MCBS.Config.Minecraft;
 using Nett;
 using Newtonsoft.Json;
 using QuanLib.Core;
@@ -19,7 +16,7 @@ namespace MCBS.Config
 {
     public static class ConfigManager
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public static MinecraftConfig MinecraftConfig => _MinecraftConfig ?? throw new InvalidOperationException("配置文件未加载");
         private static MinecraftConfig? _MinecraftConfig;
@@ -70,11 +67,11 @@ namespace MCBS.Config
             if (File.Exists(path))
                 return;
 
-            MemoryStream memoryStream = LogManager.CreateDefaultXmlConfigStream();
-            FileStream fileStream = new(path, FileMode.Create);
-            memoryStream.CopyTo(fileStream);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            using Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".SystemResource.log4net.xml") ?? throw new InvalidOperationException();
+            using FileStream fileStream = new(path, FileMode.Create);
+            stream.CopyTo(fileStream);
             fileStream.Flush();
-            fileStream.Close();
         }
 
         private static void CreateRegistryConfig(string path)

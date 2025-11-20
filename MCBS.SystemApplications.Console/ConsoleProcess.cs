@@ -14,7 +14,7 @@ namespace MCBS.SystemApplications.Console
     {
         public ConsoleProcess() : this(ProcessInfo.CMD) { }
 
-        public ConsoleProcess(ProcessInfo processInfo) : base(LogManager.Instance.LoggerGetter)
+        public ConsoleProcess(ProcessInfo processInfo) : base(Log4NetManager.Instance.GetProvider())
         {
             ArgumentNullException.ThrowIfNull(processInfo, nameof(processInfo));
 

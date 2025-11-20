@@ -1,6 +1,4 @@
 ﻿using static MCBS.Config.ConfigManager;
-using log4net.Core;
-using log4net.Repository.Hierarchy;
 using Newtonsoft.Json.Linq;
 using QuanLib.Minecraft.Downloading;
 using System;
@@ -24,7 +22,7 @@ namespace MCBS
 {
     public static class MinecraftResourcesLoader
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public static ResourceEntryManager LoadAll()
         {

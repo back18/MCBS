@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using MCBS.Application;
+﻿using MCBS.Application;
 using MCBS.Cursor;
 using MCBS.Processes;
 using MCBS.Screens;
@@ -24,7 +23,7 @@ namespace MCBS.Forms
     /// </summary>
     public class FormContext : UnmanagedBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         internal FormContext(IProgram program, IForm form)
         {

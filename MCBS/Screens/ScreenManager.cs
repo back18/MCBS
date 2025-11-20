@@ -1,5 +1,4 @@
 ﻿using static MCBS.Config.ConfigManager;
-using log4net.Core;
 using QuanLib.Core;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,7 @@ namespace MCBS.Screens
 {
     public partial class ScreenManager : UnmanagedBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public ScreenManager()
         {

@@ -1,5 +1,4 @@
 ﻿using FFMediaToolkit;
-using log4net.Core;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.IO;
@@ -16,7 +15,7 @@ namespace MCBS
 {
     public static class FFmpegResourcesLoader
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
         private const string FFMPEG_DOWMLOAD_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win64-gpl-shared-7.1.zip";
         private const string FFMPEG_BIN_DIR = "ffmpeg-n7.1-latest-win64-gpl-shared-7.1/bin/";
 

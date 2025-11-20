@@ -30,7 +30,7 @@ namespace MCBS
 {
     public class MinecraftBlockScreen : TickLoopSystem, ISingleton<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
     {
-        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), LogManager.Instance.LoggerGetter)
+        private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), Log4NetManager.Instance.GetProvider())
         {
             ArgumentNullException.ThrowIfNull(minecraftInstance, nameof(minecraftInstance));
             ArgumentNullException.ThrowIfNull(appComponents, nameof(appComponents));
@@ -53,7 +53,7 @@ namespace MCBS
             TimestampForCommandHandle = SystemRunningTime;
             MaxDelayForCommandHandle = TimeSpan.FromSeconds(1);
 
-            FileWriteQueue = new(LogManager.Instance.LoggerGetter);
+            FileWriteQueue = new(Log4NetManager.Instance.GetProvider());
             FileWriteQueue.SetDefaultThreadName("FileWrite Thread");
             AddSubtask(FileWriteQueue);
 
@@ -208,7 +208,7 @@ namespace MCBS
             }
             else
             {
-                //Logger?.Debug($"命令总线繁忙，当前Tick({SystemTick})已跳过命令处理");
+                Logger?.Debug($"命令总线繁忙，当前Tick({SystemTick})已跳过命令处理");
             }
 
             HandleBeforeFrame(tick);

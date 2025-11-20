@@ -50,7 +50,7 @@ namespace MCBS.Application
             if (stream is null)
             {
                 Icon = GetDefaultIcon();
-                LogManager.Instance.GetLogger().Warn($"找不到应用程序“{ID}”位于路径“{model.Icon}”的图标，已应用默认图标");
+                Log4NetManager.Instance.GetLogger().Warn($"找不到应用程序“{ID}”位于路径“{model.Icon}”的图标，已应用默认图标");
             }
             else
             {
@@ -61,7 +61,7 @@ namespace MCBS.Application
                 catch (Exception ex)
                 {
                     Icon = GetDefaultIcon();
-                    LogManager.Instance.GetLogger().Warn($"应用程序“{ID}”位于路径“{model.Icon}”的图标无法加载，已应用默认图标", ex);
+                    Log4NetManager.Instance.GetLogger().Warn($"应用程序“{ID}”位于路径“{model.Icon}”的图标无法加载，已应用默认图标", ex);
                 }
             }
 

@@ -1,8 +1,6 @@
-﻿using log4net.Core;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.IO;
-using QuanLib.Downloader;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -19,7 +17,7 @@ namespace MCBS
 {
     public static class ColorMappingCacheBuilder
     {
-        private static LogImpl LOGGER => LogManager.Instance.GetLogger();
+        private readonly static ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public static bool ReadIfValid(Facing facing, bool enableCompressionCache, [MaybeNullWhen(false)] out IColorMappingCache result)
         {

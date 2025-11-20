@@ -1,5 +1,4 @@
 ﻿using static MCBS.Config.ConfigManager;
-using log4net.Core;
 using MCBS.Cursor.Style;
 using QuanLib.BDF;
 using QuanLib.Minecraft.ResourcePack;
@@ -16,12 +15,13 @@ using QuanLib.Logging;
 using QuanLib.Game;
 using MCBS.Drawing;
 using QuanLib.Minecraft.Versions;
+using QuanLib.Core;
 
 namespace MCBS
 {
     public static class SR
     {
-        private static LogImpl LOGGER => LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public static VersionList MinecraftVersionList => _MinecraftVersionList ?? throw new InvalidOperationException();
         private static VersionList? _MinecraftVersionList;

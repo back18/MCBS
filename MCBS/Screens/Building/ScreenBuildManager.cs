@@ -1,5 +1,4 @@
 ﻿using static MCBS.Config.ConfigManager;
-using log4net.Core;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command;
 using QuanLib.Minecraft.Command.Senders;
@@ -12,12 +11,13 @@ using QuanLib.Minecraft.NBT.Models;
 using QuanLib.TickLoop;
 using QuanLib.Logging;
 using QuanLib.Game;
+using QuanLib.Core;
 
 namespace MCBS.Screens.Building
 {
     public class ScreenBuildManager : ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         private const string AIR_BLOCK = "minecraft:air";
 

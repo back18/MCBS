@@ -1,5 +1,6 @@
 ﻿using QuanLib.Commands;
 using QuanLib.Commands.CommandLine;
+using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace MCBS.ConsoleTerminal
 {
     public class SimpleTerminal : Terminal
     {
-        public SimpleTerminal(CommandSender commandSender) : base(commandSender)
+        public SimpleTerminal(CommandSender commandSender, ILoggerProvider? loggerProvider = null) : base(commandSender, loggerProvider)
         {
             CommandParser = new(CommandManager);
         }

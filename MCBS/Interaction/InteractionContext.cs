@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.Game;
 using QuanLib.IO;
@@ -20,7 +19,7 @@ namespace MCBS.Interaction
 {
     public class InteractionContext : UnmanagedBase, ITickUpdatable
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
         private const string INTERACTION_ID = "minecraft:interaction";
         private const string INTERACTION_NBT = "{width:3,height:3,response:true}";
 

@@ -1,6 +1,6 @@
-﻿using log4net.Core;
-using MCBS.Application;
+﻿using MCBS.Application;
 using MCBS.Config;
+using QuanLib.Core;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using System;
@@ -14,7 +14,7 @@ namespace MCBS.ConsoleTerminal
 {
     public static class AppComponentLoader
     {
-        private static readonly LogImpl LOGGER = LogManager.Instance.GetLogger();
+        private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
         public static ApplicationManifest[] LoadAll()
         {
