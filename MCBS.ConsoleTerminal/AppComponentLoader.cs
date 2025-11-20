@@ -15,57 +15,111 @@ namespace MCBS.ConsoleTerminal
     public static class AppComponentLoader
     {
         private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
+        private static readonly LoadedResult EmptyLoadedResult = new([], []);
 
         public static ApplicationManifest[] LoadAll()
         {
-            List<ApplicationManifest> result = new();
-            result.AddRange(LoadSystemAppComponents());
+            List<ApplicationManifest> manifests = [];
+
+            LOGGER.Info("开始加载系统内置应用程序组件...");
+            LoadedResult systemAppComponent = LoadSystemAppComponents(ConfigManager.SystemConfig.SystemAppComponents);
+            manifests.AddRange(systemAppComponent.Manifests);
+            LOGGER.Info(FormatLogMessage(systemAppComponent));
+
             if (ConfigManager.SystemConfig.LoadDllAppComponents)
-                result.AddRange(LoadDllAppComponents());
+            {
+                LOGGER.Info("开始加载外部DLL应用程序组件...");
+                LoadedResult dllAppComponent = LoadDllAppComponents(McbsPathManager.MCBS_DllAppComponents.FullName);
+                manifests.AddRange(dllAppComponent.Manifests);
+                LOGGER.Info(FormatLogMessage(dllAppComponent));
+            }
+            else
+            {
+                LOGGER.Info("外部DLL应用程序组件被禁用，已跳过加载");
+            }
 
-            return result.ToArray();
+            return manifests.ToArray();
         }
 
-        private static ApplicationManifest[] LoadSystemAppComponents()
+        private static LoadedResult LoadSystemAppComponents(IList<string> components)
         {
-            List<ApplicationManifest> result = new();
-            foreach (string component in ConfigManager.SystemConfig.SystemAppComponents)
+            ArgumentNullException.ThrowIfNull(components, nameof(components));
+
+            if (components.Count == 0)
+                return EmptyLoadedResult;
+
+            List<ApplicationManifest> manifests = [];
+            List<ApplicationLoadException> exceptions = [];
+
+            foreach (string component in components)
             {
                 try
                 {
-                    Assembly assembly = Assembly.Load(component);
-                    ApplicationManifest applicationManifest = ApplicationManifestReader.Load(assembly);
-                    result.Add(applicationManifest);
-                    LOGGER.Info($"成功从命名空间“{component}”加载应用程序组件“{applicationManifest.ID}-{applicationManifest.Version}”");
+                    ApplicationManifest manifest = ApplicationLoader.LoadFromName(component);
+                    manifests.Add(manifest);
                 }
-                catch (Exception ex)
+                catch (ApplicationLoadException ex)
                 {
-                    LOGGER.Error($"无法从命名空间“{component}”加载应用程序组件", ex);
+                    exceptions.Add(ex);
                 }
             }
 
-            return result.ToArray();
+            return new(manifests.ToArray(), exceptions.ToArray());
         }
 
-        private static ApplicationManifest[] LoadDllAppComponents()
+        private static LoadedResult LoadDllAppComponents(string directory)
         {
-            List<ApplicationManifest> result = new();
-            string[] files = McbsPathManager.MCBS_DllAppComponents.GetFilePaths("*.dll");
-            foreach (string file in files)
+            if (!Directory.Exists(directory))
+                return EmptyLoadedResult;
+
+            string[] components = Directory.GetFiles("*.dll");
+            if (components.Length == 0)
+                return EmptyLoadedResult;
+
+            List<ApplicationManifest> manifests = [];
+            List<ApplicationLoadException> exceptions = [];
+
+            foreach (string component in components)
             {
                 try
                 {
-                    ApplicationManifest applicationManifest = ApplicationManifestReader.Load(file);
-                    result.Add(applicationManifest);
-                    LOGGER.Info($"成功从文件“{Path.GetFileName(file)}”加载应用程序组件“{applicationManifest.ID}-{applicationManifest.Version}”");
+                    ApplicationManifest manifest = ApplicationLoader.LoadFromFile(component);
+                    manifests.Add(manifest);
                 }
-                catch (Exception ex)
+                catch (ApplicationLoadException ex)
                 {
-                    LOGGER.Error($"无法从文件“{Path.GetFileName(file)}”加载应用程序组件", ex);
+                    exceptions.Add(ex);
                 }
             }
 
-            return result.ToArray();
+            return new(manifests.ToArray(), exceptions.ToArray());
         }
+
+        private static string FormatLogMessage(LoadedResult loadedResult)
+        {
+            ArgumentNullException.ThrowIfNull(loadedResult, nameof(loadedResult));
+
+            if (loadedResult.Manifests.Length == 0 && loadedResult.Exceptions.Length == 0)
+                return "未找到任何应用程序组件";
+
+            StringBuilder stringBuilder = new();
+            stringBuilder.Append($"已加载{loadedResult.Manifests.Length + loadedResult.Exceptions.Length}个应用程序组件");
+
+            if (loadedResult.Exceptions.Length == 0)
+                stringBuilder.AppendLine("，全部加载成功");
+            else
+                stringBuilder.AppendLine($"{loadedResult.Manifests.Length}个加载成功，{loadedResult.Exceptions.Length}个加载失败");
+
+            foreach (ApplicationManifest manifest in loadedResult.Manifests)
+                stringBuilder.AppendLine($"    - 成功加载 {manifest.Assembly.GetName().Name} -> {manifest.ID} - {manifest.Version}");
+
+            foreach (ApplicationLoadException exception in loadedResult.Exceptions)
+                stringBuilder.AppendLine($"    - 加载失败 {exception.Assembly} -> {exception.ApplicationLoadErrorCode} ({(int)exception.ApplicationLoadErrorCode})");
+
+            stringBuilder.Length -= Environment.NewLine.Length;
+            return stringBuilder.ToString();
+        }
+
+        private record LoadedResult(ApplicationManifest[] Manifests, ApplicationLoadException[] Exceptions);
     }
 }

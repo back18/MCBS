@@ -1,5 +1,4 @@
 ﻿using QuanLib.Core;
-using QuanLib.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -25,17 +24,13 @@ namespace MCBS.Application
             ArgumentNullException.ThrowIfNull(assembly, nameof(assembly));
             NullValidator.ValidateObject(model, nameof(model));
 
-            Type? type = assembly.GetType(model.MainClass);
-            if (type is null)
-                throw new InvalidOperationException("找不到主类");
+            Type? type = assembly.GetType(model.MainClass) ?? throw new InvalidOperationException("找不到主类");
             if (!typeof(IProgram).IsAssignableFrom(type))
                 throw new InvalidOperationException($"主类未实现 {nameof(IProgram)} 接口");
             if (type.IsAbstract)
                 throw new InvalidOperationException($"主类不能为抽象类型");
 
-            var constructor = type.GetConstructor(Type.EmptyTypes);
-            if (constructor is null)
-                throw new InvalidOperationException($"找不到主类构造函数");
+            var constructor = type.GetConstructor(Type.EmptyTypes) ?? throw new InvalidOperationException($"找不到主类构造函数");
             if (!constructor.IsPublic)
                 throw new InvalidOperationException($"主类构造函数无法访问");
 
@@ -46,23 +41,18 @@ namespace MCBS.Application
             Version = Version.Parse(model.Version);
             IsBackground = model.IsBackground;
 
-            Stream? stream = assembly.GetManifestResourceStream(model.Icon);
-            if (stream is null)
+            try
+            {
+                Stream? stream = assembly.GetManifestResourceStream(model.Icon);
+                if (stream is not null)
+                    Icon = Image.Load<Rgba32>(stream);
+                else
+                    Icon = GetDefaultIcon();
+
+            }
+            catch
             {
                 Icon = GetDefaultIcon();
-                Log4NetManager.Instance.GetLogger().Warn($"找不到应用程序“{ID}”位于路径“{model.Icon}”的图标，已应用默认图标");
-            }
-            else
-            {
-                try
-                {
-                    Icon = Image.Load<Rgba32>(stream);
-                }
-                catch (Exception ex)
-                {
-                    Icon = GetDefaultIcon();
-                    Log4NetManager.Instance.GetLogger().Warn($"应用程序“{ID}”位于路径“{model.Icon}”的图标无法加载，已应用默认图标", ex);
-                }
             }
 
             Environment = Platforms.None;
@@ -84,7 +74,7 @@ namespace MCBS.Application
                 }
             }
 
-            List<ApplicationDependencie> descriptions = new();
+            List<ApplicationDependencie> descriptions = [];
             foreach (ApplicationDependencie.Model description in model.Dependencies)
                 descriptions.Add(new(description));
 
