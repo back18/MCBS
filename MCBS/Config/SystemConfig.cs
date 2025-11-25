@@ -24,7 +24,7 @@ namespace MCBS.Config
             EnableCompressionCache = model.EnableCompressionCache;
             LoadDllAppComponents = model.LoadDllAppComponents;
             SystemAppComponents = model.SystemAppComponents.AsReadOnly();
-            ServicesAppID = model.ServicesAppID;
+            ServicesAppId = model.ServicesAppId;
             StartupChecklist = model.StartupChecklist.AsReadOnly();
         }
 
@@ -38,7 +38,7 @@ namespace MCBS.Config
 
         public ReadOnlyCollection<string> SystemAppComponents { get; }
 
-        public string ServicesAppID { get; }
+        public string ServicesAppId { get; }
 
         public ReadOnlyCollection<string> StartupChecklist { get; }
 
@@ -65,7 +65,7 @@ namespace MCBS.Config
                 BuildColorMappingCaches = BuildColorMappingCaches,
                 LoadDllAppComponents = LoadDllAppComponents,
                 SystemAppComponents = SystemAppComponents.ToArray(),
-                ServicesAppID = ServicesAppID,
+                ServicesAppId = ServicesAppId,
                 StartupChecklist = StartupChecklist.ToArray()
             };
         }
@@ -99,7 +99,7 @@ namespace MCBS.Config
                     "MCBS.SystemApplications.FileMoveHandler",
                     "MCBS.SystemApplications.FileRenameHandler"
                     ];
-                ServicesAppID = "System.Services";
+                ServicesAppId = "System.Services";
                 StartupChecklist = ["System.Desktop"];
             }
 
@@ -121,7 +121,7 @@ namespace MCBS.Config
 
             [Display(Name = "系统服务AppID")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            public string ServicesAppID { get; set; }
+            public string ServicesAppId { get; set; }
 
             [Display(Name = "启动项AppID列表")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]

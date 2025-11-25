@@ -115,9 +115,9 @@ namespace MCBS.Screens
             sender.TryGetPlayerItem(cursorContext.PlayerName, inventorySlot, out mainItem);
             sender.TryGetPlayerDualWieldItem(cursorContext.PlayerName, out deputyItem);
 
-            if (mainItem is not null && (mainItem.ID == ScreenConfig.RightClickItemID || mainItem.ID == ScreenConfig.TextEditorItemID))
+            if (mainItem is not null && (mainItem.ID == ScreenConfig.RightClickItemId || mainItem.ID == ScreenConfig.TextEditorItemId))
                 toolsItem = mainItem;
-            else if (deputyItem is not null && (deputyItem.ID == ScreenConfig.RightClickItemID || deputyItem.ID == ScreenConfig.TextEditorItemID))
+            else if (deputyItem is not null && (deputyItem.ID == ScreenConfig.RightClickItemId || deputyItem.ID == ScreenConfig.TextEditorItemId))
                 toolsItem = deputyItem;
 
             if (toolsItem is null)
@@ -142,7 +142,7 @@ namespace MCBS.Screens
                 goto fail;
             }
 
-            if (toolsItem.ID == ScreenConfig.RightClickItemID)
+            if (toolsItem.ID == ScreenConfig.RightClickItemId)
             {
                 cursorMode = CursorMode.Click;
                 ClickResult clickResult = cursorContext.ClickReader.ReadClick();
@@ -157,7 +157,7 @@ namespace MCBS.Screens
                     rightClickTime = cursorContext.ClickReader.RightClickTime;
                 }
             }
-            else if (toolsItem.ID == ScreenConfig.TextEditorItemID)
+            else if (toolsItem.ID == ScreenConfig.TextEditorItemId)
             {
                 cursorMode = CursorMode.TextEditor;
                 cursorContext.TextEditor.ReadText(toolsItem);

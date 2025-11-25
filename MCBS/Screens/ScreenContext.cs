@@ -276,7 +276,7 @@ namespace MCBS.Screens
                 ScreenView.HandleTextEditorUpdate(new(newData.CursorPosition, cursorContext));
 
             string? deputyItem = cursorContext.NewInputData.DeputyItem?.ID;
-            if (deputyItem == ScreenConfig.RightClickItemID || deputyItem == ScreenConfig.TextEditorItemID)
+            if (deputyItem == ScreenConfig.RightClickItemId || deputyItem == ScreenConfig.TextEditorItemId)
             {
                 if (oldData.InventorySlot != newData.InventorySlot)
                     ScreenView.HandleCursorSlotChanged(new(newData.CursorPosition, cursorContext));

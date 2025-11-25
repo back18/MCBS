@@ -29,8 +29,8 @@ namespace MCBS.Config
             ScreenIdleTimeout = model.ScreenIdleTimeout;
             RightClickObjective = model.RightClickObjective;
             RightClickCriterion = model.RightClickCriterion;
-            RightClickItemID = model.RightClickItemID;
-            TextEditorItemID = model.TextEditorItemID;
+            RightClickItemId = model.RightClickItemId;
+            TextEditorItemId = model.TextEditorItemId;
             ScreenBuilderItemName = model.ScreenBuilderItemName;
             ScreenOperatorList = model.ScreenOperatorList.AsReadOnly();
             ScreenBuildOperatorList = model.ScreenBuildOperatorList.AsReadOnly();
@@ -64,9 +64,9 @@ namespace MCBS.Config
 
         public string RightClickCriterion { get; }
 
-        public string RightClickItemID { get; }
+        public string RightClickItemId { get; }
 
-        public string TextEditorItemID { get; }
+        public string TextEditorItemId { get; }
 
         public string ScreenBuilderItemName { get; }
 
@@ -104,8 +104,8 @@ namespace MCBS.Config
                 InitialHeight = InitialHeight,
                 RightClickObjective = RightClickObjective,
                 RightClickCriterion = RightClickCriterion,
-                RightClickItemID = RightClickItemID,
-                TextEditorItemID = TextEditorItemID,
+                RightClickItemId = RightClickItemId,
+                TextEditorItemId = TextEditorItemId,
                 ScreenBuilderItemName = ScreenBuilderItemName,
                 ScreenOperatorList = ScreenOperatorList.ToArray(),
                 ScreenBuildOperatorList = ScreenBuildOperatorList.ToArray(),
@@ -127,8 +127,8 @@ namespace MCBS.Config
                 ScreenIdleTimeout = -1;
                 RightClickObjective = "snowball_mouse";
                 RightClickCriterion = "minecraft.used:minecraft.snowball";
-                RightClickItemID = "minecraft:snowball";
-                TextEditorItemID = "minecraft:writable_book";
+                RightClickItemId = "minecraft:snowball";
+                TextEditorItemId = "minecraft:writable_book";
                 ScreenBuilderItemName = "创建屏幕";
                 ScreenOperatorList = [];
                 ScreenBuildOperatorList = [];
@@ -216,11 +216,11 @@ namespace MCBS.Config
 
             [Display(Name = "触发右键点击操作的物品ID")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            public string RightClickItemID { get; set; }
+            public string RightClickItemId { get; set; }
 
             [Display(Name = "编辑屏幕文本的书与笔物品ID")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            public string TextEditorItemID { get; set; }
+            public string TextEditorItemId { get; set; }
 
             [Display(Name = "载入屏幕构建器的物品名称")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]

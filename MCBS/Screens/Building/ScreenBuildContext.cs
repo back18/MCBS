@@ -49,7 +49,7 @@ namespace MCBS.Screens.Building
             if (!sender.TryGetEntityPosition(PlayerName, out var position) ||
                 !sender.TryGetEntityRotation(PlayerName, out var rotation) ||
                 !sender.TryGetPlayerSelectedItem(PlayerName, out var item) ||
-                item.ID != ScreenConfig.RightClickItemID ||
+                item.ID != ScreenConfig.RightClickItemId ||
                 item.GetItemName() != ScreenConfig.ScreenBuilderItemName)
             {
                 BuildState = ScreenBuildState.Canceled;

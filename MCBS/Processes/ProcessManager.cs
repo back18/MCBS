@@ -79,7 +79,7 @@ namespace MCBS.Processes
 
         public ProcessContext StartServicesProcess(string[] args)
         {
-            ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents[ConfigManager.SystemConfig.ServicesAppID];
+            ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents[ConfigManager.SystemConfig.ServicesAppId];
             if (!typeof(IServicesProgram).IsAssignableFrom(applicationManifest.MainClass))
                 throw new InvalidOperationException("无效的 IServicesProgram");
 

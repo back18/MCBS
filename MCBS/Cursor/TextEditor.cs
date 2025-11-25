@@ -42,9 +42,9 @@ namespace MCBS.Cursor
             if (!IsSynchronized)
             {
                 if (string.IsNullOrEmpty(InitialText))
-                    sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemID}{{pages:[]}}");
+                    sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemId}{{pages:[]}}");
                 else
-                    sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemID}{{pages:[\"{InitialText}\"]}}");
+                    sender.SetPlayerHotbarItem(PlayerName, item.Slot, $"{ConfigManager.ScreenConfig.TextEditorItemId}{{pages:[\"{InitialText}\"]}}");
                 CurrentText = InitialText;
                 IsSynchronized = true;
                 SynchronizeTick = MinecraftBlockScreen.Instance.SystemTick;
