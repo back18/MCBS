@@ -39,6 +39,11 @@ namespace MCBS.ConsoleTerminal
         {
             while (IsRunning)
             {
+                if (!MinecraftBlockScreen.IsInstanceLoaded || !MinecraftBlockScreen.Instance.IsRunning)
+                {
+                    break;
+                }
+
                 CommandReaderResult? result = ReadCommand();
 
                 if (!IsRunning || result is null)

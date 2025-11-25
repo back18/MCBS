@@ -61,7 +61,6 @@ namespace MCBS
 
             SystemStageSatrt += OnSystemStageSatrt;
             SystemStageEnd += OnSystemStageEnd;
-            MinecraftInstance.Stopped += MinecraftInstance_Stopped;
 
             _msptRecord = new(this);
             _gtQuery = Task.FromResult(-1);
@@ -120,15 +119,6 @@ namespace MCBS
 
         protected virtual void OnSystemStageEnd(MinecraftBlockScreen sender, TickStageEventArgs e) { }
 
-        private void MinecraftInstance_Stopped(IRunnable sender, EventArgs e)
-        {
-            if (!IsRunning)
-                return;
-
-            Logger?.Warn("Minecraft实例意外断开连接，系统即将终止");
-            IsRunning = false;
-        }
-
         public static MinecraftBlockScreen LoadInstance(InstantiateArgs instantiateArgs)
         {
             ArgumentNullException.ThrowIfNull(instantiateArgs, nameof(instantiateArgs));
@@ -141,24 +131,6 @@ namespace MCBS
                 _Instance = new(instantiateArgs.MinecraftInstance, instantiateArgs.AppComponents);
                 return _Instance;
             }
-        }
-
-        private bool ConnectToMinecraft()
-        {
-            if (MinecraftInstance.IsSubprocess)
-            {
-                MinecraftInstance.Start("MinecraftInstance Thread");
-                MinecraftInstance.WaitForConnection();
-            }
-            else
-            {
-                MinecraftInstance.WaitForConnection();
-                MinecraftInstance.Start("MinecraftInstance Thread");
-            }
-
-            Thread.Sleep(1000);
-
-            return MinecraftInstance.IsRunning;
         }
 
         private void Initialize()
@@ -182,6 +154,12 @@ namespace MCBS
 
         public override void OnTickUpdate(int tick)
         {
+            if (!MinecraftInstance.IsRunning)
+            {
+                Logger?.Warn($"Minecraft实例已断开连接，当前Tick({SystemTick})操作无法完成");
+                return;
+            }
+
             ScreenScheduling(tick);
             ProcessScheduling(tick);
             FormScheduling(tick);
@@ -226,17 +204,9 @@ namespace MCBS
 
         protected override void Run()
         {
-            Logger?.Info($"正在等待位于“{MinecraftInstance.MinecraftPathManager.Minecraft.FullName}”的Minecraft实例启动...");
-
-            bool connection = ConnectToMinecraft();
-
-            if (connection)
+            if (!MinecraftInstance.TestConnectivity())
             {
-                Logger?.Info("成功连接到Minecraft实例");
-            }
-            else
-            {
-                Logger?.Error("由于Minecraft实例启动失败，系统即将终止");
+                Logger?.Error("由于Minecraft实例未连接，系统无法启动");
                 return;
             }
 
@@ -265,13 +235,6 @@ namespace MCBS
             Logger?.Info("MCBS已终止运行");
         }
 
-        protected override void DisposeUnmanaged()
-        {
-            base.DisposeUnmanaged();
-
-            MinecraftInstance.Dispose();
-        }
-
         private void DisposeMinecraftResource()
         {
             if (!MinecraftInstance.TestConnectivity())
@@ -293,10 +256,11 @@ namespace MCBS
             {
                 Logger?.Error("释放托管在Minecraft的资源时引发了异常，部分资源可能无法回收", ex);
             }
-            finally
-            {
-                MinecraftInstance.Stop();
-            }
+        }
+
+        public void RequestStop()
+        {
+            IsRunning = false;
         }
 
         private void ScreenScheduling(int tick)

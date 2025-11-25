@@ -6,7 +6,6 @@ using MCBS.Config.Minecraft;
 using QuanLib.Commands;
 using QuanLib.Consoles;
 using QuanLib.Core;
-using QuanLib.Core.Extensions;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft;
@@ -50,6 +49,21 @@ namespace MCBS.ConsoleTerminal
             MinecraftInstance minecraftInstance = CreateMinecraftInstance(config, Log4NetManager.Instance.GetProvider());
             LOGGER.Info(GetMinecraftInstanceInfo(minecraftInstance));
 
+            LOGGER.Info($"正在等待位于“{config.MinecraftPath}”的Minecraft实例启动...");
+
+            if (ConnectToMinecraft(minecraftInstance))
+            {
+                LOGGER.Info("成功连接到Minecraft实例");
+            }
+            else
+            {
+                LOGGER.Error("由于Minecraft实例启动失败，程序即将终止");
+                Exit(-1);
+            }
+
+            minecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
+            minecraftInstance.Stopped += MinecraftInstance_Stopped;
+
             ApplicationManifest[] appComponents = AppComponentLoader.LoadAll();
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
 
@@ -57,9 +71,11 @@ namespace MCBS.ConsoleTerminal
             Terminal.Start("Terminal Thread");
             CommandLogger.Start("CommandLogger Thread");
 
-            minecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
-
             mcbs.WaitForStop();
+            mcbs.Dispose();
+
+            minecraftInstance.Stop();
+            minecraftInstance.Dispose();
 
             Exit(0);
         }
@@ -183,6 +199,24 @@ namespace MCBS.ConsoleTerminal
             return stringBuilder.ToString();
         }
 
+        public static bool ConnectToMinecraft(MinecraftInstance minecraftInstance)
+        {
+            if (minecraftInstance.IsSubprocess)
+            {
+                minecraftInstance.Start("MinecraftInstance Thread");
+                minecraftInstance.WaitForConnection();
+            }
+            else
+            {
+                minecraftInstance.WaitForConnection();
+                minecraftInstance.Start("MinecraftInstance Thread");
+            }
+
+            Thread.Sleep(1000);
+
+            return minecraftInstance.IsRunning;
+        }
+
         private static void LoadLogManager()
         {
             using FileStream fileStream = McbsPathManager.MCBS_Configs_Log4NetConfig.OpenRead();
@@ -207,8 +241,24 @@ namespace MCBS.ConsoleTerminal
 
         private static void CommandSender_CommandSent(QuanLib.Minecraft.Command.Senders.CommandSender sender, CommandInfoEventArgs e)
         {
+            if (!MinecraftBlockScreen.IsInstanceLoaded)
+                return;
+
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
             CommandLogger.Submit(new(e.CommandInfo, mcbs.GameTick, mcbs.SystemTick, mcbs.SystemStage));
+        }
+
+        private static void MinecraftInstance_Stopped(IRunnable sender, EventArgs e)
+        {
+            if (!MinecraftBlockScreen.IsInstanceLoaded)
+                return;
+
+            MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
+            if (!mcbs.IsRunning)
+                return;
+
+            LOGGER.Error("Minecraft实例意外断开连接，系统即将终止");
+            mcbs.RequestStop();
         }
 
         public static void Exit(int exitCode)
