@@ -15,23 +15,23 @@ namespace MCBS
 
         public static DirectoryInfo MCBS => Paths.MCBS.CreateDirectoryInfo();
 
-        public static DirectoryInfo MCBS_Configs => Paths.MCBS_Configs.CreateDirectoryInfo();
+        public static DirectoryInfo MCBS_Config => Paths.MCBS_Config.CreateDirectoryInfo();
 
-        public static FileInfo MCBS_Configs_MinecraftConfig => Paths.MCBS_Configs_MinecraftConfig.CreateFileInfo();
+        public static FileInfo MCBS_Config_MinecraftConfig => Paths.MCBS_Config_MinecraftConfig.CreateFileInfo();
 
-        public static FileInfo MCBS_Configs_SystemConfig => Paths.MCBS_Configs_SystemConfig.CreateFileInfo();
+        public static FileInfo MCBS_Config_SystemConfig => Paths.MCBS_Config_SystemConfig.CreateFileInfo();
 
-        public static FileInfo MCBS_Configs_ScreenConfig => Paths.MCBS_Configs_ScreenConfig.CreateFileInfo();
+        public static FileInfo MCBS_Config_ScreenConfig => Paths.MCBS_Config_ScreenConfig.CreateFileInfo();
 
-        public static FileInfo MCBS_Configs_RegistryConfig => Paths.MCBS_Configs_RegistryConfig.CreateFileInfo();
+        public static FileInfo MCBS_Config_RegistryConfig => Paths.MCBS_Config_RegistryConfig.CreateFileInfo();
 
-        public static FileInfo MCBS_Configs_Log4NetConfig => Paths.MCBS_Configs_Log4NetConfig.CreateFileInfo();
+        public static FileInfo MCBS_Config_Log4NetConfig => Paths.MCBS_Config_Log4NetConfig.CreateFileInfo();
 
-        public static DirectoryInfo MCBS_Caches => Paths.MCBS_Caches.CreateDirectoryInfo();
+        public static DirectoryInfo MCBS_Cache => Paths.MCBS_Cache.CreateDirectoryInfo();
 
-        public static DirectoryInfo MCBS_Caches_ColorMapping => Paths.MCBS_Caches_ColorMapping.CreateDirectoryInfo();
+        public static DirectoryInfo MCBS_Cache_ColorMapping => Paths.MCBS_Cache_ColorMapping.CreateDirectoryInfo();
 
-        public static DirectoryInfo MCBS_Applications => Paths.MCBS_Applications.CreateDirectoryInfo();
+        public static DirectoryInfo MCBS_Application => Paths.MCBS_Application.CreateDirectoryInfo();
 
         public static DirectoryInfo MCBS_DllAppComponents => Paths.MCBS_DllAppComponents.CreateDirectoryInfo();
 
@@ -86,23 +86,23 @@ namespace MCBS
         {
             public static readonly string MCBS = Environment.CurrentDirectory.PathCombine("MCBS");
 
-            public static readonly string MCBS_Configs = MCBS.PathCombine("Configs");
+            public static readonly string MCBS_Config = MCBS.PathCombine("Config");
 
-            public static readonly string MCBS_Configs_MinecraftConfig = MCBS_Configs.PathCombine("Minecraft.toml");
+            public static readonly string MCBS_Config_MinecraftConfig = MCBS_Config.PathCombine("Minecraft.toml");
 
-            public static readonly string MCBS_Configs_SystemConfig = MCBS_Configs.PathCombine("System.toml");
+            public static readonly string MCBS_Config_SystemConfig = MCBS_Config.PathCombine("System.toml");
 
-            public static readonly string MCBS_Configs_ScreenConfig = MCBS_Configs.PathCombine("Screen.toml");
+            public static readonly string MCBS_Config_ScreenConfig = MCBS_Config.PathCombine("Screen.toml");
 
-            public static readonly string MCBS_Configs_RegistryConfig = MCBS_Configs.PathCombine("Registry.json");
+            public static readonly string MCBS_Config_RegistryConfig = MCBS_Config.PathCombine("Registry.json");
 
-            public static readonly string MCBS_Configs_Log4NetConfig = MCBS_Configs.PathCombine("log4net.xml");
+            public static readonly string MCBS_Config_Log4NetConfig = MCBS_Config.PathCombine("log4net.xml");
 
-            public static readonly string MCBS_Caches = MCBS.PathCombine("Caches");
+            public static readonly string MCBS_Cache = MCBS.PathCombine("Cache");
 
-            public static readonly string MCBS_Caches_ColorMapping = MCBS_Caches.PathCombine("ColorMapping");
+            public static readonly string MCBS_Cache_ColorMapping = MCBS_Cache.PathCombine("ColorMapping");
 
-            public static readonly string MCBS_Applications = MCBS.PathCombine("Applications");
+            public static readonly string MCBS_Application = MCBS.PathCombine("Application");
 
             public static readonly string MCBS_DllAppComponents = MCBS.PathCombine("DllAppComponents");
 

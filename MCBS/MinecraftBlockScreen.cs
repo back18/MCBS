@@ -524,7 +524,7 @@ namespace MCBS
         private void CreateAppComponentsDirectory()
         {
             foreach (var appId in AppComponents.Keys)
-                McbsPathManager.MCBS_Applications.CombineDirectory(appId).CreateIfNotExists();
+                McbsPathManager.MCBS_Application.CombineDirectory(appId).CreateIfNotExists();
         }
 
         public class InstantiateArgs : QuanLib.Core.InstantiateArgs

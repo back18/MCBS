@@ -190,9 +190,9 @@ namespace MCBS
             return true;
         }
 
-        private static string GetJsonFilePath(Facing facing) => McbsPathManager.MCBS_Caches_ColorMapping.CombineFile(facing.ToString() + ".json").FullName;
+        private static string GetJsonFilePath(Facing facing) => McbsPathManager.MCBS_Cache_ColorMapping.CombineFile(facing.ToString() + ".json").FullName;
 
-        private static string GetBinFilePath(Facing facing) => McbsPathManager.MCBS_Caches_ColorMapping.CombineFile(facing.ToString() + ".bin").FullName;
+        private static string GetBinFilePath(Facing facing) => McbsPathManager.MCBS_Cache_ColorMapping.CombineFile(facing.ToString() + ".bin").FullName;
 
         private class BuildInfo
         {

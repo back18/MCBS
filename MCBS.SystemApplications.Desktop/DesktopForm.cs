@@ -39,8 +39,8 @@ namespace MCBS.SystemApplications.Desktop
                 if (_DesktopPathManager is null)
                 {
                     ScreenContext? screenContext = this.GetScreenContext() ?? throw new InvalidOperationException("无法获取屏幕上下文");
-                    DirectoryInfo appsDir = McbsPathManager.MCBS_Applications;
-                    string basePath = Path.Combine(appsDir.FullName, DesktopApp.Id, "ScreenData", screenContext.Guid.ToString());
+                    DirectoryInfo applicationDir = McbsPathManager.MCBS_Application;
+                    string basePath = Path.Combine(applicationDir.FullName, DesktopApp.Id, "ScreenData", screenContext.Guid.ToString());
                     _DesktopPathManager = new(basePath);
                 }
 

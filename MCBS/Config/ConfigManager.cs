@@ -33,19 +33,19 @@ namespace MCBS.Config
 
         public static void CreateIfNotExists()
         {
-            CreateLog4NetConfig(McbsPathManager.MCBS_Configs_Log4NetConfig.FullName);
-            CreateRegistryConfig(McbsPathManager.MCBS_Configs_RegistryConfig.FullName);
-            CreateTomlConfig<MinecraftConfig.Model>(McbsPathManager.MCBS_Configs_MinecraftConfig.FullName);
-            CreateTomlConfig<SystemConfig.Model>(McbsPathManager.MCBS_Configs_SystemConfig.FullName);
-            CreateTomlConfig<ScreenConfig.Model>(McbsPathManager.MCBS_Configs_ScreenConfig.FullName);
+            CreateLog4NetConfig(McbsPathManager.MCBS_Config_Log4NetConfig.FullName);
+            CreateRegistryConfig(McbsPathManager.MCBS_Config_RegistryConfig.FullName);
+            CreateTomlConfig<MinecraftConfig.Model>(McbsPathManager.MCBS_Config_MinecraftConfig.FullName);
+            CreateTomlConfig<SystemConfig.Model>(McbsPathManager.MCBS_Config_SystemConfig.FullName);
+            CreateTomlConfig<ScreenConfig.Model>(McbsPathManager.MCBS_Config_ScreenConfig.FullName);
         }
 
         public static void LoadAll()
         {
-            _MinecraftConfig = MinecraftConfig.Load(McbsPathManager.MCBS_Configs_MinecraftConfig.FullName);
-            _SystemConfig = SystemConfig.Load(McbsPathManager.MCBS_Configs_SystemConfig.FullName);
-            _ScreenConfig = ScreenConfig.Load(McbsPathManager.MCBS_Configs_ScreenConfig.FullName);
-            _Registry = LoadRegistry(McbsPathManager.MCBS_Configs_RegistryConfig.FullName);
+            _MinecraftConfig = MinecraftConfig.Load(McbsPathManager.MCBS_Config_MinecraftConfig.FullName);
+            _SystemConfig = SystemConfig.Load(McbsPathManager.MCBS_Config_SystemConfig.FullName);
+            _ScreenConfig = ScreenConfig.Load(McbsPathManager.MCBS_Config_ScreenConfig.FullName);
+            _Registry = LoadRegistry(McbsPathManager.MCBS_Config_RegistryConfig.FullName);
 
             LOGGER.Info("配置文件加载完成");
         }

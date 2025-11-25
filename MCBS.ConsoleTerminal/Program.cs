@@ -219,14 +219,14 @@ namespace MCBS.ConsoleTerminal
 
         private static void LoadLogManager()
         {
-            using FileStream fileStream = McbsPathManager.MCBS_Configs_Log4NetConfig.OpenRead();
+            using FileStream fileStream = McbsPathManager.MCBS_Config_Log4NetConfig.OpenRead();
             Log4NetProvider provider = new(McbsPathManager.MCBS_Logs_LatestLog.FullName, fileStream, true);
             Log4NetManager.LoadInstance(new(provider));
         }
 
         private static void LoadCharacterWidthMapping()
         {
-            FileInfo fileInfo = McbsPathManager.MCBS_Caches.CombineFile("CharacterWidthMapping.bin");
+            FileInfo fileInfo = McbsPathManager.MCBS_Cache.CombineFile("CharacterWidthMapping.bin");
 
             if (fileInfo.Exists)
             {

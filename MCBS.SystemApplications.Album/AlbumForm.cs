@@ -332,7 +332,7 @@ namespace MCBS.SystemApplications.Album
         private void SetAsWallpaper_Button_RightClick(Control sender, CursorEventArgs e)
         {
             ScreenContext? screenContext = this.GetScreenContext() ?? throw new InvalidOperationException("无法获取屏幕上下文");
-            DirectoryInfo wallpapersDirectory = McbsPathManager.MCBS_Applications.CombineDirectory("System.Desktop", "ScreenData", screenContext.Guid.ToString(), "Wallpapers");
+            DirectoryInfo wallpapersDirectory = McbsPathManager.MCBS_Application.CombineDirectory("System.Desktop", "ScreenData", screenContext.Guid.ToString(), "Wallpapers");
             wallpapersDirectory.CreateIfNotExists();
             string sourcePath = Path_TextBox.Text;
             string destPath = wallpapersDirectory.CombineFile("Wallpaper" + Path.GetExtension(sourcePath)).FullName;
