@@ -74,9 +74,9 @@ namespace MCBS.Config
         {
             public Model()
             {
-                CrashAutoRestart = true;
+                CrashAutoRestart = false;
                 BuildColorMappingCaches = true;
-                EnableCompressionCache = true;
+                EnableCompressionCache = false;
                 LoadDllAppComponents = false;
                 SystemAppComponents = [
                     "MCBS.SystemApplications.Services",
