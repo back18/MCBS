@@ -20,14 +20,14 @@ namespace MCBS.Screens
 
         public ScreenManager()
         {
-            Items = new(this);
+            Collection = new(this);
             ScreenOutputHandler = new(this);
 
             AddedScreen += OnAddedScreen;
             RemovedScreen += OnRemovedScreen;
         }
 
-        public ScreenCollection Items { get; }
+        public ScreenCollection Collection { get; }
 
         public ScreenOutputHandler ScreenOutputHandler { get; }
 
@@ -61,7 +61,7 @@ namespace MCBS.Screens
                     Guid guid = Guid.Parse(name);
                     ScreenContext screenContext = MinecraftBlockScreen.Instance.BuildScreen(screen, guid);
 
-                    LOGGER.Info($"成功从文件“{Path.GetFileName(file)}”构建屏幕({screenContext.Screen.StartPosition})");
+                    LOGGER.Info($"成功从文件“{Path.GetFileName(file)}”构建屏幕({screenContext.ShortId})");
                 }
                 catch (Exception ex)
                 {
@@ -72,17 +72,16 @@ namespace MCBS.Screens
 
         public void OnTickUpdate(int tick)
         {
-            foreach (var item in Items)
+            foreach (ScreenContext screenContext in Collection.GetScreens())
             {
-                ScreenContext screenContext = item.Value;
                 var stateMachine = screenContext.StateMachine;
 
                 if (stateMachine.CurrentState == ScreenState.Active)
                 {
-                    if (ScreenConfig.ScreenIdleTimeout != -1 && item.Value.ScreenInputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
+                    if (ScreenConfig.ScreenIdleTimeout != -1 && screenContext.ScreenInputHandler.IdleTime >= ScreenConfig.ScreenIdleTimeout)
                     {
                         screenContext.UnloadScreen();
-                        LOGGER.Warn($"屏幕({item.Value.Screen.StartPosition})已达到最大闲置时间，即将卸载");
+                        LOGGER.Warn($"屏幕({screenContext.ShortId})已达到最大闲置时间，即将卸载");
                     }
                 }
 
@@ -90,8 +89,11 @@ namespace MCBS.Screens
 
                 if (stateMachine.CurrentState == ScreenState.Unload)
                 {
-                    Guid guid = item.Key;
-                    Items.TryRemove(guid, out _);
+                    Guid guid = screenContext.Guid;
+
+                    lock (Collection)
+                        Collection.RemoveScreen(guid);
+
                     if (screenContext.IsRestarting)
                         MinecraftBlockScreen.Instance.BuildScreen(screenContext.Screen, guid);
                 }
@@ -103,58 +105,62 @@ namespace MCBS.Screens
             ArgumentNullException.ThrowIfNull(screen, nameof(screen));
             ArgumentNullException.ThrowIfNull(screenView, nameof(screenView));
 
-            ScreenContext screenContext = new(screen, screenView, guid);
-            if (!Items.TryAdd(screenContext.GUID, screenContext))
-                throw new InvalidOperationException();
+            lock (Collection)
+            {
+                if (guid == default)
+                    guid = Collection.PreGenerateGuid();
 
-            screenContext.LoadScreen();
-            return screenContext;
+                ScreenContext screenContext = new(screen, screenView, guid);
+                Collection.AddScreen(screenContext);
+                screenContext.LoadScreen();
+                return screenContext;
+            }
         }
 
         public void HandleAllScreenControl()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values)
+            List<Task> tasks = [];
+            foreach (ScreenContext screenContext in Collection)
                 tasks.Add(screenContext.HandleScreenControlAsync());
             Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllScreenInput()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values)
+            List<Task> tasks = [];
+            foreach (ScreenContext screenContext in Collection)
                 tasks.Add(screenContext.HandleScreenInputAsync());
             Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllScreenEvent()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values)
+            List<Task> tasks = [];
+            foreach (ScreenContext screenContext in Collection)
                 tasks.Add(screenContext.HandleScreenEventAsync());
             Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllBeforeFrame()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values)
+            List<Task> tasks = [];
+            foreach (ScreenContext screenContext in Collection)
                 tasks.Add(screenContext.HandleBeforeFrameAsync());
             Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllFrameDrawing()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
+            List<Task> tasks = [];
+            foreach (ScreenContext screenContext in Collection.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
                 tasks.Add(screenContext.HandleFrameDrawingAsync());
             Task.WaitAll(tasks.ToArray());
         }
 
         public void HandleAllFrameUpdate()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
+            List<Task> tasks = [];
+            foreach (ScreenContext screenContext in Collection.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
                 tasks.Add(screenContext.HandleFrameUpdateAsync());
             Task.WaitAll(tasks.ToArray());
         }
@@ -166,24 +172,41 @@ namespace MCBS.Screens
 
         public void HandleAllAfterFrame()
         {
-            List<Task> tasks = new();
-            foreach (var screenContext in Items.Values)
+            List<Task> tasks = [];
+            foreach (ScreenContext screenContext in Collection)
                 tasks.Add(screenContext.HandleAfterFrameAsync());
             Task.WaitAll(tasks.ToArray());
         }
 
         protected override void DisposeUnmanaged()
         {
-            Guid[] guids = Items.Keys.ToArray();
-            for (int i = 0; i < guids.Length; i++)
+            ScreenContext[] screens = Collection.GetScreens();
+            List<Exception>? exceptions = null;
+
+            foreach (ScreenContext screenContext in screens)
             {
-                Guid guid = guids[i];
-                if (Items.TryGetValue(guid, out var screenContext))
+                try
                 {
                     screenContext.Dispose();
-                    Items.TryRemove(guid, out screenContext);
+                }
+                catch (Exception ex)
+                {
+                    exceptions ??= [];
+                    exceptions.Add(ex);
                 }
             }
+
+            try
+            {
+                Collection.ClearAllScreen();
+            }
+            catch (AggregateException ex) when (exceptions is not null)
+            {
+                exceptions.Add(ex);
+            }
+
+            if (exceptions is not null && exceptions.Count > 0)
+                throw new AggregateException(exceptions);
         }
     }
 }

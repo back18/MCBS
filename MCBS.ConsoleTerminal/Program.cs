@@ -6,6 +6,7 @@ using MCBS.Config.Minecraft;
 using QuanLib.Commands;
 using QuanLib.Consoles;
 using QuanLib.Core;
+using QuanLib.Core.Extensions;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft;

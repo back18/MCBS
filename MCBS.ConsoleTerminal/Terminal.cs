@@ -1,5 +1,8 @@
 ﻿using MCBS.Analyzer;
 using MCBS.ConsoleTerminal.Extensions;
+using MCBS.Forms;
+using MCBS.Processes;
+using MCBS.Screens;
 using QuanLib.Commands;
 using QuanLib.Commands.CommandLine;
 using QuanLib.Consoles;
@@ -201,10 +204,10 @@ namespace MCBS.ConsoleTerminal
 
             mcbs.SubmitAndWait(() =>
             {
-                var list = mcbs.ScreenManager.Items;
-                stringBuilder.AppendLine($"当前已加载{list.Count}个屏幕，屏幕列表：");
-                foreach (var context in list.Values)
-                    stringBuilder.AppendLine(context.ToString());
+                ScreenContext[] screens = mcbs.ScreenManager.Collection.GetScreens();
+                stringBuilder.AppendLine($"当前已加载{screens.Length}个屏幕，屏幕列表：");
+                foreach (ScreenContext screenContext in screens)
+                    stringBuilder.AppendLine(screenContext.ToString());
                 stringBuilder.Length -= Environment.NewLine.Length;
             });
 
@@ -218,10 +221,10 @@ namespace MCBS.ConsoleTerminal
 
             mcbs.SubmitAndWait(() =>
             {
-                var list = mcbs.ProcessManager.Items;
-                stringBuilder.AppendLine($"当前已启动{list.Count}个进程，进程列表：");
-                foreach (var context in list.Values)
-                    stringBuilder.AppendLine(context.ToString());
+                ProcessContext[] processes = mcbs.ProcessManager.Collection.GetProcesses();
+                stringBuilder.AppendLine($"当前已启动{processes.Length}个进程，进程列表：");
+                foreach (ProcessContext processContext in processes)
+                    stringBuilder.AppendLine(processContext.ToString());
                 stringBuilder.Length -= Environment.NewLine.Length;
             });
 
@@ -235,29 +238,29 @@ namespace MCBS.ConsoleTerminal
 
             mcbs.SubmitAndWait(() =>
             {
-                var list = mcbs.FormManager.Items;
-                stringBuilder.AppendLine($"当前已打开{list.Count}个窗体，窗体列表：");
-                foreach (var context in list.Values)
-                    stringBuilder.AppendLine(context.ToString());
+                FormContext[] forms = mcbs.FormManager.Collection.GetForms();
+                stringBuilder.AppendLine($"当前已打开{forms.Length}个窗体，窗体列表：");
+                foreach (FormContext formContext in forms)
+                    stringBuilder.AppendLine(formContext.ToString());
                 stringBuilder.Length -= Environment.NewLine.Length;
             });
 
             return stringBuilder.ToString();
         }
 
-        private static string GetFormsOfScreen(Guid screenGuid)
+        private static string GetFormsOfScreen(string screenId)
         {
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
-            if (!mcbs.ScreenManager.Items.TryGetValue(screenGuid, out var screenContext))
-                return $"找不到GUID为 {screenGuid} 的屏幕";
+            if (!mcbs.ScreenManager.Collection.TryGetScreen(screenId, out var screenContext))
+                return $"找不到ID为 {screenId} 的屏幕";
 
             StringBuilder stringBuilder = new();
             mcbs.SubmitAndWait(() =>
             {
-                var list = mcbs.FormManager.Items.Values.Where(s => s.RootForm == screenContext.RootForm);
-                stringBuilder.AppendLine($"屏幕({screenGuid})当前已打开{list.Count()}个窗体，窗体列表：");
-                foreach (var context in list)
-                    stringBuilder.AppendLine(context.ToString());
+                FormContext[] forms = mcbs.FormManager.Collection.Where(s => s.RootForm == screenContext.RootForm).ToArray();
+                stringBuilder.AppendLine($"屏幕({screenId})当前已打开{forms.Length}个窗体，窗体列表：");
+                foreach (FormContext formContext in forms)
+                    stringBuilder.AppendLine(formContext.ToString());
                 stringBuilder.Length -= Environment.NewLine.Length;
             });
 

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using MCBS.ObjectModel;
+using QuanLib.Core.Events;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -11,68 +12,115 @@ namespace MCBS.Processes
 {
     public partial class ProcessManager
     {
-        public class ProcessCollection : IReadOnlyDictionary<Guid, ProcessContext>
+        public class ProcessCollection : IEnumerable<ProcessContext>
         {
             public ProcessCollection(ProcessManager owner)
             {
                 ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
                 _owner = owner;
-                _items = new();
+                _items = [];
+
+                _items.Added += Items_Added;
+                _items.Removed += Items_Removed;
             }
 
             private readonly ProcessManager _owner;
 
-            private readonly ConcurrentDictionary<Guid, ProcessContext> _items;
-
-            public ProcessContext this[Guid key] => _items[key];
-
-            public IEnumerable<Guid> Keys => _items.Keys;
-
-            public IEnumerable<ProcessContext> Values => _items.Values;
+            private readonly GuidDictionary<ProcessContext> _items;
 
             public int Count => _items.Count;
 
-            internal bool TryAdd(Guid key, ProcessContext value)
+            public ProcessContext GetProcess(Guid guid)
             {
-                if (_items.TryAdd(key, value))
-                {
-                    _owner.AddedProcess.Invoke(_owner, new(value));
-                    return true;
-                }
-
-                return false;
+                return _items[guid];
             }
 
-            internal bool TryRemove(Guid key, [MaybeNullWhen(false)] out ProcessContext value)
+            public ProcessContext GetProcess(string shortId)
             {
-                if (_items.TryRemove(key, out value))
-                {
-                    _owner.RemovedProcess.Invoke(_owner, new(value));
-                    return true;
-                }
-
-                return false;
+                return _items[shortId];
             }
 
-            public bool ContainsKey(Guid key)
+            public ProcessContext[] GetProcesses()
             {
-                return _items.ContainsKey(key);
+                return _items.Values.ToArray();
             }
 
-            public IEnumerator<KeyValuePair<Guid, ProcessContext>> GetEnumerator()
+            internal void AddProcess(ProcessContext processContext)
             {
-                return _items.GetEnumerator();
+                _items.Add(processContext);
             }
 
-            public bool TryGetValue(Guid key, [MaybeNullWhen(false)] out ProcessContext value)
+            internal bool RemoveProcess(Guid guid)
             {
-                return _items.TryGetValue(key, out value);
+                return _items.Remove(guid);
+            }
+
+            internal bool RemoveProcess(string shortId)
+            {
+                return _items.Remove(shortId);
+            }
+
+            internal bool RemoveProcess(ProcessContext processContext)
+            {
+                return _items.Remove(processContext);
+            }
+
+            internal void ClearAllProcess()
+            {
+                _items.Clear();
+            }
+
+            public bool ContainsProcess(Guid guid)
+            {
+                return _items.ContainsKey(guid);
+            }
+
+            public bool ContainsProcess(string shortId)
+            {
+                return _items.ContainsKey(shortId);
+            }
+
+            public bool ContainsProcess(ProcessContext ProcessContext)
+            {
+                ArgumentNullException.ThrowIfNull(ProcessContext, nameof(ProcessContext));
+
+                return _items.ContainsKey(ProcessContext.Guid);
+            }
+
+            public bool TryGetProcess(Guid guid, [MaybeNullWhen(false)] out ProcessContext result)
+            {
+                return _items.TryGetValue(guid, out result);
+            }
+
+            public bool TryGetProcess(string shortId, [MaybeNullWhen(false)] out ProcessContext result)
+            {
+                return _items.TryGetValue(shortId, out result);
+            }
+
+            public Guid PreGenerateGuid()
+            {
+                return _items.PreGenerateGuid();
+            }
+
+            private void Items_Added(GuidDictionary<ProcessContext> sender, EventArgs<ProcessContext> e)
+            {
+                _owner.AddedProcess.Invoke(_owner, e);
+            }
+
+            private void Items_Removed(GuidDictionary<ProcessContext> sender, EventArgs<ProcessContext> e)
+            {
+                _owner.RemovedProcess.Invoke(_owner, e);
+            }
+
+            public IEnumerator<ProcessContext> GetEnumerator()
+            {
+                return _items.Values.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return ((IEnumerable)_items).GetEnumerator();
+                return GetEnumerator();
             }
         }
     }

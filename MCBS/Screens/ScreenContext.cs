@@ -1,4 +1,5 @@
 ﻿using MCBS.Cursor;
+using MCBS.ObjectModel;
 using MCBS.Screens.Drawing;
 using MCBS.UI;
 using MCBS.UI.Extensions;
@@ -22,14 +23,17 @@ namespace MCBS.Screens
     /// <summary>
     /// 屏幕运行时上下文
     /// </summary>
-    public class ScreenContext : UnmanagedBase, ITickUpdatable
+    public class ScreenContext : UnmanagedBase, IUnique, ITickUpdatable
     {
         private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
-        internal ScreenContext(Screen screen, IScreenView screenView, Guid guid = default)
+        internal ScreenContext(Screen screen, IScreenView screenView, Guid guid)
         {
             ArgumentNullException.ThrowIfNull(screen, nameof(screen));
             ArgumentNullException.ThrowIfNull(screenView, nameof(screenView));
+
+            if (guid == default)
+                throw new ArgumentException("无效的GUID", nameof(guid));
 
             ScreenView = screenView;
             ScreenController = new(this, screen, 0, 1);
@@ -38,7 +42,7 @@ namespace MCBS.Screens
             ScreenUpdateHandler = new(this);
             IsRestarting = false;
 
-            GUID = guid != default ? guid : Guid.NewGuid();
+            Guid = guid;
             StateMachine = new(ScreenState.NotLoaded, new StateContext<ScreenState>[]
             {
                 new(ScreenState.NotLoaded, Array.Empty<ScreenState>(), GotoNotLoadedState),
@@ -53,7 +57,7 @@ namespace MCBS.Screens
 
             DirectoryInfo? worldDirectory = MinecraftBlockScreen.Instance.MinecraftInstance.MinecraftPathManager.GetActiveWorlds().FirstOrDefault() ?? throw new InvalidOperationException("无法定位存档文件夹");
             McbsDataPathManager mcbsDataPathManager = McbsDataPathManager.FromWorldDirectoryCreate(worldDirectory.FullName);
-            _savePath = mcbsDataPathManager.McbsData_Screens.FullName.PathCombine(GUID + ".json");
+            _savePath = mcbsDataPathManager.McbsData_Screens.FullName.PathCombine(Guid + ".json");
         }
 
         private ScreenDrawingContext? _drawingContext;
@@ -64,7 +68,9 @@ namespace MCBS.Screens
 
         private readonly string _savePath;
 
-        public Guid GUID { get; }
+        public Guid Guid { get; }
+
+        public string ShortId => Guid.GetShortId();
 
         public TickStateMachine<ScreenState> StateMachine { get; }
 
@@ -108,7 +114,7 @@ namespace MCBS.Screens
                     foreach (var appId in SystemConfig.StartupChecklist)
                         MinecraftBlockScreen.Instance.ProcessManager.StartProcess(appId, RootForm);
                     SaveJson();
-                    LOGGER.Info($"屏幕({Screen.StartPosition})已加载");
+                    LOGGER.Info($"屏幕({ShortId})已加载");
                     return true;
                 case ScreenState.Sleep:
                     //TODO
@@ -126,7 +132,7 @@ namespace MCBS.Screens
 
         protected virtual bool GotoUnloadState(ScreenState sourceState, ScreenState targetState)
         {
-            foreach (var forem in MinecraftBlockScreen.Instance.FormManager.Items.Values)
+            foreach (var forem in MinecraftBlockScreen.Instance.FormManager.Collection.GetForms())
             {
                 if (forem.RootForm == RootForm)
                     forem.CloseForm();
@@ -134,7 +140,7 @@ namespace MCBS.Screens
             RootForm.CloseForm();
             ScreenController.ClearScreenRange();
             DeleteJson();
-            LOGGER.Info($"屏幕({Screen.StartPosition})已卸载");
+            LOGGER.Info($"屏幕({ShortId})已卸载");
             return true;
         }
 
@@ -251,7 +257,7 @@ namespace MCBS.Screens
         public override string ToString()
         {
             Screen subScreen = GetSubScreen();
-            return $"GUID={GUID} State={StateMachine.CurrentState} Position={subScreen.StartPosition} Size=({subScreen.Width},{subScreen.Height}) Facing={subScreen.NormalFacing}";
+            return $"Id={ShortId} State={StateMachine.CurrentState} Position={subScreen.StartPosition} Size=({subScreen.Width},{subScreen.Height}) Facing={subScreen.NormalFacing}";
         }
 
         private void InvokeScreenEvent(CursorContext cursorContext)
@@ -305,7 +311,7 @@ namespace MCBS.Screens
                 return;
 
             ScreenController.ClearScreenRange();
-            LOGGER.Info($"屏幕({Screen.StartPosition})已清除");
+            LOGGER.Info($"屏幕({ShortId})已清除");
         }
     }
 }

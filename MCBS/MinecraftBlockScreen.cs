@@ -467,9 +467,11 @@ namespace MCBS
         {
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            foreach (var context in ScreenManager.Items.Values)
-                if (context.RootForm == form || context.RootForm.ContainsForm(form))
-                    return context;
+            foreach (ScreenContext screenContext in ScreenManager.Collection.GetScreens())
+            {
+                if (screenContext.RootForm == form || screenContext.RootForm.ContainsForm(form))
+                    return screenContext;
+            }
 
             return null;
         }
@@ -478,9 +480,11 @@ namespace MCBS
         {
             ArgumentNullException.ThrowIfNull(program, nameof(program));
 
-            foreach (var context in ProcessManager.Items.Values)
-                if (program == context.Program)
-                    return context;
+            foreach (ProcessContext processContext in ProcessManager.Collection.GetProcesses())
+            {
+                if (program == processContext.Program)
+                    return processContext;
+            }
 
             return null;
         }
@@ -489,20 +493,22 @@ namespace MCBS
         {
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            FormContext? context = FormContextOf(form);
-            if (context is null)
+            FormContext? formContext = FormContextOf(form);
+            if (formContext is null)
                 return null;
 
-            return ProcessContextOf(context.Program);
+            return ProcessContextOf(formContext.Program);
         }
 
         public FormContext? FormContextOf(IForm form)
         {
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            foreach (var context in FormManager.Items.Values.ToArray())
-                if (form == context.Form)
-                    return context;
+            foreach (FormContext formContext in FormManager.Collection.GetForms())
+            {
+                if (form == formContext.Form)
+                    return formContext;
+            }
 
             return null;
         }

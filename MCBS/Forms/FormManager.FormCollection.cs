@@ -1,6 +1,7 @@
-﻿using System;
+﻿using MCBS.ObjectModel;
+using QuanLib.Core.Events;
+using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,69 +12,116 @@ namespace MCBS.Forms
 {
     public partial class FormManager
     {
-        public class FormCollection : IReadOnlyDictionary<Guid, FormContext>
+        public class FormCollection : IEnumerable<FormContext>
         {
             public FormCollection(FormManager owner)
-			{
+            {
                 ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
-				_owner = owner;
-				_items = new();
+                _owner = owner;
+                _items = [];
+
+                _items.Added += Items_Added;
+                _items.Removed += Items_Removed;
             }
 
             private readonly FormManager _owner;
 
-			private readonly ConcurrentDictionary<Guid, FormContext> _items;
-
-            public FormContext this[Guid key] => _items[key];
-
-            public IEnumerable<Guid> Keys => _items.Keys;
-
-            public IEnumerable<FormContext> Values => _items.Values;
+            private readonly GuidDictionary<FormContext> _items;
 
             public int Count => _items.Count;
 
-            internal bool TryAdd(Guid key, FormContext value)
+            public FormContext GetForm(Guid guid)
             {
-                if (_items.TryAdd(key, value))
-                {
-                    _owner.AddedForm.Invoke(_owner, new(value));
-                    return true;
-                }
-
-                return false;
+                return _items[guid];
             }
 
-            internal bool TryRemove(Guid key, [MaybeNullWhen(false)] out FormContext value)
+            public FormContext GetForm(string shortId)
             {
-                if (_items.TryRemove(key, out value))
-                {
-                    _owner.RemovedForm.Invoke(_owner, new(value));
-                    return true;
-                }
-
-                return false;
+                return _items[shortId];
             }
 
-            public bool ContainsKey(Guid key)
+            public FormContext[] GetForms()
             {
-                return _items.ContainsKey(key);
+                return _items.Values.ToArray();
             }
 
-            public IEnumerator<KeyValuePair<Guid, FormContext>> GetEnumerator()
+            internal void AddForm(FormContext FormContext)
             {
-                return _items.GetEnumerator();
+                _items.Add(FormContext);
             }
 
-            public bool TryGetValue(Guid key, [MaybeNullWhen(false)] out FormContext value)
+            internal bool RemoveForm(Guid guid)
             {
-                return _items.TryGetValue(key, out value);
+                return _items.Remove(guid);
+            }
+
+            internal bool RemoveForm(string shortId)
+            {
+                return _items.Remove(shortId);
+            }
+
+            internal bool RemoveForm(FormContext FormContext)
+            {
+                return _items.Remove(FormContext);
+            }
+
+            internal void ClearAllForm()
+            {
+                _items.Clear();
+            }
+
+            public bool ContainsForm(Guid guid)
+            {
+                return _items.ContainsKey(guid);
+            }
+
+            public bool ContainsForm(string shortId)
+            {
+                return _items.ContainsKey(shortId);
+            }
+
+            public bool ContainsForm(FormContext FormContext)
+            {
+                ArgumentNullException.ThrowIfNull(FormContext, nameof(FormContext));
+
+                return _items.ContainsKey(FormContext.Guid);
+            }
+
+            public bool TryGetForm(Guid guid, [MaybeNullWhen(false)] out FormContext result)
+            {
+                return _items.TryGetValue(guid, out result);
+            }
+
+            public bool TryGetForm(string shortId, [MaybeNullWhen(false)] out FormContext result)
+            {
+                return _items.TryGetValue(shortId, out result);
+            }
+
+            public Guid PreGenerateGuid()
+            {
+                return _items.PreGenerateGuid();
+            }
+
+            private void Items_Added(GuidDictionary<FormContext> sender, EventArgs<FormContext> e)
+            {
+                _owner.AddedForm.Invoke(_owner, e);
+            }
+
+            private void Items_Removed(GuidDictionary<FormContext> sender, EventArgs<FormContext> e)
+            {
+                _owner.RemovedForm.Invoke(_owner, e);
+            }
+
+            public IEnumerator<FormContext> GetEnumerator()
+            {
+                return _items.Values.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return ((IEnumerable)_items).GetEnumerator();
+                return GetEnumerator();
             }
         }
-	}
+    }
 }

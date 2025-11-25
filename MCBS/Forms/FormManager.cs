@@ -15,13 +15,13 @@ namespace MCBS.Forms
     {
         public FormManager()
         {
-            Items = new(this);
+            Collection = new(this);
 
             AddedForm += OnAddedForm;
             RemovedForm += OnRemovedForm;
         }
 
-        public FormCollection Items { get; }
+        public FormCollection Collection { get; }
 
         public event EventHandler<FormManager, EventArgs<FormContext>> AddedForm;
 
@@ -33,11 +33,14 @@ namespace MCBS.Forms
 
         public void OnTickUpdate(int tick)
         {
-            foreach (var item in Items)
+            foreach (FormContext formContext in Collection.GetForms())
             {
-                item.Value.OnTickUpdate(tick);
-                if (item.Value.FormState == FormState.Closed)
-                    Items.TryRemove(item.Key, out _);
+                formContext.OnTickUpdate(tick);
+                if (formContext.FormState == FormState.Closed)
+                {
+                    lock (Collection)
+                        Collection.RemoveForm(formContext);
+                }
             }
         }
 
@@ -46,26 +49,45 @@ namespace MCBS.Forms
             ArgumentNullException.ThrowIfNull(program, nameof(program));
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            FormContext formContext = new(program, form);
-            if (!Items.TryAdd(formContext.GUID, formContext))
-                throw new InvalidOperationException();
-
-            formContext.LoadForm();
-            return formContext;
+            lock (Collection)
+            {
+                Guid guid = Collection.PreGenerateGuid();
+                FormContext formContext = new(program, form, guid);
+                Collection.AddForm(formContext);
+                formContext.LoadForm();
+                return formContext;
+            }
         }
 
         protected override void DisposeUnmanaged()
         {
-            Guid[] guids = Items.Keys.ToArray();
-            for (int i = 0; i < guids.Length; i++)
+            FormContext[] forms = Collection.GetForms();
+            List<Exception>? exceptions = null;
+
+            foreach (FormContext formContext in forms)
             {
-                Guid guid = guids[i];
-                if (Items.TryGetValue(guid, out var formContext))
+                try
                 {
                     formContext.Dispose();
-                    Items.TryRemove(guid, out _);
+                }
+                catch (Exception ex)
+                {
+                    exceptions ??= [];
+                    exceptions.Add(ex);
                 }
             }
+
+            try
+            {
+                Collection.ClearAllForm();
+            }
+            catch (AggregateException ex) when (exceptions is not null)
+            {
+                exceptions.Add(ex);
+            }
+
+            if (exceptions is not null && exceptions.Count > 0)
+                throw new AggregateException(exceptions);
         }
     }
 }

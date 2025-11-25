@@ -1,5 +1,6 @@
 ﻿using MCBS.Application;
 using MCBS.Forms;
+using MCBS.ObjectModel;
 using MCBS.UI;
 using QuanLib.Core;
 using QuanLib.Logging;
@@ -14,21 +15,24 @@ using System.Threading.Tasks;
 
 namespace MCBS.Processes
 {
-    public class ProcessContext : RunnableBase, ITickUpdatable
+    public class ProcessContext : RunnableBase, IUnique, ITickUpdatable
     {
         private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
-        internal ProcessContext(ApplicationManifest applicationManifest, string[] args, IForm? initiator = null) : base(Log4NetManager.Instance.GetProvider())
+        internal ProcessContext(ApplicationManifest applicationManifest, Guid guid, string[] args, IForm? initiator = null) : base(Log4NetManager.Instance.GetProvider())
         {
             ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
             ArgumentNullException.ThrowIfNull(args, nameof(args));
+
+            if (guid == default)
+                throw new ArgumentException("无效的GUID", nameof(guid));
 
             _args = args;
             Application = applicationManifest;
             Program = Application.CreateApplicationInstance();
             Initiator = initiator;
 
-            GUID = Guid.NewGuid();
+            Guid = guid;
             StateMachine = new(ProcessState.Unstarted, new StateContext<ProcessState>[]
             {
                 new(ProcessState.Unstarted, Array.Empty<ProcessState>(), GotoUnstartedState),
@@ -39,7 +43,9 @@ namespace MCBS.Processes
 
         private readonly string[] _args;
 
-        public Guid GUID { get; }
+        public Guid Guid { get; }
+
+        public string ShortId => Guid.GetShortId();
 
         public TickStateMachine<ProcessState> StateMachine { get; }
 
@@ -74,7 +80,7 @@ namespace MCBS.Processes
 
         protected virtual bool GotoActiveState(ProcessState sourceState, ProcessState targetState)
         {
-            Start($"{Application.ID} AppThread");
+            Start("Application Thread #" + ShortId);
             return true;
         }
 
@@ -91,14 +97,16 @@ namespace MCBS.Processes
 
         protected override void Run()
         {
-            string args = _args.Length == 0 ? "empty" : string.Join(", ", _args.Select(arg => $"\"{arg}\""));
-            FormContext ? formContext = Initiator is null ? null : MinecraftBlockScreen.Instance.FormContextOf(Initiator);
-            if (formContext is null)
-                LOGGER.Info($"进程({Application.ID})启动参数为 {args}");
-            else
-                LOGGER.Info($"进程({Application.ID})启动参数为 {args}，从窗体({formContext.Form.Text})");
+            string? args = _args.Length == 0 ? null : string.Join(", ", _args.Select(arg => $"\"{arg}\""));
+            FormContext? formContext = Initiator is null ? null : MinecraftBlockScreen.Instance.FormContextOf(Initiator);
+
+            if (formContext is not null && args is not null)
+                LOGGER.Info($"进程({ShortId})启动参数为 {args}，从窗体({formContext.ShortId})");
+
             object? result = Program.Main(_args);
-            LOGGER.Info($"进程({Application.ID})返回值为 {result ?? "null"}");
+
+            if (result is not null && result is not 0)
+                LOGGER.Info($"进程({ShortId})返回值为 {ObjectFormatter.Format(result)}");
         }
 
         public ProcessContext StartProcess()
@@ -114,7 +122,7 @@ namespace MCBS.Processes
 
         public override string ToString()
         {
-            return $"GUID={GUID} State={StateMachine.CurrentState} Application={Application.ID}";
+            return $"Id={ShortId} State={StateMachine.CurrentState} Application={Application.ID}";
         }
     }
 }

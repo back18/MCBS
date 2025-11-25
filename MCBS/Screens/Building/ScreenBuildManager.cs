@@ -30,7 +30,7 @@ namespace MCBS.Screens.Building
 
         private readonly Dictionary<string, ScreenBuildContext> _screenBuildContexts;
 
-        public int ScreenCount => MinecraftBlockScreen.Instance.ScreenManager.Items.Count;
+        public int ScreenCount => MinecraftBlockScreen.Instance.ScreenManager.Collection.Count;
 
         public bool Enable { get; set; }
 

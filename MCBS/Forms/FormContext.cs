@@ -1,5 +1,6 @@
 ﻿using MCBS.Application;
 using MCBS.Cursor;
+using MCBS.ObjectModel;
 using MCBS.Processes;
 using MCBS.Screens;
 using MCBS.UI;
@@ -21,14 +22,17 @@ namespace MCBS.Forms
     /// <summary>
     /// 窗体运行时上下文
     /// </summary>
-    public class FormContext : UnmanagedBase, ITickUpdatable
+    public class FormContext : UnmanagedBase, IUnique, ITickUpdatable
     {
         private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
-        internal FormContext(IProgram program, IForm form)
+        internal FormContext(IProgram program, IForm form, Guid guid)
         {
             ArgumentNullException.ThrowIfNull(program, nameof(program));
             ArgumentNullException.ThrowIfNull(form, nameof(form));
+
+            if (guid == default)
+                throw new ArgumentException("无效的GUID", nameof(guid));
 
             Program = program;
             Form = form;
@@ -53,14 +57,14 @@ namespace MCBS.Forms
 
                     if (screenContext is not null)
                         RootForm = screenContext.RootForm;
-                    else if (mcbs.ScreenManager.Items.Count != 0)
-                        RootForm = mcbs.ScreenManager.Items.FirstOrDefault().Value.RootForm;
+                    else if (mcbs.ScreenManager.Collection.Count > 0)
+                        RootForm = mcbs.ScreenManager.Collection.First().RootForm;
                     else
                         throw new InvalidOperationException();
                 }
             }
 
-            GUID = Guid.NewGuid();
+            Guid = guid;
             StateMachine = new(FormState.NotLoaded, new StateContext<FormState>[]
             {
                 new(FormState.NotLoaded, Array.Empty<FormState>(), GotoNotLoadedState),
@@ -76,7 +80,9 @@ namespace MCBS.Forms
 
         private readonly TaskSemaphore _closeSemaphore;
 
-        public Guid GUID { get; }
+        public Guid Guid { get; }
+
+        public string ShortId => Guid.GetShortId();
 
         public TickStateMachine<FormState> StateMachine { get; }
 
@@ -107,9 +113,9 @@ namespace MCBS.Forms
                     Form.HandleFormLoad(EventArgs.Empty);
                     ProcessContext? processContext = MinecraftBlockScreen.Instance.ProcessContextOf(Program);
                     if (processContext is null)
-                        LOGGER.Info($"窗体({Form.Text})已打开");
+                        LOGGER.Debug($"窗体({ShortId})已打开");
                     else
-                        LOGGER.Info($"窗体({Form.Text})已被进程({processContext.Application.ID})打开，位于屏幕({MinecraftBlockScreen.Instance.ScreenContextOf(Form)?.Screen.StartPosition})");
+                        LOGGER.Debug($"窗体({ShortId})已被进程({processContext.ShortId})打开，位于屏幕({MinecraftBlockScreen.Instance.ScreenContextOf(Form)?.ShortId})");
                     return true;
                 case FormState.Minimize:
                     if (Form is IRootForm)
@@ -117,7 +123,7 @@ namespace MCBS.Forms
                     if (!RootForm.ContainsForm(Form))
                         RootForm.AddForm(Form);
                     Form.HandleFormUnminimize(EventArgs.Empty);
-                    LOGGER.Info($"窗体({Form.Text})已取消最小化");
+                    LOGGER.Debug($"窗体({ShortId})已取消最小化");
                     return true;
                 case FormState.Dragging:
                     if (DraggingContext is null)
@@ -132,7 +138,7 @@ namespace MCBS.Forms
                         position.X - offset.X - RootForm.ClientLocation.X - RootForm.BorderWidth - Form.BorderWidth,
                         position.Y - offset.Y - RootForm.ClientLocation.Y - RootForm.BorderWidth - Form.BorderWidth);
                     DraggingContext = null;
-                    LOGGER.Info($"窗体({Form.Text})已被拖动到屏幕({MinecraftBlockScreen.Instance.ScreenContextOf(RootForm)?.Screen.StartPosition})");
+                    LOGGER.Debug($"窗体({ShortId})已被拖动到屏幕({MinecraftBlockScreen.Instance.ScreenContextOf(RootForm)?.ShortId})");
                     return true;
                 case FormState.Stretching:
                     if (StretchingContext is null)
@@ -151,7 +157,7 @@ namespace MCBS.Forms
             if (RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
             Form.HandleFormMinimize(EventArgs.Empty);
-            LOGGER.Info($"窗体({Form.Text})已最小化");
+            LOGGER.Debug($"窗体({ShortId})已最小化");
             return true;
         }
 
@@ -165,7 +171,7 @@ namespace MCBS.Forms
                 return false;
             if (RootForm.ContainsForm(Form))
                 RootForm.RemoveForm(Form);
-            LOGGER.Info($"窗体({Form.Text})已从屏幕({MinecraftBlockScreen.Instance.ScreenContextOf(RootForm)?.Screen.StartPosition})脱离，开始拖动");
+            LOGGER.Debug($"窗体({ShortId})已从屏幕({MinecraftBlockScreen.Instance.ScreenContextOf(RootForm)?.ShortId})脱离，开始拖动");
             return true;
         }
 
@@ -257,7 +263,7 @@ namespace MCBS.Forms
 
         public override string ToString()
         {
-            return $"GUID={GUID} State={StateMachine.CurrentState} Title={Form.Text} Position=[{Form.ClientLocation.X},{Form.ClientLocation.Y}] Size=({Form.ClientSize.Width},{Form.ClientSize.Height})";
+            return $"Id={ShortId} State={StateMachine.CurrentState} Title={Form.Text} Position=[{Form.ClientLocation.X},{Form.ClientLocation.Y}] Size=({Form.ClientSize.Width},{Form.ClientSize.Height})";
         }
 
         protected override void DisposeUnmanaged()
@@ -278,7 +284,7 @@ namespace MCBS.Forms
                 RootForm.RemoveForm(Form);
 
             Form.HandleFormClose(EventArgs.Empty);
-            LOGGER.Info($"窗体({Form.Text})已关闭，返回值为 {Form.ReturnValue ?? "null"}");
+            LOGGER.Debug($"窗体({ShortId})已关闭，返回值为 {ObjectFormatter.Format(Form.ReturnValue)}");
             _closeSemaphore.Release();
         }
     }

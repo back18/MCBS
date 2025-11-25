@@ -16,13 +16,13 @@ namespace MCBS.Processes
     {
         public ProcessManager()
         {
-            Items = new(this);
+            Collection = new(this);
 
             AddedProcess += OnAddedProcess;
             RemovedProcess += OnRemovedProcess;
         }
 
-        public ProcessCollection Items { get; }
+        public ProcessCollection Collection { get; }
 
         public event EventHandler<ProcessManager, EventArgs<ProcessContext>> AddedProcess;
 
@@ -34,11 +34,14 @@ namespace MCBS.Processes
 
         public void OnTickUpdate(int tick)
         {
-            foreach (var items in Items)
+            foreach (ProcessContext processContext in Collection.GetProcesses())
             {
-                items.Value.OnTickUpdate(tick);
-                if (items.Value.ProcessState == ProcessState.Stopped)
-                    Items.TryRemove(items.Key, out _);
+                processContext.OnTickUpdate(tick);
+                if (processContext.ProcessState == ProcessState.Stopped)
+                {
+                    lock (Collection)
+                        Collection.RemoveProcess(processContext);
+                }
             }
         }
 
@@ -52,12 +55,14 @@ namespace MCBS.Processes
             ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
             ArgumentNullException.ThrowIfNull(args, nameof(args));
 
-            ProcessContext processContext = new(applicationManifest, args, initiator);
-            if (!Items.TryAdd(processContext.GUID, processContext))
-                throw new InvalidOperationException();
-
-            processContext.StartProcess();
-            return processContext;
+            lock (Collection)
+            {
+                Guid guid = Collection.PreGenerateGuid();
+                ProcessContext processContext = new(applicationManifest, guid, args, initiator);
+                Collection.AddProcess(processContext);
+                processContext.StartProcess();
+                return processContext;
+            }
         }
 
         public ProcessContext StartProcess(string appId, IForm? initiator = null)
@@ -75,7 +80,7 @@ namespace MCBS.Processes
         public ProcessContext StartServicesProcess(string[] args)
         {
             ApplicationManifest applicationManifest = MinecraftBlockScreen.Instance.AppComponents[ConfigManager.SystemConfig.ServicesAppID];
-            if (!typeof(IProgram).IsAssignableFrom(applicationManifest.MainClass))
+            if (!typeof(IServicesProgram).IsAssignableFrom(applicationManifest.MainClass))
                 throw new InvalidOperationException("无效的 IServicesProgram");
 
             return StartProcess(applicationManifest, args);
@@ -88,21 +93,12 @@ namespace MCBS.Processes
 
         protected override void DisposeUnmanaged()
         {
-            List<Guid> guids = [];
             List<Task> tasks = [];
-            foreach (var item in Items)
-            {
-                Guid guid = item.Key;
-                ProcessContext processContext = item.Value;
-
-                guids.Add(guid);
+            foreach (ProcessContext processContext in Collection.GetProcesses())
                 tasks.Add(Task.Run(processContext.Stop));
-            }
 
             Task.WaitAll(tasks.ToArray());
-
-            foreach (Guid guid in guids)
-                Items.TryRemove(guid, out _);
+            Collection.ClearAllProcess();
         }
     }
 }

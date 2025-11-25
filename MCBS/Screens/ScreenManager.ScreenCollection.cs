@@ -1,78 +1,126 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MCBS.ObjectModel;
+using QuanLib.Core.Events;
 
 namespace MCBS.Screens
 {
     public partial class ScreenManager
     {
-        public class ScreenCollection : IReadOnlyDictionary<Guid, ScreenContext>
+        public class ScreenCollection : IEnumerable<ScreenContext>
         {
             public ScreenCollection(ScreenManager owner)
             {
                 ArgumentNullException.ThrowIfNull(owner, nameof(owner));
 
                 _owner = owner;
-                _items = new();
+                _items = [];
+
+                _items.Added += Items_Added;
+                _items.Removed += Items_Removed;
             }
 
             private readonly ScreenManager _owner;
 
-            private readonly ConcurrentDictionary<Guid, ScreenContext> _items;
-
-            public ScreenContext this[Guid key] => _items[key];
-
-            public IEnumerable<Guid> Keys => _items.Keys;
-
-            public IEnumerable<ScreenContext> Values => _items.Values;
+            private readonly GuidDictionary<ScreenContext> _items;
 
             public int Count => _items.Count;
 
-            internal bool TryAdd(Guid key, ScreenContext value)
+            public ScreenContext GetScreen(Guid guid)
             {
-                if (_items.TryAdd(key, value))
-                {
-                    _owner.AddedScreen.Invoke(_owner, new(value));
-                    return true;
-                }
-
-                return false;
+                return _items[guid];
             }
 
-            internal bool TryRemove(Guid key, [MaybeNullWhen(false)] out ScreenContext value)
+            public ScreenContext GetScreen(string shortId)
             {
-                if (_items.TryRemove(key, out value))
-                {
-                    _owner.RemovedScreen.Invoke(_owner, new(value));
-                    return true;
-                }
-
-                return false;
+                return _items[shortId];
             }
 
-            public bool ContainsKey(Guid key)
+            public ScreenContext[] GetScreens()
             {
-                return _items.ContainsKey(key);
+                return _items.Values.ToArray();
             }
 
-            public IEnumerator<KeyValuePair<Guid, ScreenContext>> GetEnumerator()
+            internal void AddScreen(ScreenContext screenContext)
             {
-                return _items.GetEnumerator();
+                _items.Add(screenContext);
             }
 
-            public bool TryGetValue(Guid key, [MaybeNullWhen(false)] out ScreenContext value)
+            internal bool RemoveScreen(Guid guid)
             {
-                return _items.TryGetValue(key, out value);
+                return _items.Remove(guid);
+            }
+
+            internal bool RemoveScreen(string shortId)
+            {
+                return _items.Remove(shortId);
+            }
+
+            internal bool RemoveScreen(ScreenContext screenContext)
+            {
+                return _items.Remove(screenContext);
+            }
+
+            internal void ClearAllScreen()
+            {
+                _items.Clear();
+            }
+
+            public bool ContainsScreen(Guid guid)
+            {
+                return _items.ContainsKey(guid);
+            }
+
+            public bool ContainsScreen(string shortId)
+            {
+                return _items.ContainsKey(shortId);
+            }
+
+            public bool ContainsScreen(ScreenContext screenContext)
+            {
+                ArgumentNullException.ThrowIfNull(screenContext, nameof(screenContext));
+
+                return _items.ContainsKey(screenContext.Guid);
+            }
+
+            public bool TryGetScreen(Guid guid, [MaybeNullWhen(false)] out ScreenContext result)
+            {
+                return _items.TryGetValue(guid, out result);
+            }
+
+            public bool TryGetScreen(string shortId, [MaybeNullWhen(false)] out ScreenContext result)
+            {
+                return _items.TryGetValue(shortId, out result);
+            }
+
+            public Guid PreGenerateGuid()
+            {
+                return _items.PreGenerateGuid();
+            }
+
+            private void Items_Added(GuidDictionary<ScreenContext> sender, EventArgs<ScreenContext> e)
+            {
+                _owner.AddedScreen.Invoke(_owner, e);
+            }
+
+            private void Items_Removed(GuidDictionary<ScreenContext> sender, EventArgs<ScreenContext> e)
+            {
+                _owner.RemovedScreen.Invoke(_owner, e);
+            }
+
+            public IEnumerator<ScreenContext> GetEnumerator()
+            {
+                return _items.Values.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return ((IEnumerable)_items).GetEnumerator();
+                return GetEnumerator();
             }
         }
     }

@@ -32,9 +32,11 @@ namespace MCBS.Application
         public static FormContext[] GetForms(this IProgram source)
         {
             List<FormContext> result = new();
-            foreach (var context in MinecraftBlockScreen.Instance.FormManager.Items.Values)
-                if (context.Program == source)
-                    result.Add(context);
+            foreach (FormContext formContext in MinecraftBlockScreen.Instance.FormManager.Collection.GetForms())
+            {
+                if (formContext.Program == source)
+                    result.Add(formContext);
+            }
 
             return result.ToArray();
         }

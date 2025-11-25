@@ -66,7 +66,7 @@ namespace MCBS.Screens
         {
             List<WorldBlock> blocks = [];
 
-            foreach (ScreenContext screenContext in _owner.Items.Values.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
+            foreach (ScreenContext screenContext in _owner.Collection.Where(w => w.StateMachine.CurrentState == ScreenState.Active))
                 blocks.AddRange(screenContext.ScreenUpdateHandler.GetBlockUpdateList());
 
             return blocks;
