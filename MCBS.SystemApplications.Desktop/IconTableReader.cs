@@ -64,8 +64,8 @@ namespace MCBS.SystemApplications.Desktop
                 if (applicationManifest.IsBackground)
                     continue;
 
-                if (!appIds.Contains(applicationManifest.ID))
-                    result.Add(GetNextPosition(result, tableSize), new(DesktopAppIcon.ICON_TYPE, applicationManifest.ID));
+                if (!appIds.Contains(applicationManifest.Id))
+                    result.Add(GetNextPosition(result, tableSize), new(DesktopAppIcon.ICON_TYPE, applicationManifest.Id));
             }
 
             if (!Directory.Exists(desktopDirectory))

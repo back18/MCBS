@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.Desktop
 {
     public class DesktopApp : IProgram
     {
-        public const string ID = "System.Desktop";
+        public const string Id = "System.Desktop";
 
         public const string Name = "系统桌面";
 

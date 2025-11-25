@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.QRCodeGenerator
 {
     public class QRCodeGeneratorApp : IProgram
     {
-        public const string ID = "System.QRCodeGenerator";
+        public const string Id = "System.QRCodeGenerator";
 
         public const string Name = "二维码生成器";
 

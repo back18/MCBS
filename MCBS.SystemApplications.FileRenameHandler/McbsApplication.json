@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.FileRenameHandler.FileRenameHandlerApp",
-  "ID": "System.FileRenameHandler",
+  "Id": "System.FileRenameHandler",
   "Name": "文件重命名处理程序",
   "Version": "1.0.0",
   "IsBackground": true,

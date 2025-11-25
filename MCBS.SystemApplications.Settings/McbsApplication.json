@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.Settings.SettingsApp",
-  "ID": "System.Settings",
+  "Id": "System.Settings",
   "Name": "系统设置",
   "Version": "1.0.0",
   "IsBackground": false,

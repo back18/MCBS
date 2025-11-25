@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.Album.AlbumApp",
-  "ID": "System.Album",
+  "Id": "System.Album",
   "Name": "相册",
   "Version": "1.0.0",
   "IsBackground": false,
@@ -12,7 +12,7 @@
   ],
   "Dependencies": [
     {
-      "ID": "System.Desktop",
+      "Id": "System.Desktop",
       "Version": "1.0.0",
       "Mandatory": true
     }

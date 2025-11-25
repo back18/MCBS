@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.VideoPlayer.VideoPlayerApp",
-  "ID": "System.VideoPlayer",
+  "Id": "System.VideoPlayer",
   "Name": "视频播放器",
   "Version": "1.0.0",
   "IsBackground": false,

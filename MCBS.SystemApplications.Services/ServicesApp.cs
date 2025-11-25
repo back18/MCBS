@@ -15,7 +15,7 @@ namespace MCBS.SystemApplications.Services
             ScreenView = new ScreenView();
         }
 
-        public const string ID = "System.Services";
+        public const string Id = "System.Services";
 
         public const string Name = "系统服务";
 

@@ -13,7 +13,7 @@ namespace MCBS.SystemApplications.FileDeleteHandler
 {
     public class FileDeleteHandlerApp : IProgram
     {
-        public const string ID = "System.FileDeleteHandler";
+        public const string Id = "System.FileDeleteHandler";
 
         public const string Name = "文件删除处理程序";
 

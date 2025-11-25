@@ -46,7 +46,7 @@ namespace MCBS
             InteractionManager = new();
             ScoreboardManager = new();
             CursorManager = new();
-            AppComponents = new(appComponents.ToDictionary(item => item.ID, item => item));
+            AppComponents = new(appComponents.ToDictionary(item => item.Id, item => item));
 
             GameTick = -1;
             SystemStage = SystemStage.ScreenScheduling;

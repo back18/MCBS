@@ -122,7 +122,7 @@ namespace MCBS.Processes
 
         public override string ToString()
         {
-            return $"Id={ShortId} State={StateMachine.CurrentState} Application={Application.ID}";
+            return $"Id={ShortId} State={StateMachine.CurrentState} Application={Application.Id}";
         }
     }
 }

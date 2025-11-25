@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.Settings
 {
     public class SettingsApp : IProgram
     {
-        public const string ID = "System.Settings";
+        public const string Id = "System.Settings";
 
         public const string Name = "设置";
 

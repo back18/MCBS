@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.TaskManager.TaskManagerApp",
-  "ID": "System.TaskManager",
+  "Id": "System.TaskManager",
   "Name": "任务管理器",
   "Version": "1.0.0",
   "IsBackground": false,

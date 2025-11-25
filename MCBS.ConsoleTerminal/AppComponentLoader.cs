@@ -111,7 +111,7 @@ namespace MCBS.ConsoleTerminal
                 stringBuilder.AppendLine($"{loadedResult.Manifests.Length}个加载成功，{loadedResult.Exceptions.Length}个加载失败");
 
             foreach (ApplicationManifest manifest in loadedResult.Manifests)
-                stringBuilder.AppendLine($"    - 成功加载 {manifest.Assembly.GetName().Name} -> {manifest.ID} - {manifest.Version}");
+                stringBuilder.AppendLine($"    - 成功加载 {manifest.Assembly.GetName().Name} -> {manifest.Id} - {manifest.Version}");
 
             foreach (ApplicationLoadException exception in loadedResult.Exceptions)
                 stringBuilder.AppendLine($"    - 加载失败 {exception.Assembly} -> {exception.ApplicationLoadErrorCode} ({(int)exception.ApplicationLoadErrorCode})");

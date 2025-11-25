@@ -354,7 +354,7 @@ namespace MCBS.SystemApplications.Desktop
 
             private void UpdateDesktopIconManager()
             {
-                string[] apps = MinecraftBlockScreen.Instance.AppComponents.Values.Where(i => !i.IsBackground).Select(i => i.ID).ToArray();
+                string[] apps = MinecraftBlockScreen.Instance.AppComponents.Values.Where(i => !i.IsBackground).Select(i => i.Id).ToArray();
                 string[] dirs, files;
                 List<IconIdentifier> iconIdentifiers = [];
                 List<Point> miss = [];

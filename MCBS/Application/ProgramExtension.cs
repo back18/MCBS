@@ -52,7 +52,7 @@ namespace MCBS.Application
             if (applicationManifest is null)
                 return null;
 
-            return McbsPathManager.MCBS_Applications.CombineDirectory(applicationManifest.ID).FullName;
+            return McbsPathManager.MCBS_Applications.CombineDirectory(applicationManifest.Id).FullName;
         }
     }
 }

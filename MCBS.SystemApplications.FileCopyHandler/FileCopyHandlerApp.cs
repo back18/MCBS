@@ -13,7 +13,7 @@ namespace MCBS.SystemApplications.FileCopyHandler
 {
     public class FileCopyHandlerApp : IProgram
     {
-        public const string ID = "System.FileCopyHandler";
+        public const string Id = "System.FileCopyHandler";
 
         public const string Name = "文件复制处理程序";
 

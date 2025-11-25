@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.DataScreen.DataScreenApp",
-  "ID": "System.DataScreen",
+  "Id": "System.DataScreen",
   "Name": "数据大屏",
   "Version": "1.0.0",
   "IsBackground": false,

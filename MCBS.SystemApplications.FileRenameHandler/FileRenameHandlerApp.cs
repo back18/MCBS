@@ -14,7 +14,7 @@ namespace MCBS.SystemApplications.FileRenameHandler
 {
     public class FileRenameHandlerApp : IProgram
     {
-        public const string ID = "System.FileRenameHandler";
+        public const string Id = "System.FileRenameHandler";
 
         public const string Name = "文件重命名处理程序";
 

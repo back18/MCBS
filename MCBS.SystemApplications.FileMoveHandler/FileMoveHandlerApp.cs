@@ -16,7 +16,7 @@ namespace MCBS.SystemApplications.FileMoveHandler
 {
     public class FileMoveHandlerApp : IProgram
     {
-        public const string ID = "System.FileMoveHandler";
+        public const string Id = "System.FileMoveHandler";
 
         public const string Name = "文件移动处理程序";
 

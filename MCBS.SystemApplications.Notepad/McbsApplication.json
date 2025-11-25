@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.Notepad.NotepadApp",
-  "ID": "System.Notepad",
+  "Id": "System.Notepad",
   "Name": "记事本",
   "Version": "1.0.0",
   "IsBackground": false,

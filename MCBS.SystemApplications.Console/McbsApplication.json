@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.Console.ConsoleApp",
-  "ID": "System.Console",
+  "Id": "System.Console",
   "Name": "控制台",
   "Version": "1.0.0",
   "IsBackground": false,

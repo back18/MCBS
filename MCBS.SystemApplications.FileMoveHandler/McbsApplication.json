@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.FileMoveHandler.FileMoveHandlerApp",
-  "ID": "System.FileMoveHandler",
+  "Id": "System.FileMoveHandler",
   "Name": "文件移动处理程序",
   "Version": "1.0.0",
   "IsBackground": true,

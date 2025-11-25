@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.Album
 {
     public class AlbumApp : IProgram
     {
-        public const string ID = "System.Album";
+        public const string Id = "System.Album";
 
         public const string Name = "相册";
 

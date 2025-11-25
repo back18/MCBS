@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.ScreenController.ScreenControllerApp",
-  "ID": "System.ScreenController",
+  "Id": "System.ScreenController",
   "Name": "屏幕控制器",
   "Version": "1.0.0",
   "IsBackground": false,

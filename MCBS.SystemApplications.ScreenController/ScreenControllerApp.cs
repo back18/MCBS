@@ -9,7 +9,7 @@ namespace MCBS.SystemApplications.ScreenController
 {
     public class ScreenControllerApp : IProgram
     {
-        public const string ID = "System.ScreenController";
+        public const string Id = "System.ScreenController";
 
         public const string Name = "屏幕控制器";
 

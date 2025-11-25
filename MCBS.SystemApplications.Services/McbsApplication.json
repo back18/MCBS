@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.Services.ServicesApp",
-  "ID": "System.Services",
+  "Id": "System.Services",
   "Name": "系统服务",
   "Version": "1.0.0",
   "IsBackground": true,

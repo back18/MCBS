@@ -12,7 +12,7 @@ namespace MCBS.SystemApplications.VideoPlayer
 {
     public class VideoPlayerApp : IProgram
     {
-        public const string ID = "System.VideoPlayer";
+        public const string Id = "System.VideoPlayer";
 
         public const string Name = "视频播放器";
 

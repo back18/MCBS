@@ -13,12 +13,12 @@ namespace MCBS.Application
         {
             NullValidator.ValidateObject(model, nameof(model));
 
-            ID = model.ID;
+            Id = model.Id;
             Version = Version.Parse(model.Version);
             Mandatory = model.Mandatory;
         }
 
-        public string ID { get; }
+        public string Id { get; }
 
         public Version Version { get; }
 
@@ -26,7 +26,7 @@ namespace MCBS.Application
 
         public class Model
         {
-            public required string ID { get; set; }
+            public required string Id { get; set; }
 
             public required string Version { get; set; }
 

@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.FileExplorer.FileExplorerApp",
-  "ID": "System.FileExplorer",
+  "Id": "System.FileExplorer",
   "Name": "资源管理器",
   "Version": "1.0.0",
   "IsBackground": false,

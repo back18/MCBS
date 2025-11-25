@@ -36,7 +36,7 @@ namespace MCBS.Application
 
             Assembly = assembly;
             MainClass = type;
-            ID = model.ID;
+            Id = model.Id;
             Name = model.Name;
             Version = Version.Parse(model.Version);
             IsBackground = model.IsBackground;
@@ -88,7 +88,7 @@ namespace MCBS.Application
 
         public Type MainClass { get; }
 
-        public string ID { get; }
+        public string Id { get; }
 
         public string Name { get; }
 
@@ -119,14 +119,14 @@ namespace MCBS.Application
 
         public override string ToString()
         {
-            return $"{Name} - {ID} ({Version})";
+            return $"{Name} - {Id} ({Version})";
         }
 
         public class Model
         {
             public required string MainClass { get; set; }
 
-            public required string ID { get; set; }
+            public required string Id { get; set; }
 
             public required string Name { get; set; }
 

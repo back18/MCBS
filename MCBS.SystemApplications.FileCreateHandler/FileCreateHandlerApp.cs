@@ -13,7 +13,7 @@ namespace MCBS.SystemApplications.FileCreateHandler
 {
     public class FileCreateHandlerApp : IProgram
     {
-        public const string ID = "System.FileCreateHandler";
+        public const string Id = "System.FileCreateHandler";
 
         public const string Name = "文件新建处理程序";
 

@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.QRCodeGenerator.QRCodeGeneratorApp",
-  "ID": "System.QRCodeGenerator",
+  "Id": "System.QRCodeGenerator",
   "Name": "二维码生成器",
   "Version": "1.0.0",
   "IsBackground": false,

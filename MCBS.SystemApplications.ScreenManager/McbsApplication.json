@@ -1,6 +1,6 @@
 {
   "MainClass": "MCBS.SystemApplications.ScreenManager.ScreenManagerApp",
-  "ID": "System.ScreenManager",
+  "Id": "System.ScreenManager",
   "Name": "屏幕管理器",
   "Version": "1.0.0",
   "IsBackground": false,
