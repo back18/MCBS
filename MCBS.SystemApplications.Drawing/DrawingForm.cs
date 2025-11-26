@@ -37,8 +37,8 @@ namespace MCBS.SystemApplications.Drawing
             Save_Button = new();
             DrawingBox = new();
 
-            MinSize = 4;
-            MaxSize = 4096;
+            MinImageSize = 4;
+            MaxImageSize = 4096;
         }
 
         private string? _save;
@@ -71,9 +71,9 @@ namespace MCBS.SystemApplications.Drawing
 
         private readonly DrawingBox<Rgba32> DrawingBox;
 
-        public int MinSize { get; set; }
+        public int MinImageSize { get; set; }
 
-        public int MaxSize { get; set; }
+        public int MaxImageSize { get; set; }
 
         public override void Initialize()
         {
@@ -245,9 +245,9 @@ namespace MCBS.SystemApplications.Drawing
                 if (size == dialogBox.DefaultResult)
                     return;
 
-                if (size.Width < MinSize || size.Height < MinSize || size.Width > MaxSize || size.Height > MaxSize)
+                if (size.Width < MinImageSize || size.Height < MinImageSize || size.Width > MaxImageSize || size.Height > MaxImageSize)
                 {
-                    _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", $"图片尺寸需要在{MinSize}至{MaxSize}之间", MessageBoxButtons.OK);
+                    _ = DialogBoxHelper.OpenMessageBoxAsync(this, "温馨提醒", $"图片尺寸需要在{MinImageSize}至{MaxImageSize}之间", MessageBoxButtons.OK);
                     return;
                 }
 

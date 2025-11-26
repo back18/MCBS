@@ -80,8 +80,6 @@ namespace MCBS.ConsoleTerminal
 
         public void Submit(CommandLog commandLog)
         {
-            ArgumentNullException.ThrowIfNull(commandLog, nameof(commandLog));
-
             _queue.Enqueue(commandLog);
         }
 

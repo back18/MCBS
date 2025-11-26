@@ -479,8 +479,6 @@ namespace MCBS
 
         public ScreenContext BuildScreen(Screen screen, Guid guid = default)
         {
-            ArgumentNullException.ThrowIfNull(screen, nameof(screen));
-
             ProcessContext processContext = ProcessManager.StartServicesProcess();
             IScreenView screenView = ((IServicesProgram)processContext.Program).ScreenView;
             return ScreenManager.LoadScreen(screen, screenView, guid);

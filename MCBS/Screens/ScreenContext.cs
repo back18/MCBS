@@ -29,7 +29,6 @@ namespace MCBS.Screens
 
         internal ScreenContext(Screen screen, IScreenView screenView, Guid guid)
         {
-            ArgumentNullException.ThrowIfNull(screen, nameof(screen));
             ArgumentNullException.ThrowIfNull(screenView, nameof(screenView));
 
             if (guid == default)

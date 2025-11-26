@@ -102,7 +102,6 @@ namespace MCBS.Screens
 
         public ScreenContext LoadScreen(Screen screen, IScreenView screenView, Guid guid = default)
         {
-            ArgumentNullException.ThrowIfNull(screen, nameof(screen));
             ArgumentNullException.ThrowIfNull(screenView, nameof(screenView));
 
             lock (Collection)
