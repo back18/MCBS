@@ -106,6 +106,8 @@ namespace MCBS.Interaction
                 _items = new();
             }
 
+            private readonly Lock _lock = new();
+
             private readonly InteractionManager _owner;
 
             private readonly ConcurrentDictionary<string, InteractionContext> _items;
@@ -124,7 +126,7 @@ namespace MCBS.Interaction
 
             public InteractionContext Add(string playerName)
             {
-                lock (_items)
+                lock (_lock)
                 {
                     InteractionContext interactionContext = new(playerName);
                     _items.TryAdd(playerName, interactionContext);
@@ -135,7 +137,7 @@ namespace MCBS.Interaction
 
             public bool Remove(string playerName)
             {
-                lock (_items)
+                lock (_lock)
                 {
                     if (!_items.TryRemove(playerName, out var interactionContext))
                         return false;

@@ -25,7 +25,7 @@ namespace MCBS.Cursor.Style
             _items = items;
         }
 
-        private static readonly object _slock = new();
+        private static readonly Lock _slock = new();
 
         public static bool IsInstanceLoaded => _Instance is not null;
 

@@ -22,6 +22,8 @@ namespace MCBS.Processes
             RemovedProcess += OnRemovedProcess;
         }
 
+        private readonly Lock _lock = new();
+
         public ProcessCollection Collection { get; }
 
         public event EventHandler<ProcessManager, EventArgs<ProcessContext>> AddedProcess;
@@ -39,7 +41,7 @@ namespace MCBS.Processes
                 processContext.OnTickUpdate(tick);
                 if (processContext.ProcessState == ProcessState.Stopped)
                 {
-                    lock (Collection)
+                    lock (_lock)
                         Collection.RemoveProcess(processContext);
                 }
             }
@@ -55,7 +57,7 @@ namespace MCBS.Processes
             ArgumentNullException.ThrowIfNull(applicationManifest, nameof(applicationManifest));
             ArgumentNullException.ThrowIfNull(args, nameof(args));
 
-            lock (Collection)
+            lock (_lock)
             {
                 Guid guid = Collection.PreGenerateGuid();
                 ProcessContext processContext = new(applicationManifest, guid, args, initiator);

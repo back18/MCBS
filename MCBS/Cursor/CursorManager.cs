@@ -12,8 +12,10 @@ namespace MCBS.Cursor
     {
         public CursorManager()
         {
-            _items = new();
+            _items = [];
         }
+
+        private readonly Lock _lock = new();
 
         private readonly Dictionary<string, CursorContext> _items;
 
@@ -29,7 +31,7 @@ namespace MCBS.Cursor
         {
             ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
 
-            lock (_items)
+            lock (_lock)
             {
                 if (_items.TryGetValue(key, out var context))
                     return context;

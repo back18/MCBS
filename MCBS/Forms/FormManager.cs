@@ -21,6 +21,8 @@ namespace MCBS.Forms
             RemovedForm += OnRemovedForm;
         }
 
+        private readonly Lock _lock = new();
+
         public FormCollection Collection { get; }
 
         public event EventHandler<FormManager, EventArgs<FormContext>> AddedForm;
@@ -38,7 +40,7 @@ namespace MCBS.Forms
                 formContext.OnTickUpdate(tick);
                 if (formContext.FormState == FormState.Closed)
                 {
-                    lock (Collection)
+                    lock (_lock)
                         Collection.RemoveForm(formContext);
                 }
             }
@@ -49,7 +51,7 @@ namespace MCBS.Forms
             ArgumentNullException.ThrowIfNull(program, nameof(program));
             ArgumentNullException.ThrowIfNull(form, nameof(form));
 
-            lock (Collection)
+            lock (_lock)
             {
                 Guid guid = Collection.PreGenerateGuid();
                 FormContext formContext = new(program, form, guid);

@@ -27,6 +27,8 @@ namespace MCBS.Screens
             RemovedScreen += OnRemovedScreen;
         }
 
+        private readonly Lock _lock = new();
+
         public ScreenCollection Collection { get; }
 
         public ScreenOutputHandler ScreenOutputHandler { get; }
@@ -91,7 +93,7 @@ namespace MCBS.Screens
                 {
                     Guid guid = screenContext.Guid;
 
-                    lock (Collection)
+                    lock (_lock)
                         Collection.RemoveScreen(guid);
 
                     if (screenContext.IsRestarting)
@@ -104,7 +106,7 @@ namespace MCBS.Screens
         {
             ArgumentNullException.ThrowIfNull(screenView, nameof(screenView));
 
-            lock (Collection)
+            lock (_lock)
             {
                 if (guid == default)
                     guid = Collection.PreGenerateGuid();

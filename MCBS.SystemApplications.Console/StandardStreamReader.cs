@@ -19,13 +19,15 @@ namespace MCBS.SystemApplications.Console
             _output = new();
         }
 
+        private readonly Lock _lock = new();
+
         private readonly StreamReader _streamReader;
 
         private readonly StringBuilder _output;
 
         public string GetOutput()
         {
-            lock (_output)
+            lock (_lock)
             {
                 if (_output.Length == 0)
                     return string.Empty;
