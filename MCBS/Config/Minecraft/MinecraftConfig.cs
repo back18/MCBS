@@ -24,7 +24,7 @@ namespace MCBS.Config.Minecraft
 
             MinecraftPath = model.MinecraftPath;
             MinecraftVersion = model.MinecraftVersion;
-            IsClient = model.IsClient;
+            IsServer = model.IsServer;
             ServerAddress = model.ServerAddress;
             ServerPort = (ushort)model.ServerPort;
             Language = model.Language;
@@ -40,7 +40,7 @@ namespace MCBS.Config.Minecraft
 
         public string MinecraftVersion { get; }
 
-        public bool IsClient { get; }
+        public bool IsServer { get; }
 
         public string ServerAddress { get; }
 
@@ -71,7 +71,7 @@ namespace MCBS.Config.Minecraft
             {
                 MinecraftPath = MinecraftPath,
                 MinecraftVersion = MinecraftVersion,
-                IsClient = IsClient,
+                IsServer = IsServer,
                 ServerAddress = ServerAddress,
                 ServerPort = ServerPort,
                 Language = Language,
@@ -116,9 +116,9 @@ namespace MCBS.Config.Minecraft
         {
             public Model()
             {
-                MinecraftPath = "";
+                MinecraftPath = string.Empty;
                 MinecraftVersion = "1.20.1";
-                IsClient = true;
+                IsServer = false;
                 ServerAddress = "localhost";
                 ServerPort = 25565;
                 Language = "zh_cn";
@@ -130,57 +130,60 @@ namespace MCBS.Config.Minecraft
                 ConsoleModeConfig = Minecraft.ConsoleModeConfig.Model.CreateDefault();
             }
 
-            [Display(Name = "Minecraft路径", Description = "用于确定Minecra主目录所在路径\n\".\"为程序工作目录\n\"..\"为程序工作目录的上一层目录")]
+            [Display(Order = 0, Name = "Minecraft路径", Description = "用于确定Minecraft主目录的所在路径\n如果启用了版本隔离，请将目录路径设置为\".minecraft\\versions\\<实例名>\\\"\n并注意toml字符串的斜杠符号\'\\\'需要转义")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             [DirectoryExists]
             public string MinecraftPath { get; set; }
 
-            [Display(Name = "Minecraft版本", Description = "用于确定Minecraft的游戏版本")]
+            [Display(Order = 1, Name = "Minecraft版本", Description = "用于确定Minecraft的游戏版本")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string MinecraftVersion { get; set; }
 
-            [Display(Name = "Minecraft类型", Description = "用于确定Minecraft是服务端还是客户端")]
+            [Display(Order = 2, Name = "是否为服务端", Description = "用于确定Minecraft是服务端还是客户端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-            public bool IsClient { get; set; }
+            public bool IsServer { get; set; }
 
-            [Display(Name = "Minecraft服务器地址", Description = "也作为RCON地址以及MCAPI地址\n由于一般情况下MCBS与Minecraft均运行在同一台主机\n因此将其设置为localhost即可")]
-            [RequiredIf(nameof(IsClient), CompareOperator.Equal, false, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [Display(Order = 3, Name = "服务器地址", Description = "也作为RCON地址以及MCAPI地址\n由于一般情况下MCBS与Minecraft均运行在同一台主机\n因此将其设置为localhost即可")]
+            [RequiredIf(nameof(IsServer), CompareOperator.Equal, true, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string ServerAddress { get; set; }
 
-            [Display(Name = "Minecraft服务器端口")]
-            [RequiredIf(nameof(IsClient), CompareOperator.Equal, false, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
+            [Display(Order = 4, Name = "服务器端口")]
+            [RequiredIf(nameof(IsServer), CompareOperator.Equal, true, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int ServerPort { get; set; }
 
-            [Display(Name = "语言标识", Description = "服务端语言默认为en_us，客户端根据选择的语言设置\n主要影响命令结果文本的解析\n语言文件目录: MCBS\\Minecraft\\Vanilla\\{版本}\\Languages\\")]
+            [Display(Order = 5, Name = "语言标识", Description = "服务端语言默认为en_us，客户端根据选择的语言设置\n主要影响命令执行结果文本的解析\n语言文件目录: MCBS\\Minecraft\\Vanilla\\{版本}\\Languages\\")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Language { get; set; }
 
-            [Display(Name = "资源包列表", Description = "程序会根据资源包列表按照顺序加载资源包文件\n支持的文件类型: 客户端核心.jar, 服务端核心.jar, 模组文件.jar, 资源包.zip\n资源包目录: MCBS\\Minecraft\\ResourcePacks\\")]
+            [Display(Order = 6, Name = "资源包列表", Description = "程序会根据资源包列表按照顺序加载资源包文件\n支持的文件类型: 客户端核心.jar, 服务端核心.jar, 模组文件.jar, 资源包.zip\n资源包目录: MCBS\\Minecraft\\ResourcePacks\\")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ResourcePackList { get; set; }
 
-            [Display(Name = "下载源", Description = "用于确定下载Minecraft游戏资源时使用的下载源")]
+            [Display(Order = 7, Name = "下载源", Description = "用于确定下载Minecraft的游戏资源时使用的下载源")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             [NewAllowedValues(DownloadSources.MOJANG, DownloadSources.BMCLAPI, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
             public string DownloadSource { get; set; }
 
-            [Display(Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信，支持服务端和客户端\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端")]
+            [Display(Order = 8, Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信，支持服务端和客户端\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             [NewAllowedValues(CommunicationModes.MCAPI, CommunicationModes.RCON, CommunicationModes.CONSOLE, CommunicationModes.HYBRID, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
-            [AllowedValuesIf(nameof(IsClient), CompareOperator.Equal, true, CommunicationModes.MCAPI)]
+            [AllowedValuesIf(nameof(IsServer), CompareOperator.Equal, false, CommunicationModes.MCAPI)]
             public string CommunicationMode { get; set; }
 
-            [Display(Name = "MCAPI模式配置")]
+            [ConfigGroup]
+            [Display(Order = 9, Name = "MCAPI模式配置")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.MCAPI, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public McapiModeConfig.Model McapiModeConfig { get; set; }
 
-            [Display(Name = "RCON模式配置")]
+            [ConfigGroup]
+            [Display(Order = 10, Name = "RCON模式配置")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.RCON, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.HYBRID, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public RconModeConfig.Model RconModeConfig { get; set; }
 
-            [Display(Name = "CONSOLE模式配置")]
+            [ConfigGroup]
+            [Display(Order = 11, Name = "CONSOLE模式配置")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.CONSOLE, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.HYBRID, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public ConsoleModeConfig.Model ConsoleModeConfig { get; set; }

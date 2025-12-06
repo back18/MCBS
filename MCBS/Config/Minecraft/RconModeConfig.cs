@@ -45,11 +45,11 @@ namespace MCBS.Config.Minecraft
                 Password = string.Empty;
             }
 
-            [Display(Name = "RCON端口")]
+            [Display(Order = 0, GroupName = nameof(MinecraftConfig), Name = "RCON端口")]
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int Port { get; set; }
 
-            [Display(Name = "RCON密码")]
+            [Display(Order = 1, GroupName = nameof(MinecraftConfig), Name = "RCON密码")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Password { get; set; }
 

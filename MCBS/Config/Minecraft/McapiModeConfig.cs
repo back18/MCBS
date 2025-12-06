@@ -50,15 +50,15 @@ namespace MCBS.Config.Minecraft
                 Password = string.Empty;
             }
 
-            [Display(Name = "MCAPI地址")]
+            [Display(Order = 0, GroupName = nameof(MinecraftConfig), Name = "MCAPI地址")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Address { get; set; }
 
-            [Display(Name = "MCAPI端口")]
+            [Display(Order = 1, GroupName = nameof(MinecraftConfig), Name = "MCAPI端口")]
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int Port { get; set; }
 
-            [Display(Name = "MCAPI密码")]
+            [Display(Order = 2, GroupName = nameof(MinecraftConfig), Name = "MCAPI密码")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Password { get; set; }
 

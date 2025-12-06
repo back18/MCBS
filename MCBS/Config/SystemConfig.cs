@@ -19,7 +19,7 @@ namespace MCBS.Config
         {
             NullValidator.ValidateObject(model, nameof(model));
 
-            CrashAutoRestart = model.CrashAutoRestart;
+            AutoRestart = model.AutoRestart;
             BuildColorMappingCaches = model.BuildColorMappingCaches;
             EnableCompressionCache = model.EnableCompressionCache;
             LoadDllAppComponents = model.LoadDllAppComponents;
@@ -28,7 +28,7 @@ namespace MCBS.Config
             StartupChecklist = model.StartupChecklist.AsReadOnly();
         }
 
-        public bool CrashAutoRestart { get; }
+        public bool AutoRestart { get; }
 
         public bool BuildColorMappingCaches { get; }
 
@@ -61,7 +61,7 @@ namespace MCBS.Config
         {
             return new()
             {
-                CrashAutoRestart = CrashAutoRestart,
+                AutoRestart = AutoRestart,
                 BuildColorMappingCaches = BuildColorMappingCaches,
                 LoadDllAppComponents = LoadDllAppComponents,
                 SystemAppComponents = SystemAppComponents.ToArray(),
@@ -74,7 +74,7 @@ namespace MCBS.Config
         {
             public Model()
             {
-                CrashAutoRestart = false;
+                AutoRestart = false;
                 BuildColorMappingCaches = true;
                 EnableCompressionCache = false;
                 LoadDllAppComponents = false;
@@ -103,27 +103,27 @@ namespace MCBS.Config
                 StartupChecklist = ["System.Desktop"];
             }
 
-            [Display(Name = "崩溃时是否自动重启")]
-            public bool CrashAutoRestart { get; set; }
+            [Display(Order = 0, Name = "自动重启", Description = "启用后，将在系统发生错误时自动重启系统")]
+            public bool AutoRestart { get; set; }
 
-            [Display(Name = "启动时是否构建Minecraft方块颜色映射表缓存")]
+            [Display(Order = 1, Name = "缓存构建", Description = "启用后，将在启动时自动构建Minecraft方块颜色映射表缓存")]
             public bool BuildColorMappingCaches { get; set; }
 
-            [Display(Name = "是否启用压缩缓存，启用后大幅降低缓存内存占用，但会降低一些执行效率")]
+            [Display(Order = 2, Name = "缓存压缩", Description = "启用后，将使用压缩后的缓存，大幅降低缓存内存占用，但会造成一些执行性能损失")]
             public bool EnableCompressionCache { get; set; }
 
-            [Display(Name = "是否加载“MCBS\\DllAppComponents\\”目录下的DLL应用程序")]
+            [Display(Order = 3, Name = "加载外部应用", Description = "启用后，将加载“MCBS\\DllAppComponents\\”目录下的DLL应用程序组件，请确保已完全信任DLL文件的提供者")]
             public bool LoadDllAppComponents { get; set; }
 
-            [Display(Name = "系统应用程序组件加载列表")]
+            [Display(Order = 4, Name = "系统应用列表")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] SystemAppComponents { get; set; }
 
-            [Display(Name = "系统服务AppID")]
+            [Display(Order = 5, Name = "系统服务应用")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string ServicesAppId { get; set; }
 
-            [Display(Name = "启动项AppID列表")]
+            [Display(Order = 6, Name = "启动项应用列表")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] StartupChecklist { get; set; }
 

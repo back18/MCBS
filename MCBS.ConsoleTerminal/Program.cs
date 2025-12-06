@@ -106,19 +106,7 @@ namespace MCBS.ConsoleTerminal
         {
             try
             {
-                if (config.IsClient)
-                {
-                    if (config.CommunicationMode == CommunicationModes.MCAPI)
-                        return new McapiMinecraftClient(
-                            config.MinecraftPath,
-                            config.McapiModeConfig.Address,
-                            config.McapiModeConfig.Port,
-                            config.McapiModeConfig.Password,
-                            loggerProvider);
-                    else
-                        throw new InvalidOperationException();
-                }
-                else
+                if (config.IsServer)
                 {
                     return config.CommunicationMode switch
                     {
@@ -157,6 +145,18 @@ namespace MCBS.ConsoleTerminal
                             loggerProvider),
                         _ => throw new InvalidOperationException(),
                     };
+                }
+                else
+                {
+                    if (config.CommunicationMode == CommunicationModes.MCAPI)
+                        return new McapiMinecraftClient(
+                            config.MinecraftPath,
+                            config.McapiModeConfig.Address,
+                            config.McapiModeConfig.Port,
+                            config.McapiModeConfig.Password,
+                            loggerProvider);
+                    else
+                        throw new InvalidOperationException();
                 }
             }
             catch (Exception ex)

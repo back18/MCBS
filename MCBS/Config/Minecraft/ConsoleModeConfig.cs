@@ -54,15 +54,15 @@ namespace MCBS.Config.Minecraft
                 ];
             }
 
-            [Display(Name = "Java路径", Description = "启动Minecraft服务端进程所使用的Java路径")]
+            [Display(Order = 0, GroupName = nameof(MinecraftConfig), Name = "Java路径", Description = "启动Minecraft服务端进程所使用的Java路径")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string JavaPath { get; set; }
 
-            [Display(Name = "启动参数", Description = "启动Minecraft服务端进程所使用的启动参数")]
+            [Display(Order = 1, GroupName = nameof(MinecraftConfig), Name = "启动参数", Description = "启动Minecraft服务端进程所使用的启动参数")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string LaunchArguments { get; set; }
 
-            [Display(Name = "正则表达式日志过滤器", Description = "使用正则表达式过滤日志输出")]
+            [Display(Order = 2, GroupName = nameof(MinecraftConfig), Name = "正则表达式日志过滤器", Description = "使用正则表达式过滤日志输出")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] MclogRegexFilter { get; set; }
 
