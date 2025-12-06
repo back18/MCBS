@@ -1,0 +1,27 @@
+﻿<ui:Page x:Class="MCBS.WpfApp.Pages.Settings.MinecraftSettingsPage"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+         xmlns:local="clr-namespace:MCBS.WpfApp.Pages.Settings"
+         xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+         xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels.Settings"
+         mc:Ignorable="d" 
+         d:DataContext="{d:DesignInstance Type=viewmodels:MinecraftSettingsViewModel}"
+         d:DesignHeight="450" d:DesignWidth="800"
+         Title="MinecraftSettingsPage"
+         Loaded="Page_Loaded">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding SaveCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <TextBlock Text="MinecraftSettings Page"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="24"/>
+    </Grid>
+</ui:Page>
