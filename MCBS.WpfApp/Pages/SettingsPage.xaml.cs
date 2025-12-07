@@ -27,7 +27,7 @@ namespace MCBS.WpfApp.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            DataContext ??= new SettingsViewModel(this);
+            DataContext ??= new SettingsViewModel(NavigationService, typeof(SettingsPage));
         }
     }
 }

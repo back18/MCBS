@@ -20,24 +20,29 @@ namespace MCBS.WpfApp.Pages.Settings
     /// </summary>
     public partial class ApplicationSettingsPage : Page, INavigationPage
     {
-        public ApplicationSettingsPage(Page parentPage, IConfigProvider configProvider)
+        public ApplicationSettingsPage(Type parentPageType, IConfigProvider configProvider)
         {
-            ArgumentNullException.ThrowIfNull(parentPage, nameof(parentPage));
+            ArgumentNullException.ThrowIfNull(parentPageType, nameof(parentPageType));
             ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
 
-            _parentPage = parentPage;
+            _parentPageType = parentPageType;
             _configProvider = configProvider;
 
             InitializeComponent();
         }
 
-        private readonly Page _parentPage;
+        private readonly Type _parentPageType;
 
         private readonly IConfigProvider _configProvider;
 
-        public Page GetParentPage()
+        public INavigationPage? GetParentPage()
         {
-            return _parentPage;
+            return null;
+        }
+
+        public Type GetParentPageType()
+        {
+            return _parentPageType;
         }
     }
 }

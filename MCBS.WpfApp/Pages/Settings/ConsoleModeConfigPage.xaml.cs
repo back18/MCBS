@@ -21,7 +21,7 @@ namespace MCBS.WpfApp.Pages.Settings
     /// </summary>
     public partial class ConsoleModeConfigPage : Page, INavigationPage
     {
-        public ConsoleModeConfigPage(Page parentPage, IConfigService configService)
+        public ConsoleModeConfigPage(INavigationPage parentPage, IConfigService configService)
         {
             ArgumentNullException.ThrowIfNull(parentPage, nameof(parentPage));
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
@@ -32,15 +32,20 @@ namespace MCBS.WpfApp.Pages.Settings
             InitializeComponent();
         }
 
-        private readonly Page _parentPage;
+        private readonly INavigationPage _parentPage;
 
         private readonly IConfigService _configService;
 
         private ConsoleModeConfigViewModel? _viewModel;
 
-        public Page GetParentPage()
+        public INavigationPage? GetParentPage()
         {
             return _parentPage;
+        }
+
+        public Type GetParentPageType()
+        {
+            return _parentPage.GetType();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)

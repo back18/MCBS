@@ -4,20 +4,21 @@ using MCBS.WpfApp.Config;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Page = iNKORE.UI.WPF.Modern.Controls.Page;
+using System.Windows.Navigation;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
     public class SettingsViewModel : ObservableObject
     {
-        public SettingsViewModel(Page page)
+        public SettingsViewModel(NavigationService navigationService, Type pageType)
         {
-            ArgumentNullException.ThrowIfNull(page, nameof(page));
+            ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
+            ArgumentNullException.ThrowIfNull(pageType, nameof(pageType));
 
             _pageCreateFactory = new PageCreateFactory();
             _configProvider = new ConfigProvider();
 
-            PageNavigateCommand = new(page.Frame, _pageCreateFactory, [page, _configProvider]);
+            PageNavigateCommand = new(navigationService, _pageCreateFactory, [pageType, _configProvider]);
         }
 
         private readonly IPageCreateFactory _pageCreateFactory;

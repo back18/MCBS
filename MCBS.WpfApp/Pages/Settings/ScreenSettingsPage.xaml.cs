@@ -22,26 +22,31 @@ namespace MCBS.WpfApp.Pages.Settings
     /// </summary>
     public partial class ScreenSettingsPage : Page, INavigationPage
     {
-        public ScreenSettingsPage(Page parentPage, IConfigProvider configProvider)
+        public ScreenSettingsPage(Type parentPageType, IConfigProvider configProvider)
         {
-            ArgumentNullException.ThrowIfNull(parentPage, nameof(parentPage));
+            ArgumentNullException.ThrowIfNull(parentPageType, nameof(parentPageType));
             ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
 
-            _parentPage = parentPage;
+            _parentPageType = parentPageType;
             _configProvider = configProvider;
 
             InitializeComponent();
         }
 
-        private readonly Page _parentPage;
+        private readonly Type _parentPageType;
 
         private readonly IConfigProvider _configProvider;
 
         private ScreenSettingsViewModel? _viewModel;
 
-        public Page GetParentPage()
+        public INavigationPage? GetParentPage()
         {
-            return _parentPage;
+            return null;
+        }
+
+        public Type GetParentPageType()
+        {
+            return _parentPageType;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)

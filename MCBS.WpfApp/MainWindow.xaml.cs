@@ -40,7 +40,7 @@ namespace MCBS.WpfApp
 
             if (content is not null && content.GetType().Equals(pageType))
                 return;
-            else if (content is INavigationPage navigationPage && GetRootPage(navigationPage).GetType().Equals(pageType))
+            else if (content is INavigationPage navigationPage && GetRootPageType(navigationPage).Equals(pageType))
                 return;
 
             if (args.IsSettingsSelected)
@@ -61,11 +61,7 @@ namespace MCBS.WpfApp
             if (e.Content is not Page page)
                 return;
 
-            if (page is INavigationPage navigationPage)
-                page = GetRootPage(navigationPage);
-
-            Type pageType = page.GetType();
-
+            Type pageType = page is INavigationPage navigationPage ? GetRootPageType(navigationPage) : page.GetType();
             if (pageType.Equals(typeof(SettingsPage)))
             {
                 MainNavigationView.SelectedItem = MainNavigationView.SettingsItem;
@@ -95,15 +91,14 @@ namespace MCBS.WpfApp
             return null;
         }
 
-        private static Page GetRootPage(INavigationPage navigationPage)
+        private static Type GetRootPageType(INavigationPage navigationPage)
         {
             ArgumentNullException.ThrowIfNull(navigationPage, nameof(navigationPage));
 
-            Page page = navigationPage.GetParentPage();
-            if (page is INavigationPage navigationPage2)
-                return GetRootPage(navigationPage2);
+            if (navigationPage.GetParentPage() is INavigationPage navigationPage2)
+                return GetRootPageType(navigationPage2);
             else
-                return page;
+                return navigationPage.GetParentPageType();
         }
     }
 }

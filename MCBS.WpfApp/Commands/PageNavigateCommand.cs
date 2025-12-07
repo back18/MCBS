@@ -2,25 +2,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Navigation;
 using Page = iNKORE.UI.WPF.Modern.Controls.Page;
-using Frame = iNKORE.UI.WPF.Modern.Controls.Frame;
 
 namespace MCBS.WpfApp.Commands
 {
     public class PageNavigateCommand : IRelayCommand
     {
-        public PageNavigateCommand(Frame frame, IPageCreateFactory pageCreateFactory, object?[]? args = null, Func<object?, bool>? canExecute = null)
+        public PageNavigateCommand(NavigationService navigationService, IPageCreateFactory pageCreateFactory, object?[]? args = null, Func<object?, bool>? canExecute = null)
         {
-            ArgumentNullException.ThrowIfNull(frame, nameof(frame));
+            ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
             ArgumentNullException.ThrowIfNull(pageCreateFactory, nameof(pageCreateFactory));
 
-            _frame = frame;
+            _navigationService = navigationService;
             _pageCreateFactory = pageCreateFactory;
             _args = args;
             _canExecute = canExecute;
         }
 
-        private readonly Frame _frame;
+        private readonly NavigationService _navigationService;
 
         private readonly IPageCreateFactory _pageCreateFactory;
 
@@ -44,7 +44,7 @@ namespace MCBS.WpfApp.Commands
                 _pageCreateFactory.GetOrCreatePage(pageType, _args) :
                 _pageCreateFactory.GetOrCreatePage(pageType);
 
-            _frame.Navigate(page);
+            _navigationService.Navigate(page);
         }
 
         public void NotifyCanExecuteChanged()
