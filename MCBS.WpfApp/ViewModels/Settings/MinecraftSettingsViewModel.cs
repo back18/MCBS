@@ -33,12 +33,12 @@ namespace MCBS.WpfApp.ViewModels.Settings
             );
         }
 
-        public MinecraftSettingsViewModel(Page page, IConfigService configService)
+        public MinecraftSettingsViewModel(NavigationService navigationService, IConfigService configService)
         {
-            ArgumentNullException.ThrowIfNull(page, nameof(page));
+            ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
 
-            _page = page;
+            _navigationService = navigationService;
             _configService = configService;
 
             var model = (MinecraftConfig.Model)configService.GetCurrentConfig();
@@ -63,7 +63,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
             ValidateAllProperties();
         }
 
-        private readonly Page _page;
+        private readonly NavigationService _navigationService;
 
         private readonly IConfigService _configService;
 
@@ -151,8 +151,8 @@ namespace MCBS.WpfApp.ViewModels.Settings
                     return;
             }
 
-            Page page = _pageCreateFactory.GetOrCreatePage(pageType, _page, configService);
-            _page.Frame.Navigate(page);
+            Page page = _pageCreateFactory.GetOrCreatePage(pageType, configService);
+            _navigationService.Navigate(page);
         }
 
         private void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)

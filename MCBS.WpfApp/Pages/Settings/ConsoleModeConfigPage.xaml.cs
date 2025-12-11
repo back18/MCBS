@@ -19,34 +19,21 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// ConsoleModeConfigPage.xaml 的交互逻辑
     /// </summary>
-    public partial class ConsoleModeConfigPage : Page, INavigationPage
+    [Route(Parent = typeof(MinecraftSettingsPage))]
+    public partial class ConsoleModeConfigPage : Page
     {
-        public ConsoleModeConfigPage(INavigationPage parentPage, IConfigService configService)
+        public ConsoleModeConfigPage(IConfigService configService)
         {
-            ArgumentNullException.ThrowIfNull(parentPage, nameof(parentPage));
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
 
-            _parentPage = parentPage;
             _configService = configService;
 
             InitializeComponent();
         }
 
-        private readonly INavigationPage _parentPage;
-
         private readonly IConfigService _configService;
 
         private ConsoleModeConfigViewModel? _viewModel;
-
-        public INavigationPage? GetParentPage()
-        {
-            return _parentPage;
-        }
-
-        public Type GetParentPageType()
-        {
-            return _parentPage.GetType();
-        }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {

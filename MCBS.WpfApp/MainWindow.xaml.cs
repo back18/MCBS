@@ -1,5 +1,6 @@
 ﻿using iNKORE.UI.WPF.Modern.Controls;
 using MCBS.WpfApp.Pages;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,6 +29,8 @@ namespace MCBS.WpfApp
 
         private readonly IPageFactory _pageFactory;
 
+        private readonly Dictionary<Type, Type> _routeCache = [];
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             MainNavigationView.SelectedItem = MainNavigationView.MenuItems[0];
@@ -38,9 +41,8 @@ namespace MCBS.WpfApp
             Type? pageType = args.IsSettingsSelected ? typeof(SettingsPage) : args.SelectedItemContainer.Tag as Type;
             object? content = MainFrame.Content;
 
-            if (content is not null && content.GetType().Equals(pageType))
-                return;
-            else if (content is INavigationPage navigationPage && GetRootPageType(navigationPage).Equals(pageType))
+            if (content is not null && content.GetType() is Type type &&
+               (type.Equals(pageType) || GetRootPageType(type).Equals(pageType)))
                 return;
 
             if (args.IsSettingsSelected)
@@ -61,7 +63,7 @@ namespace MCBS.WpfApp
             if (e.Content is not Page page)
                 return;
 
-            Type pageType = page is INavigationPage navigationPage ? GetRootPageType(navigationPage) : page.GetType();
+            Type pageType = GetRootPageType(page.GetType());
             if (pageType.Equals(typeof(SettingsPage)))
             {
                 MainNavigationView.SelectedItem = MainNavigationView.SettingsItem;
@@ -91,14 +93,27 @@ namespace MCBS.WpfApp
             return null;
         }
 
-        private static Type GetRootPageType(INavigationPage navigationPage)
+        private Type GetRootPageType(Type pageType)
         {
-            ArgumentNullException.ThrowIfNull(navigationPage, nameof(navigationPage));
+            ArgumentNullException.ThrowIfNull(pageType, nameof(pageType));
 
-            if (navigationPage.GetParentPage() is INavigationPage navigationPage2)
-                return GetRootPageType(navigationPage2);
+            if (_routeCache.TryGetValue(pageType, out var cached))
+            {
+                if (cached.Equals(pageType))
+                    return cached;
+                else
+                    return GetRootPageType(cached);
+            }
+            else if (pageType.GetCustomAttribute<RouteAttribute>() is RouteAttribute route && route.Parent is Type parent)
+            {
+                _routeCache[pageType] = parent;
+                return GetRootPageType(parent);
+            }
             else
-                return navigationPage.GetParentPageType();
+            {
+                _routeCache[pageType] = pageType;
+                return pageType;
+            }
         }
     }
 }

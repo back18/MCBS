@@ -19,34 +19,21 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// RconModeConfigPage.xaml 的交互逻辑
     /// </summary>
-    public partial class RconModeConfigPage : Page, INavigationPage
+    [Route(Parent = typeof(MinecraftSettingsPage))]
+    public partial class RconModeConfigPage : Page
     {
-        public RconModeConfigPage(INavigationPage parentPage, IConfigService configService)
+        public RconModeConfigPage(IConfigService configService)
         {
-            ArgumentNullException.ThrowIfNull(parentPage, nameof(parentPage));
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
 
-            _parentPage = parentPage;
             _configService = configService;
 
             InitializeComponent();
         }
 
-        private readonly INavigationPage _parentPage;
-
         private readonly IConfigService _configService;
 
         private RconModeConfigViewModel? _viewModel;
-
-        public INavigationPage? GetParentPage()
-        {
-            return _parentPage;
-        }
-
-        public Type GetParentPageType()
-        {
-            return _parentPage.GetType();
-        }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {

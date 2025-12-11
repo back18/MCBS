@@ -20,34 +20,21 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// ScreenSettingsPage.xaml 的交互逻辑
     /// </summary>
-    public partial class ScreenSettingsPage : Page, INavigationPage
+    [Route(Parent = typeof(SettingsPage))]
+    public partial class ScreenSettingsPage : Page
     {
-        public ScreenSettingsPage(Type parentPageType, IConfigProvider configProvider)
+        public ScreenSettingsPage(IConfigProvider configProvider)
         {
-            ArgumentNullException.ThrowIfNull(parentPageType, nameof(parentPageType));
             ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
 
-            _parentPageType = parentPageType;
             _configProvider = configProvider;
 
             InitializeComponent();
         }
 
-        private readonly Type _parentPageType;
-
         private readonly IConfigProvider _configProvider;
 
         private ScreenSettingsViewModel? _viewModel;
-
-        public INavigationPage? GetParentPage()
-        {
-            return null;
-        }
-
-        public Type GetParentPageType()
-        {
-            return _parentPageType;
-        }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {

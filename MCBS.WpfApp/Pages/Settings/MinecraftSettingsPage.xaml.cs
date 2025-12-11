@@ -20,20 +20,17 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// MinecraftSettingsPage.xaml 的交互逻辑
     /// </summary>
-    public partial class MinecraftSettingsPage : Page, INavigationPage
+    [Route(Parent = typeof(SettingsPage))]
+    public partial class MinecraftSettingsPage : Page
     {
-        public MinecraftSettingsPage(Type parentPageType, IConfigProvider configProvider)
+        public MinecraftSettingsPage(IConfigProvider configProvider)
         {
-            ArgumentNullException.ThrowIfNull(parentPageType, nameof(parentPageType));
             ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
 
-            _parentPageType = parentPageType;
             _configProvider = configProvider;
 
             InitializeComponent();
         }
-
-        private readonly Type _parentPageType;
 
         private readonly IConfigProvider _configProvider;
 
@@ -57,7 +54,7 @@ namespace MCBS.WpfApp.Pages.Settings
             IConfigStorage configStorage = _configProvider.GetMinecraftConfigService();
             IConfigService configService = await configStorage.LoadOrCreateConfigAsync(true);
 
-            _viewModel = new(this, configService);
+            _viewModel = new(NavigationService, configService);
             DataContext = _viewModel;
 
             var config = configService.GetCurrentConfig();

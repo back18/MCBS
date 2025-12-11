@@ -18,31 +18,18 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// ApplicationSettingsPage.xaml 的交互逻辑
     /// </summary>
-    public partial class ApplicationSettingsPage : Page, INavigationPage
+    [Route(Parent = typeof(SettingsPage))]
+    public partial class ApplicationSettingsPage : Page
     {
-        public ApplicationSettingsPage(Type parentPageType, IConfigProvider configProvider)
+        public ApplicationSettingsPage(IConfigProvider configProvider)
         {
-            ArgumentNullException.ThrowIfNull(parentPageType, nameof(parentPageType));
             ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
 
-            _parentPageType = parentPageType;
             _configProvider = configProvider;
 
             InitializeComponent();
         }
 
-        private readonly Type _parentPageType;
-
         private readonly IConfigProvider _configProvider;
-
-        public INavigationPage? GetParentPage()
-        {
-            return null;
-        }
-
-        public Type GetParentPageType()
-        {
-            return _parentPageType;
-        }
     }
 }

@@ -10,15 +10,14 @@ namespace MCBS.WpfApp.ViewModels.Settings
 {
     public class SettingsViewModel : ObservableObject
     {
-        public SettingsViewModel(NavigationService navigationService, Type pageType)
+        public SettingsViewModel(NavigationService navigationService)
         {
             ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
-            ArgumentNullException.ThrowIfNull(pageType, nameof(pageType));
 
             _pageCreateFactory = new PageCreateFactory();
             _configProvider = new ConfigProvider();
 
-            PageNavigateCommand = new(navigationService, _pageCreateFactory, [pageType, _configProvider]);
+            PageNavigateCommand = new(navigationService, _pageCreateFactory, [_configProvider]);
         }
 
         private readonly IPageCreateFactory _pageCreateFactory;
