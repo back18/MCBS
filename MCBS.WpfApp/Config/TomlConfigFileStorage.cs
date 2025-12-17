@@ -25,7 +25,7 @@ namespace MCBS.WpfApp.Config
 
         private object? _config;
 
-        private IConfigService? _configService;
+        private ConfigService? _configService;
 
         private readonly IConfigModel _configModel;
 
@@ -38,6 +38,11 @@ namespace MCBS.WpfApp.Config
         public bool IsLoaded => _configService is not null;
 
         public event EventHandler? Saved;
+
+        public IConfigModel GetModel()
+        {
+            return _configModel;
+        }
 
         public IConfigService GetConfig()
         {

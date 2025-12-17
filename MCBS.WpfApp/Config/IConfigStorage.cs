@@ -12,6 +12,8 @@ namespace MCBS.WpfApp.Config
 
         public event EventHandler Saved;
 
+        public IConfigModel GetModel();
+
         public IConfigService GetConfig();
 
         public IConfigService CreateConfig(bool save);
