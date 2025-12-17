@@ -1,6 +1,9 @@
-﻿using MCBS.WpfApp.Config;
-using MCBS.WpfApp.Config.Extensions;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using MCBS.Config.Minecraft;
+using MCBS.WpfApp.Config;
+using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.ViewModels.Settings;
+using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,44 +24,28 @@ namespace MCBS.WpfApp.Pages.Settings
     /// MinecraftSettingsPage.xaml 的交互逻辑
     /// </summary>
     [Route(Parent = typeof(SettingsPage))]
-    public partial class MinecraftSettingsPage : Page
+    public partial class MinecraftSettingsPage : Page, INavigable
     {
-        public MinecraftSettingsPage(IConfigProvider configProvider)
+        public MinecraftSettingsPage(MinecraftSettingsViewModel viewModel)
         {
-            ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
+            ArgumentNullException.ThrowIfNull(viewModel, nameof(viewModel));
 
-            _configProvider = configProvider;
+            viewModel.Loaded += ViewModel_Loaded;
+            DataContext = viewModel;
 
             InitializeComponent();
         }
 
-        private readonly IConfigProvider _configProvider;
-
-        private MinecraftSettingsViewModel? _viewModel;
-
-        public INavigationPage? GetParentPage()
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            return null;
+            base.OnNavigatingFrom(e);
+
+            WeakReferenceMessenger.Default.Send(new PageNavigatingFromMessage(e), nameof(MinecraftConfig));
         }
 
-        public Type GetParentPageType()
+        private async void ViewModel_Loaded(object? sender, EventArgs<object> e)
         {
-            return _parentPageType;
-        }
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (_viewModel is not null)
-                return;
-
-            IConfigStorage configStorage = _configProvider.GetMinecraftConfigService();
-            IConfigService configService = await configStorage.LoadOrCreateConfigAsync(true);
-
-            _viewModel = new(NavigationService, configService);
-            DataContext = _viewModel;
-
-            var config = configService.GetCurrentConfig();
-            Content = await SettingsUIBuilder.BuildSettingsUIAsync(config);
+            Content = await SettingsUIBuilder.BuildSettingsUIAsync(e.Argument);
         }
     }
 }

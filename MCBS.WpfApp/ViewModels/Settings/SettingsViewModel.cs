@@ -1,28 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MCBS.WpfApp.Commands;
-using MCBS.WpfApp.Config;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Navigation;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
     public class SettingsViewModel : ObservableObject
     {
-        public SettingsViewModel(NavigationService navigationService)
+        public SettingsViewModel(INavigable navigable, IServiceProvider serviceProvider)
         {
-            ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
+            ArgumentNullException.ThrowIfNull(navigable, nameof(navigable));
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
 
-            _pageCreateFactory = new PageCreateFactory();
-            _configProvider = new ConfigProvider();
-
-            PageNavigateCommand = new(navigationService, _pageCreateFactory, [_configProvider]);
+            PageNavigateCommand = new(navigable, serviceProvider);
         }
-
-        private readonly IPageCreateFactory _pageCreateFactory;
-
-        private readonly IConfigProvider _configProvider;
 
         public PageNavigateCommand PageNavigateCommand { get; }
     }

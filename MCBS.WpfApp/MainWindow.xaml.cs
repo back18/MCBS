@@ -1,5 +1,9 @@
-﻿using iNKORE.UI.WPF.Modern.Controls;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using iNKORE.UI.WPF.Modern.Controls;
+using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Pages;
+using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -18,18 +22,22 @@ namespace MCBS.WpfApp
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INavigable
     {
-        public MainWindow()
+        public MainWindow(IServiceProvider serviceProvider)
         {
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
+
             InitializeComponent();
 
-            _pageFactory = new PageFactory();
+            _serviceProvider = serviceProvider;
         }
 
-        private readonly IPageFactory _pageFactory;
+        private readonly IServiceProvider _serviceProvider;
 
         private readonly Dictionary<Type, Type> _routeCache = [];
+
+        public NavigationService NavigationService => MainFrame.NavigationService;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -47,10 +55,10 @@ namespace MCBS.WpfApp
 
             if (args.IsSettingsSelected)
             {
-                SettingsPage settingsPage = _pageFactory.GetPage<SettingsPage>();
+                SettingsPage settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
                 MainFrame.Navigate(settingsPage);
             }
-            else if (pageType is not null && _pageFactory.TryGetPage(pageType, out var page))
+            else if (pageType is not null && _serviceProvider.GetService(pageType) is Page page)
             {
                 MainFrame.Navigate(page);
             }
@@ -78,6 +86,11 @@ namespace MCBS.WpfApp
         {
             if (MainFrame.CanGoBack)
                 MainFrame.GoBack();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            WeakReferenceMessenger.Default.Send(new MainWindowClosingMessage(e));
         }
 
         private NavigationViewItem? NavigationViewItemOf(Type pageType)

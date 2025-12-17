@@ -1,83 +1,65 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using MCBS.Config.Constants;
 using MCBS.Config.Minecraft;
 using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Config.Extensions;
+using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Pages.Settings;
+using MCBS.WpfApp.Services;
+using Microsoft.Extensions.DependencyInjection;
 using QuanLib.Core;
+using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Page = iNKORE.UI.WPF.Modern.Controls.Page;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class MinecraftSettingsViewModel : ObservableValidator
+    public partial class MinecraftSettingsViewModel : ConfigServiceViewModel
     {
         private const string McapiModeConfigIdentifier = nameof(MinecraftConfig.McapiModeConfig);
         private const string RconModeConfigIdentifier = nameof(MinecraftConfig.RconModeConfig);
         private const string ConsoleModeConfigIdentifier = nameof(MinecraftConfig.ConsoleModeConfig);
 
-        static MinecraftSettingsViewModel()
+        public MinecraftSettingsViewModel(
+            IServiceProvider serviceProvider,
+            INavigable navigable,
+            IMessageBoxService messageBoxService,
+            [FromKeyedServices(typeof(MinecraftConfig))] IConfigStorage configStorage) : base(messageBoxService)
         {
-            _lazyProperties = new Lazy<ReadOnlyDictionary<string, PropertyInfo>>(
-                () => ReflectionHelper.GetObservableProperties(typeof(MinecraftSettingsViewModel)).AsReadOnly(),
-                LazyThreadSafetyMode.ExecutionAndPublication
-            );
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
+            ArgumentNullException.ThrowIfNull(navigable, nameof(navigable));
+            ArgumentNullException.ThrowIfNull(messageBoxService, nameof(messageBoxService));
+            ArgumentNullException.ThrowIfNull(configStorage, nameof(configStorage));
+
+            _serviceProvider = serviceProvider;
+            _navigable = navigable;
+            _configStorage = configStorage;
+            var model = (MinecraftConfig.Model)configStorage.GetModel().CreateDefault();
+
+            UpdateFromModel(model);
+
+            WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(MinecraftConfig));
+            WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
         }
 
-        public MinecraftSettingsViewModel(NavigationService navigationService, IConfigService configService)
-        {
-            ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
-            ArgumentNullException.ThrowIfNull(configService, nameof(configService));
+        private readonly IServiceProvider _serviceProvider;
 
-            _navigationService = navigationService;
-            _configService = configService;
+        private readonly INavigable _navigable;
 
-            var model = (MinecraftConfig.Model)configService.GetCurrentConfig();
-            MinecraftPath = model.MinecraftPath;
-            MinecraftVersion = model.MinecraftVersion;
-            IsServer = model.IsServer;
-            ServerAddress = model.ServerAddress;
-            ServerPort = model.ServerPort;
-            Language = model.Language;
-            ResourcePackList = new ObservableCollection<string>(model.ResourcePackList);
-            DownloadSource = model.DownloadSource;
-            CommunicationMode = model.CommunicationMode;
+        private readonly IConfigStorage _configStorage;
 
-            _mcapiModeConfigService = configService.CreateSubservices(model.McapiModeConfig);
-            _rconModeConfigService = configService.CreateSubservices(model.RconModeConfig);
-            _consoleModeConfigService = configService.CreateSubservices(model.ConsoleModeConfig);
-            _pageCreateFactory = new PageCreateFactory();
+        protected override IConfigService? ConfigService { get; set; }
 
-            ResourcePackList.CollectionChanged += CollectionChanged;
-            PropertyChanged += ObservablePropertyChanged;
-
-            ValidateAllProperties();
-        }
-
-        private readonly NavigationService _navigationService;
-
-        private readonly IConfigService _configService;
-
-        private readonly IConfigService _mcapiModeConfigService;
-
-        private readonly IConfigService _rconModeConfigService;
-
-        private readonly IConfigService _consoleModeConfigService;
-
-        private readonly IPageCreateFactory _pageCreateFactory;
-
-        private static readonly Lazy<ReadOnlyDictionary<string, PropertyInfo>> _lazyProperties;
-
-        private static ReadOnlyDictionary<string, PropertyInfo> Properties => _lazyProperties.Value;
+        public event EventHandler<EventArgs<object>>? Loaded;
 
         [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
@@ -104,8 +86,9 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
         public partial string Language { get; set; }
 
+        [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-        public ObservableCollection<string> ResourcePackList { get; set; }
+        public partial ObservableCollection<string> ResourcePackList { get; set; }
 
         [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
@@ -118,11 +101,46 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [AllowedValuesIf(nameof(IsServer), CompareOperator.Equal, false, CommunicationModes.MCAPI)]
         public partial string CommunicationMode { get; set; }
 
-        [RelayCommand]
-        public async Task Save()
+        [MemberNotNull([
+            nameof(MinecraftPath),
+            nameof(MinecraftVersion),
+            nameof(ServerAddress),
+            nameof(Language),
+            nameof(ResourcePackList),
+            nameof(DownloadSource),
+            nameof(CommunicationMode)])]
+        private void UpdateFromModel(MinecraftConfig.Model model)
         {
-            if (_configService.IsModified)
-                await _configService.GetConfigStorage().SaveConfigAsync();
+            MinecraftPath = model.MinecraftPath;
+            MinecraftVersion = model.MinecraftVersion;
+            IsServer = model.IsServer;
+            ServerAddress = model.ServerAddress;
+            ServerPort = model.ServerPort;
+            Language = model.Language;
+            ResourcePackList = new ObservableCollection<string>(model.ResourcePackList);
+            DownloadSource = model.DownloadSource;
+            CommunicationMode = model.CommunicationMode;
+        }
+
+        [RelayCommand]
+        public async Task Load()
+        {
+            if (ConfigService is not null)
+                return;
+
+            ConfigService = await _configStorage.LoadOrCreateConfigAsync(true);
+            var model = (MinecraftConfig.Model)ConfigService.GetCurrentConfig();
+
+            UpdateFromModel(model);
+            PropertyChanged += ObservablePropertyChanged;
+            ValidateAllProperties();
+            Loaded?.Invoke(this, new(model));
+        }
+
+        [RelayCommand]
+        public Task Save()
+        {
+            return HandleSaveAsync();
         }
 
         [RelayCommand]
@@ -131,58 +149,31 @@ namespace MCBS.WpfApp.ViewModels.Settings
             if (parameter is not string identifier)
                 return;
 
-            Type pageType;
-            IConfigService configService;
-            switch (identifier)
+            Type? pageType = identifier switch
             {
-                case McapiModeConfigIdentifier:
-                    pageType = typeof(McapiModeConfigPage);
-                    configService = _mcapiModeConfigService;
-                    break;
-                case RconModeConfigIdentifier:
-                    pageType = typeof(RconModeConfigPage);
-                    configService = _rconModeConfigService;
-                    break;
-                case ConsoleModeConfigIdentifier:
-                    pageType = typeof(ConsoleModeConfigPage);
-                    configService = _consoleModeConfigService;
-                    break;
-                default:
-                    return;
-            }
+                McapiModeConfigIdentifier => typeof(McapiModeConfigPage),
+                RconModeConfigIdentifier => typeof(RconModeConfigPage),
+                ConsoleModeConfigIdentifier => typeof(ConsoleModeConfigPage),
+                _ => null,
+            };
 
-            Page page = _pageCreateFactory.GetOrCreatePage(pageType, configService);
-            _navigationService.Navigate(page);
+            if (pageType is null || _serviceProvider.GetService(pageType) is not Page page)
+                return;
+
+            _navigable.NavigationService.Navigate(page);
         }
 
-        private void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        partial void OnResourcePackListChanged(ObservableCollection<string> oldValue, ObservableCollection<string> newValue)
         {
-            string? propertyName = e.PropertyName;
-            if (!string.IsNullOrEmpty(propertyName) && Properties.TryGetValue(propertyName, out var propertyInfo))
-            {
-                ValidateAllProperties();
-                if (!HasErrors)
-                {
-                    object? value = propertyInfo.GetValue(this);
-                    _configService.SetPropertyValue(propertyName, value);
-                }
-            }
+            oldValue?.CollectionChanged -= CollectionChanged;
+            HandleCollectionChanged(nameof(ResourcePackList), ResourcePackList);
+            newValue?.CollectionChanged += CollectionChanged;
         }
 
         private void CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (ReferenceEquals(sender, ResourcePackList))
                 HandleCollectionChanged(nameof(ResourcePackList), ResourcePackList);
-        }
-
-        private void HandleCollectionChanged(string propertyName, ObservableCollection<string> collection)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
-            ArgumentNullException.ThrowIfNull(collection, nameof(collection));
-
-            ValidateProperty(collection, propertyName);
-            if (!HasErrors)
-                _configService.SetPropertyValue(propertyName, collection.ToArray());
         }
     }
 }

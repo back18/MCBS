@@ -1,6 +1,9 @@
-﻿using MCBS.WpfApp.Config;
-using MCBS.WpfApp.Config.Extensions;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using MCBS.Config;
+using MCBS.WpfApp.Config;
+using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.ViewModels.Settings;
+using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,32 +26,26 @@ namespace MCBS.WpfApp.Pages.Settings
     [Route(Parent = typeof(SettingsPage))]
     public partial class SystemSettingsPage : Page
     {
-        public SystemSettingsPage(IConfigProvider configProvider)
+        public SystemSettingsPage(SystemSettingsViewModel viewModel)
         {
-            ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
+            ArgumentNullException.ThrowIfNull(viewModel, nameof(viewModel));
 
-            _configProvider = configProvider;
+            viewModel.Loaded += ViewModel_Loaded;
+            DataContext = viewModel;
 
             InitializeComponent();
         }
 
-        private readonly IConfigProvider _configProvider;
-
-        private SystemSettingsViewModel? _viewModel;
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            if (_viewModel is not null)
-                return;
+            base.OnNavigatingFrom(e);
 
-            IConfigStorage configStorage = _configProvider.GetSystemConfigService();
-            IConfigService configService = await configStorage.LoadOrCreateConfigAsync(true);
+            WeakReferenceMessenger.Default.Send(new PageNavigatingFromMessage(e), nameof(SystemConfig));
+        }
 
-            _viewModel = new(configService);
-            DataContext = _viewModel;
-
-            var config = configService.GetCurrentConfig();
-            Content = await SettingsUIBuilder.BuildSettingsUIAsync(config);
+        private async void ViewModel_Loaded(object? sender, EventArgs<object> e)
+        {
+            Content = await SettingsUIBuilder.BuildSettingsUIAsync(e.Argument);
         }
     }
 }

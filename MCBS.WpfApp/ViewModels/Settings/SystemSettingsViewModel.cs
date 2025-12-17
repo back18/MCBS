@@ -1,55 +1,44 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using MCBS.Config;
 using MCBS.WpfApp.Config;
+using MCBS.WpfApp.Config.Extensions;
+using MCBS.WpfApp.Messages;
+using MCBS.WpfApp.Services;
+using Microsoft.Extensions.DependencyInjection;
+using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class SystemSettingsViewModel : ObservableValidator
+    public partial class SystemSettingsViewModel : ConfigServiceViewModel
     {
-        static SystemSettingsViewModel()
+        public SystemSettingsViewModel(IMessageBoxService messageBoxService, [FromKeyedServices(typeof(SystemConfig))] IConfigStorage configStorage) : base(messageBoxService)
         {
-            _lazyProperties = new Lazy<ReadOnlyDictionary<string, PropertyInfo>>(
-                () => ReflectionHelper.GetObservableProperties(typeof(SystemSettingsViewModel)).AsReadOnly(),
-                LazyThreadSafetyMode.ExecutionAndPublication
-            );
+            ArgumentNullException.ThrowIfNull(configStorage, nameof(configStorage));
+
+            _configStorage = configStorage;
+            var model = (SystemConfig.Model)configStorage.GetModel().CreateDefault();
+
+            UpdateFromModel(model);
+
+            WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(SystemConfig));
+            WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
         }
 
-        public SystemSettingsViewModel(IConfigService configService)
-        {
-            ArgumentNullException.ThrowIfNull(configService, nameof(configService));
+        private readonly IConfigStorage _configStorage;
 
-            _configService = configService;
-            var model = (SystemConfig.Model)configService.GetCurrentConfig();
-            AutoRestart = model.AutoRestart;
-            BuildColorMappingCaches = model.BuildColorMappingCaches;
-            EnableCompressionCache = model.EnableCompressionCache;
-            LoadDllAppComponents = model.LoadDllAppComponents;
-            SystemAppComponents = new ObservableCollection<string>(model.SystemAppComponents);
-            ServicesAppId = model.ServicesAppId;
-            StartupChecklist = new ObservableCollection<string>(model.StartupChecklist);
+        protected override IConfigService? ConfigService { get; set; }
 
-            SystemAppComponents.CollectionChanged += CollectionChanged;
-            StartupChecklist.CollectionChanged += CollectionChanged;
-            PropertyChanged += ObservablePropertyChanged;
-
-            ValidateAllProperties();
-        }
-
-        private readonly IConfigService _configService;
-
-        private static readonly Lazy<ReadOnlyDictionary<string, PropertyInfo>> _lazyProperties;
-
-        private static ReadOnlyDictionary<string, PropertyInfo> Properties => _lazyProperties.Value;
+        public event EventHandler<EventArgs<object>>? Loaded;
 
         [ObservableProperty]
         public partial bool AutoRestart { get; set; }
@@ -63,35 +52,63 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [ObservableProperty]
         public partial bool LoadDllAppComponents { get; set; }
 
+        [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-        public ObservableCollection<string> SystemAppComponents { get; }
+        public partial ObservableCollection<string> SystemAppComponents { get; set; }
 
         [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
         public partial string ServicesAppId { get; set; }
 
+        [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-        public ObservableCollection<string> StartupChecklist { get; }
+        public partial ObservableCollection<string> StartupChecklist { get; set; }
 
-        [RelayCommand]
-        public async Task Save()
+        [MemberNotNull([nameof(SystemAppComponents), nameof(ServicesAppId), nameof(StartupChecklist)])]
+        private void UpdateFromModel(SystemConfig.Model model)
         {
-            if (_configService.IsModified)
-                await _configService.GetConfigStorage().SaveConfigAsync();
+            AutoRestart = model.AutoRestart;
+            BuildColorMappingCaches = model.BuildColorMappingCaches;
+            EnableCompressionCache = model.EnableCompressionCache;
+            LoadDllAppComponents = model.LoadDllAppComponents;
+            SystemAppComponents = new ObservableCollection<string>(model.SystemAppComponents);
+            ServicesAppId = model.ServicesAppId;
+            StartupChecklist = new ObservableCollection<string>(model.StartupChecklist);
         }
 
-        private void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        [RelayCommand]
+        public async Task Load()
         {
-            string? propertyName = e.PropertyName;
-            if (!string.IsNullOrEmpty(propertyName) && Properties.TryGetValue(propertyName, out var propertyInfo))
-            {
-                ValidateAllProperties();
-                if (!HasErrors)
-                {
-                    object? value = propertyInfo.GetValue(this);
-                    _configService.SetPropertyValue(propertyName, value);
-                }
-            }
+            if (ConfigService is not null)
+                return;
+
+            ConfigService = await _configStorage.LoadOrCreateConfigAsync(true);
+            var model = (SystemConfig.Model)ConfigService.GetCurrentConfig();
+
+            UpdateFromModel(model);
+            PropertyChanged += ObservablePropertyChanged;
+            ValidateAllProperties();
+            Loaded?.Invoke(this, new(model));
+        }
+
+        [RelayCommand]
+        public Task Save()
+        {
+            return HandleSaveAsync();
+        }
+
+        partial void OnSystemAppComponentsChanged(ObservableCollection<string> oldValue, ObservableCollection<string> newValue)
+        {
+            oldValue?.CollectionChanged -= CollectionChanged;
+            HandleCollectionChanged(nameof(SystemAppComponents), SystemAppComponents);
+            newValue?.CollectionChanged += CollectionChanged;
+        }
+
+        partial void OnStartupChecklistChanged(ObservableCollection<string> oldValue, ObservableCollection<string> newValue)
+        {
+            oldValue?.CollectionChanged -= CollectionChanged;
+            HandleCollectionChanged(nameof(StartupChecklist), StartupChecklist);
+            newValue?.CollectionChanged += CollectionChanged;
         }
 
         private void CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -100,16 +117,6 @@ namespace MCBS.WpfApp.ViewModels.Settings
                 HandleCollectionChanged(nameof(SystemAppComponents), SystemAppComponents);
             else if (ReferenceEquals(sender, StartupChecklist))
                 HandleCollectionChanged(nameof(StartupChecklist), StartupChecklist);
-        }
-
-        private void HandleCollectionChanged(string propertyName, ObservableCollection<string> collection)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
-            ArgumentNullException.ThrowIfNull(collection, nameof(collection));
-
-            ValidateProperty(collection, propertyName);
-            if (!HasErrors)
-                _configService.SetPropertyValue(propertyName, collection.ToArray());
         }
     }
 }

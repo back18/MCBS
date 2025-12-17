@@ -1,4 +1,7 @@
-﻿using MCBS.WpfApp.Config;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using MCBS.Config.Minecraft;
+using MCBS.WpfApp.Config;
+using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.ViewModels.Settings;
 using System;
 using System.Collections.Generic;
@@ -22,29 +25,26 @@ namespace MCBS.WpfApp.Pages.Settings
     [Route(Parent = typeof(MinecraftSettingsPage))]
     public partial class RconModeConfigPage : Page
     {
-        public RconModeConfigPage(IConfigService configService)
+        public RconModeConfigPage(RconModeConfigViewModel viewModel)
         {
-            ArgumentNullException.ThrowIfNull(configService, nameof(configService));
+            ArgumentNullException.ThrowIfNull(viewModel, nameof(viewModel));
 
-            _configService = configService;
+            viewModel.Loaded += ViewModel_Loaded;
+            DataContext = viewModel;
 
             InitializeComponent();
         }
 
-        private readonly IConfigService _configService;
-
-        private RconModeConfigViewModel? _viewModel;
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            if (_viewModel is not null)
-                return;
+            base.OnNavigatingFrom(e);
 
-            _viewModel = new(_configService);
-            DataContext = _viewModel;
+            WeakReferenceMessenger.Default.Send(new PageNavigatingFromMessage(e), nameof(RconModeConfig));
+        }
 
-            var config = _configService.GetCurrentConfig();
-            Content = await SettingsUIBuilder.BuildSettingsUIAsync(config);
+        private async void ViewModel_Loaded(object? sender, QuanLib.Core.Events.EventArgs<object> e)
+        {
+            Content = await SettingsUIBuilder.BuildSettingsUIAsync(e.Argument);
         }
     }
 }

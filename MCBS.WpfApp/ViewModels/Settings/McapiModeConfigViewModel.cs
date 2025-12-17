@@ -1,29 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using MCBS.Config.Minecraft;
 using MCBS.WpfApp.Config;
+using MCBS.WpfApp.Messages;
+using MCBS.WpfApp.Services;
+using Microsoft.Extensions.DependencyInjection;
+using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class McapiModeConfigViewModel : ObservableValidator
+    public partial class McapiModeConfigViewModel : ConfigServiceViewModel
     {
-        static McapiModeConfigViewModel()
-        {
-            _lazyProperties = new Lazy<ReadOnlyDictionary<string, PropertyInfo>>(
-                () => ReflectionHelper.GetObservableProperties(typeof(McapiModeConfigViewModel)).AsReadOnly(),
-                LazyThreadSafetyMode.ExecutionAndPublication
-            );
-        }
-
-        public McapiModeConfigViewModel(IConfigService configService)
+        public McapiModeConfigViewModel(IMessageBoxService messageBoxService, [FromKeyedServices(typeof(McapiModeConfig))] IConfigService configService) : base(messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
 
@@ -36,13 +30,20 @@ namespace MCBS.WpfApp.ViewModels.Settings
             PropertyChanged += ObservablePropertyChanged;
 
             ValidateAllProperties();
+
+            WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(McapiModeConfig));
+            WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
         }
 
         private readonly IConfigService _configService;
 
-        private static readonly Lazy<ReadOnlyDictionary<string, PropertyInfo>> _lazyProperties;
+        protected override IConfigService? ConfigService
+        {
+            get => _configService;
+            set => throw new NotSupportedException();
+        }
 
-        private static ReadOnlyDictionary<string, PropertyInfo> Properties => _lazyProperties.Value;
+        public event EventHandler<EventArgs<object>>? Loaded;
 
         [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
@@ -57,24 +58,15 @@ namespace MCBS.WpfApp.ViewModels.Settings
         public partial string Password { get; set; }
 
         [RelayCommand]
-        public async Task Save()
+        public void Load()
         {
-            if (_configService.IsModified)
-                await _configService.GetConfigStorage().SaveConfigAsync();
+            Loaded?.Invoke(this, new(_configService.GetCurrentConfig()));
         }
 
-        private void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        [RelayCommand]
+        public Task Save()
         {
-            string? propertyName = e.PropertyName;
-            if (!string.IsNullOrEmpty(propertyName) && Properties.TryGetValue(propertyName, out var propertyInfo))
-            {
-                ValidateAllProperties();
-                if (!HasErrors)
-                {
-                    object? value = propertyInfo.GetValue(this);
-                    _configService.SetPropertyValue(propertyName, value);
-                }
-            }
+            return HandleSaveAsync();
         }
     }
 }

@@ -10,9 +10,12 @@
          mc:Ignorable="d" 
          d:DataContext="{d:DesignInstance Type=viewmodels:MinecraftSettingsViewModel}"
          d:DesignHeight="450" d:DesignWidth="800"
-         Title="MinecraftSettingsPage"
-         Loaded="Page_Loaded">
+         Title="MinecraftSettingsPage">
     <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}" />
+        </i:EventTrigger>
+        
         <i:EventTrigger EventName="Unloaded">
             <i:InvokeCommandAction Command="{Binding SaveCommand}" />
         </i:EventTrigger>

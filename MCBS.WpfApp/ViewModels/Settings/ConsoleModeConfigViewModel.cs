@@ -1,30 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using MCBS.Config.Minecraft;
 using MCBS.WpfApp.Config;
+using MCBS.WpfApp.Messages;
+using MCBS.WpfApp.Services;
+using Microsoft.Extensions.DependencyInjection;
+using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class ConsoleModeConfigViewModel : ObservableValidator
+    public partial class ConsoleModeConfigViewModel : ConfigServiceViewModel
     {
-        static ConsoleModeConfigViewModel()
-        {
-            _lazyProperties = new Lazy<ReadOnlyDictionary<string, PropertyInfo>>(
-                () => ReflectionHelper.GetObservableProperties(typeof(ConsoleModeConfigViewModel)).AsReadOnly(),
-                LazyThreadSafetyMode.ExecutionAndPublication
-            );
-        }
-
-        public ConsoleModeConfigViewModel(IConfigService configService)
+        public ConsoleModeConfigViewModel(IMessageBoxService messageBoxService, [FromKeyedServices(typeof(ConsoleModeConfig))] IConfigService configService) : base(messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
             _configService = configService;
@@ -37,13 +32,20 @@ namespace MCBS.WpfApp.ViewModels.Settings
             PropertyChanged += ObservablePropertyChanged;
 
             ValidateAllProperties();
+
+            WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(ConsoleModeConfig));
+            WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
         }
 
         private readonly IConfigService _configService;
 
-        private static readonly Lazy<ReadOnlyDictionary<string, PropertyInfo>> _lazyProperties;
+        protected override IConfigService? ConfigService
+        {
+            get => _configService;
+            set => throw new NotSupportedException();
+        }
 
-        private static ReadOnlyDictionary<string, PropertyInfo> Properties => _lazyProperties.Value;
+        public event EventHandler<EventArgs<object>>? Loaded;
 
         [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
@@ -53,44 +55,33 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
         public partial string LaunchArguments { get; set; }
 
+        [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
-        public ObservableCollection<string> MclogRegexFilter { get; set; }
+        public partial ObservableCollection<string> MclogRegexFilter { get; set; }
 
         [RelayCommand]
-        public async Task Save()
+        public void Load()
         {
-            if (_configService.IsModified)
-                await _configService.GetConfigStorage().SaveConfigAsync();
+            Loaded?.Invoke(this, new(_configService.GetCurrentConfig()));
         }
 
-        private void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        [RelayCommand]
+        public Task Save()
         {
-            string? propertyName = e.PropertyName;
-            if (!string.IsNullOrEmpty(propertyName) && Properties.TryGetValue(propertyName, out var propertyInfo))
-            {
-                ValidateAllProperties();
-                if (!HasErrors)
-                {
-                    object? value = propertyInfo.GetValue(this);
-                    _configService.SetPropertyValue(propertyName, value);
-                }
-            }
+            return HandleSaveAsync();
+        }
+
+        partial void OnMclogRegexFilterChanged(ObservableCollection<string> oldValue, ObservableCollection<string> newValue)
+        {
+            oldValue?.CollectionChanged -= CollectionChanged;
+            HandleCollectionChanged(nameof(MclogRegexFilter), MclogRegexFilter);
+            newValue?.CollectionChanged += CollectionChanged;
         }
 
         private void CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (ReferenceEquals(sender, MclogRegexFilter))
                 HandleCollectionChanged(nameof(MclogRegexFilter), MclogRegexFilter);
-        }
-
-        private void HandleCollectionChanged(string propertyName, ObservableCollection<string> collection)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
-            ArgumentNullException.ThrowIfNull(collection, nameof(collection));
-
-            ValidateProperty(collection, propertyName);
-            if (!HasErrors)
-                _configService.SetPropertyValue(propertyName, collection.ToArray());
         }
     }
 }

@@ -9,22 +9,19 @@ namespace MCBS.WpfApp.Commands
 {
     public class PageNavigateCommand : IRelayCommand
     {
-        public PageNavigateCommand(NavigationService navigationService, IPageCreateFactory pageCreateFactory, object?[]? args = null, Func<object?, bool>? canExecute = null)
+        public PageNavigateCommand(INavigable navigable, IServiceProvider serviceProvider, Func<object?, bool>? canExecute = null)
         {
-            ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
-            ArgumentNullException.ThrowIfNull(pageCreateFactory, nameof(pageCreateFactory));
+            ArgumentNullException.ThrowIfNull(navigable, nameof(navigable));
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
 
-            _navigationService = navigationService;
-            _pageCreateFactory = pageCreateFactory;
-            _args = args;
+            _navigable = navigable;
+            _serviceProvider = serviceProvider;
             _canExecute = canExecute;
         }
 
-        private readonly NavigationService _navigationService;
+        private readonly INavigable _navigable;
 
-        private readonly IPageCreateFactory _pageCreateFactory;
-
-        private readonly object?[]? _args;
+        private readonly IServiceProvider _serviceProvider;
 
         private readonly Func<object?, bool>? _canExecute;
 
@@ -37,14 +34,10 @@ namespace MCBS.WpfApp.Commands
 
         public void Execute(object? parameter)
         {
-            if (parameter is not Type pageType)
+            if (parameter is not Type pageType || _serviceProvider.GetService(pageType) is not Page page)
                 return;
 
-            Page page = _args is not null ?
-                _pageCreateFactory.GetOrCreatePage(pageType, _args) :
-                _pageCreateFactory.GetOrCreatePage(pageType);
-
-            _navigationService.Navigate(page);
+            _navigable.NavigationService.Navigate(page);
         }
 
         public void NotifyCanExecuteChanged()

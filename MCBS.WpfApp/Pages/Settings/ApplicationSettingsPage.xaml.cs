@@ -1,5 +1,4 @@
-﻿using MCBS.WpfApp.Config;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -21,15 +20,9 @@ namespace MCBS.WpfApp.Pages.Settings
     [Route(Parent = typeof(SettingsPage))]
     public partial class ApplicationSettingsPage : Page
     {
-        public ApplicationSettingsPage(IConfigProvider configProvider)
+        public ApplicationSettingsPage()
         {
-            ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
-
-            _configProvider = configProvider;
-
             InitializeComponent();
         }
-
-        private readonly IConfigProvider _configProvider;
     }
 }
