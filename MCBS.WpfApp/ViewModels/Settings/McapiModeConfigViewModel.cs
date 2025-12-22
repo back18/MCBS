@@ -43,7 +43,9 @@ namespace MCBS.WpfApp.ViewModels.Settings
             set => throw new NotSupportedException();
         }
 
-        public event EventHandler<EventArgs<object>>? Loaded;
+        public override bool IsLoaded { get; protected set; }
+
+        public override event EventHandler<EventArgs<object>>? Loaded;
 
         [ObservableProperty]
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
@@ -60,6 +62,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [RelayCommand]
         public void Load()
         {
+            IsLoaded = true;
             Loaded?.Invoke(this, new(_configService.GetCurrentConfig()));
         }
 

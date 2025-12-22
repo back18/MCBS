@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
+using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,6 +40,10 @@ namespace MCBS.WpfApp.ViewModels
         protected Dictionary<string, object?> TempStorage { get; }
 
         protected abstract IConfigService? ConfigService { get; set; }
+
+        public abstract bool IsLoaded { get; protected set; }
+
+        public abstract event EventHandler<EventArgs<object>>? Loaded;
 
         public virtual void Receive(PageNavigatingFromMessage message)
         {
@@ -97,7 +102,7 @@ namespace MCBS.WpfApp.ViewModels
 
         protected virtual void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (ConfigService is null)
+            if (ConfigService is null || !IsLoaded)
                 return;
 
             string? propertyName = e.PropertyName;
@@ -113,7 +118,7 @@ namespace MCBS.WpfApp.ViewModels
 
         protected virtual void HandleCollectionChanged(string propertyName, ObservableCollection<string> collection)
         {
-            if (ConfigService is null)
+            if (ConfigService is null || !IsLoaded)
                 return;
 
             ArgumentException.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
@@ -134,7 +139,7 @@ namespace MCBS.WpfApp.ViewModels
 
         private void DumpTempStorage()
         {
-            if (ConfigService is null)
+            if (ConfigService is null || !IsLoaded)
                 return;
 
             foreach (var item in TempStorage)

@@ -38,7 +38,9 @@ namespace MCBS.WpfApp.ViewModels.Settings
 
         protected override IConfigService? ConfigService { get; set; }
 
-        public event EventHandler<EventArgs<object>>? Loaded;
+        public override bool IsLoaded { get; protected set; }
+
+        public override event EventHandler<EventArgs<object>>? Loaded;
 
         [ObservableProperty]
         public partial bool AutoRestart { get; set; }
@@ -88,6 +90,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
             UpdateFromModel(model);
             PropertyChanged += ObservablePropertyChanged;
             ValidateAllProperties();
+            IsLoaded = true;
             Loaded?.Invoke(this, new(model));
         }
 
