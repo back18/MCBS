@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DynamicPropertyAccessor;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -68,8 +69,8 @@ namespace MCBS.WpfApp.Config
         {
             ArgumentException.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
 
-            if (Properties.TryGetValue(propertyName, out var propertyInfo))
-                return propertyInfo.GetValue(_config);
+            if (Properties.ContainsKey(propertyName))
+                return _config.GetProperty(propertyName);
             else
                 return null;
         }
@@ -78,9 +79,9 @@ namespace MCBS.WpfApp.Config
         {
             ArgumentException.ThrowIfNullOrEmpty(propertyName, nameof(propertyName));
 
-            if (Properties.TryGetValue(propertyName, out var propertyInfo))
+            if (Properties.ContainsKey(propertyName))
             {
-                propertyInfo.SetValue(_config, value);
+                _config.SetProperty(propertyName, value);
                 IsModified = true;
                 PropertyChanged?.Invoke(this, new(propertyName));
             }

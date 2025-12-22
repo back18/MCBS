@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using DynamicPropertyAccessor;
 using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
@@ -122,7 +123,7 @@ namespace MCBS.WpfApp.ViewModels
                 Properties.TryGetValue(propertyName, out var propertyInfo) &&
                 !COLLECTION_TYPE.Equals(propertyInfo.PropertyType))
             {
-                object? value = propertyInfo.GetValue(this);
+                object? value = this.GetProperty(propertyName);
                 ValidateAllProperties();
                 HandlePropertyChanged(propertyName, value);
             }
