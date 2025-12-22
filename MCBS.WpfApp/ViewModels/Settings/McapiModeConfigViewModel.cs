@@ -6,6 +6,7 @@ using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using System;
@@ -17,7 +18,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
 {
     public partial class McapiModeConfigViewModel : ConfigServiceViewModel
     {
-        public McapiModeConfigViewModel(IMessageBoxService messageBoxService, [FromKeyedServices(typeof(McapiModeConfig))] IConfigService configService) : base(messageBoxService)
+        public McapiModeConfigViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(McapiModeConfig))] IConfigService configService) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
 

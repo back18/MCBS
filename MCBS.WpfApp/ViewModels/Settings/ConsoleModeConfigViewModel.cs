@@ -6,6 +6,7 @@ using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using System;
@@ -19,7 +20,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
 {
     public partial class ConsoleModeConfigViewModel : ConfigServiceViewModel
     {
-        public ConsoleModeConfigViewModel(IMessageBoxService messageBoxService, [FromKeyedServices(typeof(ConsoleModeConfig))] IConfigService configService) : base(messageBoxService)
+        public ConsoleModeConfigViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(ConsoleModeConfig))] IConfigService configService) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
             _configService = configService;

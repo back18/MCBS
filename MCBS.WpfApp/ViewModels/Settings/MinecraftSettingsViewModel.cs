@@ -9,6 +9,7 @@ using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Pages.Settings;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using QuanLib.Core;
 using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
@@ -30,10 +31,11 @@ namespace MCBS.WpfApp.ViewModels.Settings
         private const string ConsoleModeConfigIdentifier = nameof(MinecraftConfig.ConsoleModeConfig);
 
         public MinecraftSettingsViewModel(
+            ILoggerFactory loggerFactory,
             IServiceProvider serviceProvider,
             INavigable navigable,
             IMessageBoxService messageBoxService,
-            [FromKeyedServices(typeof(MinecraftConfig))] IConfigStorage configStorage) : base(messageBoxService)
+            [FromKeyedServices(typeof(MinecraftConfig))] IConfigStorage configStorage) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
             ArgumentNullException.ThrowIfNull(navigable, nameof(navigable));

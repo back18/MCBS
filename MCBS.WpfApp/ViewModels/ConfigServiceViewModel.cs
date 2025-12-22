@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Messaging;
 using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
+using Microsoft.Extensions.Logging;
+using QuanLib.Core;
 using QuanLib.Core.Events;
 using System;
 using System.Collections.Generic;
@@ -11,17 +13,20 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Windows;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace MCBS.WpfApp.ViewModels
 {
-    public abstract class ConfigServiceViewModel : ObservableValidator, IRecipient<PageNavigatingFromMessage>, IRecipient<MainWindowClosingMessage>
+    public abstract partial class ConfigServiceViewModel : ObservableValidator, IRecipient<PageNavigatingFromMessage>, IRecipient<MainWindowClosingMessage>
     {
         private static readonly Type COLLECTION_TYPE = typeof(ObservableCollection<string>);
 
-        protected ConfigServiceViewModel(IMessageBoxService messageBoxService)
+        protected ConfigServiceViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService)
         {
+            ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
             ArgumentNullException.ThrowIfNull(messageBoxService, nameof(messageBoxService));
 
+            _logger = loggerFactory.CreateLogger(GetType());
             _messageBoxService = messageBoxService;
             _lazyProperties = new Lazy<ReadOnlyDictionary<string, PropertyInfo>>(
                 () => ReflectionHelper.GetObservableProperties(GetType()).AsReadOnly(),
@@ -30,6 +35,8 @@ namespace MCBS.WpfApp.ViewModels
 
             TempStorage = [];
         }
+
+        protected readonly ILogger _logger;
 
         protected readonly IMessageBoxService _messageBoxService;
 
@@ -68,8 +75,7 @@ namespace MCBS.WpfApp.ViewModels
                 $"以下属性未正确设置：{Environment.NewLine}{errorMessage}",
                 "是否离开当前页面",
                 MessageBoxButton.OKCancel,
-                MessageBoxImage.Warning
-            );
+                MessageBoxImage.Warning);
 
             switch (result)
             {
@@ -88,7 +94,10 @@ namespace MCBS.WpfApp.ViewModels
                 DumpTempStorage();
 
             if (ConfigService?.IsModified == true)
+            {
                 ConfigService.GetConfigStorage().SaveConfig();
+                LogSaved();
+            }
         }
 
         protected virtual async Task HandleSaveAsync()
@@ -97,7 +106,10 @@ namespace MCBS.WpfApp.ViewModels
                 DumpTempStorage();
 
             if (ConfigService?.IsModified == true)
+            {
                 await ConfigService.GetConfigStorage().SaveConfigAsync();
+                LogSaved();
+            }
         }
 
         protected virtual void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -143,8 +155,15 @@ namespace MCBS.WpfApp.ViewModels
                 return;
 
             foreach (var item in TempStorage)
+            {
                 ConfigService.SetPropertyValue(item.Key, item.Value);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                    _logger.LogDebug("配置属性 {PropertyName} 已更新为 {PropertyValue}", item.Key, ObjectFormatter.Format(item.Value));
+            }
             TempStorage.Clear();
         }
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "配置已保存")]
+        private partial void LogSaved();
     }
 }

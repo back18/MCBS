@@ -3,14 +3,18 @@ using MCBS.Config;
 using MCBS.Config.Minecraft;
 using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Config.Extensions;
+using MCBS.WpfApp.Logging;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Pages;
 using MCBS.WpfApp.Pages.Settings;
 using MCBS.WpfApp.Services;
 using MCBS.WpfApp.ViewModels.Settings;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using QuanLib.Logging;
+using System.IO;
 using System.Windows;
 
 namespace MCBS.WpfApp
@@ -20,15 +24,37 @@ namespace MCBS.WpfApp
     /// </summary>
     public partial class App : System.Windows.Application, IServiceProvider
     {
+        private const string APPSETTINGS_PATH = "appsettings.json";
+        private const string APPSETTINGS_PATH_FORMAT = "appsettings.{0}.json";
         private readonly IHost _host;
 
         public App()
         {
             InitializeComponent();
 
+            McbsPathManager.CreateAllDirectory();
+            ConfigManager.CreateIfNotExists();
+            LoadLogManager();
+
             _host = Host.CreateDefaultBuilder()
+                .UseEnvironment(EnvironmentHelper.GetCurrentEnvironment())
+                .ConfigureAppConfiguration(ConfigureAppConfiguration)
+                .ConfigureLogging(ConfigureLogging)
                 .ConfigureServices(ConfigureServices)
                 .Build();
+        }
+
+        private void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder config)
+        {
+            config.AddJsonFile(APPSETTINGS_PATH, optional: false, reloadOnChange: false);
+            config.AddJsonFile(string.Format(APPSETTINGS_PATH_FORMAT, context.HostingEnvironment.EnvironmentName), optional: true, reloadOnChange: false);
+            config.AddEnvironmentVariables();
+        }
+
+        private void ConfigureLogging(HostBuilderContext context, ILoggingBuilder logging)
+        {
+            logging.ClearProviders();
+            logging.AddProvider(new MicrosoftLoggerProviderAdapter(Log4NetManager.Instance.GetProvider()));
         }
 
         private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
@@ -94,10 +120,19 @@ namespace MCBS.WpfApp
         [STAThread]
         private static void Main()
         {
+            Thread.CurrentThread.Name = "Main Thread";
+
             App app = new();
-            app.MainWindow = app._host.Services.GetRequiredService<MainWindow>();   
+            app.MainWindow = app._host.Services.GetRequiredService<MainWindow>();
             app.MainWindow.Show();
             app.Run();
+        }
+
+        private static void LoadLogManager()
+        {
+            using FileStream fileStream = McbsPathManager.MCBS_Config_Log4NetConfig.OpenRead();
+            Log4NetProvider provider = new(McbsPathManager.MCBS_Logs_LatestLog.FullName, fileStream, true);
+            Log4NetManager.LoadInstance(new(provider));
         }
 
         protected override async void OnStartup(StartupEventArgs e)

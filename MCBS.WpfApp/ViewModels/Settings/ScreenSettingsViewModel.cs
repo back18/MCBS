@@ -7,6 +7,7 @@ using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using QuanLib.Core.Events;
 using QuanLib.DataAnnotations;
 using System;
@@ -21,7 +22,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
 {
     public partial class ScreenSettingsViewModel : ConfigServiceViewModel
     {
-        public ScreenSettingsViewModel(IMessageBoxService messageBoxService, [FromKeyedServices(typeof(ScreenConfig))] IConfigStorage configStorage) : base(messageBoxService)
+        public ScreenSettingsViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(ScreenConfig))] IConfigStorage configStorage) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configStorage, nameof(configStorage));
 
