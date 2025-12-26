@@ -2,6 +2,10 @@
          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+         xmlns:lex="http://wpflocalizeextension.codeplex.com"
+         lex:LocalizeDictionary.DesignCulture="zh-CN"
+         lex:ResxLocalizationProvider.DefaultAssembly="MCBS.WpfApp"
+         lex:ResxLocalizationProvider.DefaultDictionary="Lang"
          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
          xmlns:local="clr-namespace:MCBS.WpfApp.Pages"
          xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels.Settings"
@@ -11,12 +15,12 @@
          mc:Ignorable="d" 
          d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
          d:DesignHeight="450" d:DesignWidth="800"
-         Title="SettingsPage">
+         Title="{lex:Loc Title_SettingsPage}">
 
     <ScrollViewer Margin="10">
         <ikw:SimpleStackPanel Spacing="10">
-            <ui:SettingsCard Header="应用设置"
-                             Description="图形界面应用程序相关设置"
+            <ui:SettingsCard Header="{lex:Loc Settings_ApplicationSettings_Header}"
+                             Description="{lex:Loc Settings_MinecraftSettings_Description}"
                              IsClickEnabled="True"
                              Command="{Binding PageNavigateCommand}"
                              CommandParameter="{x:Type pages:ApplicationSettingsPage}">
@@ -28,8 +32,8 @@
                 </ui:SettingsCard.HeaderIcon>
             </ui:SettingsCard>
 
-            <ui:SettingsCard Header="系统设置"
-                             Description="MCBS系统相关设置"
+            <ui:SettingsCard Header="{lex:Loc Settings_SystemSettings_Header}"
+                             Description="{lex:Loc Settings_SystemSettings_Description}"
                              IsClickEnabled="True"
                              Command="{Binding PageNavigateCommand}"
                              CommandParameter="{x:Type pages:SystemSettingsPage}">
@@ -41,8 +45,8 @@
                 </ui:SettingsCard.HeaderIcon>
             </ui:SettingsCard>
 
-            <ui:SettingsCard Header="MC设置"
-                             Description="Minecraft环境配置"
+            <ui:SettingsCard Header="{lex:Loc Settings_MinecraftSettings_Header}"
+                             Description="{lex:Loc Settings_MinecraftSettings_Description}"
                              IsClickEnabled="True"
                              Command="{Binding PageNavigateCommand}"
                              CommandParameter="{x:Type pages:MinecraftSettingsPage}">
@@ -54,8 +58,8 @@
                 </ui:SettingsCard.HeaderIcon>
             </ui:SettingsCard>
 
-            <ui:SettingsCard Header="屏幕设置"
-                             Description="局内屏幕参数配置"
+            <ui:SettingsCard Header="{lex:Loc Settings_ScreenSettings_Header}"
+                             Description="{lex:Loc Settings_ScreenSettings_Description}"
                              IsClickEnabled="True"
                              Command="{Binding PageNavigateCommand}"
                              CommandParameter="{x:Type pages:ScreenSettingsPage}">

@@ -3,6 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lex="http://wpflocalizeextension.codeplex.com"
+        lex:LocalizeDictionary.DesignCulture="zh-CN"
+        lex:ResxLocalizationProvider.DefaultAssembly="MCBS.WpfApp"
+        lex:ResxLocalizationProvider.DefaultDictionary="Lang"
         xmlns:local="clr-namespace:MCBS.WpfApp"
         xmlns:pages="clr-namespace:MCBS.WpfApp.Pages"
         xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
@@ -10,7 +14,7 @@
         ui:WindowHelper.SystemBackdropType="Mica"
         ui:TitleBar.Height="36"
         mc:Ignorable="d"
-        Title="Minecraft Block Screen" Height="600" Width="900"
+        Title="{lex:Loc Title_MainWindow}" Height="600" Width="900"
         Loaded="Window_Loaded"
         Closing="Window_Closing">
 
@@ -20,7 +24,7 @@
                        SelectionChanged="NavigationView_SelectionChanged"
                        BackRequested="MainNavigationView_BackRequested">
         <ui:NavigationView.MenuItems>
-            <ui:NavigationViewItem Content="主页">
+            <ui:NavigationViewItem Content="{lex:Loc MainNavigation_Home}">
                 <ui:NavigationViewItem.Tag>
                     <x:Type TypeName="pages:HomePage"/>
                 </ui:NavigationViewItem.Tag>
@@ -29,7 +33,7 @@
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
 
-            <ui:NavigationViewItem Content="模拟器">
+            <ui:NavigationViewItem Content="{lex:Loc MainNavigation_Simulator}">
                 <ui:NavigationViewItem.Tag>
                     <x:Type TypeName="pages:SimulatorPage"/>
                 </ui:NavigationViewItem.Tag>
@@ -38,7 +42,7 @@
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
 
-            <ui:NavigationViewItem Content="管理">
+            <ui:NavigationViewItem Content="{lex:Loc MainNavigation_Manager}">
                 <ui:NavigationViewItem.Tag>
                     <x:Type TypeName="pages:ManagerPage"/>
                 </ui:NavigationViewItem.Tag>
@@ -47,7 +51,7 @@
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
 
-            <ui:NavigationViewItem Content="调试">
+            <ui:NavigationViewItem Content="{lex:Loc MainNavigation_Debugger}">
                 <ui:NavigationViewItem.Tag>
                     <x:Type TypeName="pages:DebuggerPage"/>
                 </ui:NavigationViewItem.Tag>

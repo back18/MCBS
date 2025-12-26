@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using QuanLib.Logging;
 using System.IO;
 using System.Windows;
+using WPFLocalizeExtension.Engine;
 
 namespace MCBS.WpfApp
 {
@@ -105,6 +106,7 @@ namespace MCBS.WpfApp
             services.AddSingleton<RconModeConfigPage>();
             services.AddSingleton<ConsoleModeConfigPage>();
 
+            services.AddSingleton<ApplicationSettingsViewModel>();
             services.AddSingleton<SettingsViewModel>();
             services.AddSingleton<SystemSettingsViewModel>();
             services.AddSingleton<MinecraftSettingsViewModel>();
@@ -121,6 +123,7 @@ namespace MCBS.WpfApp
         private static void Main()
         {
             Thread.CurrentThread.Name = "Main Thread";
+            LocalizeDictionary.Instance.Culture = Thread.CurrentThread.CurrentCulture;
 
             App app = new();
             app.MainWindow = app._host.Services.GetRequiredService<MainWindow>();

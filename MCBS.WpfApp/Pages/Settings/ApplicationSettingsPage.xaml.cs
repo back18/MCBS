@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MCBS.WpfApp.ViewModels.Settings;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -20,9 +21,11 @@ namespace MCBS.WpfApp.Pages.Settings
     [Route(Parent = typeof(SettingsPage))]
     public partial class ApplicationSettingsPage : Page
     {
-        public ApplicationSettingsPage()
+        public ApplicationSettingsPage(ApplicationSettingsViewModel viewModel)
         {
             InitializeComponent();
+
+            DataContext = viewModel;
         }
     }
 }

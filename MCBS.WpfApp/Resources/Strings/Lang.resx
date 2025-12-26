@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ApplicationSettingsPage_Language" xml:space="preserve">
+    <value>language</value>
+  </data>
+  <data name="Title_ConsoleModeConfigPage" xml:space="preserve">
+    <value>CONSOLE Configuration</value>
+  </data>
+  <data name="Title_DebuggerPage" xml:space="preserve">
+    <value>Debugger Page</value>
+  </data>
+  <data name="Title_HomePage" xml:space="preserve">
+    <value>Home Page</value>
+  </data>
+  <data name="Language_en_US" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Language_zh_CN" xml:space="preserve">
+    <value>简体中文</value>
+  </data>
+  <data name="Title_MainWindow" xml:space="preserve">
+    <value>Minecraft Block Screen</value>
+  </data>
+  <data name="Title_ManagerPage" xml:space="preserve">
+    <value>Manager Page</value>
+  </data>
+  <data name="Title_McapiModeConfigPage" xml:space="preserve">
+    <value>MCAPI Config Page</value>
+  </data>
+  <data name="Title_RconModeConfigPage" xml:space="preserve">
+    <value>RCON Config Page</value>
+  </data>
+  <data name="Title_SettingsPage" xml:space="preserve">
+    <value>Settings Page</value>
+  </data>
+  <data name="Settings_ApplicationSettings_Description" xml:space="preserve">
+    <value>Settings related to graphical interface applications</value>
+  </data>
+  <data name="Settings_ApplicationSettings_Header" xml:space="preserve">
+    <value>Application Settings</value>
+  </data>
+  <data name="Settings_MinecraftSettings_Description" xml:space="preserve">
+    <value>Minecraft Environment Configuration</value>
+  </data>
+  <data name="Settings_MinecraftSettings_Header" xml:space="preserve">
+    <value>Minecraft Settings</value>
+  </data>
+  <data name="Settings_ScreenSettings_Description" xml:space="preserve">
+    <value>In game screen parameter configuration</value>
+  </data>
+  <data name="Settings_ScreenSettings_Header" xml:space="preserve">
+    <value>Screen Settings</value>
+  </data>
+  <data name="Settings_SystemSettings_Description" xml:space="preserve">
+    <value>MCBS system related settings</value>
+  </data>
+  <data name="Settings_SystemSettings_Header" xml:space="preserve">
+    <value>System Settings</value>
+  </data>
+  <data name="Title_SimulatorPage" xml:space="preserve">
+    <value>Simulator Page</value>
+  </data>
+  <data name="MainNavigation_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Title_ApplicationSettingsPage" xml:space="preserve">
+    <value>Application Settings Page</value>
+  </data>
+  <data name="Title_MinecraftSettingsPage" xml:space="preserve">
+    <value>Minecraft Settings Page</value>
+  </data>
+  <data name="Title_ScreenSettingsPage" xml:space="preserve">
+    <value>Screen Settings Page</value>
+  </data>
+  <data name="Title_SystemSettingsPage" xml:space="preserve">
+    <value>System Settings Page</value>
+  </data>
+  <data name="MainNavigation_Simulator" xml:space="preserve">
+    <value>Simulator</value>
+  </data>
+  <data name="MainNavigation_Manager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="MainNavigation_Debugger" xml:space="preserve">
+    <value>Debugger</value>
+  </data>
+  <data name="ManagerNavigation_Screen" xml:space="preserve">
+    <value>Screen</value>
+  </data>
+  <data name="ManagerNavigation_Process" xml:space="preserve">
+    <value>Process</value>
+  </data>
+  <data name="ManagerNavigation_Form" xml:space="preserve">
+    <value>Form</value>
+  </data>
+  <data name="ManagerNavigation_Application" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="ManagerNavigation_Resourcepack" xml:space="preserve">
+    <value>Resourcepack</value>
+  </data>
+  <data name="Title_ScreenManagerPage" xml:space="preserve">
+    <value>Screen Manager Page</value>
+  </data>
+  <data name="Title_ProcessManagerPage" xml:space="preserve">
+    <value>Process Manager Page</value>
+  </data>
+  <data name="Title_FormManagerPage" xml:space="preserve">
+    <value>Form Manager Page</value>
+  </data>
+  <data name="Title_ApplicationManagerPage" xml:space="preserve">
+    <value>Application Manager Page</value>
+  </data>
+  <data name="Title_ResourcepackManagerPage" xml:space="preserve">
+    <value>Resourcepack Manager Page</value>
+  </data>
+  <data name="DebuggerNavigation_Mspt" xml:space="preserve">
+    <value>MSPT</value>
+  </data>
+  <data name="DebuggerNavigation_Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="DebuggerNavigation_Screen" xml:space="preserve">
+    <value>Screen</value>
+  </data>
+  <data name="DebuggerNavigation_Log" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="Title_MsptAnalyzerPage" xml:space="preserve">
+    <value>MSPT Analyzer Page</value>
+  </data>
+  <data name="Title_CommandAnalyzerPage" xml:space="preserve">
+    <value>Command Analyzer Page</value>
+  </data>
+  <data name="Title_ScreenAnalyzerPage" xml:space="preserve">
+    <value>Screen Analyzer Page</value>
+  </data>
+  <data name="Title_LogManagerPage" xml:space="preserve">
+    <value>Log Manager Page</value>
+  </data>
+</root>
