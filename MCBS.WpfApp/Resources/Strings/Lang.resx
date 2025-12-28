@@ -255,4 +255,10 @@
   <data name="Title_LogManagerPage" xml:space="preserve">
     <value>Log Manager Page</value>
   </data>
+  <data name="ToggleButton_SwitchToDark" xml:space="preserve">
+    <value>Switch To Dark</value>
+  </data>
+  <data name="ToggleButton_SwitchToLight" xml:space="preserve">
+    <value>Switch To Light</value>
+  </data>
 </root>

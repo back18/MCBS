@@ -19,6 +19,28 @@
 
     <ScrollViewer Margin="10">
         <ikw:SimpleStackPanel Spacing="10">
+            <Grid Height="140"
+                  Background = "{DynamicResource SettingsCardBackground}">
+                <ToggleButton Height="100"
+                              HorizontalAlignment = "Center"
+                              VerticalAlignment="Center"
+                              FontSize="36"
+                              Foreground = "{DynamicResource SettingsCardForeground}"
+                              IsChecked="{Binding AppTheme, Converter={StaticResource ElementThemeToBooleanConverter}}">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton"
+                               BasedOn="{StaticResource ToggleButtonGorgeousThemeSwitchStyle}">
+                            <Setter Property="Content" Value="{lex:Loc ToggleButton_SwitchToDark}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content" Value="{lex:Loc ToggleButton_SwitchToLight}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
+            </Grid>
+            
             <ui:SettingsCard Header="{lex:Loc ApplicationSettingsPage_Language}">
                 <ComboBox SelectedValue="{Binding Language}"
                           SelectedValuePath="Tag"

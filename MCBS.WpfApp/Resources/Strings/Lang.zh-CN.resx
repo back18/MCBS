@@ -255,4 +255,10 @@
   <data name="Title_LogManagerPage" xml:space="preserve">
     <value>日志管理页面</value>
   </data>
+  <data name="ToggleButton_SwitchToDark" xml:space="preserve">
+    <value>切换深色</value>
+  </data>
+  <data name="ToggleButton_SwitchToLight" xml:space="preserve">
+    <value>切换浅色</value>
+  </data>
 </root>

@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging;
 using QuanLib.Logging;
 using System.IO;
 using System.Windows;
-using WPFLocalizeExtension.Engine;
 
 namespace MCBS.WpfApp
 {
@@ -123,10 +122,12 @@ namespace MCBS.WpfApp
         private static void Main()
         {
             Thread.CurrentThread.Name = "Main Thread";
-            LocalizeDictionary.Instance.Culture = Thread.CurrentThread.CurrentCulture;
+            LanguageHelper.Initialize();
 
             App app = new();
             app.MainWindow = app._host.Services.GetRequiredService<MainWindow>();
+            ThemeHelper.Initialize();
+
             app.MainWindow.Show();
             app.Run();
         }

@@ -473,5 +473,23 @@ namespace MCBS.WpfApp.Resources.Strings {
                 return ResourceManager.GetString("Title_SystemSettingsPage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 Switch To Dark 的本地化字符串。
+        /// </summary>
+        public static string ToggleButton_SwitchToDark {
+            get {
+                return ResourceManager.GetString("ToggleButton_SwitchToDark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Switch To Light 的本地化字符串。
+        /// </summary>
+        public static string ToggleButton_SwitchToLight {
+            get {
+                return ResourceManager.GetString("ToggleButton_SwitchToLight", resourceCulture);
+            }
+        }
     }
 }
