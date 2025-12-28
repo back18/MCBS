@@ -415,7 +415,12 @@
                                                 <Setter Property="RenderTransform">
                                                     <Setter.Value>
                                                         <TransformGroup>
-                                                            <ScaleTransform ScaleX="1" ScaleY="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Path}, Path=RenderTransform.Children[0].ScaleX}" />
+                                                            <!--<ScaleTransform ScaleX="1" ScaleY="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Path}, Path=RenderTransform.Children[0].ScaleX}" />-->
+                                                            <ScaleTransform ScaleX="1">
+                                                                <ScaleTransform.ScaleY>
+                                                                    <Binding RelativeSource="{RelativeSource Self}" Path="ScaleX" />
+                                                                </ScaleTransform.ScaleY>
+                                                            </ScaleTransform>
                                                         </TransformGroup>
                                                     </Setter.Value>
                                                 </Setter>
