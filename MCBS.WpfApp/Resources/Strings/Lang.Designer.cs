@@ -70,6 +70,51 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Window Backdrop 的本地化字符串。
+        /// </summary>
+        public static string ApplicationSettingsPage_WindowBackdrop {
+            get {
+                return ResourceManager.GetString("ApplicationSettingsPage_WindowBackdrop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Acrylic 的本地化字符串。
+        /// </summary>
+        public static string Backdrop_Acrylic {
+            get {
+                return ResourceManager.GetString("Backdrop_Acrylic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Mica 的本地化字符串。
+        /// </summary>
+        public static string Backdrop_Mica {
+            get {
+                return ResourceManager.GetString("Backdrop_Mica", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 None 的本地化字符串。
+        /// </summary>
+        public static string Backdrop_None {
+            get {
+                return ResourceManager.GetString("Backdrop_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 High Contrast 的本地化字符串。
+        /// </summary>
+        public static string Backdrop_Tabbed {
+            get {
+                return ResourceManager.GetString("Backdrop_Tabbed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Command 的本地化字符串。
         /// </summary>
         public static string DebuggerNavigation_Command {

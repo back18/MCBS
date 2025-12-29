@@ -11,7 +11,6 @@
         xmlns:pages="clr-namespace:MCBS.WpfApp.Pages"
         xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
         ui:WindowHelper.UseModernWindowStyle="True"
-        ui:WindowHelper.SystemBackdropType="Mica"
         ui:TitleBar.Height="36"
         mc:Ignorable="d"
         Title="{lex:Loc Title_MainWindow}" Height="600" Width="900"

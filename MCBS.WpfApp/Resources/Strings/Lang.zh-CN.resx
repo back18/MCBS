@@ -261,4 +261,19 @@
   <data name="ToggleButton_SwitchToLight" xml:space="preserve">
     <value>切换浅色</value>
   </data>
+  <data name="ApplicationSettingsPage_WindowBackdrop" xml:space="preserve">
+    <value>窗口背景</value>
+  </data>
+  <data name="Backdrop_None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Backdrop_Mica" xml:space="preserve">
+    <value>云母</value>
+  </data>
+  <data name="Backdrop_Tabbed" xml:space="preserve">
+    <value>高对比度</value>
+  </data>
+  <data name="Backdrop_Acrylic" xml:space="preserve">
+    <value>亚克力</value>
+  </data>
 </root>

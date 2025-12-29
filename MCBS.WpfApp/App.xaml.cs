@@ -127,6 +127,7 @@ namespace MCBS.WpfApp
             App app = new();
             app.MainWindow = app._host.Services.GetRequiredService<MainWindow>();
             ThemeHelper.Initialize();
+            BackdropHelper.Initialize();
 
             app.MainWindow.Show();
             app.Run();

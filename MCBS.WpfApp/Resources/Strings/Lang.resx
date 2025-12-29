@@ -261,4 +261,19 @@
   <data name="ToggleButton_SwitchToLight" xml:space="preserve">
     <value>Switch To Light</value>
   </data>
+  <data name="ApplicationSettingsPage_WindowBackdrop" xml:space="preserve">
+    <value>Window Backdrop</value>
+  </data>
+  <data name="Backdrop_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Backdrop_Mica" xml:space="preserve">
+    <value>Mica</value>
+  </data>
+  <data name="Backdrop_Tabbed" xml:space="preserve">
+    <value>High Contrast</value>
+  </data>
+  <data name="Backdrop_Acrylic" xml:space="preserve">
+    <value>Acrylic</value>
+  </data>
 </root>

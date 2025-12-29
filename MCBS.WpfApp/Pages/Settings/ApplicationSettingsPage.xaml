@@ -11,6 +11,7 @@
          xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
          xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
          xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+         xmlns:ikwstyles="clr-namespace:iNKORE.UI.WPF.Modern.Helpers.Styles;assembly=iNKORE.UI.WPF.Modern"
          xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels.Settings"
          mc:Ignorable="d" 
          d:DataContext="{d:DesignInstance Type=viewmodels:ApplicationSettingsViewModel}"
@@ -40,6 +41,17 @@
                     </ToggleButton.Style>
                 </ToggleButton>
             </Grid>
+
+            <ui:SettingsCard Header="{lex:Loc ApplicationSettingsPage_WindowBackdrop}">
+                <ComboBox SelectedValue="{Binding WindowBackdrop}"
+                          SelectedValuePath="Tag"
+                          Width="240">
+                    <ComboBoxItem Content="{lex:Loc Backdrop_None}" Tag="{x:Static ikwstyles:BackdropType.None}"/>
+                    <ComboBoxItem Content="{lex:Loc Backdrop_Mica}" Tag="{x:Static ikwstyles:BackdropType.Mica}"/>
+                    <ComboBoxItem Content="{lex:Loc Backdrop_Tabbed}" Tag="{x:Static ikwstyles:BackdropType.Tabbed}"/>
+                    <ComboBoxItem Content="{lex:Loc Backdrop_Acrylic}" Tag="{x:Static ikwstyles:BackdropType.Acrylic}"/>
+                </ComboBox>
+            </ui:SettingsCard>
             
             <ui:SettingsCard Header="{lex:Loc ApplicationSettingsPage_Language}">
                 <ComboBox SelectedValue="{Binding Language}"

@@ -46,5 +46,17 @@ namespace MCBS.WpfApp.Properties {
                 this["Language"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Tabbed")]
+        public string WindowBackdrop {
+            get {
+                return ((string)(this["WindowBackdrop"]));
+            }
+            set {
+                this["WindowBackdrop"] = value;
+            }
+        }
     }
 }
