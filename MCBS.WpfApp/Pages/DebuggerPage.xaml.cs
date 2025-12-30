@@ -1,5 +1,4 @@
 ﻿using iNKORE.UI.WPF.Modern.Controls;
-using MCBS.WpfApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,14 +20,16 @@ namespace MCBS.WpfApp.Pages
     /// </summary>
     public partial class DebuggerPage : Page
     {
-        public DebuggerPage()
+        public DebuggerPage(IServiceProvider serviceProvider)
         {
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
+
             InitializeComponent();
 
-            _pageFactory = new PageFactory();
+            _serviceProvider = serviceProvider;
         }
 
-        private readonly IPageFactory _pageFactory;
+        private readonly IServiceProvider _serviceProvider;
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
@@ -41,7 +42,7 @@ namespace MCBS.WpfApp.Pages
             {
                 return;
             }
-            else if (args.SelectedItemContainer.Tag is Type pageType && _pageFactory.TryGetPage(pageType, out var page))
+            else if (args.SelectedItemContainer.Tag is Type pageType && _serviceProvider.GetService(pageType) is Page page)
             {
                 DebuggerFrame.Navigate(page);
             }

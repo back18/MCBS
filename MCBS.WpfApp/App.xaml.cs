@@ -6,11 +6,7 @@ using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Helpers;
 using MCBS.WpfApp.Logging;
 using MCBS.WpfApp.Messages;
-using MCBS.WpfApp.Pages;
-using MCBS.WpfApp.Pages.Settings;
 using MCBS.WpfApp.Services;
-using MCBS.WpfApp.ViewModels;
-using MCBS.WpfApp.ViewModels.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -93,31 +89,16 @@ namespace MCBS.WpfApp
             });
 
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<HomePage>();
-            services.AddSingleton<SimulatorPage>();
-            services.AddSingleton<ManagerPage>();
-            services.AddSingleton<DebuggerPage>();
-            services.AddSingleton<SettingsPage>();
-
-            services.AddSingleton<ApplicationSettingsPage>();
-            services.AddSingleton<SystemSettingsPage>();
-            services.AddSingleton<MinecraftSettingsPage>();
-            services.AddSingleton<ScreenSettingsPage>();
-            services.AddSingleton<McapiModeConfigPage>();
-            services.AddSingleton<RconModeConfigPage>();
-            services.AddSingleton<ConsoleModeConfigPage>();
-
-            services.AddSingleton<ApplicationSettingsViewModel>();
-            services.AddSingleton<SettingsViewModel>();
-            services.AddSingleton<SystemSettingsViewModel>();
-            services.AddSingleton<MinecraftSettingsViewModel>();
-            services.AddSingleton<ScreenSettingsViewModel>();
-            services.AddSingleton<McapiModeConfigViewModel>();
-            services.AddSingleton<RconModeConfigViewModel>();
-            services.AddSingleton<ConsoleModeConfigViewModel>();
 
             services.AddTransient<IPageFactory, PageFactory>();
             services.AddTransient<IPageCreateFactory, PageCreateFactory>();
+
+            services.Scan(scan => scan
+                .FromAssemblyOf<App>()
+                .AddClasses(cls => cls.InNamespaces("MCBS.WpfApp.ViewModels", "MCBS.WpfApp.Pages"))
+                .AsSelf()
+                .WithSingletonLifetime()
+            );
         }
 
         [STAThread]
