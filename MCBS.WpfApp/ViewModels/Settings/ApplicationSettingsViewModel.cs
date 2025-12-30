@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using iNKORE.UI.WPF.Modern;
 using iNKORE.UI.WPF.Modern.Helpers.Styles;
+using MCBS.WpfApp.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using WPFLocalizeExtension.Engine;
+using BackdropHelper = MCBS.WpfApp.Helpers.BackdropHelper;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {

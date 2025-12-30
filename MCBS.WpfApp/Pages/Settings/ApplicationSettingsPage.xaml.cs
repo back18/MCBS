@@ -18,7 +18,7 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// ApplicationSettingsPage.xaml 的交互逻辑
     /// </summary>
-    [Route(Parent = typeof(SettingsPage))]
+    [Attributes.Route(Parent = typeof(SettingsPage))]
     public partial class ApplicationSettingsPage : Page
     {
         public ApplicationSettingsPage(ApplicationSettingsViewModel viewModel)

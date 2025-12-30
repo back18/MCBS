@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 
-namespace MCBS.WpfApp
+namespace MCBS.WpfApp.Services
 {
     public class PageFactory : IPageFactory
     {

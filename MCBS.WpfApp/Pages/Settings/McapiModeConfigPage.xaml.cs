@@ -22,7 +22,7 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// McapiModeConfigPage.xaml 的交互逻辑
     /// </summary>
-    [Route(Parent = typeof(MinecraftSettingsPage))]
+    [Attributes.Route(Parent = typeof(MinecraftSettingsPage))]
     public partial class McapiModeConfigPage : Page
     {
         public McapiModeConfigPage(McapiModeConfigViewModel viewModel)

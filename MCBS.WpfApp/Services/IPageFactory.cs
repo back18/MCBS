@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Page = iNKORE.UI.WPF.Modern.Controls.Page;
 
-namespace MCBS.WpfApp
+namespace MCBS.WpfApp.Services
 {
     public interface IPageFactory
     {

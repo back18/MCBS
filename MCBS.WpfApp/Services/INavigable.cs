@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Navigation;
 
-namespace MCBS.WpfApp
+namespace MCBS.WpfApp.Services
 {
     public interface INavigable
     {

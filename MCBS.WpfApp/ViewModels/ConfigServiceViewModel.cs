@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using DynamicPropertyAccessor;
 using MCBS.WpfApp.Config;
+using MCBS.WpfApp.Helpers;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.Logging;

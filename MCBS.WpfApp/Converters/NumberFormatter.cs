@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MCBS.WpfApp
+namespace MCBS.WpfApp.Converters
 {
     public class NumberFormatter : INumberBoxNumberFormatter
     {

@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using iNKORE.UI.WPF.Modern.Controls;
+using MCBS.WpfApp.Attributes;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Pages;
+using MCBS.WpfApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Reflection;

@@ -1,4 +1,5 @@
-﻿using MCBS.WpfApp.ViewModels.Settings;
+﻿using MCBS.WpfApp.Services;
+using MCBS.WpfApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;

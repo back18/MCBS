@@ -22,7 +22,7 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// RconModeConfigPage.xaml 的交互逻辑
     /// </summary>
-    [Route(Parent = typeof(MinecraftSettingsPage))]
+    [Attributes.Route(Parent = typeof(MinecraftSettingsPage))]
     public partial class RconModeConfigPage : Page
     {
         public RconModeConfigPage(RconModeConfigViewModel viewModel)

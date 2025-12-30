@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace MCBS.WpfApp
+namespace MCBS.WpfApp.Helpers
 {
     public static class ReflectionHelper
     {

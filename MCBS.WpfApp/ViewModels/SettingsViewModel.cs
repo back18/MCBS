@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MCBS.WpfApp.Commands;
+using MCBS.WpfApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MCBS.WpfApp.ViewModels.Settings
+namespace MCBS.WpfApp.ViewModels
 {
     public class SettingsViewModel : ObservableObject
     {

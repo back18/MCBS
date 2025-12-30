@@ -2,6 +2,7 @@
 using MCBS.Config.Minecraft;
 using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Messages;
+using MCBS.WpfApp.Services;
 using MCBS.WpfApp.ViewModels.Settings;
 using QuanLib.Core.Events;
 using System;
@@ -23,7 +24,7 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// MinecraftSettingsPage.xaml 的交互逻辑
     /// </summary>
-    [Route(Parent = typeof(SettingsPage))]
+    [Attributes.Route(Parent = typeof(SettingsPage))]
     public partial class MinecraftSettingsPage : Page, INavigable
     {
         public MinecraftSettingsPage(MinecraftSettingsViewModel viewModel)

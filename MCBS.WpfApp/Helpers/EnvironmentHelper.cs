@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MCBS.WpfApp
+namespace MCBS.WpfApp.Helpers
 {
     public static class EnvironmentHelper
     {

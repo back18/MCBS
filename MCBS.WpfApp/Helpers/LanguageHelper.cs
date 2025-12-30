@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text;
 using WPFLocalizeExtension.Engine;
 
-namespace MCBS.WpfApp
+namespace MCBS.WpfApp.Helpers
 {
     public static class LanguageHelper
     {

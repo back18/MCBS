@@ -23,7 +23,7 @@ namespace MCBS.WpfApp.Pages.Settings
     /// <summary>
     /// ScreenSettingsPage.xaml 的交互逻辑
     /// </summary>
-    [Route(Parent = typeof(SettingsPage))]
+    [Attributes.Route(Parent = typeof(SettingsPage))]
     public partial class ScreenSettingsPage : Page
     {
         public ScreenSettingsPage(ScreenSettingsViewModel viewModel)
