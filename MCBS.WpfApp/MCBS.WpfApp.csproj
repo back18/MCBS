@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MCBS.Common\MCBS.Common.csproj" />
+    <!--<ProjectReference Include="..\..\MCBS\MCBS.Common\MCBS.Common.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>
