@@ -1,0 +1,16 @@
+{
+  "txt": "System.Notepad",
+  "log": "System.Notepad",
+  "json": "System.Notepad",
+  "xml": "System.Notepad",
+  "jpg": "System.Album",
+  "jpeg": "System.Album",
+  "png": "System.Album",
+  "bmp": "System.Album",
+  "webp": "System.Album",
+  "mp4": "System.VideoPlayer",
+  "avi": "System.VideoPlayer",
+  "wmv": "System.VideoPlayer",
+  "mkv": "System.VideoPlayer",
+  "process": "System.Console"
+}

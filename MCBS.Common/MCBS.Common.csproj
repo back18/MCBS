@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SystemResource\log4net.xml" />
+    <None Remove="SystemResource\Registry.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SystemResource\log4net.xml" />
+    <EmbeddedResource Include="SystemResource\Registry.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MCBS.SystemApplications.Album\MCBS.SystemApplications.Album.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.Console\MCBS.SystemApplications.Console.csproj" />
     <ProjectReference Include="..\MCBS.SystemApplications.DataScreen\MCBS.SystemApplications.DataScreen.csproj" />
