@@ -84,7 +84,7 @@ namespace MCBS
             }
         }
 
-        private class Paths
+        internal class Paths
         {
             public static readonly string MCBS = Environment.CurrentDirectory.PathCombine("MCBS");
 
