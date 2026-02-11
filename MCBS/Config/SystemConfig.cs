@@ -1,8 +1,6 @@
-﻿using Nett;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.DataAnnotations;
-using QuanLib.Minecraft;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config
 {
-    public class SystemConfig : IDataModelOwner<SystemConfig, SystemConfig.Model>
+    public class SystemConfig : IDataViewModel<SystemConfig>
     {
         public SystemConfig(Model model)
         {
@@ -42,24 +40,14 @@ namespace MCBS.Config
 
         public ReadOnlyCollection<string> StartupChecklist { get; }
 
-        public static SystemConfig Load(string path)
+        public static SystemConfig FromDataModel(object model)
         {
-            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-
-            TomlTable table = Toml.ReadFile(path);
-            Model model = table.Get<Model>();
-            Model.Validate(model, Path.GetFileName(path));
-            return new(model);
+            return new SystemConfig((Model)model);
         }
 
-        public static SystemConfig FromDataModel(Model model)
+        public object ToDataModel()
         {
-            return new(model);
-        }
-
-        public Model ToDataModel()
-        {
-            return new()
+            return new Model()
             {
                 AutoRestart = AutoRestart,
                 BuildColorMappingCaches = BuildColorMappingCaches,
@@ -129,12 +117,17 @@ namespace MCBS.Config
 
             public static Model CreateDefault()
             {
-                return new();
+                return new Model();
             }
 
-            public static void Validate(Model model, string name)
+            public IValidatableObject GetValidator()
             {
-                ValidationHelper.Validate(model, name);
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Array.Empty<IValidatable>();
             }
         }
     }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config.Minecraft
 {
-    public class ConsoleModeConfig : IDataModelOwner<ConsoleModeConfig, ConsoleModeConfig.Model>
+    public class ConsoleModeConfig : IDataViewModel<ConsoleModeConfig>
     {
         private ConsoleModeConfig(Model model)
         {
@@ -27,14 +27,14 @@ namespace MCBS.Config.Minecraft
 
         public ReadOnlyCollection<string> MclogRegexFilter { get; }
 
-        public static ConsoleModeConfig FromDataModel(Model model)
+        public static ConsoleModeConfig FromDataModel(object model)
         {
-            return new(model);
+            return new ConsoleModeConfig((Model)model);
         }
 
-        public Model ToDataModel()
+        public object ToDataModel()
         {
-            return new()
+            return new Model()
             {
                 JavaPath = JavaPath,
                 LaunchArguments = LaunchArguments
@@ -68,12 +68,17 @@ namespace MCBS.Config.Minecraft
 
             public static Model CreateDefault()
             {
-                return new();
+                return new Model();
             }
 
-            public static void Validate(Model model, string name)
+            public IValidatableObject GetValidator()
             {
-                ValidationHelper.Validate(model, name);
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Array.Empty<IValidatable>();
             }
         }
     }

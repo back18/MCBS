@@ -15,7 +15,7 @@ namespace MCBS.Screens
     /// <summary>
     /// 屏幕
     /// </summary>
-    public struct Screen : IPlane, IEquatable<Screen>, IDataModelOwner<Screen, Screen.DataModel>
+    public struct Screen : IPlane, IEquatable<Screen>, IDataViewModel<Screen>
     {
         public Screen(DataModel model)
         {
@@ -387,9 +387,9 @@ namespace MCBS.Screens
             return $"StartPosition={StartPosition}, Width={Width}, Height={Height}, XFacing={XFacing}, YFacing={YFacing}";
         }
 
-        public readonly DataModel ToDataModel()
+        public readonly object ToDataModel()
         {
-            return new()
+            return new DataModel()
             {
                 StartPosition = [StartPosition.X, StartPosition.Y, StartPosition.Z],
                 Width = Width,
@@ -399,9 +399,9 @@ namespace MCBS.Screens
             };
         }
 
-        public static Screen FromDataModel(DataModel model)
+        public static Screen FromDataModel(object model)
         {
-            return new(model);
+            return new Screen((DataModel)model);
         }
 
         public static Screen CreateScreen(Vector3<int> startPosition, Vector3<int> endPosition, Facing normalFacing)
@@ -687,12 +687,17 @@ namespace MCBS.Screens
 
             public static DataModel CreateDefault()
             {
-                return new();
+                return new DataModel();
             }
 
-            public static void Validate(DataModel model, string name)
+            public IValidatableObject GetValidator()
             {
-                ValidationHelper.Validate(model, name);
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Array.Empty<IValidatable>();
             }
         }
     }

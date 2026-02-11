@@ -297,7 +297,7 @@ namespace MCBS.Screens
 
         private string ToJson()
         {
-            Screen.DataModel model = Screen.ToDataModel();
+            var model = Screen.ToDataModel();
             return JsonConvert.SerializeObject(model);
         }
 
