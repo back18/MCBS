@@ -6,6 +6,10 @@
     <layout type="log4net.Layout.PatternLayout">
       <conversionPattern value="[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n" />
     </layout>
+    <filter type="log4net.Filter.StringMatchFilter">
+      <stringToMatch value="ConcurrentStream: Call CancelState()" />
+      <acceptOnMatch value="false" />
+    </filter>
   </appender>
 
   <appender name="RollingFileAppender" type="log4net.Appender.RollingFileAppender">
@@ -18,6 +22,10 @@
     <layout type="log4net.Layout.PatternLayout">
       <conversionPattern value="[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n" />
     </layout>
+    <filter type="log4net.Filter.StringMatchFilter">
+      <stringToMatch value="ConcurrentStream: Call CancelState()" />
+      <acceptOnMatch value="false" />
+    </filter>
   </appender>
 
     <appender name="DebugFileAppender" type="log4net.Appender.FileAppender">
@@ -28,6 +36,18 @@
       <layout type="log4net.Layout.PatternLayout">
         <conversionPattern value="[%date{HH:mm:ss}] [%t/%p] [%c]: %m%n" />
       </layout>
+      <filter type="log4net.Filter.StringMatchFilter">
+        <stringToMatch value="bytes of the chunk" />
+        <acceptOnMatch value="false" />
+      </filter>
+      <filter type="log4net.Filter.StringMatchFilter">
+        <stringToMatch value="bytes in the chunk" />
+        <acceptOnMatch value="false" />
+      </filter>
+      <filter type="log4net.Filter.StringMatchFilter">
+        <stringToMatch value="current position is:" />
+        <acceptOnMatch value="false" />
+      </filter>
     </appender>
 
   <root>

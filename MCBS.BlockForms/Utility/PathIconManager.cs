@@ -36,7 +36,7 @@ namespace MCBS.BlockForms.Utility
                 return TextureManager.Instance["FileErrorIcon"];
 
             string extension = Path.GetExtension(path).TrimStart('.');
-            if (!ConfigManager.Registry.TryGetValue(extension, out var appId) ||
+            if (!CoreConfigManager.Registry.TryGetValue(extension, out var appId) ||
                 !MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appId, out var applicationManifest))
                 return TextureManager.Instance["FileIcon"];
 

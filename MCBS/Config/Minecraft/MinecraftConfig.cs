@@ -1,11 +1,7 @@
 ﻿using MCBS.Config.Constants;
-using Nett;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using QuanLib.Core;
 using QuanLib.DataAnnotations;
-using QuanLib.Minecraft;
-using QuanLib.Minecraft.ResourcePack;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config.Minecraft
 {
-    public class MinecraftConfig : IDataModelOwner<MinecraftConfig, MinecraftConfig.Model>
+    public class MinecraftConfig : IDataViewModel<MinecraftConfig>
     {
         private MinecraftConfig(Model model)
         {
@@ -60,14 +56,14 @@ namespace MCBS.Config.Minecraft
 
         public ConsoleModeConfig ConsoleModeConfig { get; }
 
-        public static MinecraftConfig FromDataModel(Model model)
+        public static MinecraftConfig FromDataModel(object model)
         {
-            return new(model);
+            return new MinecraftConfig((Model)model);
         }
 
-        public Model ToDataModel()
+        public object ToDataModel()
         {
-            return new()
+            return new Model()
             {
                 MinecraftPath = MinecraftPath,
                 MinecraftVersion = MinecraftVersion,
@@ -79,37 +75,6 @@ namespace MCBS.Config.Minecraft
                 DownloadSource = DownloadSource,
                 CommunicationMode = CommunicationMode
             };
-        }
-
-        public static MinecraftConfig Load(string path)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-
-            TomlTable table = Toml.ReadFile(path);
-            Model model = table.Get<Model>();
-            string fileName = Path.GetFileName(path);
-            Model.Validate(model, fileName);
-
-            switch (model.CommunicationMode)
-            {
-                case CommunicationModes.MCAPI:
-                    McapiModeConfig.Model.Validate(model.McapiModeConfig, $"{fileName}[{nameof(model.McapiModeConfig)}]");
-                    break;
-                case CommunicationModes.RCON:
-                    RconModeConfig.Model.Validate(model.RconModeConfig, $"{fileName}[{nameof(model.RconModeConfig)}]");
-                    break;
-                case CommunicationModes.CONSOLE:
-                    ConsoleModeConfig.Model.Validate(model.ConsoleModeConfig, $"{fileName}[{nameof(model.ConsoleModeConfig)}]");
-                    break;
-                case CommunicationModes.HYBRID:
-                    RconModeConfig.Model.Validate(model.RconModeConfig, $"{fileName}[{nameof(model.RconModeConfig)}]");
-                    ConsoleModeConfig.Model.Validate(model.ConsoleModeConfig, $"{fileName}[{nameof(model.ConsoleModeConfig)}]");
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            return new(model);
         }
 
         public class Model : IDataModel<Model>
@@ -190,12 +155,32 @@ namespace MCBS.Config.Minecraft
 
             public static Model CreateDefault()
             {
-                return new();
+                return new Model();
             }
 
-            public static void Validate(Model model, string name)
+            public IValidatableObject GetValidator()
             {
-                ValidationHelper.Validate(model, name);
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                switch (CommunicationMode)
+                {
+                    case CommunicationModes.MCAPI:
+                        yield return McapiModeConfig;
+                        break;
+                    case CommunicationModes.RCON:
+                        yield return RconModeConfig;
+                        break;
+                    case CommunicationModes.CONSOLE:
+                        yield return ConsoleModeConfig;
+                        break;
+                    case CommunicationModes.HYBRID:
+                        yield return RconModeConfig;
+                        yield return ConsoleModeConfig;
+                        break;
+                }
             }
         }
     }

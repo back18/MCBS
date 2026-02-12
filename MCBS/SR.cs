@@ -1,21 +1,16 @@
-﻿using static MCBS.Config.ConfigManager;
-using MCBS.Cursor.Style;
+﻿using MCBS.Cursor.Style;
 using QuanLib.BDF;
-using QuanLib.Minecraft.ResourcePack;
-using QuanLib.Minecraft.ResourcePack.Block;
-using QuanLib.Minecraft.ResourcePack.Language;
+using QuanLib.Core;
+using QuanLib.Logging;
+using QuanLib.Minecraft.Versions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using QuanLib.Logging;
-using QuanLib.Game;
-using MCBS.Drawing;
-using QuanLib.Minecraft.Versions;
-using QuanLib.Core;
+using static MCBS.Config.ConfigManager;
 
 namespace MCBS
 {
@@ -23,112 +18,69 @@ namespace MCBS
     {
         private static readonly ILogger LOGGER = Log4NetManager.Instance.GetLogger();
 
-        public static VersionList MinecraftVersionList => _MinecraftVersionList ?? throw new InvalidOperationException();
-        private static VersionList? _MinecraftVersionList;
+        public static bool IsLoaded { get; private set; }
 
-        public static MinecraftVersion CurrentMinecraftVersion => _CurrentMinecraftVersion ?? throw new InvalidOperationException();
-        private static MinecraftVersion? _CurrentMinecraftVersion;
-
-        public static LanguageManager MinecraftLanguage => _MinecraftLanguage ?? throw new InvalidOperationException();
-        private static LanguageManager? _MinecraftLanguage;
-
-        public static ReadOnlyDictionary<Facing, Rgba32BlockMapping> Rgba32BlockMappings => _Rgba32BlockMappings ?? new(new Dictionary<Facing, Rgba32BlockMapping>());
-        private static ReadOnlyDictionary<Facing, Rgba32BlockMapping>? _Rgba32BlockMappings;
-
-        public static HashBlockMapping HashBlockMapping => _HashBlockMapping ?? throw new InvalidOperationException();
-        private static HashBlockMapping? _HashBlockMapping;
-
-        public static ReadOnlyDictionary<Facing, IColorMappingCache> ColorMappingCaches => _ColorMappingCaches ?? new(new Dictionary<Facing, IColorMappingCache>());
-        private static ReadOnlyDictionary<Facing, IColorMappingCache>? _ColorMappingCaches;
-
-        public static BdfFont DefaultFont => _DefaultFont ?? throw new InvalidOperationException();
-        private static BdfFont? _DefaultFont;
-
-        public static CursorStyleManager CursorStyleManager => _CursorStyleManager ?? throw new InvalidOperationException();
-        private static CursorStyleManager? _CursorStyleManager;
-
-        public static void LoadAll(ResourceEntryManager resources)
+        public static VersionList MinecraftVersionList
         {
-            ArgumentNullException.ThrowIfNull(resources, nameof(resources));
-
-            LoadMinecraftVersionList(resources);
-            LoadMinecraftLanguage(resources);
-            LoadBlockTextureManager(resources);
-            BuildColorMappingCache(resources);
-            LoadFontFile(resources);
-            LoadCursorFile(resources);
+            get => GetNotNull(field);
+            private set => field = value;
         }
 
-        private static void LoadMinecraftVersionList(ResourceEntryManager resources)
+        public static MinecraftVersion CurrentMinecraftVersion
         {
-            _MinecraftVersionList = VersionList.LoadInstance(QuanLib.Core.InstantiateArgs.Empty);
-            _CurrentMinecraftVersion = _MinecraftVersionList.GetVersion(MinecraftConfig.MinecraftVersion);
+            get => GetNotNull(field);
+            private set => field = value;
+        }
+
+        public static BdfFont DefaultFont
+        {
+            get => GetNotNull(field);
+            private set => field = value;
+        }
+
+        public static CursorStyleManager CursorStyleManager
+        {
+            get => GetNotNull(field);
+            private set => field = value;
+        }
+
+        public static void LoadAll()
+        {
+            if (IsLoaded)
+                throw new InvalidOperationException("系统资源管理器完成已初始化，无法重复初始化");
+            IsLoaded = true;
+
+            LoadMinecraftVersionList();
+            LoadFontFile();
+            LoadCursorFile();
+        }
+
+        private static void LoadMinecraftVersionList()
+        {
+            MinecraftVersionList = VersionList.LoadInstance(InstantiateArgs.Empty);
+            CurrentMinecraftVersion = MinecraftVersionList.GetVersion(MinecraftConfig.MinecraftVersion);
 
             LOGGER.Info("Minecraft版本数据加载完成");
         }
 
-        private static void LoadMinecraftLanguage(ResourceEntryManager resources)
-        {
-            _MinecraftLanguage = LanguageManager.LoadInstance(new(resources, MinecraftConfig.Language));
-
-            LOGGER.Info($"Minecraft语言数据加载完成，语言:{MinecraftConfig.Language} 条目数量:{_MinecraftLanguage.Count}");
-        }
-
-        private static void LoadBlockTextureManager(ResourceEntryManager resources)
-        {
-            using BlockTextureManager blockTextureManager = BlockTextureReader.Load(resources);
-            Dictionary<Facing, Rgba32BlockMapping> mappings = new()
-            {
-                { Facing.Xp, new(blockTextureManager, Facing.Xp, ScreenConfig.ScreenBlockBlacklist) },
-                { Facing.Xm, new(blockTextureManager, Facing.Xm, ScreenConfig.ScreenBlockBlacklist) },
-                { Facing.Yp, new(blockTextureManager, Facing.Yp, ScreenConfig.ScreenBlockBlacklist) },
-                { Facing.Ym, new(blockTextureManager, Facing.Ym, ScreenConfig.ScreenBlockBlacklist) },
-                { Facing.Zp, new(blockTextureManager, Facing.Zp, ScreenConfig.ScreenBlockBlacklist) },
-                { Facing.Zm, new(blockTextureManager, Facing.Zm, ScreenConfig.ScreenBlockBlacklist) }
-            };
-
-            _Rgba32BlockMappings = mappings.AsReadOnly();
-            _HashBlockMapping = new(blockTextureManager, ScreenConfig.ScreenBlockBlacklist);
-
-            LOGGER.Info($"Minecraft方块纹理数据加载完成，成功加载 {blockTextureManager.Count} 个方块纹理数据");
-        }
-
-        private static void BuildColorMappingCache(ResourceEntryManager resources)
-        {
-            Dictionary<Facing, IColorMappingCache> caches = new();
-            foreach (Facing facing in Enum.GetValues(typeof(Facing)))
-            {
-                IColorMappingCache? cache;
-                if (SystemConfig.BuildColorMappingCaches)
-                {
-                    cache = ColorMappingCacheBuilder.ReadOrBuild(facing, SystemConfig.EnableCompressionCache);
-                }
-                else
-                {
-                    if (!ColorMappingCacheBuilder.ReadIfValid(facing, SystemConfig.EnableCompressionCache, out cache))
-                        continue;
-                }
-
-                caches.Add(facing, cache);
-            }
-            _ColorMappingCaches = new(caches);
-
-            LOGGER.Info("Minecraft方块颜色映射表缓存构建完成");
-        }
-
-        private static void LoadFontFile(ResourceEntryManager resources)
+        private static void LoadFontFile()
         {
             using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("MCBS.SystemResource.DefaultFont.bdf") ?? throw new InvalidOperationException();
-            _DefaultFont = BdfFont.Load(stream);
+            DefaultFont = BdfFont.Load(stream);
 
-            LOGGER.Info($"默认字体数据完成，字符数量:{_DefaultFont.Count} 字体高度:{_DefaultFont.Height} 全角宽度:{_DefaultFont.FullWidth} 半角宽度:{_DefaultFont.HalfWidth}");
+            LOGGER.Info($"BDF字体数据完成，字符数量:{DefaultFont.Count} 字符高度:{DefaultFont.Height} 全角宽度:{DefaultFont.FullWidth} 半角宽度:{DefaultFont.HalfWidth}");
         }
 
-        private static void LoadCursorFile(ResourceEntryManager resources)
+        private static void LoadCursorFile()
         {
-            _CursorStyleManager = CursorStyleManager.LoadInstance();
+            CursorStyleManager = CursorStyleManager.LoadInstance();
 
-            LOGGER.Info($"光标数据加载完成，光标数量:{_CursorStyleManager.Count}");
+            LOGGER.Info($"光标数据加载完成，光标数量:{CursorStyleManager.Count}");
+        }
+
+        private static T GetNotNull<T>(T? field, [CallerMemberName] string? propertyName = null) where T : class
+        {
+            return field ?? throw new InvalidOperationException($"属性“{propertyName}”初始化");
         }
     }
 }

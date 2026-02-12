@@ -49,7 +49,7 @@ namespace MCBS.SystemApplications.Desktop.DesktopIcons
                 return;
 
             string extension = Path.GetExtension(_path).TrimStart('.');
-            if (ConfigManager.Registry.TryGetValue(extension, out var appId) &&
+            if (CoreConfigManager.Registry.TryGetValue(extension, out var appId) &&
                 MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appId, out var applicationManifest))
             {
                 MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [_path], this.GetForm());

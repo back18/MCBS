@@ -325,7 +325,7 @@ namespace MCBS.ConsoleTerminal
         {
             FileInfo fileInfo = McbsPathManager.MCBS_Logs.CombineFile($"Command-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log");
             using FileStream fileStream = fileInfo.Create();
-            Program.CommandLogger.Dump(fileStream);
+            ConsoleApp.Current.CommandLogger.Dump(fileStream);
             return $"命令日志已保存到“{fileInfo.FullName}”";
         }
 
@@ -333,7 +333,7 @@ namespace MCBS.ConsoleTerminal
         {
             FileInfo fileInfo = McbsPathManager.MCBS_Logs.CombineFile($"Command-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log");
             using FileStream fileStream = fileInfo.Create();
-            Program.CommandLogger.Dump(fileStream, maxLogCount);
+            ConsoleApp.Current.CommandLogger.Dump(fileStream, maxLogCount);
             return $"命令日志已保存到“{fileInfo.FullName}”";
         }
 

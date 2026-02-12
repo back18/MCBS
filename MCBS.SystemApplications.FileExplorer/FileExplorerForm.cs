@@ -132,7 +132,7 @@ namespace MCBS.SystemApplications.FileExplorer
                 return;
 
             string extension = fileInfo.Extension.TrimStart('.');
-            if (ConfigManager.Registry.TryGetValue(extension, out var appId) &&
+            if (CoreConfigManager.Registry.TryGetValue(extension, out var appId) &&
                 MinecraftBlockScreen.Instance.AppComponents.TryGetValue(appId, out var applicationManifest))
             {
                 MinecraftBlockScreen.Instance.ProcessManager.StartProcess(applicationManifest, [fileInfo.FullName], this.GetForm());

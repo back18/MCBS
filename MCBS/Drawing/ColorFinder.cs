@@ -9,17 +9,19 @@ namespace MCBS.Drawing
 {
     public class ColorFinder : IColorFinder
     {
-        public ColorFinder(Rgba32[] colors)
+        public ColorFinder(IEnumerable<Rgba32> colorSet)
         {
-            ArgumentNullException.ThrowIfNull(colors, nameof(colors));
+            ArgumentNullException.ThrowIfNull(colorSet, nameof(colorSet));
 
-            _colors = colors;
-            _colorSet = CreateColorSet(colors);
+            _colorSet = new HashSet<Rgba32>(colorSet);
+            _colors = _colorSet.ToArray();
         }
 
         private readonly Rgba32[] _colors;
 
         private readonly HashSet<Rgba32> _colorSet;
+
+        public int Count => _colors.Length;
 
         public Rgba32 Find(Rgba32 rgba32)
         {
@@ -43,12 +45,11 @@ namespace MCBS.Drawing
             return _colorSet.Contains(rgba32);
         }
 
-        private static HashSet<Rgba32> CreateColorSet(Rgba32[] colors)
+        public Rgba32[] GetColorSet()
         {
-            HashSet<Rgba32> hashSet = [];
-            foreach (var color in colors)
-                hashSet.Add(color);
-            return hashSet;
+            Rgba32[] colors = new Rgba32[_colors.Length];
+            _colors.CopyTo(colors);
+            return colors;
         }
 
         private readonly struct RgbaVector(int r, int g, int b, int a)

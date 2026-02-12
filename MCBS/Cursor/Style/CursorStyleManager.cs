@@ -9,10 +9,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using QuanLib.Minecraft;
-using QuanLib.Core.Extensions;
-using QuanLib.Core;
 using MCBS.Drawing;
+using QuanLib.IO.Extensions;
+using QuanLib.Core;
 
 namespace MCBS.Cursor.Style
 {
