@@ -171,6 +171,7 @@ namespace MCBS.ConsoleTerminal
             services.AddTransient<CoreConfigLoader>();
             services.AddTransient<TomlConfigLoader>();
             services.AddTransient<ILoggingLoader, Log4NetLoader>();
+            services.AddTransient<CharacterWidthMappingLoader>();
             services.AddTransient<MinecraftResourceDownloader>();
             services.AddTransient<MinecraftResourceEntryLoader>();
             services.AddTransient<MinecraftResourceLoader>();

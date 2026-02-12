@@ -5,7 +5,6 @@ using MCBS.Config;
 using MCBS.Config.Minecraft;
 using MCBS.ConsoleTerminal.Services;
 using Microsoft.Extensions.DependencyInjection;
-using QuanLib.Consoles;
 using QuanLib.Core;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
@@ -102,9 +101,10 @@ namespace MCBS.ConsoleTerminal
             {
                 LOGGER.Info("开始加载外部资源");
 
-                LoadCharacterWidthMapping();
-
                 ConsoleApp consoleApp = ConsoleApp.Current;
+
+                CharacterWidthMappingLoader characterWidthMappingLoader = consoleApp.GetRequiredService<CharacterWidthMappingLoader>();
+                await characterWidthMappingLoader.LoadAsync();
 
                 MinecraftResourceDownloader minecraftResourceDownloader = consoleApp.GetRequiredService<MinecraftResourceDownloader>();
                 MinecraftResourceEntryLoader minecraftResourceEntryLoader = consoleApp.GetRequiredService<MinecraftResourceEntryLoader>();
@@ -192,21 +192,6 @@ namespace MCBS.ConsoleTerminal
             Thread.Sleep(1000);
 
             return minecraftInstance.IsRunning;
-        }
-
-        private static void LoadCharacterWidthMapping()
-        {
-            FileInfo fileInfo = McbsPathManager.MCBS_Cache.CombineFile("CharacterWidthMapping.bin");
-
-            if (fileInfo.Exists)
-            {
-                CharacterWidthMapping.LoadInstance(new(File.ReadAllBytes(fileInfo.FullName)));
-            }
-            else
-            {
-                CharacterWidthMapping characterWidthMapping = CharacterWidthMapping.LoadInstance(new(null));
-                File.WriteAllBytes(fileInfo.FullName, characterWidthMapping.BuildCacheBytes());
-            }
         }
 
         private static void CommandSender_CommandSent(QuanLib.Minecraft.Command.Senders.CommandSender sender, CommandInfoEventArgs e)
