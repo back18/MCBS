@@ -1,5 +1,4 @@
-﻿using MCBS.UI;
-using QuanLib.Game;
+﻿using QuanLib.Game;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
@@ -57,7 +56,7 @@ namespace MCBS.Drawing.Extensions
                     if (string.IsNullOrEmpty(blockId))
                         continue;
 
-                    if (!SR.Rgba32BlockMappings[facing].TryGetKey(blockId, out var rgba32))
+                    if (!MinecraftResourceManager.Rgba32BlockMappings[facing].TryGetColor(blockId, out var rgba32))
                         continue;
 
                     image[x, y] = rgba32;

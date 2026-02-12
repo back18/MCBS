@@ -14,7 +14,7 @@ namespace MCBS.Drawing
         public ColorBlockConverter(Facing facing = Facing.Zm)
         {
             _Facing = facing;
-            _mapping = new(SR.Rgba32BlockMappings[facing]);
+            _mapping = new(MinecraftResourceManager.Rgba32BlockMappings[facing], MinecraftResourceManager.CreateColorMatcher<TPixel>(facing));
         }
 
         private ColorBlockMapping<TPixel> _mapping;
@@ -27,7 +27,7 @@ namespace MCBS.Drawing
                 if (_Facing != value)
                 {
                     _Facing = value;
-                    _mapping = new(SR.Rgba32BlockMappings[value]);
+                    _mapping = new(MinecraftResourceManager.Rgba32BlockMappings[value], MinecraftResourceManager.CreateColorMatcher<TPixel>(value));
                 }
             }
         }
@@ -35,7 +35,7 @@ namespace MCBS.Drawing
 
         public string this[TPixel pixel] => _mapping[pixel];
 
-        public TPixel this[string blockId] => _mapping.TryGetKey(blockId, out var pixel) ? pixel : default;
+        public TPixel this[string blockId] => _mapping.TryGetColor(blockId, out var pixel) ? pixel : default;
 
         public IBlockMapping<TPixel> BlockMapping => _mapping;
 
