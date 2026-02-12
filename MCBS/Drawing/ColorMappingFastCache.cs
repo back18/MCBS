@@ -17,43 +17,16 @@ namespace MCBS.Drawing
             ArgumentNullException.ThrowIfNull(mapping, nameof(mapping));
             ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256, mapping, nameof(mapping));
 
-            _mapping = new Rgba32[256 * 256 * 256];
-            new Span<Rgba32>(mapping).CopyTo(new Span<Rgba32>(_mapping));
-        }
-
-        public ColorMappingFastCache(byte[] bytes)
-        {
-            ArgumentNullException.ThrowIfNull(bytes, nameof(bytes));
-            ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256 * 4, bytes, nameof(bytes));
-
-            _mapping = new Rgba32[256 * 256 * 256];
-            for (int i = 0; i < bytes.Length; i += 4)
-                _mapping[i / 4] = new(bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]);
+            _mapping = mapping;
         }
 
         private readonly Rgba32[] _mapping;
 
         public Rgba32 this[int index] => _mapping[index];
 
-        public Rgba32 this[Rgba32 color] => this[ToIndex(color)];
+        public Rgba32 this[Rgba32 color] => _mapping[ToIndex(color)];
 
         public bool IsSupportAlpha => false;
-
-        public byte[] ToBytes()
-        {
-            int index = 0;
-            byte[] bytes = new byte[_mapping.Length * 4];
-
-            foreach (Rgba32 color in _mapping)
-            {
-                bytes[index++] = color.R;
-                bytes[index++] = color.G;
-                bytes[index++] = color.B;
-                bytes[index++] = color.A;
-            }
-
-            return bytes;
-        }
 
         public static int ToIndex(Rgba32 color)
         {
