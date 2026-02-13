@@ -39,6 +39,8 @@ namespace MCBS
 
         public static FileInfo MCBS_Logs_LatestLog => Paths.MCBS_Logs_LatestLog.CreateFileInfo();
 
+        public static FileInfo MCBS_Logs_DebugLog => Paths.MCBS_Logs_DebugLog.CreateFileInfo();
+
         public static DirectoryInfo MCBS_Minecraft => Paths.MCBS_Minecraft.CreateDirectoryInfo();
 
         public static DirectoryInfo MCBS_Minecraft_ResourcePacks => Paths.MCBS_Minecraft_ResourcePacks.CreateDirectoryInfo();
@@ -66,7 +68,7 @@ namespace MCBS
 
         public static FileInfo MCBS_FFmpeg_Win64ZipFile => Paths.MCBS_FFmpeg_Win64ZipFile.CreateFileInfo();
 
-        public static FileInfo MCBS_FFmpeg_Win64IndexFile => Paths.MCBS_FFmpeg_Win64IndexFile.CreateFileInfo();
+        public static FileInfo MCBS_FFmpeg_Win64FileManifest => Paths.MCBS_FFmpeg_Win64FileManifest.CreateFileInfo();
 
         public static void CreateAllDirectory()
         {
@@ -82,7 +84,7 @@ namespace MCBS
             }
         }
 
-        private class Paths
+        internal class Paths
         {
             public static readonly string MCBS = Environment.CurrentDirectory.PathCombine("MCBS");
 
@@ -110,6 +112,8 @@ namespace MCBS
 
             public static readonly string MCBS_Logs_LatestLog = MCBS_Logs.PathCombine("Latest.log");
 
+            public static readonly string MCBS_Logs_DebugLog = MCBS_Logs.PathCombine("Debug.log");
+
             public static readonly string MCBS_Minecraft = MCBS.PathCombine("Minecraft");
 
             public static readonly string MCBS_Minecraft_ResourcePacks = MCBS_Minecraft.PathCombine("ResourcePacks");
@@ -132,7 +136,7 @@ namespace MCBS
 
             public static readonly string MCBS_FFmpeg_Win64ZipFile = MCBS_FFmpeg.PathCombine("ffmpeg-n7.1-latest-win64-gpl-shared-7.1.zip");
 
-            public static readonly string MCBS_FFmpeg_Win64IndexFile = MCBS_FFmpeg.PathCombine("ffmpeg-n7.1-latest-win64-gpl-shared-7.1.json");
+            public static readonly string MCBS_FFmpeg_Win64FileManifest = MCBS_FFmpeg.PathCombine("ffmpeg-n7.1-latest-win64-gpl-shared-7.1.json");
         }
 
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = false, AllowMultiple = false)]

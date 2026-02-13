@@ -1,7 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -12,62 +11,59 @@ namespace MCBS.Drawing
 {
     public class ColorBlockMapping<TPixel> : IBlockMapping<TPixel> where TPixel : unmanaged, IPixel<TPixel>
     {
-        public ColorBlockMapping(Rgba32BlockMapping mapping)
+        private const int COLOR_COUNT = 256 * 256 * 256;
+
+        public ColorBlockMapping(Rgba32BlockMapping mapping, ColorMatcher<TPixel> matcher)
         {
             ArgumentNullException.ThrowIfNull(mapping, nameof(mapping));
+            ArgumentNullException.ThrowIfNull(matcher, nameof(matcher));
 
             _mapping = mapping;
-            _matcher = _mapping.CreateColorMatcher<TPixel>();
+            _matcher = matcher;
         }
 
         private readonly Rgba32BlockMapping _mapping;
 
         private readonly ColorMatcher<TPixel> _matcher;
 
-        public string this[TPixel key] => _mapping[_matcher.Match(key)];
+        public string this[TPixel color] => _mapping[_matcher.Match(color)];
 
-        public TPixel this[string value] => new Color(_mapping[value]).ToPixel<TPixel>();
+        public TPixel this[string blockId] => new Color(_mapping[blockId]).ToPixel<TPixel>();
 
-        public IEnumerable<TPixel> Keys => [];
+        public IEnumerable<TPixel> Colors => [];
 
-        public IEnumerable<string> Values => _mapping.Values;
+        public IEnumerable<string> Blocks => _mapping.Blocks;
 
-        public int Count => _mapping.Count;
+        public int ColorCount => COLOR_COUNT;
 
-        public bool ContainsKey(TPixel key)
+        public int BlockCount => _mapping.BlockCount;
+
+        public bool ContainsColor(TPixel color)
         {
             return true;
         }
 
-        public bool TryGetValue(TPixel key, [MaybeNullWhen(false)] out string value)
+        public bool ContainsBlock(string blockId)
         {
-            value = _mapping[_matcher.Match(key)];
-            return true;
+            return _mapping.ContainsBlock(blockId);
         }
 
-        public bool TryGetKey(string value, out TPixel key)
+        public bool TryGetColor(string blockId, out TPixel color)
         {
-            if (_mapping.TryGetKey(value, out var rgba32))
+            if (_mapping.TryGetColor(blockId, out var rgba32))
             {
-                key = new Color(rgba32).ToPixel<TPixel>();
+                color = new Color(rgba32).ToPixel<TPixel>();
                 return true;
             }
 
-            key = default;
+            color = default;
             return false;
         }
 
-        public IEnumerator<KeyValuePair<TPixel, string>> GetEnumerator()
+        public bool TryGetBlock(TPixel color, [MaybeNullWhen(false)] out string blockId)
         {
-            foreach (var item in _mapping)
-            {
-                yield return new(new Color(item.Key).ToPixel<TPixel>(), item.Value);
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            blockId = _mapping[_matcher.Match(color)];
+            return true;
         }
     }
 }

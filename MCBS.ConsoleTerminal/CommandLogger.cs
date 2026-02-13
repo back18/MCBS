@@ -12,7 +12,7 @@ namespace MCBS.ConsoleTerminal
 {
     public class CommandLogger : UnmanagedRunnable
     {
-        public CommandLogger(string logFilePath, int maxCacheCount = 10000, bool deduplication = true) : base(Log4NetManager.Instance.GetProvider())
+        public CommandLogger(string logFilePath, int maxCacheCount = 10000, bool deduplication = true, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
         {
             ArgumentException.ThrowIfNullOrEmpty(logFilePath, nameof(logFilePath));
             ThrowHelper.ArgumentOutOfMin(1, maxCacheCount, nameof(maxCacheCount));

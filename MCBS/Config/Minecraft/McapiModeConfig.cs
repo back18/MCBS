@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config.Minecraft
 {
-    public class McapiModeConfig : IDataModelOwner<McapiModeConfig, McapiModeConfig.Model>
+    public class McapiModeConfig : IDataViewModel<McapiModeConfig>
     {
         private McapiModeConfig(Model model)
         {
@@ -26,14 +26,14 @@ namespace MCBS.Config.Minecraft
 
         public string Password { get; }
 
-        public static McapiModeConfig FromDataModel(Model model)
+        public static McapiModeConfig FromDataModel(object model)
         {
-            return new(model);
+            return new McapiModeConfig((Model)model);
         }
 
-        public Model ToDataModel()
+        public object ToDataModel()
         {
-            return new()
+            return new Model()
             {
                 Address = Address,
                 Port = Port,
@@ -64,12 +64,17 @@ namespace MCBS.Config.Minecraft
 
             public static Model CreateDefault()
             {
-                return new();
+                return new Model();
             }
 
-            public static void Validate(Model model, string name)
+            public IValidatableObject GetValidator()
             {
-                ValidationHelper.Validate(model, name);
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Array.Empty<IValidatable>();
             }
         }
     }

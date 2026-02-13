@@ -12,7 +12,5 @@ namespace MCBS.Drawing
         public bool IsSupportAlpha { get; }
 
         public Rgba32 this[Rgba32 color] { get; }
-
-        public byte[] ToBytes();
     }
 }

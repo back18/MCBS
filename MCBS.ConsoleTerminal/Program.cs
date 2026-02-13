@@ -1,14 +1,13 @@
 ﻿using MCBS.Application;
 using MCBS.BlockForms.Utility;
+using MCBS.Common.Services;
 using MCBS.Config;
-using MCBS.Config.Constants;
 using MCBS.Config.Minecraft;
-using QuanLib.Commands;
-using QuanLib.Consoles;
+using MCBS.ConsoleTerminal.Services;
+using Microsoft.Extensions.DependencyInjection;
 using QuanLib.Core;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
-using QuanLib.Minecraft;
 using QuanLib.Minecraft.Command.Events;
 using QuanLib.Minecraft.Instance;
 using QuanLib.Minecraft.ResourcePack;
@@ -21,32 +20,20 @@ namespace MCBS.ConsoleTerminal
     {
         private static ILogger LOGGER => Log4NetManager.Instance.GetLogger(typeof(Program));
 
-        static Program()
-        {
-            Thread.CurrentThread.Name = "Main Thread";
-            McbsPathManager.CreateAllDirectory();
-            ConfigManager.CreateIfNotExists();
-            LoadLogManager();
-            LoadCharacterWidthMapping();
-            Terminal = new AdvancedTerminal(new("SYSTEM", PrivilegeLevel.Root), Log4NetManager.Instance.GetProvider());
-            CommandLogger = new(McbsPathManager.MCBS_Logs.CombineFile("Command.log").FullName) { IsWriteToFile = true };
-            CommandLogger.AddBlacklist("time query gametime");
-        }
-
-        public static Terminal Terminal { get; }
-
-        public static CommandLogger CommandLogger { get; }
-
         private static void Main(string[] args)
         {
-            LOGGER.Info("MCBS已启动，欢迎使用！");
+            Thread.CurrentThread.Name = "Main Thread";
 
             Initialize();
 
-            MinecraftConfig config = ConfigManager.MinecraftConfig;
-            LOGGER.Info($"将以 {config.CommunicationMode} 模式绑定到位于“{config.MinecraftPath}”的Minecraft实例");
+            LOGGER.Info("MCBS已启动，欢迎使用！");
 
-            MinecraftInstance minecraftInstance = CreateMinecraftInstance(config, Log4NetManager.Instance.GetProvider());
+            LoadResourceAsync().GetAwaiter().GetResult();
+
+            MinecraftConfig config = ConfigManager.MinecraftConfig;
+            LOGGER.Info($"将以 {config.CommunicationMode} 模式绑定到位于“{config.MinecraftPath}”的Minecraft{(config.IsServer ? "服务端" : "客户端")}");
+
+            MinecraftInstance minecraftInstance = CreateMinecraftInstance();
             LOGGER.Info(GetMinecraftInstanceInfo(minecraftInstance));
 
             LOGGER.Info($"正在等待位于“{config.MinecraftPath}”的Minecraft实例启动...");
@@ -57,8 +44,9 @@ namespace MCBS.ConsoleTerminal
             }
             else
             {
-                LOGGER.Error("由于Minecraft实例启动失败，程序即将终止");
+                LOGGER.Fatal("由于Minecraft实例启动失败，程序即将终止");
                 Exit(-1);
+                return;
             }
 
             minecraftInstance.CommandSender.CommandSent += CommandSender_CommandSent;
@@ -68,8 +56,7 @@ namespace MCBS.ConsoleTerminal
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.LoadInstance(new(minecraftInstance, appComponents));
 
             mcbs.Start("System Thread");
-            Terminal.Start("Terminal Thread");
-            CommandLogger.Start("CommandLogger Thread");
+            ConsoleApp.Current.Start();
 
             mcbs.WaitForStop();
             mcbs.Dispose();
@@ -84,86 +71,76 @@ namespace MCBS.ConsoleTerminal
         {
             try
             {
-                LOGGER.Info("程序开始初始化");
+                McbsPathManager.CreateAllDirectory();
+                ConsoleApp consoleApp = ConsoleApp.Create();
 
-                ConfigManager.LoadAll();
-                using ResourceEntryManager resources = MinecraftResourcesLoader.LoadAll();
-                SR.LoadAll(resources);
-                FFmpegResourcesLoader.LoadAll();
-                TextureManager.LoadInstance();
+                CoreConfigLoader coreConfigLoader = consoleApp.GetRequiredService<CoreConfigLoader>();
+                coreConfigLoader.CreateIfNotExists();
+                coreConfigLoader.LoadAll().ApplyInitialize();
 
-                LOGGER.Info("程序初始化完成");
+                TomlConfigLoader tomlConfigLoader = consoleApp.GetRequiredService<TomlConfigLoader>();
+                tomlConfigLoader.CreateIfNotExists();
+                tomlConfigLoader.LoadAll().ApplyInitialize();
+
+                ILoggingLoader loggingLoader = consoleApp.GetRequiredService<ILoggingLoader>();
+                loggingLoader.Load();
+
+                consoleApp.Initialize();
             }
             catch (Exception ex)
             {
-                LOGGER.Fatal("程序初始化失败", ex);
-                Exit(-1);
-                throw new InvalidOperationException();
+                Console.Error.WriteLine("FATAL: ");
+                Console.Error.WriteLine(ex.ToString());
+                Environment.Exit(-1);
             }
         }
 
-        private static MinecraftInstance CreateMinecraftInstance(MinecraftConfig config, ILoggerProvider loggerProvider)
+        private static async Task LoadResourceAsync()
         {
             try
             {
-                if (config.IsServer)
-                {
-                    return config.CommunicationMode switch
-                    {
-                        CommunicationModes.MCAPI => new McapiMinecraftServer(
-                            config.MinecraftPath,
-                            config.ServerAddress,
-                            config.ServerPort,
-                            config.McapiModeConfig.Port,
-                            config.McapiModeConfig.Password,
-                            loggerProvider),
-                        CommunicationModes.RCON => new RconMinecraftServer(config.MinecraftPath,
-                            config.ServerAddress,
-                            config.ServerPort,
-                            config.RconModeConfig.Port,
-                            config.RconModeConfig.Password,
-                            loggerProvider),
-                        CommunicationModes.CONSOLE => new ConsoleMinecraftServer(
-                            config.MinecraftPath,
-                            config.ServerAddress,
-                            config.ServerPort,
-                            new GenericServerLaunchArguments(
-                                config.ConsoleModeConfig.JavaPath,
-                                config.ConsoleModeConfig.LaunchArguments),
-                            config.ConsoleModeConfig.MclogRegexFilter,
-                            loggerProvider),
-                        CommunicationModes.HYBRID => new HybridMinecraftServer(
-                            config.MinecraftPath,
-                            config.ServerAddress,
-                            config.ServerPort,
-                            config.RconModeConfig.Port,
-                            config.RconModeConfig.Password,
-                            new GenericServerLaunchArguments(
-                                config.ConsoleModeConfig.JavaPath,
-                                config.ConsoleModeConfig.LaunchArguments),
-                            config.ConsoleModeConfig.MclogRegexFilter,
-                            loggerProvider),
-                        _ => throw new InvalidOperationException(),
-                    };
-                }
-                else
-                {
-                    if (config.CommunicationMode == CommunicationModes.MCAPI)
-                        return new McapiMinecraftClient(
-                            config.MinecraftPath,
-                            config.McapiModeConfig.Address,
-                            config.McapiModeConfig.Port,
-                            config.McapiModeConfig.Password,
-                            loggerProvider);
-                    else
-                        throw new InvalidOperationException();
-                }
+                LOGGER.Info("开始加载外部资源");
+
+                ConsoleApp consoleApp = ConsoleApp.Current;
+
+                CharacterWidthMappingLoader characterWidthMappingLoader = consoleApp.GetRequiredService<CharacterWidthMappingLoader>();
+                await characterWidthMappingLoader.LoadAsync();
+
+                MinecraftResourceDownloader minecraftResourceDownloader = consoleApp.GetRequiredService<MinecraftResourceDownloader>();
+                MinecraftResourceEntryLoader minecraftResourceEntryLoader = consoleApp.GetRequiredService<MinecraftResourceEntryLoader>();
+                MinecraftResourceLoader minecraftResourceLoader = consoleApp.GetRequiredService<MinecraftResourceLoader>();
+
+                await minecraftResourceDownloader.StartAsync();
+                using ResourceEntryManager resources = await minecraftResourceEntryLoader.LoadAsync();
+                (await minecraftResourceLoader.LoadAsync(resources)).ApplyInitialize();
+
+                IFFmpegLoader ffmpegLoader = consoleApp.GetRequiredService<IFFmpegLoader>();
+                await ffmpegLoader.LoadAsync();
+
+                SR.LoadAll();
+                TextureManager.LoadInstance();
+
+                LOGGER.Info("所有资源已全部加载完成");
             }
             catch (Exception ex)
             {
-                LOGGER.Fatal("无法创建Minecraft实例", ex);
+                LOGGER.Fatal("资源加载失败", ex);
                 Exit(-1);
-                throw new InvalidOperationException();
+            }
+        }
+
+        private static MinecraftInstance CreateMinecraftInstance()
+        {
+            try
+            {
+                IMinecraftInstanceFactory factory = ConsoleApp.Current.GetRequiredService<IMinecraftInstanceFactory>();
+                return factory.CreateInstance();
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Fatal("Minecraft实例创建失败", ex);
+                Exit(-1);
+                throw;
             }
         }
 
@@ -217,35 +194,13 @@ namespace MCBS.ConsoleTerminal
             return minecraftInstance.IsRunning;
         }
 
-        private static void LoadLogManager()
-        {
-            using FileStream fileStream = McbsPathManager.MCBS_Config_Log4NetConfig.OpenRead();
-            Log4NetProvider provider = new(McbsPathManager.MCBS_Logs_LatestLog.FullName, fileStream, true);
-            Log4NetManager.LoadInstance(new(provider));
-        }
-
-        private static void LoadCharacterWidthMapping()
-        {
-            FileInfo fileInfo = McbsPathManager.MCBS_Cache.CombineFile("CharacterWidthMapping.bin");
-
-            if (fileInfo.Exists)
-            {
-                CharacterWidthMapping.LoadInstance(new(File.ReadAllBytes(fileInfo.FullName)));
-            }
-            else
-            {
-                CharacterWidthMapping characterWidthMapping = CharacterWidthMapping.LoadInstance(new(null));
-                File.WriteAllBytes(fileInfo.FullName, characterWidthMapping.BuildCacheBytes());
-            }
-        }
-
         private static void CommandSender_CommandSent(QuanLib.Minecraft.Command.Senders.CommandSender sender, CommandInfoEventArgs e)
         {
             if (!MinecraftBlockScreen.IsInstanceLoaded)
                 return;
 
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
-            CommandLogger.Submit(new(e.CommandInfo, mcbs.GameTick, mcbs.SystemTick, mcbs.SystemStage));
+            ConsoleApp.Current.CommandLogger.Submit(new(e.CommandInfo, mcbs.GameTick, mcbs.SystemTick, mcbs.SystemStage));
         }
 
         private static void MinecraftInstance_Stopped(IRunnable sender, EventArgs e)
@@ -263,9 +218,7 @@ namespace MCBS.ConsoleTerminal
 
         public static void Exit(int exitCode)
         {
-            CommandLogger.Stop();
-            CommandLogger.WaitForStop();
-            Terminal.Stop();
+            ConsoleApp.Current.Stop();
 
             for (int i = 10; i >= 1; i--)
             {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config.Minecraft
 {
-    public class RconModeConfig : IDataModelOwner<RconModeConfig, RconModeConfig.Model>
+    public class RconModeConfig : IDataViewModel<RconModeConfig>
     {
         private RconModeConfig(Model model)
         {
@@ -23,14 +23,14 @@ namespace MCBS.Config.Minecraft
 
         public string Password { get; }
 
-        public static RconModeConfig FromDataModel(Model model)
+        public static RconModeConfig FromDataModel(object model)
         {
-            return new(model);
+            return new RconModeConfig((Model)model);
         }
 
-        public Model ToDataModel()
+        public object ToDataModel()
         {
-            return new()
+            return new Model()
             {
                 Port = Port,
                 Password = Password
@@ -55,12 +55,17 @@ namespace MCBS.Config.Minecraft
 
             public static Model CreateDefault()
             {
-                return new();
+                return new Model();
             }
 
-            public static void Validate(Model model, string name)
+            public IValidatableObject GetValidator()
             {
-                ValidationHelper.Validate(model, name);
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Array.Empty<IValidatable>();
             }
         }
     }

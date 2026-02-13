@@ -1,5 +1,4 @@
-﻿using Nett;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.DataAnnotations;
 using QuanLib.Minecraft;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.Config
 {
-    public class ScreenConfig : IDataModelOwner<ScreenConfig, ScreenConfig.Model>
+    public class ScreenConfig : IDataViewModel<ScreenConfig>
     {
         private ScreenConfig(Model model)
         {
@@ -76,24 +75,14 @@ namespace MCBS.Config
 
         public ReadOnlyCollection<BlockState> ScreenBlockBlacklist { get; }
 
-        public static ScreenConfig Load(string path)
+        public static ScreenConfig FromDataModel(object model)
         {
-            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-
-            TomlTable table = Toml.ReadFile(path);
-            Model model = table.Get<Model>();
-            Model.Validate(model, Path.GetFileName(path));
-            return new(model);
+            return new ScreenConfig((Model)model);
         }
 
-        public static ScreenConfig FromDataModel(Model model)
+        public object ToDataModel()
         {
-            return new(model);
-        }
-
-        public Model ToDataModel()
-        {
-            return new()
+            return new Model()
             {
                 MaxCount = MaxCount,
                 MinLength = MinLength,
@@ -240,12 +229,17 @@ namespace MCBS.Config
 
             public static Model CreateDefault()
             {
-                return new();
+                return new Model();
             }
 
-            public static void Validate(Model model, string name)
+            public IValidatableObject GetValidator()
             {
-                ValidationHelper.Validate(model, name);
+                return new ValidatableObject(this);
+            }
+
+            public IEnumerable<IValidatable> GetValidatableProperties()
+            {
+                return Array.Empty<IValidatable>();
             }
         }
     }

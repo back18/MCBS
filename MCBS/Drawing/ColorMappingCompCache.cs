@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace MCBS.Drawing
 {
-    public class ColorMappingCompressionCache : IColorMappingCache
+    public class ColorMappingCompCache : IColorMappingCache
     {
-        public ColorMappingCompressionCache(Rgba32[] mapping)
+        public ColorMappingCompCache(Rgba32[] mapping)
         {
             ArgumentNullException.ThrowIfNull(mapping, nameof(mapping));
             ThrowHelper.ArrayLengthOutOfRange(256 * 256 * 256, mapping, nameof(mapping));
@@ -31,21 +31,6 @@ namespace MCBS.Drawing
             _colorIndexs = colorIndexs.ToArray();
         }
 
-        public ColorMappingCompressionCache(byte[] bytes)
-        {
-            ArgumentNullException.ThrowIfNull(bytes, nameof(bytes));
-            if (bytes.Length % 8 != 0)
-                throw new ArgumentException("数据格式不合法", nameof(bytes));
-
-            _colorIndexs = new ColorIndex[bytes.Length / 8];
-            for (int i = 0; i < bytes.Length; i += 8)
-            {
-                int startIndex = BitConverter.ToInt32(bytes, i);
-                Rgba32 color = new(bytes[i + 4], bytes[i + 5], bytes[i + 6], bytes[i + 7]);
-                _colorIndexs[i / 8] = new(startIndex, color);
-            }
-        }
-
         private readonly ColorIndex[] _colorIndexs;
 
         public Rgba32 this[int index]
@@ -60,27 +45,6 @@ namespace MCBS.Drawing
         public Rgba32 this[Rgba32 color] => this[ToIndex(color)];
 
         public bool IsSupportAlpha => false;
-
-        public byte[] ToBytes()
-        {
-            int index = 0;
-            byte[] bytes = new byte[_colorIndexs.Length * 8];
-
-            foreach (ColorIndex colorIndex in _colorIndexs)
-            {
-                byte[] indexBytes = BitConverter.GetBytes(colorIndex.StartIndex);
-                bytes[index++] = indexBytes[0];
-                bytes[index++] = indexBytes[1];
-                bytes[index++] = indexBytes[2];
-                bytes[index++] = indexBytes[3];
-                bytes[index++] = colorIndex.Color.R;
-                bytes[index++] = colorIndex.Color.G;
-                bytes[index++] = colorIndex.Color.B;
-                bytes[index++] = colorIndex.Color.A;
-            }
-
-            return bytes;
-        }
 
         public static int ToIndex(Rgba32 color)
         {

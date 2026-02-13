@@ -1,104 +1,72 @@
-﻿using QuanLib.Minecraft.ResourcePack.Block;
-using QuanLib.Minecraft;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using QuanLib.Core;
 
 namespace MCBS.Drawing
 {
     public class HashBlockMapping : IBlockMapping<int>
     {
-        public HashBlockMapping(BlockTextureManager blockTextureManager, IEnumerable<BlockState> blacklist)
+        public HashBlockMapping(string[] blockIds)
         {
-            ArgumentNullException.ThrowIfNull(blockTextureManager, nameof(blockTextureManager));
-            CollectionValidator.ValidateNull(blacklist, nameof(blacklist));
+            ArgumentNullException.ThrowIfNull(blockIds, nameof(blockIds));
 
-            _keys = [];
-            _values = [];
+            _block2Color = [];
+            _color2Block = [];
 
-            foreach (string blockId in blockTextureManager.Keys)
-            {
-                if (!BlockState.TryParse(blockId, out var blockState))
-                    continue;
-
-                bool isBlacklist = false;
-                foreach (BlockState blacklistBlockState in blacklist)
-                {
-                    if (blacklistBlockState.BlockId != blockState.BlockId)
-                        continue;
-
-                    foreach (var item in blacklistBlockState.States)
-                    {
-                        if (!blockState.States.TryGetValue(item.Key, out var value) || value != item.Value)
-                            continue;
-                    }
-
-                    isBlacklist = true;
-                }
-
-                if (isBlacklist)
-                    continue;
-
+            foreach (string blockId in blockIds)
                 TryAdd(blockId);
-            }
 
             TryAdd("minecraft:air");
             TryAdd(string.Empty);
 
             bool TryAdd(string blockId)
             {
-                if (_keys.ContainsKey(blockId))
+                if (_block2Color.ContainsKey(blockId))
                     return false;
 
                 int hash = blockId.GetHashCode();
-                _keys.Add(blockId, hash);
-                _values.Add(hash, blockId);
+                _color2Block.Add(hash, blockId);
+                _block2Color.Add(blockId, hash);
                 return true;
             }
         }
 
-        private readonly object _lock = new();
+        private readonly Dictionary<int, string> _color2Block;
+        private readonly Dictionary<string, int> _block2Color;
 
-        private readonly Dictionary<string, int> _keys;
+        public string this[int color] => _color2Block[color];
 
-        private readonly Dictionary<int, string> _values;
+        public int this[string blockId] => _block2Color[blockId];
 
-        public string this[int key] => _values[key];
+        public IEnumerable<int> Colors => _color2Block.Keys;
 
-        public IEnumerable<int> Keys => _values.Keys;
+        public IEnumerable<string> Blocks => _block2Color.Keys;
 
-        public IEnumerable<string> Values => _values.Values;
+        public int ColorCount => _color2Block.Count;
 
-        public int Count => _values.Count;
+        public int BlockCount => _block2Color.Count;
 
-        public bool ContainsKey(int key)
+        public bool ContainsColor(int color)
         {
-            return _values.ContainsKey(key);
+            return _color2Block.ContainsKey(color);
         }
 
-        public bool TryGetValue(int key, [MaybeNullWhen(false)] out string value)
+        public bool ContainsBlock(string blockId)
         {
-            return _values.TryGetValue(key, out value);
+            return _block2Color.ContainsKey(blockId);
         }
 
-        public bool TryGetKey(string value, out int key)
+        public bool TryGetColor(string blockId, out int color)
         {
-            return _keys.TryGetValue(value, out key);
+            return _block2Color.TryGetValue(blockId, out color);
         }
 
-        public IEnumerator<KeyValuePair<int, string>> GetEnumerator()
+        public bool TryGetBlock(int color, [MaybeNullWhen(false)] out string value)
         {
-            return _values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)_values).GetEnumerator();
+            return _color2Block.TryGetValue(color, out value);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace MCBS.Drawing
     {
         public HashBlockConverter()
         {
-            _mapping = SR.HashBlockMapping;
+            _mapping = MinecraftResourceManager.HashBlockMapping;
         }
 
         private readonly HashBlockMapping _mapping;
@@ -20,14 +20,14 @@ namespace MCBS.Drawing
         {
             get
             {
-                if (_mapping.TryGetValue(pixel, out var blockId))
+                if (_mapping.TryGetBlock(pixel, out var blockId))
                     return blockId;
                 else
                     return string.Empty;
             }
         }
 
-        public int this[string blockId] => _mapping.TryGetKey(blockId, out var hash) ? hash : blockId.GetHashCode();
+        public int this[string blockId] => _mapping.TryGetColor(blockId, out var hash) ? hash : blockId.GetHashCode();
 
         public IBlockMapping<int> BlockMapping => _mapping;
 

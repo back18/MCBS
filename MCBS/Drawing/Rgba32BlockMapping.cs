@@ -1,10 +1,8 @@
-﻿using QuanLib.Core;
-using QuanLib.Game;
+﻿using QuanLib.Game;
 using QuanLib.Minecraft;
 using QuanLib.Minecraft.ResourcePack.Block;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -15,101 +13,69 @@ namespace MCBS.Drawing
 {
     public class Rgba32BlockMapping : IBlockMapping<Rgba32>
     {
-        public Rgba32BlockMapping(BlockTextureManager blockTextureManager, Facing facing, IEnumerable<BlockState> blacklist)
+        public Rgba32BlockMapping(Facing facing, BlockTexture[] blockTextures)
         {
-            ArgumentNullException.ThrowIfNull(blockTextureManager, nameof(blockTextureManager));
-            CollectionValidator.ValidateNull(blacklist, nameof(blacklist));
+            ArgumentNullException.ThrowIfNull(blockTextures, nameof(blockTextures));
 
             Facing = facing;
-            _items1 = [];
-            _items2 = [];
+            _color2Block = [];
+            _block2Color = [];
 
-            foreach (BlockTexture blockTexture in blockTextureManager.Values)
+            foreach (BlockTexture blockTexture in blockTextures)
             {
                 if (!BlockState.TryParse(blockTexture.BlockId, out var blockState))
                     continue;
 
-                bool isBlacklist = false;
-                foreach (BlockState blacklistBlockState in blacklist)
-                {
-                    if (blacklistBlockState.BlockId != blockState.BlockId)
-                        continue;
-
-                    foreach (var item in blacklistBlockState.States)
-                    {
-                        if (!blockState.States.TryGetValue(item.Key, out var value) || value != item.Value)
-                            continue;
-                    }
-
-                    isBlacklist = true;
-                }
-
-                if (isBlacklist)
-                    continue;
+                Rgba32 color = blockTexture.Textures[facing].AverageColor;
+                string blockId = blockTexture.BlockId;
 
                 if (blockTexture.BlockType == BlockType.CubeAll)
-                    _items1[blockTexture.Textures[facing].AverageColor] = blockTexture.BlockId;
+                    _color2Block[color] = blockId;
                 else
-                    _items1.TryAdd(blockTexture.Textures[facing].AverageColor, blockTexture.BlockId);
+                    _color2Block.TryAdd(color, blockId);
 
-                _items2.Add(blockTexture.BlockId, blockTexture.Textures[facing].AverageColor);
+                _block2Color.Add(blockId, color);
             }
 
-            _items1[default] = string.Empty;
-            _items2[string.Empty] = default;
+            _color2Block[default] = string.Empty;
+            _block2Color[string.Empty] = default;
         }
 
-        private readonly Dictionary<Rgba32, string> _items1;
-        private readonly Dictionary<string, Rgba32> _items2;
+        private readonly Dictionary<Rgba32, string> _color2Block;
+        private readonly Dictionary<string, Rgba32> _block2Color;
 
-        public string this[Rgba32 key] => _items1[key];
+        public string this[Rgba32 color] => _color2Block[color];
 
-        public Rgba32 this[string value] => _items2[value];
+        public Rgba32 this[string blockId] => _block2Color[blockId];
 
-        public IEnumerable<Rgba32> Keys => _items1.Keys;
+        public int ColorCount => _color2Block.Count;
 
-        public IEnumerable<string> Values => _items1.Values;
+        public int BlockCount => _block2Color.Count;
 
-        public int Count => _items1.Count;
+        public IEnumerable<Rgba32> Colors => _color2Block.Keys;
+
+        public IEnumerable<string> Blocks => _block2Color.Keys;
 
         public Facing Facing { get; }
 
-        public IColorFinder CreateColorFinder()
+        public bool ContainsColor(Rgba32 color)
         {
-            return new ColorFinder(Keys.ToArray());
+            return _color2Block.ContainsKey(color);
         }
 
-        public ColorMatcher<TPixel> CreateColorMatcher<TPixel>() where TPixel : unmanaged, IPixel<TPixel>
+        public bool ContainsBlock(string blockId)
         {
-            IColorFinder colorFinder = CreateColorFinder();
-            if (!SR.ColorMappingCaches.TryGetValue(Facing, out var mappingCache))
-                mappingCache = new ColorMappingTempCache(colorFinder);
-            return new(colorFinder, mappingCache);
+            return _block2Color.ContainsKey(blockId);
         }
 
-        public bool ContainsKey(Rgba32 key)
+        public bool TryGetColor(string blockId, out Rgba32 color)
         {
-            return _items1.ContainsKey(key);
+            return _block2Color.TryGetValue(blockId, out color);
         }
 
-        public bool TryGetValue(Rgba32 key, [MaybeNullWhen(false)] out string value)
+        public bool TryGetBlock(Rgba32 color, [MaybeNullWhen(false)] out string blockId)
         {
-            return _items1.TryGetValue(key, out value);
-        }
-
-        public bool TryGetKey(string value, out Rgba32 key)
-        {
-            return _items2.TryGetValue(value, out key);
-        }
-
-        public IEnumerator<KeyValuePair<Rgba32, string>> GetEnumerator()
-        {
-            return _items1.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)_items1).GetEnumerator();
+            return _color2Block.TryGetValue(color, out blockId);
         }
     }
 }
