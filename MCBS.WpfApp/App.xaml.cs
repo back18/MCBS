@@ -1,18 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MCBS.Common.Logging;
+using MCBS.Common.Services;
 using MCBS.Config;
 using MCBS.Config.Minecraft;
+using MCBS.Services;
 using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Helpers;
-using MCBS.WpfApp.Logging;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using QuanLib.Downloader.Services;
 using QuanLib.Logging;
-using System.IO;
+using QuanLib.Minecraft.Downloading;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 
 namespace MCBS.WpfApp
@@ -29,10 +34,6 @@ namespace MCBS.WpfApp
         public App()
         {
             InitializeComponent();
-
-            McbsPathManager.CreateAllDirectory();
-            ConfigManager.CreateIfNotExists();
-            LoadLogManager();
 
             _host = Host.CreateDefaultBuilder()
                 .UseEnvironment(EnvironmentHelper.GetCurrentEnvironment())
@@ -51,12 +52,78 @@ namespace MCBS.WpfApp
 
         private void ConfigureLogging(HostBuilderContext context, ILoggingBuilder logging)
         {
+            ILog4NetProvider log4NetProvider = Log4NetBoot.Load();
+            MicrosoftLoggerProviderAdapter loggerProvider = new(log4NetProvider);
+
             logging.ClearProviders();
-            logging.AddProvider(new MicrosoftLoggerProviderAdapter(Log4NetManager.Instance.GetProvider()));
+            logging.AddProvider(loggerProvider);
         }
 
         private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
+            services.AddSingleton(sp => Log4NetManager.Instance.GetProvider());
+            services.AddSingleton<QuanLib.Core.ILoggerProvider>(sp => sp.GetRequiredService<ILog4NetProvider>());
+
+            services.AddSingleton<IMcbsPathProvider, McbsPathProvider>();
+            services.AddSingleton<IConfigPathProvider, ConfigPathProvider>();
+            services.AddSingleton<ICachePathProvider, CachePathProvider>();
+            services.AddSingleton<ILogPathProvider, LogPathProvider>();
+            services.AddSingleton<IMinecraftPathProvider, MinecraftPathProvider>();
+            services.AddSingleton<IFFmpegPathProvider, FFmpegPathProvider>();
+
+            services.AddSingleton<IMinecraftConfigProvider, MinecraftConfigProvider>();
+            services.AddSingleton<ISystemConfigProvider, SystemConfigProvider>();
+            services.AddSingleton<IScreenConfigProvider, ScreenConfigProvider>();
+            services.AddSingleton<IRegistryConfigProvider, RegistryConfigProvider>();
+
+            services.AddSingleton<IHashComputeService, HashComputeService>();
+            services.AddSingleton<IAsyncHashComputeService, AsyncHashComputeService>();
+            services.AddSingleton<IConfigResourceProvider, ConfigResourceProvider>();
+            services.AddKeyedSingleton<IFileFactory>("MCBS.Common", (sp, _) => new ManifestResourceFileFactory(Assembly.Load("MCBS.Common"), "SystemResource"));
+            services.AddSingleton<IJsonConfigLoadService, JsonConfigLoadService>();
+            services.AddSingleton<IJsonConfigSaveService, JsonConfigSaveService>();
+            services.AddKeyedSingleton<IConfigLoadService>("JSON", (sp, _) => sp.GetRequiredService<IJsonConfigLoadService>());
+            services.AddKeyedSingleton<IConfigSaveService>("JSON", (sp, _) => sp.GetRequiredService<IJsonConfigSaveService>());
+            services.AddSingleton<ITomlConfigLoadService, TomlConfigLoadService>();
+            services.AddSingleton<ITomlConfigSaveService, TomlConfigSaveService>();
+            services.AddKeyedSingleton<IConfigLoadService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigLoadService>());
+            services.AddKeyedSingleton<IConfigSaveService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigSaveService>());
+
+            services.AddSingleton<IDownloadService, DownloadService>();
+            services.AddKeyedSingleton<IMinecraftDownloadProvider, MojangDownloadProvider>("MOJANG");
+            services.AddKeyedSingleton<IMinecraftDownloadProvider, BmclApiDownloadProvider>("BMCLAPI");
+            services.AddKeyedSingleton<IFFmpegDownloadProvider, Win64FFmpegDownloadProvider>(nameof(OSPlatform.Windows));
+            services.AddKeyedSingleton<IFFmpegDownloadProvider, Linux64FFmpegDownloadProvider>(nameof(OSPlatform.Linux));
+            services.AddSingleton(sp =>
+            {
+                IMinecraftConfigProvider configProvider = sp.GetRequiredService<IMinecraftConfigProvider>();
+                return sp.GetKeyedService<IMinecraftDownloadProvider>(configProvider.Config.DownloadSource) ??
+                       sp.GetRequiredKeyedService<IMinecraftDownloadProvider>("MOJANG");
+            });
+            services.AddSingleton(sp =>
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    return sp.GetRequiredKeyedService<IFFmpegDownloadProvider>(nameof(OSPlatform.Windows));
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    return sp.GetRequiredKeyedService<IFFmpegDownloadProvider>(nameof(OSPlatform.Linux));
+                else
+                    throw new PlatformNotSupportedException("不支持的操作系统平台: " + Environment.OSVersion.VersionString);
+            });
+
+            services.AddKeyedSingleton<IMinecraftInstanceFactory, McapiMinecraftClientFactory>("CLIENT+MCAPI");
+            services.AddKeyedSingleton<IMinecraftInstanceFactory, McapiMinecraftServerFactory>("SERVER+MCAPI");
+            services.AddKeyedSingleton<IMinecraftInstanceFactory, RconMinecraftServerFactory>("SERVER+RCON");
+            services.AddKeyedSingleton<IMinecraftInstanceFactory, ConsoleMinecraftServerFactory>("SERVER+CONSOLE");
+            services.AddKeyedSingleton<IMinecraftInstanceFactory, HybridMinecraftServerFactory>("SERVER+HYBRID");
+            services.AddSingleton(sp =>
+            {
+                IMinecraftConfigProvider configProvider = sp.GetRequiredService<IMinecraftConfigProvider>();
+                string cs = configProvider.Config.IsServer ? "SERVER" : "CLIENT";
+                string mode = configProvider.Config.CommunicationMode;
+                string key = cs + '+' + mode;
+                return sp.GetKeyedService<IMinecraftInstanceFactory>(key) ?? throw new NotSupportedException("不支持的Minecraft实例类型: " + key);
+            });
+
             services.AddSingleton<ModernMessageBox>();
             services.AddSingleton<IMessageBoxService>(sp => sp.GetRequiredService<ModernMessageBox>());
             services.AddSingleton<IMessageBoxAsyncService>(sp => sp.GetRequiredService<ModernMessageBox>());
@@ -92,6 +159,8 @@ namespace MCBS.WpfApp
 
             services.AddTransient<IPageFactory, PageFactory>();
             services.AddTransient<IPageCreateFactory, PageCreateFactory>();
+            services.AddTransient<CoreConfigLoader>();
+            services.AddTransient<TomlConfigLoader>();
 
             services.Scan(scan => scan
                 .FromAssemblyOf<App>()
@@ -105,22 +174,39 @@ namespace MCBS.WpfApp
         private static void Main()
         {
             Thread.CurrentThread.Name = "Main Thread";
-            LanguageHelper.Initialize();
 
             App app = new();
-            app.MainWindow = app._host.Services.GetRequiredService<MainWindow>();
-            ThemeHelper.Initialize();
-            BackdropHelper.Initialize();
+            Initialize(app);
+
+            app.MainWindow = app.GetRequiredService<MainWindow>();
+            ThemeHelper.Initialize(app.MainWindow);
+            BackdropHelper.Initialize(app.MainWindow);
 
             app.MainWindow.Show();
             app.Run();
         }
 
-        private static void LoadLogManager()
+        private static void Initialize(IServiceProvider serviceProvider)
         {
-            using FileStream fileStream = McbsPathManager.MCBS_Config_Log4NetConfig.OpenRead();
-            Log4NetProvider provider = new(McbsPathManager.MCBS_Logs_LatestLog.FullName, fileStream, true);
-            Log4NetManager.LoadInstance(new(provider));
+            try
+            {
+                McbsPathManager.CreateAllDirectory();
+                LanguageHelper.Initialize();
+
+                CoreConfigLoader coreConfigLoader = serviceProvider.GetRequiredService<CoreConfigLoader>();
+                coreConfigLoader.CreateIfNotExists();
+                coreConfigLoader.LoadAll().ApplyInitialize();
+
+                TomlConfigLoader tomlConfigLoader = serviceProvider.GetRequiredService<TomlConfigLoader>();
+                tomlConfigLoader.CreateIfNotExists();
+                tomlConfigLoader.LoadAll().ApplyInitialize();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("INIT FATAL: ");
+                Console.Error.WriteLine(ex.ToString());
+                throw;
+            }
         }
 
         protected override async void OnStartup(StartupEventArgs e)

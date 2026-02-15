@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace MCBS.WpfApp.Helpers
 {
@@ -12,9 +13,11 @@ namespace MCBS.WpfApp.Helpers
 
         private static Properties.Settings Settings => Properties.Settings.Default;
 
-        public static void Initialize()
+        public static void Initialize(Window window)
         {
-            ThemeManager.SetRequestedTheme(App.Current.MainWindow, AppTheme);
+            ArgumentNullException.ThrowIfNull(window, nameof(window));
+
+            ThemeManager.SetRequestedTheme(window, AppTheme);
         }
 
         public static ElementTheme ParseTheme(string themeName)
