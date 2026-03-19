@@ -17,7 +17,14 @@ namespace MCBS.WpfApp.Services.Implementations
 
         public bool Validate(object? config)
         {
-            return config is not null && Validator.TryValidateObject(config, new(config), [], true);
+            if (config is null)
+                return false;
+
+            ValidationContext validationContext = new(config);
+            if (config is TModel model)
+                return !model.GetValidator().Validate(validationContext).Any();
+
+            return Validator.TryValidateObject(config, validationContext, null, true);
         }
     }
 }
