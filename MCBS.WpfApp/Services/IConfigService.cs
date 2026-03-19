@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace MCBS.WpfApp.Config
+namespace MCBS.WpfApp.Services
 {
     public interface IConfigService : INotifyPropertyChanged
     {

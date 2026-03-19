@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MCBS.WpfApp.Config
+namespace MCBS.WpfApp.Services
 {
     public interface IConfigProvider
     {

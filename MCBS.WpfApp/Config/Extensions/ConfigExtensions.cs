@@ -1,4 +1,6 @@
-﻿using QuanLib.Core;
+﻿using MCBS.WpfApp.Services;
+using MCBS.WpfApp.Services.Implementations;
+using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;

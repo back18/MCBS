@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MCBS.WpfApp.Config
+namespace MCBS.WpfApp.Services.Implementations
 {
     public class ConfigProvider : IConfigProvider
     {

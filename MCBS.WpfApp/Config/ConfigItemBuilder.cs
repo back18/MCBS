@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MCBS.WpfApp.Config.Items;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace MCBS.WpfApp.Config.Items
+namespace MCBS.WpfApp.Config
 {
     public class ConfigItemBuilder
     {

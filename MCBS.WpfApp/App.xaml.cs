@@ -1,14 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MCBS.Common.Launcher;
 using MCBS.Common.Logging;
 using MCBS.Common.Services;
+using MCBS.Common.Services.Implementations;
 using MCBS.Config;
 using MCBS.Config.Minecraft;
 using MCBS.Services;
-using MCBS.WpfApp.Config;
+using MCBS.Services.Implementations;
 using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Helpers;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
+using MCBS.WpfApp.Services.Implementations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +28,7 @@ namespace MCBS.WpfApp
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : System.Windows.Application, IServiceProvider
+    public partial class App : Application, IServiceProvider
     {
         private const string APPSETTINGS_PATH = "appsettings.json";
         private const string APPSETTINGS_PATH_FORMAT = "appsettings.{0}.json";

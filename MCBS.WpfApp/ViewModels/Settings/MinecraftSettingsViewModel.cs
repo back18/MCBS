@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MCBS.Config.Constants;
 using MCBS.Config.Minecraft;
-using MCBS.WpfApp.Config;
 using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Pages.Settings;

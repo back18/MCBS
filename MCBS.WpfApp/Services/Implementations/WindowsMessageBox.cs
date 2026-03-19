@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 
-namespace MCBS.WpfApp.Services
+namespace MCBS.WpfApp.Services.Implementations
 {
     public class WindowsMessageBox : IMessageBoxService
     {

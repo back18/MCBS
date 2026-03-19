@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows;
 using MessageBox = iNKORE.UI.WPF.Modern.Controls.MessageBox;
 
-namespace MCBS.WpfApp.Services
+namespace MCBS.WpfApp.Services.Implementations
 {
     public class ModernMessageBox : IMessageBoxService, IMessageBoxAsyncService
     {

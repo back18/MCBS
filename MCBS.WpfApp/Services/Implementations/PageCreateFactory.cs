@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Page = iNKORE.UI.WPF.Modern.Controls.Page;
 
-namespace MCBS.WpfApp.Services
+namespace MCBS.WpfApp.Services.Implementations
 {
     public class PageCreateFactory : IPageCreateFactory
     {
