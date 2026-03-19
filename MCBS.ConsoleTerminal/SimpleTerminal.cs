@@ -1,5 +1,7 @@
 ﻿using QuanLib.Commands;
 using QuanLib.Commands.CommandLine;
+using QuanLib.Commands.Parsing;
+using QuanLib.Commands.Syntaxes;
 using QuanLib.Core;
 using System;
 using System.Collections.Generic;
@@ -13,19 +15,22 @@ namespace MCBS.ConsoleTerminal
     {
         public SimpleTerminal(CommandSender commandSender, ILoggerProvider? loggerProvider = null) : base(commandSender, loggerProvider)
         {
-            CommandParser = new(CommandManager);
+            SyntaxInterpreter = new(CommandManager, SyntaxSplitService.Default, SyntaxUnescapeService.Default, NullParser.Default, SingleQuoteParser.Default);
         }
 
-        public CommandParser CommandParser { get; }
+        public SyntaxInterpreter SyntaxInterpreter { get; }
 
-        protected override CommandReaderResult ReadCommand()
+        protected override CommandReadResult ReadCommand()
         {
             string? input = Console.ReadLine();
-            WordCollection wordCollection = CommandParser.Parse(input ?? string.Empty);
-            string identifier = wordCollection.GetIdentifier();
+            if (input is null)
+                return CommandReadResult.Empty;
+
+            SyntaxTree syntaxTree = SyntaxInterpreter.BuildSyntaxTree(input);
+            string identifier = syntaxTree.BuildIdentifier();
             CommandManager.TryGetValue(identifier, out var command);
-            string[] args = wordCollection.GetArgumentTexts();
-            return new(command, args);
+
+            return new CommandReadResult(command, syntaxTree);
         }
     }
 }
