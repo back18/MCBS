@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Application
+namespace MCBS.Applications
 {
     public enum ApplicationLoadError
     {

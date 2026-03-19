@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.Forms;
 using MCBS.ObjectModel;
 using MCBS.UI;

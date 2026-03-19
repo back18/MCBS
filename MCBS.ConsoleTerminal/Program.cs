@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.BlockForms.Utility;
 using MCBS.Common.Launcher;
 using MCBS.Common.Services;

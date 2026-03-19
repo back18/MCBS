@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Application
+namespace MCBS.Applications
 {
     public class ApplicationManifest
     {

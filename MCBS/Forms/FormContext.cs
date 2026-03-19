@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.Cursor;
 using MCBS.ObjectModel;
 using MCBS.Processes;

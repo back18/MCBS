@@ -7,7 +7,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Application
+namespace MCBS.Applications
 {
     public static class ApplicationLoader
     {

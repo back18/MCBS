@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.SystemApplications.Desktop.DesktopIcons;
 using Newtonsoft.Json;
 using QuanLib.Core;

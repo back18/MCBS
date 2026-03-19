@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.UI;
 using QuanLib.Core;
 using QuanLib.Core.Events;
