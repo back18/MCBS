@@ -5,6 +5,7 @@ using MCBS.Processes;
 using MCBS.Screens;
 using QuanLib.Commands;
 using QuanLib.Commands.CommandLine;
+using QuanLib.Commands.Syntaxes;
 using QuanLib.Consoles;
 using QuanLib.Core;
 using QuanLib.Core.Events;
@@ -20,7 +21,7 @@ namespace MCBS.ConsoleTerminal
 {
     public abstract class Terminal : RunnableBase
     {
-        public Terminal(CommandSender commandSender, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
+        protected Terminal(CommandSender commandSender, ILoggerProvider? loggerProvider = null) : base(loggerProvider)
         {
             ArgumentNullException.ThrowIfNull(commandSender, nameof(commandSender));
 
@@ -33,7 +34,7 @@ namespace MCBS.ConsoleTerminal
 
         public CommandManager CommandManager { get; }
 
-        protected abstract CommandReaderResult? ReadCommand();
+        protected abstract CommandReadResult ReadCommand();
 
         protected override void Run()
         {
@@ -44,9 +45,9 @@ namespace MCBS.ConsoleTerminal
                     break;
                 }
 
-                CommandReaderResult? result = ReadCommand();
+                CommandReadResult result = ReadCommand();
 
-                if (!IsRunning || result is null)
+                if (!IsRunning || result == CommandReadResult.Empty)
                 {
                     break;
                 }
@@ -57,7 +58,10 @@ namespace MCBS.ConsoleTerminal
                     continue;
                 }
 
-                if (result.Command is null)
+                ICommand? command = result.Command;
+                SyntaxTree? syntaxTree = result.SyntaxTree;
+
+                if (command is null)
                 {
                     Console.WriteLine("未知或不完整命令");
                     continue;
@@ -65,7 +69,12 @@ namespace MCBS.ConsoleTerminal
 
                 try
                 {
-                    string message = result.Command.Execute(_commandSender, result.Args.ToArray());
+                    string[]? arguments = syntaxTree?.BuildArguments();
+                    string message = command.Execute(_commandSender, arguments);
+
+                    if (Console.CursorLeft > 0)
+                        Console.WriteLine();
+
                     Console.WriteLine(message);
                 }
                 catch (AggregateException aggregateException)
@@ -83,108 +92,119 @@ namespace MCBS.ConsoleTerminal
         private void RegisterCommands()
         {
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
+                .On("help")
+                .Allow(PrivilegeLevel.User)
+                .Execute(Help)
+                .Build());
+
+            CommandManager.Register(
+                CommandBuilder.Create()
                 .On("application list")
                 .Allow(PrivilegeLevel.User)
                 .Execute(GetApplicationList)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("screen list")
                 .Allow(PrivilegeLevel.User)
                 .Execute(GetScreenList)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("process list")
                 .Allow(PrivilegeLevel.User)
                 .Execute(GetProcessList)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("form list")
                 .Allow(PrivilegeLevel.User)
                 .Execute(GetFormList)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("screen forms")
                 .Allow(PrivilegeLevel.User)
                 .Execute(GetFormsOfScreen)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("screen builder enable")
                 .Allow(PrivilegeLevel.User)
                 .Execute(EnableScreenBuilder)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("screen builder disable")
                 .Allow(PrivilegeLevel.User)
                 .Execute(DisableScreenBuilder)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("mcbs SystemTick")
                 .Allow(PrivilegeLevel.User)
                 .Execute(GetSystemTick)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("mcbs stop")
                 .Allow(PrivilegeLevel.User)
                 .Execute(StopMCBS)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("mspt analyzer")
                 .Allow(PrivilegeLevel.User)
                 .Execute(MsptAnalysis)
                 .Build());
 
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("mspt statistical")
                 .Allow(PrivilegeLevel.User)
-                .Execute<Action>(MsptStatisticalChart)
+                .Execute((Action)MsptStatisticalChart)
+                .Execute((Action<SystemStage>)MsptStatisticalChart)
                 .Build());
 
-            foreach (SystemStage stage in Enum.GetValues<SystemStage>())
-            {
-                CommandManager.Register(
-                    new CommandBuilder()
-                    .On(["mspt", "statistical", stage.ToString()])
-                    .Allow(PrivilegeLevel.User)
-                    .Execute(() => MsptStatisticalChart(stage))
-                    .Build());
-            }
-
             CommandManager.Register(
-                new CommandBuilder()
+                CommandBuilder.Create()
                 .On("commandlog domp")
                 .Allow(PrivilegeLevel.User)
-                .Execute<Func<string>>(DumpCommandLog)
-                .Build());
-
-            CommandManager.Register(
-                new CommandBuilder()
-                .On("commandlog domps")
-                .Allow(PrivilegeLevel.User)
-                .Execute<Func<int, string>>(DumpCommandLog)
+                .Execute((Func<string>)DumpCommandLog)
+                .Execute((Func<int, string>)DumpCommandLog)
                 .Build());
         }
 
         #region commands
+
+
+        private string Help()
+        {
+            IEnumerable<string> identifiers = CommandManager.Keys.Order();
+            StringBuilder stringBuilder = new();
+
+            foreach (string identifier in identifiers)
+            {
+                ICommand command = CommandManager[identifier];
+                string help = command.GetHelp();
+                stringBuilder.AppendLine(help);
+            }
+
+            if (stringBuilder.Length > 0)
+                stringBuilder.Length -= Environment.NewLine.Length;
+
+            return stringBuilder.ToString();
+        }
 
         private static string GetApplicationList()
         {
