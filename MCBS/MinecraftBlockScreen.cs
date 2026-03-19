@@ -1,5 +1,5 @@
 ﻿using MCBS.Analyzer;
-using MCBS.Application;
+using MCBS.Applications;
 using MCBS.Cursor;
 using MCBS.Events;
 using MCBS.Forms;

@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.BlockForms.DialogBox;
 using MCBS.BlockForms.FileSystem;
 using MCBS.UI;

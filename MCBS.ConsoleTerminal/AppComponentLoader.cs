@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.Config;
 using QuanLib.Core;
 using QuanLib.IO.Extensions;

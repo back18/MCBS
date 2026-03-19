@@ -1,4 +1,4 @@
-﻿using MCBS.Application;
+﻿using MCBS.Applications;
 using MCBS.BlockForms.Utility;
 using MCBS.Cursor;
 using MCBS.Cursor.Style;
