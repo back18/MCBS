@@ -132,6 +132,7 @@ namespace MCBS.WpfApp
             services.AddSingleton<IMessageBoxService>(sp => sp.GetRequiredService<ModernMessageBox>());
             services.AddSingleton<IMessageBoxAsyncService>(sp => sp.GetRequiredService<ModernMessageBox>());
             services.AddSingleton<INavigationProvider>(sp => sp.GetRequiredService<MainWindow>());
+            services.AddSingleton<IBackNavigationService>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IMinecraftSettingsNavigationService, MinecraftSettingsNavigationService>();
             services.AddSingleton<IConfigProvider, ConfigProvider>();
             services.AddKeyedSingleton(typeof(SystemConfig), (sp, key) => sp.GetRequiredService<IConfigProvider>().GetSystemConfigService());

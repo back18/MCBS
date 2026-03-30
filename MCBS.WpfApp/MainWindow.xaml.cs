@@ -33,6 +33,9 @@ namespace MCBS.WpfApp
             InitializeComponent();
 
             _serviceProvider = serviceProvider;
+            _navigationStack.Add(this);
+
+            NavigationChanged += OnNavigationChanged;
         }
 
         private readonly IServiceProvider _serviceProvider;
@@ -40,6 +43,11 @@ namespace MCBS.WpfApp
         private readonly Dictionary<Type, Type> _routeCache = [];
 
         public NavigationService NavigationService => MainFrame.NavigationService;
+
+        protected virtual void OnNavigationChanged(object? sender, EventArgs e)
+        {
+            MainNavigationView.IsBackEnabled = CanGoBack;
+        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -68,8 +76,6 @@ namespace MCBS.WpfApp
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
         {
-            MainNavigationView.IsBackEnabled = MainFrame.CanGoBack;
-
             if (e.Content is not Page page)
                 return;
 
@@ -84,10 +90,14 @@ namespace MCBS.WpfApp
             }
         }
 
+        private void MainFrame_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            NotifyNavigationChanged();
+        }
+
         private void MainNavigationView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            if (MainFrame.CanGoBack)
-                MainFrame.GoBack();
+            RequestGoBack();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

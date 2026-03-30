@@ -60,6 +60,8 @@
             </ui:NavigationViewItem>
         </ui:NavigationView.MenuItems>
 
-        <ui:Frame x:Name="MainFrame" Navigated="MainFrame_Navigated"/>
+        <ui:Frame x:Name="MainFrame"
+                  Navigated="MainFrame_Navigated"
+                  LoadCompleted="MainFrame_LoadCompleted"/>
     </ui:NavigationView>
 </Window>
