@@ -15,7 +15,7 @@ using QuanLib.Core;
 
 namespace MCBS.Cursor.Style
 {
-    public class CursorStyleManager : IReadOnlyDictionary<string, CursorStyle>, ISingleton<CursorStyleManager, InstantiateArgs>
+    public class CursorStyleManager : IReadOnlyDictionary<string, CursorStyle>, ISingleton<CursorStyleManager>, ISingletonFactory<CursorStyleManager>
     {
         private CursorStyleManager(Dictionary<string, CursorStyle> items)
         {
@@ -26,7 +26,7 @@ namespace MCBS.Cursor.Style
 
         private static readonly Lock _slock = new();
 
-        public static bool IsInstanceLoaded => _Instance is not null;
+        public static bool IsLoaded => _Instance is not null;
 
         public static CursorStyleManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static CursorStyleManager? _Instance;
@@ -43,13 +43,6 @@ namespace MCBS.Cursor.Style
 
         public static CursorStyleManager LoadInstance()
         {
-            return LoadInstance(InstantiateArgs.Empty);
-        }
-
-        public static CursorStyleManager LoadInstance(InstantiateArgs instantiateArgs)
-        {
-            ArgumentNullException.ThrowIfNull(instantiateArgs, nameof(instantiateArgs));
-
             lock (_slock)
             {
                 if (_Instance is not null)

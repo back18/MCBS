@@ -196,7 +196,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void CommandSender_CommandSent(QuanLib.Minecraft.Command.Senders.CommandSender sender, CommandInfoEventArgs e)
         {
-            if (!MinecraftBlockScreen.IsInstanceLoaded)
+            if (!MinecraftBlockScreen.IsLoaded)
                 return;
 
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
@@ -205,7 +205,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void MinecraftInstance_Stopped(IRunnable sender, EventArgs e)
         {
-            if (!MinecraftBlockScreen.IsInstanceLoaded)
+            if (!MinecraftBlockScreen.IsLoaded)
                 return;
 
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
