@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using DynamicPropertyAccessor;
 using MCBS.WpfApp.Helpers;
 using MCBS.WpfApp.Messages;
+using MCBS.WpfApp.Resources.Strings;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.Logging;
 using QuanLib.Core;
@@ -18,11 +19,11 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace MCBS.WpfApp.ViewModels
 {
-    public abstract partial class ConfigServiceViewModel : ObservableValidator, IRecipient<PageNavigatingFromMessage>, IRecipient<MainWindowClosingMessage>
+    public abstract partial class ConfigSettingsViewModel : ObservableValidator, IRecipient<PageNavigatingFromMessage>, IRecipient<MainWindowClosingMessage>
     {
         private static readonly Type COLLECTION_TYPE = typeof(ObservableCollection<string>);
 
-        protected ConfigServiceViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService)
+        protected ConfigSettingsViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
             ArgumentNullException.ThrowIfNull(messageBoxService, nameof(messageBoxService));
@@ -53,17 +54,19 @@ namespace MCBS.WpfApp.ViewModels
 
         public abstract event EventHandler<EventArgs<object>>? Loaded;
 
-        public virtual void Receive(PageNavigatingFromMessage message)
+        void IRecipient<PageNavigatingFromMessage>.Receive(PageNavigatingFromMessage message)
         {
             HandleErrors(message.EventArgs);
         }
 
-        public virtual void Receive(MainWindowClosingMessage message)
+        void IRecipient<MainWindowClosingMessage>.Receive(MainWindowClosingMessage message)
         {
             HandleErrors(message.EventArgs);
             if (!message.EventArgs.Cancel)
                 HandleSave();
         }
+
+        protected abstract void UpdateFromModel(object model);
 
         protected virtual void HandleErrors(CancelEventArgs e)
         {

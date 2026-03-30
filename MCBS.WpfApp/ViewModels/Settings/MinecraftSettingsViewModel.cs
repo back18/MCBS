@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MCBS.Config.Constants;
-using MCBS.Config.Minecraft;
+using MCBS.Config;
 using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Pages.Settings;
@@ -23,7 +23,7 @@ using Page = iNKORE.UI.WPF.Modern.Controls.Page;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class MinecraftSettingsViewModel : ConfigServiceViewModel
+    public partial class MinecraftSettingsViewModel : ConfigSettingsViewModel
     {
         private const string McapiModeConfigIdentifier = nameof(MinecraftConfig.McapiModeConfig);
         private const string RconModeConfigIdentifier = nameof(MinecraftConfig.RconModeConfig);
@@ -46,6 +46,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
             _configStorage = configStorage;
             var model = (MinecraftConfig.Model)configStorage.GetModel().CreateDefault();
 
+            object model = configStorage.GetModel().CreateDefault();
             UpdateFromModel(model);
 
             WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(MinecraftConfig));
@@ -112,17 +113,20 @@ namespace MCBS.WpfApp.ViewModels.Settings
             nameof(ResourcePackList),
             nameof(DownloadSource),
             nameof(CommunicationMode)])]
-        private void UpdateFromModel(MinecraftConfig.Model model)
+        protected override void UpdateFromModel(object model)
         {
-            MinecraftPath = model.MinecraftPath;
-            MinecraftVersion = model.MinecraftVersion;
-            IsServer = model.IsServer;
-            ServerAddress = model.ServerAddress;
-            ServerPort = model.ServerPort;
-            Language = model.Language;
-            ResourcePackList = new ObservableCollection<string>(model.ResourcePackList);
-            DownloadSource = model.DownloadSource;
-            CommunicationMode = model.CommunicationMode;
+            if (model is not MinecraftConfig.Model typedModel)
+                throw new ArgumentException($"Model must be of type {typeof(MinecraftConfig.Model).FullName}", nameof(model));
+
+            MinecraftPath = typedModel.MinecraftPath;
+            MinecraftVersion = typedModel.MinecraftVersion;
+            IsServer = typedModel.IsServer;
+            ServerAddress = typedModel.ServerAddress;
+            ServerPort = typedModel.ServerPort;
+            Language = typedModel.Language;
+            ResourcePackList = new ObservableCollection<string>(typedModel.ResourcePackList);
+            DownloadSource = typedModel.DownloadSource;
+            CommunicationMode = typedModel.CommunicationMode;
         }
 
         [RelayCommand]
@@ -132,7 +136,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
                 return;
 
             ConfigService = await _configStorage.LoadOrCreateConfigAsync(true);
-            var model = (MinecraftConfig.Model)ConfigService.GetCurrentConfig();
+            object model = ConfigService.GetCurrentConfig();
 
             UpdateFromModel(model);
             PropertyChanged += ObservablePropertyChanged;

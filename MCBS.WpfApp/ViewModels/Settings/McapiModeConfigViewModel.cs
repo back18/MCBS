@@ -11,25 +11,19 @@ using QuanLib.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class McapiModeConfigViewModel : ConfigServiceViewModel
+    public partial class McapiModeConfigViewModel : ConfigSettingsViewModel
     {
         public McapiModeConfigViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(McapiModeConfig))] IConfigService configService) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
 
             _configService = configService;
-            var model = (McapiModeConfig.Model)configService.GetCurrentConfig();
-            Address = model.Address;
-            Port = model.Port;
-            Password = model.Password;
-
-            PropertyChanged += ObservablePropertyChanged;
-
-            ValidateAllProperties();
+            UpdateFromModel(configService.GetCurrentConfig());
 
             WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(McapiModeConfig));
             WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
@@ -59,11 +53,28 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
         public partial string Password { get; set; }
 
+        [MemberNotNull(nameof(Address), nameof(Password))]
+        protected override void UpdateFromModel(object model)
+        {
+            if (model is not McapiModeConfig.Model typedModel)
+                throw new ArgumentException($"Model must be of type {typeof(McapiModeConfig.Model).FullName}", nameof(model));
+
+            Address = typedModel.Address;
+            Port = typedModel.Port;
+            Password = typedModel.Password;
+        }
+
         [RelayCommand]
         public void Load()
         {
+            object model = _configService.GetCurrentConfig();
+            UpdateFromModel(model);
+            if (!IsLoaded)
+                PropertyChanged += ObservablePropertyChanged;
+
+            ValidateAllProperties();
             IsLoaded = true;
-            Loaded?.Invoke(this, new(_configService.GetCurrentConfig()));
+            Loaded?.Invoke(this, new(model));
         }
 
         [RelayCommand]

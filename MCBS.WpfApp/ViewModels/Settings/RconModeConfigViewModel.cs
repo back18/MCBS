@@ -11,24 +11,19 @@ using QuanLib.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class RconModeConfigViewModel : ConfigServiceViewModel
+    public partial class RconModeConfigViewModel : ConfigSettingsViewModel
     {
         public RconModeConfigViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(RconModeConfig))] IConfigService configService) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
 
             _configService = configService;
-            var model = (RconModeConfig.Model)configService.GetCurrentConfig();
-            Port = model.Port;
-            Password = model.Password;
-
-            PropertyChanged += ObservablePropertyChanged;
-
-            ValidateAllProperties();
+            UpdateFromModel(configService.GetCurrentConfig());
 
             WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(RconModeConfig));
             WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
@@ -54,11 +49,25 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
         public partial string Password { get; set; }
 
+        [MemberNotNull(nameof(Password))]
+        protected override void UpdateFromModel(object model)
+        {
+            var typedModel = (RconModeConfig.Model)model;
+            Port = typedModel.Port;
+            Password = typedModel.Password;
+        }
+
         [RelayCommand]
         public void Load()
         {
+            object model = _configService.GetCurrentConfig();
+            UpdateFromModel(model);
+            if (!IsLoaded)
+                PropertyChanged += ObservablePropertyChanged;
+
+            ValidateAllProperties();
             IsLoaded = true;
-            Loaded?.Invoke(this, new(_configService.GetCurrentConfig()));
+            Loaded?.Invoke(this, new(model));
         }
 
         [RelayCommand]

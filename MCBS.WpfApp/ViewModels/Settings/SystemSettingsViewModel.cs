@@ -19,15 +19,15 @@ using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class SystemSettingsViewModel : ConfigServiceViewModel
+    public partial class SystemSettingsViewModel : ConfigSettingsViewModel
     {
         public SystemSettingsViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(SystemConfig))] IConfigStorage configStorage) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configStorage, nameof(configStorage));
 
             _configStorage = configStorage;
-            var model = (SystemConfig.Model)configStorage.GetModel().CreateDefault();
 
+            object model = configStorage.GetModel().CreateDefault();
             UpdateFromModel(model);
 
             WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(SystemConfig));
@@ -67,15 +67,18 @@ namespace MCBS.WpfApp.ViewModels.Settings
         public partial ObservableCollection<string> StartupChecklist { get; set; }
 
         [MemberNotNull([nameof(SystemAppComponents), nameof(ServicesAppId), nameof(StartupChecklist)])]
-        private void UpdateFromModel(SystemConfig.Model model)
+        protected override void UpdateFromModel(object model)
         {
-            AutoRestart = model.AutoRestart;
-            BuildColorMappingCaches = model.BuildColorMappingCaches;
-            EnableCompressionCache = model.EnableCompressionCache;
-            LoadDllAppComponents = model.LoadDllAppComponents;
-            SystemAppComponents = new ObservableCollection<string>(model.SystemAppComponents);
-            ServicesAppId = model.ServicesAppId;
-            StartupChecklist = new ObservableCollection<string>(model.StartupChecklist);
+            if (model is not SystemConfig.Model typedModel)
+                throw new ArgumentException($"Model must be of type {typeof(SystemConfig.Model).FullName}", nameof(model));
+
+            AutoRestart = typedModel.AutoRestart;
+            BuildColorMappingCaches = typedModel.BuildColorMappingCaches;
+            EnableCompressionCache = typedModel.EnableCompressionCache;
+            LoadDllAppComponents = typedModel.LoadDllAppComponents;
+            SystemAppComponents = new ObservableCollection<string>(typedModel.SystemAppComponents);
+            ServicesAppId = typedModel.ServicesAppId;
+            StartupChecklist = new ObservableCollection<string>(typedModel.StartupChecklist);
         }
 
         [RelayCommand]
@@ -85,7 +88,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
                 return;
 
             ConfigService = await _configStorage.LoadOrCreateConfigAsync(true);
-            var model = (SystemConfig.Model)ConfigService.GetCurrentConfig();
+            object model = ConfigService.GetCurrentConfig();
 
             UpdateFromModel(model);
             PropertyChanged += ObservablePropertyChanged;

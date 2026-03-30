@@ -13,25 +13,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class ConsoleModeConfigViewModel : ConfigServiceViewModel
+    public partial class ConsoleModeConfigViewModel : ConfigSettingsViewModel
     {
         public ConsoleModeConfigViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(ConsoleModeConfig))] IConfigService configService) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configService, nameof(configService));
+
             _configService = configService;
-            var model = (ConsoleModeConfig.Model)configService.GetCurrentConfig();
-
-            JavaPath = model.JavaPath;
-            LaunchArguments = model.LaunchArguments;
-            MclogRegexFilter = new ObservableCollection<string>(model.MclogRegexFilter);
-
-            PropertyChanged += ObservablePropertyChanged;
-
-            ValidateAllProperties();
+            UpdateFromModel(configService.GetCurrentConfig());
 
             WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(ConsoleModeConfig));
             WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
@@ -61,11 +55,31 @@ namespace MCBS.WpfApp.ViewModels.Settings
         [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
         public partial ObservableCollection<string> MclogRegexFilter { get; set; }
 
+        [MemberNotNull([
+            nameof(JavaPath),
+            nameof(LaunchArguments),
+            nameof(MclogRegexFilter)])]
+        protected override void UpdateFromModel(object model)
+        {
+            if (model is not ConsoleModeConfig.Model typedModel)
+                throw new ArgumentException($"Model must be of type {typeof(ConsoleModeConfig.Model).FullName}", nameof(model));
+
+            JavaPath = typedModel.JavaPath;
+            LaunchArguments = typedModel.LaunchArguments;
+            MclogRegexFilter = new ObservableCollection<string>(typedModel.MclogRegexFilter);
+        }
+
         [RelayCommand]
         public void Load()
         {
+            object model = _configService.GetCurrentConfig();
+            UpdateFromModel(model);
+            if (!IsLoaded)
+                PropertyChanged += ObservablePropertyChanged;
+
+            ValidateAllProperties();
             IsLoaded = true;
-            Loaded?.Invoke(this, new(_configService.GetCurrentConfig()));
+            Loaded?.Invoke(this, new(model));
         }
 
         [RelayCommand]

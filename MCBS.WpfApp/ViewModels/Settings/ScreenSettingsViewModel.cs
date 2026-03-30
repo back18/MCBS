@@ -19,15 +19,15 @@ using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
-    public partial class ScreenSettingsViewModel : ConfigServiceViewModel
+    public partial class ScreenSettingsViewModel : ConfigSettingsViewModel
     {
         public ScreenSettingsViewModel(ILoggerFactory loggerFactory, IMessageBoxService messageBoxService, [FromKeyedServices(typeof(ScreenConfig))] IConfigStorage configStorage) : base(loggerFactory, messageBoxService)
         {
             ArgumentNullException.ThrowIfNull(configStorage, nameof(configStorage));
 
             _configStorage = configStorage;
-            var model = (ScreenConfig.Model)configStorage.GetModel().CreateDefault();
 
+            object model = configStorage.GetModel().CreateDefault();
             UpdateFromModel(model);
 
             WeakReferenceMessenger.Default.Register<PageNavigatingFromMessage, string>(this, nameof(ScreenConfig));
@@ -117,24 +117,27 @@ namespace MCBS.WpfApp.ViewModels.Settings
             nameof(ScreenOperatorList),
             nameof(ScreenBuildOperatorList),
             nameof(ScreenBlockBlacklist)])]
-        private void UpdateFromModel(ScreenConfig.Model model)
+        protected override void UpdateFromModel(object model)
         {
-            MaxCount = model.MaxCount;
-            MinLength = model.MinLength;
-            MaxLength = model.MaxLength;
-            MinAltitude = model.MinAltitude;
-            MaxAltitude = model.MaxAltitude;
-            InitialWidth = model.InitialWidth;
-            InitialHeight = model.InitialHeight;
-            ScreenIdleTimeout = model.ScreenIdleTimeout;
-            RightClickObjective = model.RightClickObjective;
-            RightClickCriterion = model.RightClickCriterion;
-            RightClickItemId = model.RightClickItemId;
-            TextEditorItemId = model.TextEditorItemId;
-            ScreenBuilderItemName = model.ScreenBuilderItemName;
-            ScreenOperatorList = new ObservableCollection<string>(model.ScreenOperatorList);
-            ScreenBuildOperatorList = new ObservableCollection<string>(model.ScreenBuildOperatorList);
-            ScreenBlockBlacklist = new ObservableCollection<string>(model.ScreenBlockBlacklist);
+            if (model is not ScreenConfig.Model typedModel)
+                throw new ArgumentException($"Model must be of type {typeof(ScreenConfig.Model).FullName}", nameof(model));
+
+            MaxCount = typedModel.MaxCount;
+            MinLength = typedModel.MinLength;
+            MaxLength = typedModel.MaxLength;
+            MinAltitude = typedModel.MinAltitude;
+            MaxAltitude = typedModel.MaxAltitude;
+            InitialWidth = typedModel.InitialWidth;
+            InitialHeight = typedModel.InitialHeight;
+            ScreenIdleTimeout = typedModel.ScreenIdleTimeout;
+            RightClickObjective = typedModel.RightClickObjective;
+            RightClickCriterion = typedModel.RightClickCriterion;
+            RightClickItemId = typedModel.RightClickItemId;
+            TextEditorItemId = typedModel.TextEditorItemId;
+            ScreenBuilderItemName = typedModel.ScreenBuilderItemName;
+            ScreenOperatorList = new ObservableCollection<string>(typedModel.ScreenOperatorList);
+            ScreenBuildOperatorList = new ObservableCollection<string>(typedModel.ScreenBuildOperatorList);
+            ScreenBlockBlacklist = new ObservableCollection<string>(typedModel.ScreenBlockBlacklist);
         }
 
         [RelayCommand]
@@ -144,7 +147,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
                 return;
 
             ConfigService = await _configStorage.LoadOrCreateConfigAsync(true);
-            var model = (ScreenConfig.Model)ConfigService.GetCurrentConfig();
+            object model = ConfigService.GetCurrentConfig();
 
             UpdateFromModel(model);
             PropertyChanged += ObservablePropertyChanged;
