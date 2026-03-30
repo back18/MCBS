@@ -10,7 +10,7 @@ namespace MCBS.WpfApp.Services
 
         public bool IsLoaded { get; }
 
-        public event EventHandler Saved;
+        public event EventHandler? Saved;
 
         public IConfigModel GetModel();
 

@@ -74,6 +74,7 @@ namespace MCBS.WpfApp
             services.AddSingleton<ILogPathProvider, LogPathProvider>();
             services.AddSingleton<IMinecraftPathProvider, MinecraftPathProvider>();
             services.AddSingleton<IFFmpegPathProvider, FFmpegPathProvider>();
+            services.AddSingleton<IInstanceListPathProvider, InstanceListPathProvider>();
 
             services.AddSingleton<IMinecraftConfigProvider, MinecraftConfigProvider>();
             services.AddSingleton<ISystemConfigProvider, SystemConfigProvider>();
@@ -92,6 +93,7 @@ namespace MCBS.WpfApp
             services.AddSingleton<ITomlConfigSaveService, TomlConfigSaveService>();
             services.AddKeyedSingleton<IConfigLoadService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigLoadService>());
             services.AddKeyedSingleton<IConfigSaveService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigSaveService>());
+            services.AddSingleton<IInstanceListStorage, InstanceListStorage>();
 
             services.AddSingleton<IDownloadService, DownloadService>();
             services.AddKeyedSingleton<IMinecraftDownloadProvider, MojangDownloadProvider>("MOJANG");
