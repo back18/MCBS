@@ -1,4 +1,4 @@
-﻿using MCBS.Config.Minecraft;
+﻿using MCBS.Config;
 using MCBS.Services;
 using QuanLib.Core;
 using QuanLib.Minecraft;

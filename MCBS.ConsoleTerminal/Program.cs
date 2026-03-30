@@ -3,7 +3,6 @@ using MCBS.BlockForms.Utility;
 using MCBS.Common.Launcher;
 using MCBS.Common.Services;
 using MCBS.Config;
-using MCBS.Config.Minecraft;
 using MCBS.ConsoleTerminal.Launcher;
 using Microsoft.Extensions.DependencyInjection;
 using QuanLib.Core;

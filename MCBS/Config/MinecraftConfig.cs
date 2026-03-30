@@ -1,4 +1,5 @@
 ﻿using MCBS.Config.Constants;
+using MCBS.Config.Minecraft;
 using Newtonsoft.Json;
 using QuanLib.Core;
 using QuanLib.DataAnnotations;
@@ -10,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCBS.Config.Minecraft
+namespace MCBS.Config
 {
     public class MinecraftConfig : IDataViewModel<MinecraftConfig>
     {

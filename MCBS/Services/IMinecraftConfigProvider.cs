@@ -1,4 +1,4 @@
-﻿using MCBS.Config.Minecraft;
+﻿using MCBS.Config;
 using System;
 using System.Collections.Generic;
 using System.Text;

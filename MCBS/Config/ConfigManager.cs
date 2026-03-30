@@ -1,5 +1,4 @@
-﻿using MCBS.Config.Minecraft;
-using QuanLib.Core;
+﻿using QuanLib.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
