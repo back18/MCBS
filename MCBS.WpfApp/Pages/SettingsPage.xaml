@@ -8,7 +8,7 @@
          lex:ResxLocalizationProvider.DefaultDictionary="Lang"
          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
          xmlns:local="clr-namespace:MCBS.WpfApp.Pages"
-         xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels.Settings"
+         xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels"
          xmlns:pages="clr-namespace:MCBS.WpfApp.Pages.Settings"
          xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
          xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"

@@ -9,12 +9,12 @@ namespace MCBS.WpfApp.ViewModels
 {
     public class SettingsViewModel : ObservableObject
     {
-        public SettingsViewModel(INavigable navigable, IServiceProvider serviceProvider)
+        public SettingsViewModel(PageNavigateCommand pageNavigateCommand, IServiceProvider serviceProvider)
         {
-            ArgumentNullException.ThrowIfNull(navigable, nameof(navigable));
+            ArgumentNullException.ThrowIfNull(pageNavigateCommand, nameof(pageNavigateCommand));
             ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
 
-            PageNavigateCommand = new(navigable, serviceProvider);
+            PageNavigateCommand = pageNavigateCommand;
         }
 
         public PageNavigateCommand PageNavigateCommand { get; }

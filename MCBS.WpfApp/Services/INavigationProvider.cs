@@ -5,7 +5,7 @@ using System.Windows.Navigation;
 
 namespace MCBS.WpfApp.Services
 {
-    public interface INavigable
+    public interface INavigationProvider
     {
         public NavigationService NavigationService { get; }
     }

@@ -7,6 +7,7 @@ using MCBS.Config;
 using MCBS.Config.Minecraft;
 using MCBS.Services;
 using MCBS.Services.Implementations;
+using MCBS.WpfApp.Commands;
 using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Helpers;
 using MCBS.WpfApp.Messages;
@@ -130,7 +131,7 @@ namespace MCBS.WpfApp
             services.AddSingleton<ModernMessageBox>();
             services.AddSingleton<IMessageBoxService>(sp => sp.GetRequiredService<ModernMessageBox>());
             services.AddSingleton<IMessageBoxAsyncService>(sp => sp.GetRequiredService<ModernMessageBox>());
-            services.AddSingleton<INavigable>(sp => sp.GetRequiredService<MainWindow>());
+            services.AddSingleton<INavigationProvider>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IConfigProvider, ConfigProvider>();
             services.AddKeyedSingleton(typeof(SystemConfig), (sp, key) => sp.GetRequiredService<IConfigProvider>().GetSystemConfigService());
             services.AddKeyedSingleton(typeof(MinecraftConfig), (sp, key) => sp.GetRequiredService<IConfigProvider>().GetMinecraftConfigService());
@@ -160,6 +161,8 @@ namespace MCBS.WpfApp
 
             services.AddSingleton<MainWindow>();
 
+            services.AddTransient<PageNavigateCommand>();
+            services.AddTransient<PageOneWayNavigateCommand>();
             services.AddTransient<IPageFactory, PageFactory>();
             services.AddTransient<IPageCreateFactory, PageCreateFactory>();
             services.AddTransient<CoreConfigLoader>();

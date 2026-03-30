@@ -19,7 +19,7 @@ namespace MCBS.WpfApp.Pages
     /// <summary>
     /// SettingsPage.xaml 的交互逻辑
     /// </summary>
-    public partial class SettingsPage : Page, INavigable
+    public partial class SettingsPage : Page, INavigationProvider
     {
         public SettingsPage(SettingsViewModel settingsViewModel)
         {

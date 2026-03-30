@@ -25,7 +25,7 @@ namespace MCBS.WpfApp.Pages.Settings
     /// MinecraftSettingsPage.xaml 的交互逻辑
     /// </summary>
     [Attributes.Route(Parent = typeof(SettingsPage))]
-    public partial class MinecraftSettingsPage : Page, INavigable
+    public partial class MinecraftSettingsPage : Page, INavigationProvider
     {
         public MinecraftSettingsPage(MinecraftSettingsViewModel viewModel)
         {

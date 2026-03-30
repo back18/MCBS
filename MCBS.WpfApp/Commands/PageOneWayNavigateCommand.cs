@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using MCBS.WpfApp.Helpers;
 using MCBS.WpfApp.Services;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ using System.Windows.Controls;
 
 namespace MCBS.WpfApp.Commands
 {
-    public class PageNavigateCommand : IRelayCommand
+    public class PageOneWayNavigateCommand : IRelayCommand
     {
-        public PageNavigateCommand(INavigationProvider navigationProvider, IServiceProvider serviceProvider, Func<object?, bool>? canExecute = null)
+        public PageOneWayNavigateCommand(INavigationProvider navigationProvider, IServiceProvider serviceProvider, Func<object?, bool>? canExecute = null)
         {
             ArgumentNullException.ThrowIfNull(navigationProvider, nameof(navigationProvider));
             ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
@@ -37,7 +38,7 @@ namespace MCBS.WpfApp.Commands
             if (parameter is not Type pageType || _serviceProvider.GetService(pageType) is not Page page)
                 return;
 
-            _navigationProvider.NavigationService.Navigate(page);
+            _navigationProvider.NavigationService.NavigateOnly(page);
         }
 
         public void NotifyCanExecuteChanged()
