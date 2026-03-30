@@ -13,7 +13,7 @@ namespace MCBS.Config
 {
     public class SystemConfig : IDataViewModel<SystemConfig>
     {
-        public SystemConfig(Model model)
+        protected SystemConfig(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 
@@ -45,7 +45,7 @@ namespace MCBS.Config
             return new SystemConfig((Model)model);
         }
 
-        public object ToDataModel()
+        public virtual object ToDataModel()
         {
             return new Model()
             {
@@ -94,24 +94,24 @@ namespace MCBS.Config
             [Display(Order = 0, Name = "自动重启", Description = "启用后，将在系统发生错误时自动重启系统")]
             public bool AutoRestart { get; set; }
 
-            [Display(Order = 1, Name = "缓存构建", Description = "启用后，将在启动时自动构建Minecraft方块颜色映射表缓存")]
+            [Display(Order = 10, Name = "缓存构建", Description = "启用后，将在启动时自动构建Minecraft方块颜色映射表缓存")]
             public bool BuildColorMappingCaches { get; set; }
 
-            [Display(Order = 2, Name = "缓存压缩", Description = "启用后，将使用压缩后的缓存，大幅降低缓存内存占用，但会造成一些执行性能损失")]
+            [Display(Order = 20, Name = "缓存压缩", Description = "启用后，将使用压缩后的缓存，大幅降低缓存内存占用，但会造成一些执行性能损失")]
             public bool EnableCompressionCache { get; set; }
 
-            [Display(Order = 3, Name = "加载外部应用", Description = "启用后，将加载“MCBS\\DllAppComponents\\”目录下的DLL应用程序组件，请确保已完全信任DLL文件的提供者")]
+            [Display(Order = 30, Name = "加载外部应用", Description = "启用后，将加载“MCBS\\DllAppComponents\\”目录下的DLL应用程序组件，请确保已完全信任DLL文件的提供者")]
             public bool LoadDllAppComponents { get; set; }
 
-            [Display(Order = 4, Name = "系统应用列表")]
+            [Display(Order = 40, Name = "系统应用列表")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] SystemAppComponents { get; set; }
 
-            [Display(Order = 5, Name = "系统服务应用")]
+            [Display(Order = 50, Name = "系统服务应用")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string ServicesAppId { get; set; }
 
-            [Display(Order = 6, Name = "启动项应用列表")]
+            [Display(Order = 60, Name = "启动项应用列表")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] StartupChecklist { get; set; }
 
@@ -120,12 +120,12 @@ namespace MCBS.Config
                 return new Model();
             }
 
-            public IValidatableObject GetValidator()
+            public virtual IValidatableObject GetValidator()
             {
                 return new ValidatableObject(this);
             }
 
-            public IEnumerable<IValidatable> GetValidatableProperties()
+            public virtual IEnumerable<IValidatable> GetValidatableProperties()
             {
                 return Array.Empty<IValidatable>();
             }

@@ -3,7 +3,6 @@ using MCBS.BlockForms.Utility;
 using MCBS.Common.Launcher;
 using MCBS.Common.Services;
 using MCBS.Config;
-using MCBS.Config.Minecraft;
 using MCBS.ConsoleTerminal.Launcher;
 using Microsoft.Extensions.DependencyInjection;
 using QuanLib.Core;
@@ -196,7 +195,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void CommandSender_CommandSent(QuanLib.Minecraft.Command.Senders.CommandSender sender, CommandInfoEventArgs e)
         {
-            if (!MinecraftBlockScreen.IsInstanceLoaded)
+            if (!MinecraftBlockScreen.IsLoaded)
                 return;
 
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;
@@ -205,7 +204,7 @@ namespace MCBS.ConsoleTerminal
 
         private static void MinecraftInstance_Stopped(IRunnable sender, EventArgs e)
         {
-            if (!MinecraftBlockScreen.IsInstanceLoaded)
+            if (!MinecraftBlockScreen.IsLoaded)
                 return;
 
             MinecraftBlockScreen mcbs = MinecraftBlockScreen.Instance;

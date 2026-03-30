@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace MCBS.BlockForms.Utility
 {
-    public class TextureManager : IReadOnlyDictionary<string, Image<Rgba32>>, ISingleton<TextureManager, InstantiateArgs>
+    public class TextureManager : IReadOnlyDictionary<string, Image<Rgba32>>, ISingleton<TextureManager>, ISingletonFactory<TextureManager>
     {
         private const string TEXTURES_NAMESPACE = "MCBS.BlockForms.SystemResource.Textures";
 
@@ -28,7 +28,7 @@ namespace MCBS.BlockForms.Utility
 
         private static readonly Lock _slock = new();
 
-        public static bool IsInstanceLoaded => _Instance is not null;
+        public static bool IsLoaded => _Instance is not null;
 
         public static TextureManager Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static TextureManager? _Instance;
@@ -44,11 +44,6 @@ namespace MCBS.BlockForms.Utility
         public Image<Rgba32> this[string key] => _items[key].Clone();
 
         public static TextureManager LoadInstance()
-        {
-            return LoadInstance(InstantiateArgs.Empty);
-        }
-
-        public static TextureManager LoadInstance(InstantiateArgs instantiateArgs)
         {
             lock (_slock)
             {

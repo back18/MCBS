@@ -1,6 +1,5 @@
 ﻿using MCBS.Common.Services;
 using MCBS.Config;
-using MCBS.Config.Minecraft;
 using MCBS.Drawing;
 using MCBS.Drawing.Extensions;
 using MCBS.Services;

@@ -1,6 +1,5 @@
 ﻿using MCBS.Common.Services;
 using MCBS.Config;
-using MCBS.Config.Minecraft;
 using MCBS.Services;
 using Microsoft.Extensions.DependencyInjection;
 using QuanLib.Core;

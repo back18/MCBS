@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace MCBS
 {
-    public class MinecraftBlockScreen : TickLoopSystem, ISingleton<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
+    public class MinecraftBlockScreen : TickLoopSystem, ISingleton<MinecraftBlockScreen>, ISingletonFactory<MinecraftBlockScreen, MinecraftBlockScreen.InstantiateArgs>
     {
         private MinecraftBlockScreen(MinecraftInstance minecraftInstance, ApplicationManifest[] appComponents) : base(TimeSpan.FromMilliseconds(50), Log4NetManager.Instance.GetProvider())
         {
@@ -68,7 +68,7 @@ namespace MCBS
 
         private static readonly Lock _slock = new();
 
-        public static bool IsInstanceLoaded => _Instance is not null;
+        public static bool IsLoaded => _Instance is not null;
 
         public static MinecraftBlockScreen Instance => _Instance ?? throw new InvalidOperationException("实例未加载");
         private static MinecraftBlockScreen? _Instance;

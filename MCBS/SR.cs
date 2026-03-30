@@ -57,7 +57,7 @@ namespace MCBS
 
         private static void LoadMinecraftVersionList()
         {
-            MinecraftVersionList = VersionList.LoadInstance(InstantiateArgs.Empty);
+            MinecraftVersionList = VersionList.LoadInstance();
             CurrentMinecraftVersion = MinecraftVersionList.GetVersion(MinecraftConfig.MinecraftVersion);
 
             LOGGER.Info("Minecraft版本数据加载完成");

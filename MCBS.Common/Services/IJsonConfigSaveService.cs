@@ -10,20 +10,38 @@ namespace MCBS.Common.Services
     {
         public void Save<T>(T dataModel, string filePath, Formatting formatting) where T : IDataModel<T>;
 
+        public Task SaveAsync<T>(T dataModel, string filePath, Formatting formatting) where T : IDataModel<T>;
+
         public void Save<T>(T dataModel, Stream outputStream, Formatting formatting) where T : IDataModel<T>;
+
+        public Task SaveAsync<T>(T dataModel, Stream outputStream, Formatting formatting) where T : IDataModel<T>;
 
         public void CreateIfNotExists<T>(string filePath, Formatting formatting) where T : IDataModel<T>;
 
+        public Task CreateIfNotExistsAsync<T>(string filePath, Formatting formatting) where T : IDataModel<T>;
+
         public void Save<T>(T dataModel, string filePath, JsonSerializerSettings? settings) where T : IDataModel<T>;
+
+        public Task SaveAsync<T>(T dataModel, string filePath, JsonSerializerSettings? settings) where T : IDataModel<T>;
 
         public void Save<T>(T dataModel, Stream outputStream, JsonSerializerSettings? settings) where T : IDataModel<T>;
 
+        public Task SaveAsync<T>(T dataModel, Stream outputStream, JsonSerializerSettings? settings) where T : IDataModel<T>;
+
         public void CreateIfNotExists<T>(string filePath, JsonSerializerSettings? settings) where T : IDataModel<T>;
+
+        public Task CreateIfNotExistsAsync<T>(string filePath, JsonSerializerSettings? settings) where T : IDataModel<T>;
 
         public void Save<T>(T dataModel, string filePath, Formatting formatting, JsonSerializerSettings? settings) where T : IDataModel<T>;
 
+        public Task SaveAsync<T>(T dataModel, string filePath, Formatting formatting, JsonSerializerSettings? settings) where T : IDataModel<T>;
+
         public void Save<T>(T dataModel, Stream outputStream, Formatting formatting, JsonSerializerSettings? settings) where T : IDataModel<T>;
 
+        public Task SaveAsync<T>(T dataModel, Stream outputStream, Formatting formatting, JsonSerializerSettings? settings) where T : IDataModel<T>;
+
         public void CreateIfNotExists<T>(string filePath, Formatting formatting, JsonSerializerSettings? settings) where T : IDataModel<T>;
+
+        public Task CreateIfNotExistsAsync<T>(string filePath, Formatting formatting, JsonSerializerSettings? settings) where T : IDataModel<T>;
     }
 }

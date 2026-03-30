@@ -10,8 +10,14 @@ namespace MCBS.Common.Services
     {
         public void Save<T>(T dataModel, string filePath, TomlSettings settings) where T : IDataModel<T>;
 
+        public Task SaveAsync<T>(T dataModel, string filePath, TomlSettings settings) where T : IDataModel<T>;
+
         public void Save<T>(T dataModel, Stream outputStream, TomlSettings settings) where T : IDataModel<T>;
 
+        public Task SaveAsync<T>(T dataModel, Stream outputStream, TomlSettings settings) where T : IDataModel<T>;
+
         public void CreateIfNotExists<T>(string filePath, TomlSettings settings) where T : IDataModel<T>;
+
+        public Task CreateIfNotExistsAsync<T>(string filePath, TomlSettings settings) where T : IDataModel<T>;
     }
 }

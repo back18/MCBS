@@ -40,7 +40,7 @@ namespace MCBS.ConsoleTerminal
         {
             while (IsRunning)
             {
-                if (!MinecraftBlockScreen.IsInstanceLoaded || !MinecraftBlockScreen.Instance.IsRunning)
+                if (!MinecraftBlockScreen.IsLoaded || !MinecraftBlockScreen.Instance.IsRunning)
                 {
                     break;
                 }
@@ -52,7 +52,7 @@ namespace MCBS.ConsoleTerminal
                     break;
                 }
 
-                if (!MinecraftBlockScreen.IsInstanceLoaded || !MinecraftBlockScreen.Instance.IsRunning)
+                if (!MinecraftBlockScreen.IsLoaded || !MinecraftBlockScreen.Instance.IsRunning)
                 {
                     Console.WriteLine("MCBS未在运行，无法执行命令");
                     continue;

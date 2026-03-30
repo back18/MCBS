@@ -11,7 +11,7 @@ namespace MCBS.Config.Minecraft
 {
     public class RconModeConfig : IDataViewModel<RconModeConfig>
     {
-        private RconModeConfig(Model model)
+        protected RconModeConfig(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 
@@ -28,7 +28,7 @@ namespace MCBS.Config.Minecraft
             return new RconModeConfig((Model)model);
         }
 
-        public object ToDataModel()
+        public virtual object ToDataModel()
         {
             return new Model()
             {
@@ -49,7 +49,7 @@ namespace MCBS.Config.Minecraft
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int Port { get; set; }
 
-            [Display(Order = 1, GroupName = nameof(MinecraftConfig), Name = "RCON密码")]
+            [Display(Order = 10, GroupName = nameof(MinecraftConfig), Name = "RCON密码")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Password { get; set; }
 
@@ -58,12 +58,12 @@ namespace MCBS.Config.Minecraft
                 return new Model();
             }
 
-            public IValidatableObject GetValidator()
+            public virtual IValidatableObject GetValidator()
             {
                 return new ValidatableObject(this);
             }
 
-            public IEnumerable<IValidatable> GetValidatableProperties()
+            public virtual IEnumerable<IValidatable> GetValidatableProperties()
             {
                 return Array.Empty<IValidatable>();
             }
