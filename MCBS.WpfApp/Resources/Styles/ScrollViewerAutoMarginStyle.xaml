@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Style x:Key="ScrollViewerAutoMarginStyle"
+           TargetType="FrameworkElement">
+        <Setter Property="Margin" Value="0"/>
+        <Style.Triggers>
+
+            <!-- 仅垂直滚动条出现 -->
+            <DataTrigger Binding="{Binding ComputedVerticalScrollBarVisibility, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" 
+                         Value="Visible">
+                <Setter Property="Margin"
+                        Value="0,0,20,0"/>
+            </DataTrigger>
+
+            <!-- 仅水平滚动条出现 -->
+            <DataTrigger Binding="{Binding ComputedHorizontalScrollBarVisibility, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" 
+                         Value="Visible">
+                <Setter Property="Margin"
+                        Value="0,0,0,20"/>
+            </DataTrigger>
+            
+            <!-- 两个滚动条都出现 -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding ComputedVerticalScrollBarVisibility, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" 
+                               Value="Visible"/>
+                    <Condition Binding="{Binding ComputedHorizontalScrollBarVisibility, RelativeSource={RelativeSource AncestorType=ScrollViewer}}" 
+                               Value="Visible"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Margin"
+                        Value="0,0,20,20"/>
+            </MultiDataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

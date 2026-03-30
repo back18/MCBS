@@ -6,6 +6,7 @@ using MCBS.WpfApp.UserControls;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -61,12 +62,21 @@ namespace MCBS.WpfApp.Config
         {
             ArgumentNullException.ThrowIfNull(configItems, nameof(configItems));
 
-            ScrollViewer scrollViewer = new() { Margin = new(10) };
-            SimpleStackPanel simpleStackPanel = new() { Spacing = 10 };
-            var settingsControls = configItems.Select(BuildSettingsControl);
+            ScrollViewer scrollViewer = new()
+            {
+                Margin = new(10),
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            };
+            SimpleStackPanel simpleStackPanel = new()
+            {
+                Spacing = 10,
+                Style = (Style)Application.Current.Resources["ScrollViewerAutoMarginStyle"]
+            };
 
+            IEnumerable<Control> settingsControls = configItems.Select(BuildSettingsControl);
             scrollViewer.Content = simpleStackPanel;
-            foreach (var settingsCard in settingsControls)
+
+            foreach (Control settingsCard in settingsControls)
                 simpleStackPanel.Children.Add(settingsCard);
 
             return scrollViewer;

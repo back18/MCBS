@@ -17,10 +17,12 @@
          d:DesignHeight="450" d:DesignWidth="800"
          Title="{lex:Loc Title_SettingsPage}">
 
-    <ScrollViewer Margin="10">
-        <ikw:SimpleStackPanel Spacing="10">
+    <ScrollViewer Margin="10"
+                  VerticalScrollBarVisibility="Auto">
+        <ikw:SimpleStackPanel Spacing="10"
+                              Style="{StaticResource ScrollViewerAutoMarginStyle}">
             <ui:SettingsCard Header="{lex:Loc Settings_ApplicationSettings_Header}"
-                             Description="{lex:Loc Settings_MinecraftSettings_Description}"
+                             Description="{lex:Loc Settings_ApplicationSettings_Description}"
                              IsClickEnabled="True"
                              Command="{Binding PageNavigateCommand}"
                              CommandParameter="{x:Type pages:ApplicationSettingsPage}">
