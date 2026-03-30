@@ -14,7 +14,7 @@ namespace MCBS.Config
 {
     public class ScreenConfig : IDataViewModel<ScreenConfig>
     {
-        private ScreenConfig(Model model)
+        protected ScreenConfig(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 
@@ -80,7 +80,7 @@ namespace MCBS.Config
             return new ScreenConfig((Model)model);
         }
 
-        public object ToDataModel()
+        public virtual object ToDataModel()
         {
             return new Model()
             {
@@ -165,65 +165,65 @@ namespace MCBS.Config
             [Range(0, 64, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int MaxCount { get; set; }
 
-            [Display(Order = 1, Name = "屏幕最小长度")]
+            [Display(Order = 10, Name = "屏幕最小长度")]
             [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int MinLength { get; set; }
 
-            [Display(Order = 2, Name = "屏幕最大长度")]
+            [Display(Order = 20, Name = "屏幕最大长度")]
             [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             [GreaterThan(nameof(MinLength), ErrorMessage = ErrorMessageHelper.GreaterThanAttribute)]
             public int MaxLength { get; set; }
 
-            [Display(Order = 3, Name = "屏幕最小高度", Description = "屏幕的位置在主世界中的最小高度")]
+            [Display(Order = 30, Name = "屏幕最小高度", Description = "屏幕的位置在主世界中的最小高度")]
             [Range(-64, 319, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int MinAltitude { get; set; }
 
-            [Display(Order = 4, Name = "屏幕最大高度", Description = "屏幕的位置在主世界中的最大高度")]
+            [Display(Order = 40, Name = "屏幕最大高度", Description = "屏幕的位置在主世界中的最大高度")]
             [Range(-64, 319, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             [GreaterThan(nameof(MinAltitude), ErrorMessage = ErrorMessageHelper.GreaterThanAttribute)]
             public int MaxAltitude { get; set; }
 
-            [Display(Order = 5, Name = "屏幕初始宽度", Description = "屏幕在首次创建时的初始宽度")]
+            [Display(Order = 50, Name = "屏幕初始宽度", Description = "屏幕在首次创建时的初始宽度")]
             [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int InitialWidth { get; set; }
 
-            [Display(Order = 6, Name = "屏幕初始高度", Description = "屏幕在首次创建时的初始高度")]
+            [Display(Order = 60, Name = "屏幕初始高度", Description = "屏幕在首次创建时的初始高度")]
             [Range(1, 512, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int InitialHeight { get; set; }
 
-            [Display(Order = 7, Name = "屏幕闲置超时", Description = "屏幕在一段时间无操作后会自动关闭，单位为Tick(50ms)，设置为-1将无限等待")]
+            [Display(Order = 70, Name = "屏幕闲置超时", Description = "屏幕在一段时间无操作后会自动关闭，单位为Tick(50ms)，设置为-1将无限等待")]
             [Range(-1, int.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int ScreenIdleTimeout { get; set; }
 
-            [Display(Order = 8, Name = "计分板名称", Description = "触发右键点击操作的计分板名称")]
+            [Display(Order = 80, Name = "计分板名称", Description = "触发右键点击操作的计分板名称")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string RightClickObjective { get; set; }
 
-            [Display(Order = 9, Name = "计分板准则", Description = "触发右键点击操作的计分板准则")]
+            [Display(Order = 90, Name = "计分板准则", Description = "触发右键点击操作的计分板准则")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string RightClickCriterion { get; set; }
 
-            [Display(Order = 10, Name = "计分板关联物品", Description = "触发右键点击操作的物品ID")]
+            [Display(Order = 100, Name = "计分板关联物品", Description = "触发右键点击操作的物品ID")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string RightClickItemId { get; set; }
 
-            [Display(Order = 11, Name = "书与笔物品", Description = "编辑屏幕文本的书与笔物品ID")]
+            [Display(Order = 110, Name = "书与笔物品", Description = "编辑屏幕文本的书与笔物品ID")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string TextEditorItemId { get; set; }
 
-            [Display(Order = 12, Name = "构建器物品名称", Description = "检测是否需要载入屏幕构建器的物品名称")]
+            [Display(Order = 120, Name = "构建器物品名称", Description = "检测是否需要载入屏幕构建器的物品名称")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string ScreenBuilderItemName { get; set; }
 
-            [Display(Order = 13, Name = "屏幕控制者白名单", Description = "非空时仅允许列表中的玩家控制屏幕")]
+            [Display(Order = 130, Name = "屏幕控制者白名单", Description = "非空时仅允许列表中的玩家控制屏幕")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ScreenOperatorList { get; set; }
 
-            [Display(Order = 14, Name = "屏幕创建者白名单", Description = "非空时仅允许列表中的玩家创建屏幕")]
+            [Display(Order = 140, Name = "屏幕创建者白名单", Description = "非空时仅允许列表中的玩家创建屏幕")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ScreenBuildOperatorList { get; set; }
 
-            [Display(Order = 15, Name = "屏幕方块黑名单", Description = "将方块ID添加到黑名单后，屏幕将不再把像素映射至此方块")]
+            [Display(Order = 150, Name = "屏幕方块黑名单", Description = "将方块ID添加到黑名单后，屏幕将不再把像素映射至此方块")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ScreenBlockBlacklist { get; set; }
 
@@ -232,12 +232,12 @@ namespace MCBS.Config
                 return new Model();
             }
 
-            public IValidatableObject GetValidator()
+            public virtual IValidatableObject GetValidator()
             {
                 return new ValidatableObject(this);
             }
 
-            public IEnumerable<IValidatable> GetValidatableProperties()
+            public virtual IEnumerable<IValidatable> GetValidatableProperties()
             {
                 return Array.Empty<IValidatable>();
             }

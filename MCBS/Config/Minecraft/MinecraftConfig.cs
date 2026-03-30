@@ -14,7 +14,7 @@ namespace MCBS.Config.Minecraft
 {
     public class MinecraftConfig : IDataViewModel<MinecraftConfig>
     {
-        private MinecraftConfig(Model model)
+        protected MinecraftConfig(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 
@@ -61,7 +61,7 @@ namespace MCBS.Config.Minecraft
             return new MinecraftConfig((Model)model);
         }
 
-        public object ToDataModel()
+        public virtual object ToDataModel()
         {
             return new Model()
             {
@@ -100,55 +100,55 @@ namespace MCBS.Config.Minecraft
             [DirectoryExists]
             public string MinecraftPath { get; set; }
 
-            [Display(Order = 1, Name = "Minecraft版本", Description = "用于确定Minecraft的游戏版本")]
+            [Display(Order = 10, Name = "Minecraft版本", Description = "用于确定Minecraft的游戏版本")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string MinecraftVersion { get; set; }
 
-            [Display(Order = 2, Name = "是否为服务端", Description = "用于确定Minecraft是服务端还是客户端")]
+            [Display(Order = 20, Name = "是否为服务端", Description = "用于确定Minecraft是服务端还是客户端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public bool IsServer { get; set; }
 
-            [Display(Order = 3, Name = "服务器地址", Description = "也作为RCON地址以及MCAPI地址\n由于一般情况下MCBS与Minecraft均运行在同一台主机\n因此将其设置为localhost即可")]
+            [Display(Order = 30, Name = "服务器地址", Description = "也作为RCON地址以及MCAPI地址\n由于一般情况下MCBS与Minecraft均运行在同一台主机\n因此将其设置为localhost即可")]
             [RequiredIf(nameof(IsServer), CompareOperator.Equal, true, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public string ServerAddress { get; set; }
 
-            [Display(Order = 4, Name = "服务器端口")]
+            [Display(Order = 40, Name = "服务器端口")]
             [RequiredIf(nameof(IsServer), CompareOperator.Equal, true, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int ServerPort { get; set; }
 
-            [Display(Order = 5, Name = "语言标识", Description = "服务端语言默认为en_us，客户端根据选择的语言设置\n主要影响命令执行结果文本的解析\n语言文件目录: MCBS\\Minecraft\\Vanilla\\{版本}\\Languages\\")]
+            [Display(Order = 50, Name = "语言标识", Description = "服务端语言默认为en_us，客户端根据选择的语言设置\n主要影响命令执行结果文本的解析\n语言文件目录: MCBS\\Minecraft\\Vanilla\\{版本}\\Languages\\")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Language { get; set; }
 
-            [Display(Order = 6, Name = "资源包列表", Description = "程序会根据资源包列表按照顺序加载资源包文件\n支持的文件类型: 客户端核心.jar, 服务端核心.jar, 模组文件.jar, 资源包.zip\n资源包目录: MCBS\\Minecraft\\ResourcePacks\\")]
+            [Display(Order = 60, Name = "资源包列表", Description = "程序会根据资源包列表按照顺序加载资源包文件\n支持的文件类型: 客户端核心.jar, 服务端核心.jar, 模组文件.jar, 资源包.zip\n资源包目录: MCBS\\Minecraft\\ResourcePacks\\")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] ResourcePackList { get; set; }
 
-            [Display(Order = 7, Name = "下载源", Description = "用于确定下载Minecraft的游戏资源时使用的下载源")]
+            [Display(Order = 70, Name = "下载源", Description = "用于确定下载Minecraft的游戏资源时使用的下载源")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             [NewAllowedValues(DownloadSources.MOJANG, DownloadSources.BMCLAPI, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
             public string DownloadSource { get; set; }
 
-            [Display(Order = 8, Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信，支持服务端和客户端\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端")]
+            [Display(Order = 80, Name = "通信模式", Description = "用于确定与Minecraft实例的通信模式\nMCAPI: 连接到已启动的Minecraft服务端，使用MCAPI模组进行通信，支持服务端和客户端\nRCON: 连接到已启动的Minecraft服务端，使用RCON进行通信，仅支持服务端\nCONSOLE: 启动一个新的Minecraft服务端进程，使用控制台输入输出流进行通信，仅支持服务端\nHYBRID: 启动一个新的Minecraft服务端进程，发送单条命令时使用RCON，发送批量命令时使用控制台输入输出流，仅支持服务端")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             [NewAllowedValues(CommunicationModes.MCAPI, CommunicationModes.RCON, CommunicationModes.CONSOLE, CommunicationModes.HYBRID, ErrorMessage = ErrorMessageHelper.NewAllowedValuesAttribute)]
             [AllowedValuesIf(nameof(IsServer), CompareOperator.Equal, false, CommunicationModes.MCAPI)]
             public string CommunicationMode { get; set; }
 
             [ConfigGroup]
-            [Display(Order = 9, Name = "MCAPI模式配置")]
+            [Display(Order = 90, Name = "MCAPI模式配置")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.MCAPI, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public McapiModeConfig.Model McapiModeConfig { get; set; }
 
             [ConfigGroup]
-            [Display(Order = 10, Name = "RCON模式配置")]
+            [Display(Order = 100, Name = "RCON模式配置")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.RCON, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.HYBRID, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public RconModeConfig.Model RconModeConfig { get; set; }
 
             [ConfigGroup]
-            [Display(Order = 11, Name = "CONSOLE模式配置")]
+            [Display(Order = 110, Name = "CONSOLE模式配置")]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.CONSOLE, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             [RequiredIf(nameof(CommunicationMode), CompareOperator.Equal, CommunicationModes.HYBRID, ErrorMessage = ErrorMessageHelper.RequiredIfAttribute)]
             public ConsoleModeConfig.Model ConsoleModeConfig { get; set; }
@@ -158,12 +158,12 @@ namespace MCBS.Config.Minecraft
                 return new Model();
             }
 
-            public IValidatableObject GetValidator()
+            public virtual IValidatableObject GetValidator()
             {
                 return new ValidatableObject(this);
             }
 
-            public IEnumerable<IValidatable> GetValidatableProperties()
+            public virtual IEnumerable<IValidatable> GetValidatableProperties()
             {
                 switch (CommunicationMode)
                 {

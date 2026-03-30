@@ -11,7 +11,7 @@ namespace MCBS.Config.Minecraft
 {
     public class McapiModeConfig : IDataViewModel<McapiModeConfig>
     {
-        private McapiModeConfig(Model model)
+        protected McapiModeConfig(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 
@@ -31,7 +31,7 @@ namespace MCBS.Config.Minecraft
             return new McapiModeConfig((Model)model);
         }
 
-        public object ToDataModel()
+        public virtual object ToDataModel()
         {
             return new Model()
             {
@@ -54,11 +54,11 @@ namespace MCBS.Config.Minecraft
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Address { get; set; }
 
-            [Display(Order = 1, GroupName = nameof(MinecraftConfig), Name = "MCAPI端口")]
+            [Display(Order = 10, GroupName = nameof(MinecraftConfig), Name = "MCAPI端口")]
             [Range(ushort.MinValue, ushort.MaxValue, ErrorMessage = ErrorMessageHelper.RangeAttribute)]
             public int Port { get; set; }
 
-            [Display(Order = 2, GroupName = nameof(MinecraftConfig), Name = "MCAPI密码")]
+            [Display(Order = 20, GroupName = nameof(MinecraftConfig), Name = "MCAPI密码")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string Password { get; set; }
 
@@ -67,12 +67,12 @@ namespace MCBS.Config.Minecraft
                 return new Model();
             }
 
-            public IValidatableObject GetValidator()
+            public virtual IValidatableObject GetValidator()
             {
                 return new ValidatableObject(this);
             }
 
-            public IEnumerable<IValidatable> GetValidatableProperties()
+            public virtual IEnumerable<IValidatable> GetValidatableProperties()
             {
                 return Array.Empty<IValidatable>();
             }

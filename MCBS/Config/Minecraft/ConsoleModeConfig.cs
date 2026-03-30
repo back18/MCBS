@@ -12,7 +12,7 @@ namespace MCBS.Config.Minecraft
 {
     public class ConsoleModeConfig : IDataViewModel<ConsoleModeConfig>
     {
-        private ConsoleModeConfig(Model model)
+        protected ConsoleModeConfig(Model model)
         {
             NullValidator.ValidateObject(model, nameof(model));
 
@@ -32,7 +32,7 @@ namespace MCBS.Config.Minecraft
             return new ConsoleModeConfig((Model)model);
         }
 
-        public object ToDataModel()
+        public virtual object ToDataModel()
         {
             return new Model()
             {
@@ -58,11 +58,11 @@ namespace MCBS.Config.Minecraft
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string JavaPath { get; set; }
 
-            [Display(Order = 1, GroupName = nameof(MinecraftConfig), Name = "启动参数", Description = "启动Minecraft服务端进程所使用的启动参数")]
+            [Display(Order = 10, GroupName = nameof(MinecraftConfig), Name = "启动参数", Description = "启动Minecraft服务端进程所使用的启动参数")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string LaunchArguments { get; set; }
 
-            [Display(Order = 2, GroupName = nameof(MinecraftConfig), Name = "正则表达式日志过滤器", Description = "使用正则表达式过滤日志输出")]
+            [Display(Order = 20, GroupName = nameof(MinecraftConfig), Name = "正则表达式日志过滤器", Description = "使用正则表达式过滤日志输出")]
             [Required(ErrorMessage = ErrorMessageHelper.RequiredAttribute)]
             public string[] MclogRegexFilter { get; set; }
 
@@ -71,12 +71,12 @@ namespace MCBS.Config.Minecraft
                 return new Model();
             }
 
-            public IValidatableObject GetValidator()
+            public virtual IValidatableObject GetValidator()
             {
                 return new ValidatableObject(this);
             }
 
-            public IEnumerable<IValidatable> GetValidatableProperties()
+            public virtual IEnumerable<IValidatable> GetValidatableProperties()
             {
                 return Array.Empty<IValidatable>();
             }
