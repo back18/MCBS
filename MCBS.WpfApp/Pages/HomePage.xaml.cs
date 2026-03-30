@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MCBS.WpfApp.Helpers;
+using MCBS.WpfApp.Pages.Home;
+using MCBS.WpfApp.Services;
+using MCBS.WpfApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -19,8 +23,11 @@ namespace MCBS.WpfApp.Pages
     /// </summary>
     public partial class HomePage : Page
     {
-        public HomePage()
+        public HomePage(HomeViewModel homeViewModel)
         {
+            ArgumentNullException.ThrowIfNull(homeViewModel, nameof(homeViewModel));
+            DataContext = homeViewModel;
+
             InitializeComponent();
         }
     }

@@ -8,15 +8,26 @@
          lex:ResxLocalizationProvider.DefaultDictionary="Lang"
          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
          xmlns:local="clr-namespace:MCBS.WpfApp.Pages"
+         xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels"
+         xmlns:home_pages="clr-namespace:MCBS.WpfApp.Pages.Home"
          xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+         d:DataContext="{d:DesignInstance Type=viewmodels:HomeViewModel}"
          mc:Ignorable="d" 
          d:DesignHeight="450" d:DesignWidth="800"
          Title="{lex:Loc Title_HomePage}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding PageOneWayNavigateCommand}"
+                                   CommandParameter="{x:Type home_pages:LaunchPage}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 
     <Grid>
-        <TextBlock Text="{lex:Loc Title_HomePage}"
+        <TextBlock Text="Minecraft Block Screen"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
-                   FontSize="24"/>
+                   FontSize="64"
+                   FontWeight="Bold"/>
     </Grid>
 </ui:Page>
