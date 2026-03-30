@@ -10,8 +10,14 @@ namespace MCBS.Common.Services
     {
         public T Load<T>(string filePath, TomlSettings settings) where T : IDataModel<T>;
 
+        public Task<T> LoadAsync<T>(string filePath, TomlSettings settings) where T : IDataModel<T>;
+
         public T Load<T>(Stream inputStream, TomlSettings settings) where T : IDataModel<T>;
 
+        public Task<T> LoadAsync<T>(Stream inputStream, TomlSettings settings) where T : IDataModel<T>;
+
         public T LoadOrCreate<T>(string filePath, TomlSettings settings) where T : IDataModel<T>;
+
+        public Task<T> LoadOrCreateAsync<T>(string filePath, TomlSettings settings) where T : IDataModel<T>;
     }
 }

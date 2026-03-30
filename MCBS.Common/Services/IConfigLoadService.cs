@@ -9,8 +9,14 @@ namespace MCBS.Common.Services
     {
         public T Load<T>(string filePath) where T : IDataModel<T>;
 
+        public Task<T> LoadAsync<T>(string filePath) where T : IDataModel<T>;
+
         public T Load<T>(Stream inputStream) where T : IDataModel<T>;
 
+        public Task<T> LoadAsync<T>(Stream inputStream) where T : IDataModel<T>;
+
         public T LoadOrCreate<T>(string filePath) where T : IDataModel<T>;
+
+        public Task<T> LoadOrCreateAsync<T>(string filePath) where T : IDataModel<T>;
     }
 }
