@@ -121,10 +121,10 @@
     <value>语言</value>
   </data>
   <data name="Title_ConsoleModeConfigPage" xml:space="preserve">
-    <value>CONSOLE配置页面</value>
+    <value>CONSOLE配置</value>
   </data>
   <data name="Title_DebuggerPage" xml:space="preserve">
-    <value>调试器页面</value>
+    <value>调试器</value>
   </data>
   <data name="Title_HomePage" xml:space="preserve">
     <value>主页</value>
@@ -139,16 +139,16 @@
     <value>方块屏幕</value>
   </data>
   <data name="Title_ManagerPage" xml:space="preserve">
-    <value>管理器页面</value>
+    <value>管理器</value>
   </data>
   <data name="Title_McapiModeConfigPage" xml:space="preserve">
-    <value>MCAPI配置页面</value>
+    <value>MCAPI配置</value>
   </data>
   <data name="Title_RconModeConfigPage" xml:space="preserve">
-    <value>RCON配置页面</value>
+    <value>RCON配置</value>
   </data>
   <data name="Title_SettingsPage" xml:space="preserve">
-    <value>设置页面</value>
+    <value>设置</value>
   </data>
   <data name="Settings_ApplicationSettings_Description" xml:space="preserve">
     <value>图形界面应用程序相关设置</value>
@@ -175,22 +175,22 @@
     <value>系统设置</value>
   </data>
   <data name="Title_SimulatorPage" xml:space="preserve">
-    <value>模拟器页面</value>
+    <value>模拟器</value>
   </data>
   <data name="MainNavigation_Home" xml:space="preserve">
     <value>主页</value>
   </data>
   <data name="Title_ApplicationSettingsPage" xml:space="preserve">
-    <value>应用设置页面</value>
+    <value>应用设置</value>
   </data>
   <data name="Title_MinecraftSettingsPage" xml:space="preserve">
-    <value>MC设置页面</value>
+    <value>MC设置</value>
   </data>
   <data name="Title_ScreenSettingsPage" xml:space="preserve">
-    <value>屏幕设置页面</value>
+    <value>屏幕设置</value>
   </data>
   <data name="Title_SystemSettingsPage" xml:space="preserve">
-    <value>系统设置页面</value>
+    <value>系统设置</value>
   </data>
   <data name="MainNavigation_Simulator" xml:space="preserve">
     <value>模拟器</value>
@@ -217,19 +217,19 @@
     <value>资源包</value>
   </data>
   <data name="Title_ScreenManagerPage" xml:space="preserve">
-    <value>屏幕管理页面</value>
+    <value>屏幕管理</value>
   </data>
   <data name="Title_ProcessManagerPage" xml:space="preserve">
-    <value>进程管理页面</value>
+    <value>进程管理</value>
   </data>
   <data name="Title_FormManagerPage" xml:space="preserve">
-    <value>窗体管理页面</value>
+    <value>窗体管理</value>
   </data>
   <data name="Title_ApplicationManagerPage" xml:space="preserve">
-    <value>应用管理页面</value>
+    <value>应用管理</value>
   </data>
   <data name="Title_ResourcepackManagerPage" xml:space="preserve">
-    <value>资源包管理页面</value>
+    <value>资源包管理</value>
   </data>
   <data name="DebuggerNavigation_Mspt" xml:space="preserve">
     <value>MSPT</value>
@@ -244,16 +244,16 @@
     <value>日志</value>
   </data>
   <data name="Title_MsptAnalyzerPage" xml:space="preserve">
-    <value>MSPT分析页面</value>
+    <value>MSPT分析</value>
   </data>
   <data name="Title_CommandAnalyzerPage" xml:space="preserve">
-    <value>命令分析页面</value>
+    <value>命令分析</value>
   </data>
   <data name="Title_ScreenAnalyzerPage" xml:space="preserve">
-    <value>屏幕分析页面</value>
+    <value>屏幕分析</value>
   </data>
   <data name="Title_LogManagerPage" xml:space="preserve">
-    <value>日志管理页面</value>
+    <value>日志管理</value>
   </data>
   <data name="ToggleButton_SwitchToDark" xml:space="preserve">
     <value>切换深色</value>
@@ -275,5 +275,124 @@
   </data>
   <data name="Backdrop_Acrylic" xml:space="preserve">
     <value>亚克力</value>
+  </data>
+  <data name="Title_LaunchPage" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="LaunchPage_ManageInstances" xml:space="preserve">
+    <value>管理实例</value>
+  </data>
+  <data name="LaunchPage_ManageFfmpeg" xml:space="preserve">
+    <value>管理FFmpeg</value>
+  </data>
+  <data name="LaunchPage_CurrentInstance" xml:space="preserve">
+    <value>当前实例：</value>
+  </data>
+  <data name="LaunchPage_LaunchInstance" xml:space="preserve">
+    <value>启动实例</value>
+  </data>
+  <data name="Title_InstanceManagePage" xml:space="preserve">
+    <value>实例管理</value>
+  </data>
+  <data name="InstanceManage_AddInstance" xml:space="preserve">
+    <value>添加实例</value>
+  </data>
+  <data name="InstanceManage_RefreshList" xml:space="preserve">
+    <value>刷新列表</value>
+  </data>
+  <data name="CreateInstanceDialog_Title" xml:space="preserve">
+    <value>创建新实例</value>
+  </data>
+  <data name="CreateInstanceDialog_PrimaryButton" xml:space="preserve">
+    <value>创建</value>
+  </data>
+  <data name="CreateInstanceDialog_CloseButton" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="CreateInstanceDialog_Client" xml:space="preserve">
+    <value>客户端</value>
+  </data>
+  <data name="CreateInstanceDialog_Server" xml:space="preserve">
+    <value>服务端</value>
+  </data>
+  <data name="CreateInstanceDialog_InstanceName" xml:space="preserve">
+    <value>实例名称</value>
+  </data>
+  <data name="CreateInstanceDialog_ServerAddress" xml:space="preserve">
+    <value>服务器地址</value>
+  </data>
+  <data name="CreateInstanceDialog_ServerPort" xml:space="preserve">
+    <value>服务器端口</value>
+  </data>
+  <data name="CreateInstanceDialog_Version" xml:space="preserve">
+    <value>游戏版本</value>
+  </data>
+  <data name="CreateInstanceDialog_Path" xml:space="preserve">
+    <value>游戏路径</value>
+  </data>
+  <data name="CreateInstanceDialog_SelectFolder" xml:space="preserve">
+    <value>点击选择实例文件夹</value>
+  </data>
+  <data name="InstanceType_Client" xml:space="preserve">
+    <value>客户端</value>
+  </data>
+  <data name="InstanceType_Server" xml:space="preserve">
+    <value>服务端</value>
+  </data>
+  <data name="MessageBox_Info" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="MessageBox_Warn" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="MessageBox_Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="MessageBox_Fatal" xml:space="preserve">
+    <value>致命错误</value>
+  </data>
+  <data name="MessageBox_Error_CreateInstanceFailed" xml:space="preserve">
+    <value>创建实例 "{0}" 失败。
+{1}</value>
+  </data>
+  <data name="MessageBox_Warn_ConfirmDeleteInstance" xml:space="preserve">
+    <value>确定要删除实例 "{0}" 吗？</value>
+  </data>
+  <data name="MessageBox_Warn_UnableDeleteInstance" xml:space="preserve">
+    <value>实例 "{0}" 无法删除。</value>
+  </data>
+  <data name="MessageBox_Error_DeleteInstanceFailed" xml:space="preserve">
+    <value>删除实例 "{0}" 失败。
+{1}</value>
+  </data>
+  <data name="MessageBox_Caption_UnableCreateInstance" xml:space="preserve">
+    <value>无法创建实例</value>
+  </data>
+  <data name="MessageBox_Warn_InstanceNameExists" xml:space="preserve">
+    <value>实例名称“{0}”已存在，请使用其他名称。</value>
+  </data>
+  <data name="MessageBox_Error_UnableAccessInstanceList" xml:space="preserve">
+    <value>无法访问实例列表，请稍后再试。
+{0}</value>
+  </data>
+  <data name="CreateInstanceDialog_SelectFolder_Title" xml:space="preserve">
+    <value>选择MC游戏文件夹</value>
+  </data>
+  <data name="MessageBox_Warn_InvalidProperties" xml:space="preserve">
+    <value>以下属性未正确设置：
+{0}</value>
+  </data>
+  <data name="MessageBox_Error_RenameInstanceFailed" xml:space="preserve">
+    <value>重命名实例失败: "{0}" -&gt; "{1}"
+{2}</value>
+  </data>
+  <data name="MessageBox_Warn_UnableRenameInstance" xml:space="preserve">
+    <value>实例 "{0}" 无法重命名为 "{1}"</value>
+  </data>
+  <data name="MessageBox_Caption_InvalidInstanceName" xml:space="preserve">
+    <value>实例名称 "{0}" 无效</value>
+  </data>
+  <data name="MessageBox_Caption_ConfirmLeavePage" xml:space="preserve">
+    <value>是否离开此页面</value>
   </data>
 </root>

@@ -2,21 +2,16 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:MCBS.WpfApp"
-             xmlns:converters="clr-namespace:MCBS.WpfApp.Converters"
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources/>
                 <ui:XamlControlsResources/>
-                <ResourceDictionary Source="/Resources/Styles/ToggleButtonStyles.xaml"/>
+                <ResourceDictionary Source="/Resources/ConverterResources.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/StyleResources.xaml"/>
+                <ResourceDictionary Source="/Resources/Templates/TemplateResources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <Style TargetType="ui:NumberBox">
-                <Setter Property="MinWidth" Value="0"/>
-            </Style>
-
-            <converters:ElementThemeToBooleanConverter x:Key="ElementThemeToBooleanConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

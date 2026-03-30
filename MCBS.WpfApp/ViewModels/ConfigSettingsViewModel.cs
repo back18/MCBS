@@ -75,9 +75,9 @@ namespace MCBS.WpfApp.ViewModels
 
             var errors = GetErrors();
             string errorMessage = string.Join(Environment.NewLine, errors.Select(s => s.ErrorMessage));
-            var result = _messageBoxService.Show(
-                $"以下属性未正确设置：{Environment.NewLine}{errorMessage}",
-                "是否离开当前页面",
+            MessageBoxResult result = _messageBoxService.Show(
+                string.Format(Lang.MessageBox_Warn_InvalidProperties, errorMessage),
+                Lang.MessageBox_Caption_ConfirmLeavePage,
                 MessageBoxButton.OKCancel,
                 MessageBoxImage.Warning);
 

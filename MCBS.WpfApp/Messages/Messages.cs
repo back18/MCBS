@@ -14,4 +14,12 @@ namespace MCBS.WpfApp.Messages
     public record MainWindowClosingMessage(CancelEventArgs EventArgs);
 
     public record PageNavigatingFromMessage(NavigatingCancelEventArgs EventArgs);
+
+    public record PageNavigatedFromMessage(NavigationEventArgs EventArgs);
+
+    public record PageNavigatedToMessage(NavigationEventArgs EventArgs);
+
+    public record MinecraftInstanceChangedMessage(string OldInstanceName, string NewInstanceName);
+
+    public record MinecraftInstanceModifiedMessage(string InstanceName);
 }

@@ -1,0 +1,43 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
+
+    <DataTemplate x:Key="MinecraftInstanceItemTemplate">
+        <Grid RowDefinitions="2*, 1*">
+            <TextBlock Grid.Row="0"
+                       Text="{Binding InstanceName}"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"/>
+            <TextBlock Grid.Row="1"
+                       Text="{Binding MinecraftPath}"
+                       FontSize="12"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap"/>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="MinecraftInstanceItemEditTemplate">
+        <Grid ColumnDefinitions="*, Auto">
+            <ContentPresenter Grid.Column="0"
+                              Content="{Binding}"
+                              ContentTemplate="{StaticResource MinecraftInstanceItemTemplate}"/>
+            <Button Grid.Column="1"
+                    Width="28"
+                    Height="28"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Padding="0"
+                    Margin="8,0,0,0"
+                    Command="{Binding DataContext.DeleteInstanceCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                    CommandParameter="{Binding InstanceName}">
+                <ui:FontIcon Icon="{x:Static ui:SegoeFluentIcons.Delete}"/>
+            </Button>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

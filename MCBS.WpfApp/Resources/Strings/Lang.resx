@@ -124,10 +124,10 @@
     <value>CONSOLE Configuration</value>
   </data>
   <data name="Title_DebuggerPage" xml:space="preserve">
-    <value>Debugger Page</value>
+    <value>Debugger</value>
   </data>
   <data name="Title_HomePage" xml:space="preserve">
-    <value>Home Page</value>
+    <value>Home</value>
   </data>
   <data name="Language_en_US" xml:space="preserve">
     <value>English</value>
@@ -139,16 +139,16 @@
     <value>Minecraft Block Screen</value>
   </data>
   <data name="Title_ManagerPage" xml:space="preserve">
-    <value>Manager Page</value>
+    <value>Manager</value>
   </data>
   <data name="Title_McapiModeConfigPage" xml:space="preserve">
-    <value>MCAPI Config Page</value>
+    <value>MCAPI Config</value>
   </data>
   <data name="Title_RconModeConfigPage" xml:space="preserve">
-    <value>RCON Config Page</value>
+    <value>RCON Config</value>
   </data>
   <data name="Title_SettingsPage" xml:space="preserve">
-    <value>Settings Page</value>
+    <value>Settings</value>
   </data>
   <data name="Settings_ApplicationSettings_Description" xml:space="preserve">
     <value>Settings related to graphical interface applications</value>
@@ -175,22 +175,22 @@
     <value>System Settings</value>
   </data>
   <data name="Title_SimulatorPage" xml:space="preserve">
-    <value>Simulator Page</value>
+    <value>Simulator</value>
   </data>
   <data name="MainNavigation_Home" xml:space="preserve">
     <value>Home</value>
   </data>
   <data name="Title_ApplicationSettingsPage" xml:space="preserve">
-    <value>Application Settings Page</value>
+    <value>Application Settings</value>
   </data>
   <data name="Title_MinecraftSettingsPage" xml:space="preserve">
-    <value>Minecraft Settings Page</value>
+    <value>Minecraft Settings</value>
   </data>
   <data name="Title_ScreenSettingsPage" xml:space="preserve">
-    <value>Screen Settings Page</value>
+    <value>Screen Settings</value>
   </data>
   <data name="Title_SystemSettingsPage" xml:space="preserve">
-    <value>System Settings Page</value>
+    <value>System Settings</value>
   </data>
   <data name="MainNavigation_Simulator" xml:space="preserve">
     <value>Simulator</value>
@@ -217,19 +217,19 @@
     <value>Resourcepack</value>
   </data>
   <data name="Title_ScreenManagerPage" xml:space="preserve">
-    <value>Screen Manager Page</value>
+    <value>Screen Manager</value>
   </data>
   <data name="Title_ProcessManagerPage" xml:space="preserve">
-    <value>Process Manager Page</value>
+    <value>Process Manager</value>
   </data>
   <data name="Title_FormManagerPage" xml:space="preserve">
-    <value>Form Manager Page</value>
+    <value>Form Manager</value>
   </data>
   <data name="Title_ApplicationManagerPage" xml:space="preserve">
-    <value>Application Manager Page</value>
+    <value>Application Manager</value>
   </data>
   <data name="Title_ResourcepackManagerPage" xml:space="preserve">
-    <value>Resourcepack Manager Page</value>
+    <value>Resourcepack Manager</value>
   </data>
   <data name="DebuggerNavigation_Mspt" xml:space="preserve">
     <value>MSPT</value>
@@ -244,16 +244,16 @@
     <value>Log</value>
   </data>
   <data name="Title_MsptAnalyzerPage" xml:space="preserve">
-    <value>MSPT Analyzer Page</value>
+    <value>MSPT Analyzer</value>
   </data>
   <data name="Title_CommandAnalyzerPage" xml:space="preserve">
-    <value>Command Analyzer Page</value>
+    <value>Command Analyzer</value>
   </data>
   <data name="Title_ScreenAnalyzerPage" xml:space="preserve">
-    <value>Screen Analyzer Page</value>
+    <value>Screen Analyzer</value>
   </data>
   <data name="Title_LogManagerPage" xml:space="preserve">
-    <value>Log Manager Page</value>
+    <value>Log Manager</value>
   </data>
   <data name="ToggleButton_SwitchToDark" xml:space="preserve">
     <value>Switch To Dark</value>
@@ -275,5 +275,124 @@
   </data>
   <data name="Backdrop_Acrylic" xml:space="preserve">
     <value>Acrylic</value>
+  </data>
+  <data name="Title_LaunchPage" xml:space="preserve">
+    <value>Launch</value>
+  </data>
+  <data name="LaunchPage_ManageInstances" xml:space="preserve">
+    <value>Manage Instances</value>
+  </data>
+  <data name="LaunchPage_ManageFfmpeg" xml:space="preserve">
+    <value>Manage FFmpeg</value>
+  </data>
+  <data name="LaunchPage_CurrentInstance" xml:space="preserve">
+    <value>Current Instance:</value>
+  </data>
+  <data name="LaunchPage_LaunchInstance" xml:space="preserve">
+    <value>Launch Instance</value>
+  </data>
+  <data name="Title_InstanceManagePage" xml:space="preserve">
+    <value>Instance Manager</value>
+  </data>
+  <data name="InstanceManage_AddInstance" xml:space="preserve">
+    <value>Add Instance</value>
+  </data>
+  <data name="InstanceManage_RefreshList" xml:space="preserve">
+    <value>Refresh List</value>
+  </data>
+  <data name="CreateInstanceDialog_Title" xml:space="preserve">
+    <value>Create New Instance</value>
+  </data>
+  <data name="CreateInstanceDialog_PrimaryButton" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="CreateInstanceDialog_CloseButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CreateInstanceDialog_Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="CreateInstanceDialog_Server" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="CreateInstanceDialog_InstanceName" xml:space="preserve">
+    <value>Instance Name</value>
+  </data>
+  <data name="CreateInstanceDialog_ServerAddress" xml:space="preserve">
+    <value>Server Address</value>
+  </data>
+  <data name="CreateInstanceDialog_ServerPort" xml:space="preserve">
+    <value>Server Port</value>
+  </data>
+  <data name="CreateInstanceDialog_Version" xml:space="preserve">
+    <value>Game Version</value>
+  </data>
+  <data name="CreateInstanceDialog_Path" xml:space="preserve">
+    <value>Game Path</value>
+  </data>
+  <data name="CreateInstanceDialog_SelectFolder" xml:space="preserve">
+    <value>Click to select instance folder</value>
+  </data>
+  <data name="InstanceType_Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="InstanceType_Server" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="MessageBox_Info" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="MessageBox_Warn" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="MessageBox_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="MessageBox_Fatal" xml:space="preserve">
+    <value>Fatal error</value>
+  </data>
+  <data name="MessageBox_Error_CreateInstanceFailed" xml:space="preserve">
+    <value>Failed to create instance "{0}".
+{1}</value>
+  </data>
+  <data name="MessageBox_Warn_ConfirmDeleteInstance" xml:space="preserve">
+    <value>Are you sure you want to delete instance "{0}"?</value>
+  </data>
+  <data name="MessageBox_Warn_UnableDeleteInstance" xml:space="preserve">
+    <value>Instance "{0}" cannot be deleted.</value>
+  </data>
+  <data name="MessageBox_Error_DeleteInstanceFailed" xml:space="preserve">
+    <value>Failed to delete instance "{0}".
+{1}</value>
+  </data>
+  <data name="MessageBox_Caption_UnableCreateInstance" xml:space="preserve">
+    <value>Unable to create instance</value>
+  </data>
+  <data name="MessageBox_Warn_InstanceNameExists" xml:space="preserve">
+    <value>The instance name "{0}" already exists, please use a different name.</value>
+  </data>
+  <data name="MessageBox_Error_UnableAccessInstanceList" xml:space="preserve">
+    <value>Unable to access instance list, please try again later.
+{0}</value>
+  </data>
+  <data name="CreateInstanceDialog_SelectFolder_Title" xml:space="preserve">
+    <value>Select MC game folder</value>
+  </data>
+  <data name="MessageBox_Warn_InvalidProperties" xml:space="preserve">
+    <value>The following properties are not set correctly:
+{0}</value>
+  </data>
+  <data name="MessageBox_Error_RenameInstanceFailed" xml:space="preserve">
+    <value>Failed to rename instance: "{0}" -&gt; "{1}"
+{2}</value>
+  </data>
+  <data name="MessageBox_Warn_UnableRenameInstance" xml:space="preserve">
+    <value>Instance "{0}" cannot be renamed to "{1}"</value>
+  </data>
+  <data name="MessageBox_Caption_InvalidInstanceName" xml:space="preserve">
+    <value>The instance name "{0}" is invalid</value>
+  </data>
+  <data name="MessageBox_Caption_ConfirmLeavePage" xml:space="preserve">
+    <value>Do you want to leave this page</value>
   </data>
 </root>

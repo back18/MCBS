@@ -115,6 +115,114 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Client 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_Client {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_Client", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cancel 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_CloseButton {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_CloseButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Instance Name 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_InstanceName {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_InstanceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Game Path 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_Path {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Create 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_PrimaryButton {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_PrimaryButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Click to select instance folder 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_SelectFolder {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_SelectFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select MC game folder 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_SelectFolder_Title {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_SelectFolder_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Server 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_Server {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_Server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Server Address 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_ServerAddress {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_ServerAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Server Port 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_ServerPort {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_ServerPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Create New Instance 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_Title {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Game Version 的本地化字符串。
+        /// </summary>
+        public static string CreateInstanceDialog_Version {
+            get {
+                return ResourceManager.GetString("CreateInstanceDialog_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Command 的本地化字符串。
         /// </summary>
         public static string DebuggerNavigation_Command {
@@ -151,6 +259,42 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Add Instance 的本地化字符串。
+        /// </summary>
+        public static string InstanceManage_AddInstance {
+            get {
+                return ResourceManager.GetString("InstanceManage_AddInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Refresh List 的本地化字符串。
+        /// </summary>
+        public static string InstanceManage_RefreshList {
+            get {
+                return ResourceManager.GetString("InstanceManage_RefreshList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Client 的本地化字符串。
+        /// </summary>
+        public static string InstanceType_Client {
+            get {
+                return ResourceManager.GetString("InstanceType_Client", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Server 的本地化字符串。
+        /// </summary>
+        public static string InstanceType_Server {
+            get {
+                return ResourceManager.GetString("InstanceType_Server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 English 的本地化字符串。
         /// </summary>
         public static string Language_en_US {
@@ -165,6 +309,42 @@ namespace MCBS.WpfApp.Resources.Strings {
         public static string Language_zh_CN {
             get {
                 return ResourceManager.GetString("Language_zh_CN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Current Instance: 的本地化字符串。
+        /// </summary>
+        public static string LaunchPage_CurrentInstance {
+            get {
+                return ResourceManager.GetString("LaunchPage_CurrentInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Launch Instance 的本地化字符串。
+        /// </summary>
+        public static string LaunchPage_LaunchInstance {
+            get {
+                return ResourceManager.GetString("LaunchPage_LaunchInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Manage FFmpeg 的本地化字符串。
+        /// </summary>
+        public static string LaunchPage_ManageFfmpeg {
+            get {
+                return ResourceManager.GetString("LaunchPage_ManageFfmpeg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Manage Instances 的本地化字符串。
+        /// </summary>
+        public static string LaunchPage_ManageInstances {
+            get {
+                return ResourceManager.GetString("LaunchPage_ManageInstances", resourceCulture);
             }
         }
         
@@ -250,6 +430,155 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Do you want to leave this page 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Caption_ConfirmLeavePage {
+            get {
+                return ResourceManager.GetString("MessageBox_Caption_ConfirmLeavePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The instance name &quot;{0}&quot; is invalid 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Caption_InvalidInstanceName {
+            get {
+                return ResourceManager.GetString("MessageBox_Caption_InvalidInstanceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Unable to create instance 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Caption_UnableCreateInstance {
+            get {
+                return ResourceManager.GetString("MessageBox_Caption_UnableCreateInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Error 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Error {
+            get {
+                return ResourceManager.GetString("MessageBox_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Failed to create instance &quot;{0}&quot;.
+        ///{1} 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Error_CreateInstanceFailed {
+            get {
+                return ResourceManager.GetString("MessageBox_Error_CreateInstanceFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Failed to delete instance &quot;{0}&quot;.
+        ///{1} 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Error_DeleteInstanceFailed {
+            get {
+                return ResourceManager.GetString("MessageBox_Error_DeleteInstanceFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Failed to rename instance: &quot;{0}&quot; -&gt; &quot;{1}&quot;
+        ///{2} 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Error_RenameInstanceFailed {
+            get {
+                return ResourceManager.GetString("MessageBox_Error_RenameInstanceFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Unable to access instance list, please try again later.
+        ///{0} 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Error_UnableAccessInstanceList {
+            get {
+                return ResourceManager.GetString("MessageBox_Error_UnableAccessInstanceList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Fatal error 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Fatal {
+            get {
+                return ResourceManager.GetString("MessageBox_Fatal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Information 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Info {
+            get {
+                return ResourceManager.GetString("MessageBox_Info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Warning 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Warn {
+            get {
+                return ResourceManager.GetString("MessageBox_Warn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Are you sure you want to delete instance &quot;{0}&quot;? 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Warn_ConfirmDeleteInstance {
+            get {
+                return ResourceManager.GetString("MessageBox_Warn_ConfirmDeleteInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The instance name &quot;{0}&quot; already exists, please use a different name. 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Warn_InstanceNameExists {
+            get {
+                return ResourceManager.GetString("MessageBox_Warn_InstanceNameExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The following properties are not set correctly:
+        ///{0} 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Warn_InvalidProperties {
+            get {
+                return ResourceManager.GetString("MessageBox_Warn_InvalidProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Instance &quot;{0}&quot; cannot be deleted. 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Warn_UnableDeleteInstance {
+            get {
+                return ResourceManager.GetString("MessageBox_Warn_UnableDeleteInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Instance &quot;{0}&quot; cannot be renamed to &quot;{1}&quot; 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Warn_UnableRenameInstance {
+            get {
+                return ResourceManager.GetString("MessageBox_Warn_UnableRenameInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Settings related to graphical interface applications 的本地化字符串。
         /// </summary>
         public static string Settings_ApplicationSettings_Description {
@@ -322,7 +651,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Application Manager Page 的本地化字符串。
+        ///   查找类似 Application Manager 的本地化字符串。
         /// </summary>
         public static string Title_ApplicationManagerPage {
             get {
@@ -331,7 +660,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Application Settings Page 的本地化字符串。
+        ///   查找类似 Application Settings 的本地化字符串。
         /// </summary>
         public static string Title_ApplicationSettingsPage {
             get {
@@ -340,7 +669,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Command Analyzer Page 的本地化字符串。
+        ///   查找类似 Command Analyzer 的本地化字符串。
         /// </summary>
         public static string Title_CommandAnalyzerPage {
             get {
@@ -358,7 +687,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Debugger Page 的本地化字符串。
+        ///   查找类似 Debugger 的本地化字符串。
         /// </summary>
         public static string Title_DebuggerPage {
             get {
@@ -367,7 +696,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Form Manager Page 的本地化字符串。
+        ///   查找类似 Form Manager 的本地化字符串。
         /// </summary>
         public static string Title_FormManagerPage {
             get {
@@ -376,7 +705,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Home Page 的本地化字符串。
+        ///   查找类似 Home 的本地化字符串。
         /// </summary>
         public static string Title_HomePage {
             get {
@@ -385,7 +714,25 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Log Manager Page 的本地化字符串。
+        ///   查找类似 Instance Manager 的本地化字符串。
+        /// </summary>
+        public static string Title_InstanceManagePage {
+            get {
+                return ResourceManager.GetString("Title_InstanceManagePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Launch 的本地化字符串。
+        /// </summary>
+        public static string Title_LaunchPage {
+            get {
+                return ResourceManager.GetString("Title_LaunchPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Log Manager 的本地化字符串。
         /// </summary>
         public static string Title_LogManagerPage {
             get {
@@ -403,7 +750,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Manager Page 的本地化字符串。
+        ///   查找类似 Manager 的本地化字符串。
         /// </summary>
         public static string Title_ManagerPage {
             get {
@@ -412,7 +759,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 MCAPI Config Page 的本地化字符串。
+        ///   查找类似 MCAPI Config 的本地化字符串。
         /// </summary>
         public static string Title_McapiModeConfigPage {
             get {
@@ -421,7 +768,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Minecraft Settings Page 的本地化字符串。
+        ///   查找类似 Minecraft Settings 的本地化字符串。
         /// </summary>
         public static string Title_MinecraftSettingsPage {
             get {
@@ -430,7 +777,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 MSPT Analyzer Page 的本地化字符串。
+        ///   查找类似 MSPT Analyzer 的本地化字符串。
         /// </summary>
         public static string Title_MsptAnalyzerPage {
             get {
@@ -439,7 +786,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Process Manager Page 的本地化字符串。
+        ///   查找类似 Process Manager 的本地化字符串。
         /// </summary>
         public static string Title_ProcessManagerPage {
             get {
@@ -448,7 +795,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 RCON Config Page 的本地化字符串。
+        ///   查找类似 RCON Config 的本地化字符串。
         /// </summary>
         public static string Title_RconModeConfigPage {
             get {
@@ -457,7 +804,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Resourcepack Manager Page 的本地化字符串。
+        ///   查找类似 Resourcepack Manager 的本地化字符串。
         /// </summary>
         public static string Title_ResourcepackManagerPage {
             get {
@@ -466,7 +813,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Screen Analyzer Page 的本地化字符串。
+        ///   查找类似 Screen Analyzer 的本地化字符串。
         /// </summary>
         public static string Title_ScreenAnalyzerPage {
             get {
@@ -475,7 +822,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Screen Manager Page 的本地化字符串。
+        ///   查找类似 Screen Manager 的本地化字符串。
         /// </summary>
         public static string Title_ScreenManagerPage {
             get {
@@ -484,7 +831,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Screen Settings Page 的本地化字符串。
+        ///   查找类似 Screen Settings 的本地化字符串。
         /// </summary>
         public static string Title_ScreenSettingsPage {
             get {
@@ -493,7 +840,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Settings Page 的本地化字符串。
+        ///   查找类似 Settings 的本地化字符串。
         /// </summary>
         public static string Title_SettingsPage {
             get {
@@ -502,7 +849,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Simulator Page 的本地化字符串。
+        ///   查找类似 Simulator 的本地化字符串。
         /// </summary>
         public static string Title_SimulatorPage {
             get {
@@ -511,7 +858,7 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 System Settings Page 的本地化字符串。
+        ///   查找类似 System Settings 的本地化字符串。
         /// </summary>
         public static string Title_SystemSettingsPage {
             get {
