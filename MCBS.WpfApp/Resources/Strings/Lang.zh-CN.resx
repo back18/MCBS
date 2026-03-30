@@ -395,4 +395,16 @@
   <data name="MessageBox_Caption_ConfirmLeavePage" xml:space="preserve">
     <value>是否离开此页面</value>
   </data>
+  <data name="Title_EmptyInstancePage" xml:space="preserve">
+    <value>未选择实例</value>
+  </data>
+  <data name="EmptyInstancePage_NoSelectedInstance" xml:space="preserve">
+    <value>没有已选中的实例。</value>
+  </data>
+  <data name="EmptyInstancePage_GuidancePrefix" xml:space="preserve">
+    <value>你可以切换到其他实例，或者</value>
+  </data>
+  <data name="EmptyInstancePage_CreateInstanceLink" xml:space="preserve">
+    <value>点击此处创建新的实例。</value>
+  </data>
 </root>

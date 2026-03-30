@@ -395,4 +395,16 @@
   <data name="MessageBox_Caption_ConfirmLeavePage" xml:space="preserve">
     <value>Do you want to leave this page</value>
   </data>
+  <data name="Title_EmptyInstancePage" xml:space="preserve">
+    <value>No Instance Selected</value>
+  </data>
+  <data name="EmptyInstancePage_NoSelectedInstance" xml:space="preserve">
+    <value>No instance is currently selected.</value>
+  </data>
+  <data name="EmptyInstancePage_GuidancePrefix" xml:space="preserve">
+    <value>You can switch to another instance, or </value>
+  </data>
+  <data name="EmptyInstancePage_CreateInstanceLink" xml:space="preserve">
+    <value>click here to create a new one.</value>
+  </data>
 </root>

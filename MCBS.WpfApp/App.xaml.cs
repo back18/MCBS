@@ -140,6 +140,7 @@ namespace MCBS.WpfApp
             services.AddSingleton<INavigationProvider>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IBackNavigationService>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IMinecraftSettingsNavigationService, MinecraftSettingsNavigationService>();
+            services.AddSingleton<IInstancePageFactory, InstancePageFactory>();
             services.AddSingleton<IConfigProvider, ConfigProvider>();
             services.AddKeyedSingleton(typeof(SystemConfig), (sp, key) => sp.GetRequiredService<IConfigProvider>().GetSystemConfigService());
             services.AddKeyedSingleton(typeof(MinecraftConfig), (sp, key) => sp.GetRequiredService<IConfigProvider>().GetMinecraftConfigService());
