@@ -13,6 +13,7 @@ using MCBS.WpfApp.Helpers;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using MCBS.WpfApp.Services.Implementations;
+using MCBS.WpfApp.ViewModels.DialogBoxs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -135,6 +136,7 @@ namespace MCBS.WpfApp
             services.AddSingleton<IMessageBoxAsyncService>(sp => sp.GetRequiredService<ModernMessageBox>());
             services.AddSingleton<IFileDialogService, FileDialogService>();
             services.AddSingleton<IFolderDialogService, FolderDialogService>();
+            services.AddSingleton<IDialogBoxService<CreateInstanceViewModel>, CreateInstanceDialogService>();
             services.AddSingleton<INavigationProvider>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IBackNavigationService>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IMinecraftSettingsNavigationService, MinecraftSettingsNavigationService>();
