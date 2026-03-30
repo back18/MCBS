@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using MCBS.WpfApp.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,7 +21,8 @@ namespace MCBS.WpfApp.Helpers
                 if (!property.CanRead || !property.CanWrite || property.GetIndexParameters().Length > 0)
                     continue;
 
-                if (property.GetCustomAttribute<ObservablePropertyAttribute>() is not null)
+                if (property.IsDefined(typeof(ObservablePropertyAttribute), false) ||
+                    property.IsDefined(typeof(ManualObservablePropertyAttribute), false))
                     items.Add(property.Name, property);
             }
 

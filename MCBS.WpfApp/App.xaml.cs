@@ -174,10 +174,19 @@ namespace MCBS.WpfApp
 
             services.Scan(scan => scan
                 .FromAssemblyOf<App>()
-                .AddClasses(cls => cls.InNamespaces("MCBS.WpfApp.ViewModels", "MCBS.WpfApp.Pages"))
+                .AddClasses(cls => cls
+                    .InNamespaces("MCBS.WpfApp.ViewModels")
+                    .Where(c => !c.IsDefined(typeof(Attributes.ExcludeFromDIAttribute), false)))
                 .AsSelf()
-                .WithSingletonLifetime()
-            );
+                .WithTransientLifetime());
+
+            services.Scan(scan => scan
+                .FromAssemblyOf<App>()
+                .AddClasses(cls => cls
+                    .InNamespaces("MCBS.WpfApp.Pages")
+                    .Where(c => !c.IsDefined(typeof(Attributes.ExcludeFromDIAttribute), false)))
+                .AsSelf()
+                .WithSingletonLifetime());
         }
 
         [STAThread]
