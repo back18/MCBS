@@ -131,6 +131,8 @@ namespace MCBS.WpfApp
             services.AddSingleton<ModernMessageBox>();
             services.AddSingleton<IMessageBoxService>(sp => sp.GetRequiredService<ModernMessageBox>());
             services.AddSingleton<IMessageBoxAsyncService>(sp => sp.GetRequiredService<ModernMessageBox>());
+            services.AddSingleton<IFileDialogService, FileDialogService>();
+            services.AddSingleton<IFolderDialogService, FolderDialogService>();
             services.AddSingleton<INavigationProvider>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IBackNavigationService>(sp => sp.GetRequiredService<MainWindow>());
             services.AddSingleton<IMinecraftSettingsNavigationService, MinecraftSettingsNavigationService>();
