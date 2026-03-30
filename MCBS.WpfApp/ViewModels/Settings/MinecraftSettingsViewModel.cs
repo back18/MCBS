@@ -5,7 +5,6 @@ using MCBS.Config.Constants;
 using MCBS.Config;
 using MCBS.WpfApp.Config.Extensions;
 using MCBS.WpfApp.Messages;
-using MCBS.WpfApp.Pages.Settings;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,32 +18,23 @@ using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Page = iNKORE.UI.WPF.Modern.Controls.Page;
 
 namespace MCBS.WpfApp.ViewModels.Settings
 {
     public partial class MinecraftSettingsViewModel : ConfigSettingsViewModel
     {
-        private const string McapiModeConfigIdentifier = nameof(MinecraftConfig.McapiModeConfig);
-        private const string RconModeConfigIdentifier = nameof(MinecraftConfig.RconModeConfig);
-        private const string ConsoleModeConfigIdentifier = nameof(MinecraftConfig.ConsoleModeConfig);
-
         public MinecraftSettingsViewModel(
             ILoggerFactory loggerFactory,
-            IServiceProvider serviceProvider,
-            INavigable navigable,
             IMessageBoxService messageBoxService,
+            IMinecraftSettingsNavigationService navigationService,
             [FromKeyedServices(typeof(MinecraftConfig))] IConfigStorage configStorage) : base(loggerFactory, messageBoxService)
         {
-            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
-            ArgumentNullException.ThrowIfNull(navigable, nameof(navigable));
             ArgumentNullException.ThrowIfNull(messageBoxService, nameof(messageBoxService));
+            ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
             ArgumentNullException.ThrowIfNull(configStorage, nameof(configStorage));
 
-            _serviceProvider = serviceProvider;
-            _navigable = navigable;
+            _navigationService = navigationService;
             _configStorage = configStorage;
-            var model = (MinecraftConfig.Model)configStorage.GetModel().CreateDefault();
 
             object model = configStorage.GetModel().CreateDefault();
             UpdateFromModel(model);
@@ -53,9 +43,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
             WeakReferenceMessenger.Default.Register<MainWindowClosingMessage>(this);
         }
 
-        private readonly IServiceProvider _serviceProvider;
-
-        private readonly INavigable _navigable;
+        private readonly IMinecraftSettingsNavigationService _navigationService;
 
         private readonly IConfigStorage _configStorage;
 
@@ -157,18 +145,7 @@ namespace MCBS.WpfApp.ViewModels.Settings
             if (parameter is not string identifier)
                 return;
 
-            Type? pageType = identifier switch
-            {
-                McapiModeConfigIdentifier => typeof(McapiModeConfigPage),
-                RconModeConfigIdentifier => typeof(RconModeConfigPage),
-                ConsoleModeConfigIdentifier => typeof(ConsoleModeConfigPage),
-                _ => null,
-            };
-
-            if (pageType is null || _serviceProvider.GetService(pageType) is not Page page)
-                return;
-
-            _navigable.NavigationService.Navigate(page);
+            _navigationService.NavigateToSubconfig(identifier);
         }
 
         partial void OnResourcePackListChanged(ObservableCollection<string> oldValue, ObservableCollection<string> newValue)
