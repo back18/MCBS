@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:m="clr-namespace:iNKORE.UI.WPF.Modern.Markup;assembly=iNKORE.UI.WPF.Modern">
+
+    <SolidColorBrush x:Key="RedCardBackground" Color="HotPink"/>
+    <SolidColorBrush x:Key="GreenCardBackground" Color="SeaGreen"/>
+    <SolidColorBrush x:Key="BlueCardBackground" Color="RoyalBlue"/>
+    <SolidColorBrush x:Key="GoldCardBackground" Color="DarkGoldenrod"/>
+    <SolidColorBrush x:Key="GrayCardBackground" Color="DimGray"/>
+    <SolidColorBrush x:Key="DefaultCardBackground" Color="{DynamicResource CardBackgroundFillColorDefault}"/>
+    <SolidColorBrush x:Key="FontIconBackground" Color="{DynamicResource SystemChromeAltMediumHighColor}"/>
+</ResourceDictionary>

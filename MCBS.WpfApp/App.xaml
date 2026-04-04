@@ -6,7 +6,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ui:ThemeResources/>
+                <ui:ThemeResources>
+                    <ui:ThemeResources.ThemeDictionaries>
+                        <ResourceDictionary x:Key="Light" Source="/Resources/Themes/LightTheme.xaml"/>
+                        <ResourceDictionary x:Key="Dark" Source="/Resources/Themes/DarkTheme.xaml"/>
+                    </ui:ThemeResources.ThemeDictionaries>
+                </ui:ThemeResources>
                 <ui:XamlControlsResources/>
                 <ResourceDictionary Source="/Resources/ConverterResources.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/StyleResources.xaml"/>
