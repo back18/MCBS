@@ -1,0 +1,266 @@
+﻿<ui:Page x:Class="MCBS.WpfApp.Pages.Home.InstanceResourcePage"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+         xmlns:lex="http://wpflocalizeextension.codeplex.com"
+         lex:LocalizeDictionary.DesignCulture="zh-CN"
+         lex:ResxLocalizationProvider.DefaultAssembly="MCBS.WpfApp"
+         lex:ResxLocalizationProvider.DefaultDictionary="Lang"
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+         xmlns:local="clr-namespace:MCBS.WpfApp.Pages.Home"
+         xmlns:attached="clr-namespace:MCBS.WpfApp.AttachedProperties"
+         xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels.Home"
+         xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
+         xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+         mc:Ignorable="d" 
+         d:DesignHeight="450" d:DesignWidth="800"
+         d:DataContext="{d:DesignInstance Type=viewmodels:InstanceResourceViewModel}"
+         Title="{lex:Loc Title_InstanceResourcePage}">
+    <Page.Resources>
+        <DataTemplate x:Key="CoreFileCardTemplate">
+            <Grid ColumnDefinitions="Auto, *"
+                  Height="50">
+                <Border Grid.Column="0"
+                        Width="40"
+                        Height="40"
+                        CornerRadius="10"
+                        Background="{DynamicResource FontIconBackground}"
+                        Margin="5, 0, 0, 0">
+                    <Grid>
+                        <!-- 文件存在时显示正常图标 -->
+                        <ui:FontIcon Icon="{Binding FileIcon}"
+                                     FontSize="24">
+                            <ui:FontIcon.Style>
+                                <Style TargetType="ui:FontIcon">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FileInfo.Exists}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ui:FontIcon.Style>
+                        </ui:FontIcon>
+
+                        <!-- 文件不存在时显示错误图标 -->
+                        <ui:FontIcon Icon="{x:Static ui:SegoeFluentIcons.ErrorBadge}"
+                                     FontSize="24">
+                            <ui:FontIcon.Style>
+                                <Style TargetType="ui:FontIcon">
+                                    <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FileInfo.Exists}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ui:FontIcon.Style>
+                        </ui:FontIcon>
+                    </Grid>
+                </Border>
+                
+                <Grid Grid.Column="1"
+                      RowDefinitions="3*, 2*"
+                      Margin="10, 0, 0, 0">
+                    <TextBlock Grid.Row="0"
+                               Text="{lex:Loc {Binding LocalizationKey}}"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1"
+                               FontSize="12"
+                               VerticalAlignment="Top">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="{Binding FileInfo.Name}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding FileInfo.Exists}" Value="False">
+                                        <Setter Property="Text" Value="{lex:Loc ClientInstanceResource_FileNotFound}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="ListBoxItemStyle"
+               TargetType="ListBoxItem"
+               BasedOn="{StaticResource {x:Type ListBoxItem}}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid ColumnDefinitions="1*, 3*">
+        <Grid Grid.Column="0"
+              RowDefinitions="*, Auto">
+            <ListBox Grid.Row="0"
+                     SelectedItem="{Binding CurrentInstance}"
+                     ItemsSource="{Binding InstanceList}"
+                     ItemTemplate="{StaticResource MinecraftInstanceItemTemplate}"
+                     Margin="5, 5, 5, 0"/>
+            <ikw:SimpleStackPanel Grid.Row="1"
+                                  Margin="5"
+                                  Spacing="5">
+                <Button Content="{lex:Loc InstanceResourcePage_RefreshInstance}"
+                        Height="32"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding ClientResource.RefreshCommand}"/>
+                <Button Content="{lex:Loc InstanceResourcePage_RefreshList}"
+                        Height="32"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding RefreshListCommand}"/>
+            </ikw:SimpleStackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Column="1"
+                      Margin="5, 10, 10, 10"
+                      VerticalScrollBarVisibility="Auto">
+            <ikw:SimpleStackPanel Spacing="10"
+                                  Style="{StaticResource ScrollViewerAutoMarginStyle}">
+                <Border CornerRadius="10"
+                        Background="{DynamicResource DefaultCardBackground}"
+                        Visibility="{Binding CurrentInstance, Converter={StaticResource NullToVisibilityConverter}}">
+                    <ikw:SimpleStackPanel Margin="10"
+                                          Spacing="10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding CurrentInstance.InstanceName}"
+                                       FontSize="20"
+                                       FontWeight="Bold"/>
+                            <TextBlock FontSize="16"
+                                       FontWeight="Bold"
+                                       Margin="8,0,0,0"
+                                       Foreground="White"
+                                       Background="DeepSkyBlue"
+                                       Padding="6,2"
+                                       VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="{lex:Loc InstanceType_Client}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentInstance.IsServer}" Value="True">
+                                                <Setter Property="Text" Value="{lex:Loc InstanceType_Server}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Text="{Binding CurrentInstance.MinecraftVersion}"
+                                   FontSize="16"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="{Binding CurrentInstance.MinecraftPath}"
+                                   FontSize="16"/>
+                    </ikw:SimpleStackPanel>
+                </Border>
+
+                <Grid ColumnDefinitions="*, *, *"
+                      Margin="-5">
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource BlueCardBackground}"
+                            CornerRadius="10"
+                            Margin="5">
+                        <ContentControl Content="{Binding ClientResource.VersionJsonFile}"
+                                        ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
+                    </Border>
+                    <Border Grid.Column="1"
+                            Background="{DynamicResource GreenCardBackground}"
+                            CornerRadius="10"
+                            Margin="5">
+                        <ContentControl Content="{Binding ClientResource.AssetManifestFile}"
+                                        ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
+                    </Border>
+                    <Border Grid.Column="2"
+                            Background="{DynamicResource RedCardBackground}"
+                            CornerRadius="10"
+                            Margin="5">
+                        <ContentControl Content="{Binding ClientResource.ClientCoreFile}"
+                                        ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
+                    </Border>
+                </Grid>
+
+                <Expander Style="{StaticResource ExpanderRoundedStyle}"
+                          attached:ExpanderAttach.CornerRadius="10">
+                    <Expander.Header>
+                        <Border Height="50">
+                            <TextBlock Text="{lex:Loc InstanceResourcePage_ResourcePackList}"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </Expander.Header>
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <DataTemplate x:Key="SelectedResourcePackTemplate">
+                                <Border Background="{DynamicResource GoldCardBackground}"
+                                        CornerRadius="10"
+                                        Height="40">
+                                    <TextBlock Text="{Binding Name}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate x:Key="ResourcePackTemplate">
+                                <Border Background="{DynamicResource GrayCardBackground}"
+                                        CornerRadius="10"
+                                        Height="40">
+                                    <TextBlock Text="{Binding Name}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </DataTemplate>
+                        </StackPanel.Resources>
+
+                        <ListBox ItemsSource="{Binding ClientResource.SelectedResourcePacks}"
+                                 ItemTemplate="{StaticResource SelectedResourcePackTemplate}"
+                                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
+
+                        <ListBox ItemsSource="{Binding ClientResource.ResourcePacks}"
+                                 ItemTemplate="{StaticResource ResourcePackTemplate}"
+                                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander Style="{StaticResource ExpanderRoundedStyle}"
+                          attached:ExpanderAttach.CornerRadius="10">
+                    <Expander.Header>
+                        <Border Height="50">
+                            <TextBlock Text="{lex:Loc InstanceResourcePage_LanguageFileList}"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </Expander.Header>
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <DataTemplate x:Key="LanguageFileTemplate">
+                                <Border Background="{DynamicResource GrayCardBackground}"
+                                        CornerRadius="10"
+                                        Height="40">
+                                    <TextBlock Text="{Binding AssetName}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </DataTemplate>
+                        </StackPanel.Resources>
+
+                        <Border Background="{DynamicResource GoldCardBackground}"
+                                CornerRadius="10"
+                                Height="40">
+                            <TextBlock Text="{Binding ClientResource.SelectedLanguageFile.AssetName}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ListBox ItemsSource="{Binding ClientResource.LanguageFiles}"
+                                 ItemTemplate="{StaticResource LanguageFileTemplate}"
+                                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
+                    </StackPanel>
+                </Expander>
+            </ikw:SimpleStackPanel>
+        </ScrollViewer>
+    </Grid>
+</ui:Page>

@@ -22,10 +22,10 @@
         <Grid Grid.Column="0"
               RowDefinitions="*, Auto">
             <ListBox Grid.Row="0"
-                         SelectedItem="{Binding CurrentInstance}"
-                         ItemsSource="{Binding InstanceList}"
-                         ItemTemplate="{StaticResource MinecraftInstanceItemTemplate}"
-                         Margin="5, 5, 5, 0"/>
+                     SelectedItem="{Binding CurrentInstance}"
+                     ItemsSource="{Binding InstanceList}"
+                     ItemTemplate="{StaticResource MinecraftInstanceItemTemplate}"
+                     Margin="5, 5, 5, 0"/>
 
             <ikw:SimpleStackPanel Grid.Row="1"
                                   Margin="5"
@@ -36,6 +36,12 @@
                         HorizontalAlignment="Stretch"
                         Command="{Binding PageNavigateCommand}"
                         CommandParameter="{x:Type pages:InstanceManagePage}"/>
+                <Button Content="{lex:Loc LaunchPage_InstanceResources}"
+                        Height="32"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding PageNavigateCommand}"
+                        CommandParameter="{x:Type pages:InstanceResourcePage}"/>
                 <Button Content="{lex:Loc LaunchPage_ManageFfmpeg}"
                         Height="32"
                         VerticalAlignment="Stretch"
@@ -46,30 +52,30 @@
               RowDefinitions="1* 3*, 1*">
             <Grid Grid.Row="0">
                 <TextBlock Text="Minecraft Block Screen"
-                               FontSize="36"
-                               FontWeight="Bold"
-                               VerticalAlignment="Top"
-                               HorizontalAlignment="Left"
-                               Margin="20,20,0,0"/>
+                           FontSize="36"
+                           FontWeight="Bold"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Left"
+                           Margin="20,20,0,0"/>
             </Grid>
             <ikw:SimpleStackPanel Grid.Row="1"
-                                      Margin="10"
-                                      Spacing="10"
-                                      Visibility="{Binding CurrentInstance, Converter={StaticResource NullToVisibilityConverter}}">
+                                  Margin="10"
+                                  Spacing="10"
+                                  Visibility="{Binding CurrentInstance, Converter={StaticResource NullToVisibilityConverter}}">
                 <TextBlock Text="{lex:Loc LaunchPage_CurrentInstance}"
-                               FontSize="20"
-                               FontWeight="Bold"/>
+                           FontSize="20"
+                           FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding CurrentInstance.InstanceName}"
-                                   FontSize="20"
-                                   FontWeight="Bold"/>
+                               FontSize="20"
+                               FontWeight="Bold"/>
                     <TextBlock FontSize="16"
-                                   FontWeight="Bold"
-                                   Margin="8,0,0,0"
-                                   Foreground="White"
-                                   Background="DeepSkyBlue"
-                                   Padding="6,2"
-                                   VerticalAlignment="Center">
+                               FontWeight="Bold"
+                               Margin="8,0,0,0"
+                               Foreground="White"
+                               Background="DeepSkyBlue"
+                               Padding="6,2"
+                               VerticalAlignment="Center">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="Text" Value="{lex:Loc InstanceType_Client}"/>
@@ -83,20 +89,20 @@
                     </TextBlock>
                 </StackPanel>
                 <TextBlock Text="{Binding CurrentInstance.MinecraftVersion}"
-                               FontSize="16"
-                               FontWeight="Bold"/>
+                           FontSize="16"
+                           FontWeight="Bold"/>
                 <TextBlock Text="{Binding CurrentInstance.MinecraftPath}"
-                               FontSize="16"/>
+                           FontSize="16"/>
             </ikw:SimpleStackPanel>
             <Grid Grid.Row="2">
                 <Button Content="{lex:Loc LaunchPage_LaunchInstance}"
-                            Width="240"
-                            Height="60"
-                            FontSize="18"
-                            FontWeight="Bold"
-                            VerticalAlignment="Bottom"
-                            HorizontalAlignment="Right"
-                            Margin="0,0,20,20"/>
+                        Width="240"
+                        Height="60"
+                        FontSize="18"
+                        FontWeight="Bold"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,20,20"/>
             </Grid>
         </Grid>
     </Grid>

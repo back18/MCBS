@@ -115,6 +115,42 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Asset Manifest 的本地化字符串。
+        /// </summary>
+        public static string ClientInstanceResource_AssetManifest {
+            get {
+                return ResourceManager.GetString("ClientInstanceResource_AssetManifest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Client Core 的本地化字符串。
+        /// </summary>
+        public static string ClientInstanceResource_ClientCore {
+            get {
+                return ResourceManager.GetString("ClientInstanceResource_ClientCore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 File not found 的本地化字符串。
+        /// </summary>
+        public static string ClientInstanceResource_FileNotFound {
+            get {
+                return ResourceManager.GetString("ClientInstanceResource_FileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Version Metadata 的本地化字符串。
+        /// </summary>
+        public static string ClientInstanceResource_VersionJson {
+            get {
+                return ResourceManager.GetString("ClientInstanceResource_VersionJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Client 的本地化字符串。
         /// </summary>
         public static string CreateInstanceDialog_Client {
@@ -255,6 +291,33 @@ namespace MCBS.WpfApp.Resources.Strings {
         public static string DebuggerNavigation_Screen {
             get {
                 return ResourceManager.GetString("DebuggerNavigation_Screen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 click here to create a new one. 的本地化字符串。
+        /// </summary>
+        public static string EmptyInstancePage_CreateInstanceLink {
+            get {
+                return ResourceManager.GetString("EmptyInstancePage_CreateInstanceLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 You can switch to another instance, or  的本地化字符串。
+        /// </summary>
+        public static string EmptyInstancePage_GuidancePrefix {
+            get {
+                return ResourceManager.GetString("EmptyInstancePage_GuidancePrefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 No instance is currently selected. 的本地化字符串。
+        /// </summary>
+        public static string EmptyInstancePage_NoSelectedInstance {
+            get {
+                return ResourceManager.GetString("EmptyInstancePage_NoSelectedInstance", resourceCulture);
             }
         }
         
@@ -692,6 +755,15 @@ namespace MCBS.WpfApp.Resources.Strings {
         public static string Title_DebuggerPage {
             get {
                 return ResourceManager.GetString("Title_DebuggerPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 No Instance Selected 的本地化字符串。
+        /// </summary>
+        public static string Title_EmptyInstancePage {
+            get {
+                return ResourceManager.GetString("Title_EmptyInstancePage", resourceCulture);
             }
         }
         

@@ -407,4 +407,34 @@
   <data name="EmptyInstancePage_CreateInstanceLink" xml:space="preserve">
     <value>点击此处创建新的实例。</value>
   </data>
+  <data name="ClientInstanceResource_VersionJson" xml:space="preserve">
+    <value>版本元数据</value>
+  </data>
+  <data name="ClientInstanceResource_AssetManifest" xml:space="preserve">
+    <value>资源清单</value>
+  </data>
+  <data name="ClientInstanceResource_ClientCore" xml:space="preserve">
+    <value>客户端核心</value>
+  </data>
+  <data name="ClientInstanceResource_FileNotFound" xml:space="preserve">
+    <value>文件不存在</value>
+  </data>
+  <data name="Title_InstanceResourcePage" xml:space="preserve">
+    <value>实例资源</value>
+  </data>
+  <data name="InstanceResourcePage_RefreshInstance" xml:space="preserve">
+    <value>刷新实例</value>
+  </data>
+  <data name="InstanceResourcePage_RefreshList" xml:space="preserve">
+    <value>刷新列表</value>
+  </data>
+  <data name="InstanceResourcePage_ResourcePackList" xml:space="preserve">
+    <value>资源包列表</value>
+  </data>
+  <data name="InstanceResourcePage_LanguageFileList" xml:space="preserve">
+    <value>语言文件列表</value>
+  </data>
+  <data name="LaunchPage_InstanceResources" xml:space="preserve">
+    <value>实例资源</value>
+  </data>
 </root>

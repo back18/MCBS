@@ -407,4 +407,34 @@
   <data name="EmptyInstancePage_CreateInstanceLink" xml:space="preserve">
     <value>click here to create a new one.</value>
   </data>
+  <data name="ClientInstanceResource_VersionJson" xml:space="preserve">
+    <value>Version Metadata</value>
+  </data>
+  <data name="ClientInstanceResource_AssetManifest" xml:space="preserve">
+    <value>Asset Manifest</value>
+  </data>
+  <data name="ClientInstanceResource_ClientCore" xml:space="preserve">
+    <value>Client Core</value>
+  </data>
+  <data name="ClientInstanceResource_FileNotFound" xml:space="preserve">
+    <value>File not found</value>
+  </data>
+  <data name="Title_InstanceResourcePage" xml:space="preserve">
+    <value>Instance Resources</value>
+  </data>
+  <data name="InstanceResourcePage_RefreshInstance" xml:space="preserve">
+    <value>Refresh Instance</value>
+  </data>
+  <data name="InstanceResourcePage_RefreshList" xml:space="preserve">
+    <value>Refresh List</value>
+  </data>
+  <data name="InstanceResourcePage_ResourcePackList" xml:space="preserve">
+    <value>Resource Pack List</value>
+  </data>
+  <data name="InstanceResourcePage_LanguageFileList" xml:space="preserve">
+    <value>Language File List</value>
+  </data>
+  <data name="LaunchPage_InstanceResources" xml:space="preserve">
+    <value>Instance Resources</value>
+  </data>
 </root>
