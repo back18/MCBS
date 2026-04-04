@@ -3,8 +3,9 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Resources/Styles/NumberBoxFixStyle.xaml"/>
-        <ResourceDictionary Source="/Resources/Styles/ToggleButtonStyles.xaml"/>
+        <ResourceDictionary Source="/Resources/Styles/ToggleButtonGorgeousThemeSwitchStyle.xaml"/>
         <ResourceDictionary Source="/Resources/Styles/ScrollableContentDialogStyle.xaml"/>
         <ResourceDictionary Source="/Resources/Styles/ScrollViewerAutoMarginStyle.xaml"/>
+        <ResourceDictionary Source="/Resources/Styles/ExpanderRoundedStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
