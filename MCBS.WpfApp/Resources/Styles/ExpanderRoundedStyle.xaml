@@ -57,7 +57,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ExpanderRoundedStyle" TargetType="Expander">
+    <Style x:Key="ExpanderRoundedStyle" TargetType="Expander" BasedOn="{StaticResource {x:Type Expander}}">
         <Setter Property="Background" Value="{DynamicResource DefaultCardBackground}"/>
         <Setter Property="attached:ExpanderAttach.CornerRadius" Value="10"/>
         <Setter Property="Template">
