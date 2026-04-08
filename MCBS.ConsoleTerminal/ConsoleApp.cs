@@ -106,6 +106,8 @@ namespace MCBS.ConsoleTerminal
             services.AddSingleton<IMinecraftPathProvider, MinecraftPathProvider>();
             services.AddSingleton<IFFmpegPathProvider, FFmpegPathProvider>();
 
+            services.AddSingleton<IScopedMinecraftPathFactory, ScopedMinecraftPathFactory>();
+
             services.AddSingleton<IMinecraftConfigProvider, MinecraftConfigProvider>();
             services.AddSingleton<ISystemConfigProvider, SystemConfigProvider>();
             services.AddSingleton<IScreenConfigProvider, ScreenConfigProvider>();
