@@ -7,5 +7,6 @@
         <ResourceDictionary Source="/Resources/Styles/ScrollableContentDialogStyle.xaml"/>
         <ResourceDictionary Source="/Resources/Styles/ScrollViewerAutoMarginStyle.xaml"/>
         <ResourceDictionary Source="/Resources/Styles/ExpanderRoundedStyle.xaml"/>
+        <ResourceDictionary Source="/Resources/Styles/ExpanderToggleSwitchStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

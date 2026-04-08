@@ -4,4 +4,7 @@
 
     <converters:ElementThemeToBooleanConverter x:Key="ElementThemeToBooleanConverter"/>
     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <converters:BytesFormatConverter x:Key="BytesFormatConverter"/>
 </ResourceDictionary>

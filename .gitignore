@@ -361,4 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
 /.vscode
+/.claude
+
+*.ps1
+*.lnk
