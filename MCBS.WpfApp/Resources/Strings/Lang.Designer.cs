@@ -340,6 +340,78 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Downloaded 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_GlobalFileStatus_Downloaded {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_GlobalFileStatus_Downloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Not Found 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_GlobalFileStatus_NotFound {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_GlobalFileStatus_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Verification Failed 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_GlobalFileStatus_VerifyFailed {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_GlobalFileStatus_VerifyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Language File List 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_LanguageFileList {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_LanguageFileList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Refresh Instance 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_RefreshInstance {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_RefreshInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Refresh List 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_RefreshList {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_RefreshList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Resource Pack List 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_ResourcePackList {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_ResourcePackList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Use Global Resources 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_UseGlobalResources {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_UseGlobalResources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Client 的本地化字符串。
         /// </summary>
         public static string InstanceType_Client {
@@ -381,6 +453,15 @@ namespace MCBS.WpfApp.Resources.Strings {
         public static string LaunchPage_CurrentInstance {
             get {
                 return ResourceManager.GetString("LaunchPage_CurrentInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Instance Resources 的本地化字符串。
+        /// </summary>
+        public static string LaunchPage_InstanceResources {
+            get {
+                return ResourceManager.GetString("LaunchPage_InstanceResources", resourceCulture);
             }
         }
         
@@ -583,6 +664,15 @@ namespace MCBS.WpfApp.Resources.Strings {
         public static string MessageBox_Info {
             get {
                 return ResourceManager.GetString("MessageBox_Info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Server instance automatically enabled global resources. 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_ServerAutoEnabledGlobalResources {
+            get {
+                return ResourceManager.GetString("MessageBox_ServerAutoEnabledGlobalResources", resourceCulture);
             }
         }
         
@@ -791,6 +881,15 @@ namespace MCBS.WpfApp.Resources.Strings {
         public static string Title_InstanceManagePage {
             get {
                 return ResourceManager.GetString("Title_InstanceManagePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Instance Resources 的本地化字符串。
+        /// </summary>
+        public static string Title_InstanceResourcePage {
+            get {
+                return ResourceManager.GetString("Title_InstanceResourcePage", resourceCulture);
             }
         }
         

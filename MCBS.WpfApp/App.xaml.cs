@@ -14,6 +14,7 @@ using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using MCBS.WpfApp.Services.Implementations;
 using MCBS.WpfApp.ViewModels.DialogBoxs;
+using MCBS.WpfApp.ViewModels.Home;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -77,6 +78,8 @@ namespace MCBS.WpfApp
             services.AddSingleton<IFFmpegPathProvider, FFmpegPathProvider>();
             services.AddSingleton<IInstanceListPathProvider, InstanceListPathProvider>();
 
+            services.AddSingleton<IScopedMinecraftPathFactory, ScopedMinecraftPathFactory>();
+
             services.AddSingleton<IMinecraftConfigProvider, MinecraftConfigProvider>();
             services.AddSingleton<ISystemConfigProvider, SystemConfigProvider>();
             services.AddSingleton<IScreenConfigProvider, ScreenConfigProvider>();
@@ -130,6 +133,8 @@ namespace MCBS.WpfApp
                 string key = cs + '+' + mode;
                 return sp.GetKeyedService<IMinecraftInstanceFactory>(key) ?? throw new NotSupportedException("不支持的Minecraft实例类型: " + key);
             });
+
+            services.AddSingleton<IViewModelFactory<ClientInstanceResourceViewModel>, ClientInstanceResourceViewModel.Factory>();
 
             services.AddSingleton<ModernMessageBox>();
             services.AddSingleton<IMessageBoxService>(sp => sp.GetRequiredService<ModernMessageBox>());

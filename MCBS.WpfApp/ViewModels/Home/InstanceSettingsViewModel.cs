@@ -46,6 +46,7 @@ namespace MCBS.WpfApp.ViewModels.Home
 
             base.UpdateFromModel(model);
             SetProperty(ref _instanceName, typedModel.InstanceName, true, nameof(InstanceName));
+            UseGlobalResources = typedModel.UseGlobalResources;
         }
 
         [ManualObservableProperty]
@@ -81,6 +82,10 @@ namespace MCBS.WpfApp.ViewModels.Home
                 OnInstanceNameChanged(oldName, value);
             }
         }
+
+        [ObservableProperty]
+        [AllowedValuesIf(nameof(IsServer), CompareOperator.Equal, true, true)]
+        public partial bool UseGlobalResources { get; set; }
 
         void IRecipient<MinecraftInstanceReloadedMessage>.Receive(MinecraftInstanceReloadedMessage message)
         {

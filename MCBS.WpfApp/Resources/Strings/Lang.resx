@@ -434,6 +434,21 @@
   <data name="InstanceResourcePage_LanguageFileList" xml:space="preserve">
     <value>Language File List</value>
   </data>
+  <data name="MessageBox_ServerAutoEnabledGlobalResources" xml:space="preserve">
+    <value>Server instance automatically enabled global resources.</value>
+  </data>
+  <data name="InstanceResourcePage_UseGlobalResources" xml:space="preserve">
+    <value>Use Global Resources</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileStatus_Downloaded" xml:space="preserve">
+    <value>Downloaded</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileStatus_NotFound" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileStatus_VerifyFailed" xml:space="preserve">
+    <value>Verification Failed</value>
+  </data>
   <data name="LaunchPage_InstanceResources" xml:space="preserve">
     <value>Instance Resources</value>
   </data>

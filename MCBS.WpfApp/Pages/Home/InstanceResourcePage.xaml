@@ -6,12 +6,13 @@
          lex:LocalizeDictionary.DesignCulture="zh-CN"
          lex:ResxLocalizationProvider.DefaultAssembly="MCBS.WpfApp"
          lex:ResxLocalizationProvider.DefaultDictionary="Lang"
-         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
          xmlns:local="clr-namespace:MCBS.WpfApp.Pages.Home"
          xmlns:attached="clr-namespace:MCBS.WpfApp.AttachedProperties"
          xmlns:viewmodels="clr-namespace:MCBS.WpfApp.ViewModels.Home"
          xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
          xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+         xmlns:models="clr-namespace:MCBS.WpfApp.Models"
          mc:Ignorable="d" 
          d:DesignHeight="450" d:DesignWidth="800"
          d:DataContext="{d:DesignInstance Type=viewmodels:InstanceResourceViewModel}"
@@ -161,104 +162,208 @@
                     </ikw:SimpleStackPanel>
                 </Border>
 
-                <Grid ColumnDefinitions="*, *, *"
-                      Margin="-5">
-                    <Border Grid.Column="0"
-                            Background="{DynamicResource BlueCardBackground}"
-                            CornerRadius="10"
-                            Margin="5">
-                        <ContentControl Content="{Binding ClientResource.VersionJsonFile}"
-                                        ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
-                    </Border>
-                    <Border Grid.Column="1"
-                            Background="{DynamicResource GreenCardBackground}"
-                            CornerRadius="10"
-                            Margin="5">
-                        <ContentControl Content="{Binding ClientResource.AssetManifestFile}"
-                                        ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
-                    </Border>
-                    <Border Grid.Column="2"
-                            Background="{DynamicResource RedCardBackground}"
-                            CornerRadius="10"
-                            Margin="5">
-                        <ContentControl Content="{Binding ClientResource.ClientCoreFile}"
-                                        ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
-                    </Border>
-                </Grid>
-
-                <Expander Style="{StaticResource ExpanderRoundedStyle}"
-                          attached:ExpanderAttach.CornerRadius="10">
-                    <Expander.Header>
-                        <Border Height="50">
-                            <TextBlock Text="{lex:Loc InstanceResourcePage_ResourcePackList}"
-                                       VerticalAlignment="Center"/>
-                        </Border>
-                    </Expander.Header>
-                    <StackPanel>
-                        <StackPanel.Resources>
-                            <DataTemplate x:Key="SelectedResourcePackTemplate">
-                                <Border Background="{DynamicResource GoldCardBackground}"
-                                        CornerRadius="10"
-                                        Height="40">
-                                    <TextBlock Text="{Binding Name}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
-                                </Border>
-                            </DataTemplate>
-                            <DataTemplate x:Key="ResourcePackTemplate">
-                                <Border Background="{DynamicResource GrayCardBackground}"
-                                        CornerRadius="10"
-                                        Height="40">
-                                    <TextBlock Text="{Binding Name}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
-                                </Border>
-                            </DataTemplate>
-                        </StackPanel.Resources>
-
-                        <ListBox ItemsSource="{Binding ClientResource.SelectedResourcePacks}"
-                                 ItemTemplate="{StaticResource SelectedResourcePackTemplate}"
-                                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
-
-                        <ListBox ItemsSource="{Binding ClientResource.ResourcePacks}"
-                                 ItemTemplate="{StaticResource ResourcePackTemplate}"
-                                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
-                    </StackPanel>
-                </Expander>
-
-                <Expander Style="{StaticResource ExpanderRoundedStyle}"
-                          attached:ExpanderAttach.CornerRadius="10">
-                    <Expander.Header>
-                        <Border Height="50">
-                            <TextBlock Text="{lex:Loc InstanceResourcePage_LanguageFileList}"
-                                       VerticalAlignment="Center"/>
-                        </Border>
-                    </Expander.Header>
-                    <StackPanel>
-                        <StackPanel.Resources>
-                            <DataTemplate x:Key="LanguageFileTemplate">
-                                <Border Background="{DynamicResource GrayCardBackground}"
-                                        CornerRadius="10"
-                                        Height="40">
-                                    <TextBlock Text="{Binding AssetName}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
-                                </Border>
-                            </DataTemplate>
-                        </StackPanel.Resources>
-
-                        <Border Background="{DynamicResource GoldCardBackground}"
+                <ikw:SimpleStackPanel Spacing="10"
+                                      Visibility="{Binding ClientResource.IsServer, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
+                    <Grid ColumnDefinitions="*, *, *"
+                          Margin="-5">
+                        <Border Grid.Column="0"
+                                Background="{DynamicResource BlueCardBackground}"
                                 CornerRadius="10"
-                                Height="40">
-                            <TextBlock Text="{Binding ClientResource.SelectedLanguageFile.AssetName}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
+                                Margin="5">
+                            <ContentControl Content="{Binding ClientResource.VersionJsonFile}"
+                                            ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
+                        </Border>
+                        <Border Grid.Column="1"
+                                Background="{DynamicResource GreenCardBackground}"
+                                CornerRadius="10"
+                                Margin="5">
+                            <ContentControl Content="{Binding ClientResource.AssetManifestFile}"
+                                            ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
+                        </Border>
+                        <Border Grid.Column="2"
+                                Background="{DynamicResource RedCardBackground}"
+                                CornerRadius="10"
+                                Margin="5">
+                            <ContentControl Content="{Binding ClientResource.ClientCoreFile}"
+                                            ContentTemplate="{StaticResource CoreFileCardTemplate}"/>
+                        </Border>
+                    </Grid>
+
+                    <Expander Style="{StaticResource ExpanderRoundedStyle}"
+                              attached:ExpanderAttach.CornerRadius="10">
+                        <Expander.Header>
+                            <Border Height="50">
+                                <TextBlock Text="{lex:Loc InstanceResourcePage_ResourcePackList}"
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                        </Expander.Header>
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <DataTemplate x:Key="SelectedResourcePackTemplate">
+                                    <Border Background="{DynamicResource GoldCardBackground}"
+                                            CornerRadius="10"
+                                            Height="40">
+                                        <TextBlock Text="{Binding Name}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                                <DataTemplate x:Key="ResourcePackTemplate">
+                                    <Border Background="{DynamicResource GrayCardBackground}"
+                                            CornerRadius="10"
+                                            Height="40">
+                                        <TextBlock Text="{Binding Name}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </StackPanel.Resources>
+
+                            <ListBox ItemsSource="{Binding ClientResource.SelectedResourcePacks}"
+                                     ItemTemplate="{StaticResource SelectedResourcePackTemplate}"
+                                     ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
+
+                            <ListBox ItemsSource="{Binding ClientResource.ResourcePacks}"
+                                     ItemTemplate="{StaticResource ResourcePackTemplate}"
+                                     ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <Expander Style="{StaticResource ExpanderRoundedStyle}"
+                              attached:ExpanderAttach.CornerRadius="10">
+                        <Expander.Header>
+                            <Border Height="50">
+                                <TextBlock Text="{lex:Loc InstanceResourcePage_LanguageFileList}"
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                        </Expander.Header>
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <DataTemplate x:Key="LanguageFileTemplate">
+                                    <Border Background="{DynamicResource GrayCardBackground}"
+                                            CornerRadius="10"
+                                            Height="40">
+                                        <TextBlock Text="{Binding AssetName}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </StackPanel.Resources>
+
+                            <Border Background="{DynamicResource GoldCardBackground}"
+                                    CornerRadius="10"
+                                    Height="40">
+                                <TextBlock Text="{Binding ClientResource.SelectedLanguageFile.AssetName}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                            </Border>
+
+                            <ListBox ItemsSource="{Binding ClientResource.LanguageFiles}"
+                                     ItemTemplate="{StaticResource LanguageFileTemplate}"
+                                     ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
+                        </StackPanel>
+                    </Expander>
+                </ikw:SimpleStackPanel>
+
+                <Expander Style="{StaticResource ExpanderToggleSwitchStyle}"
+                          attached:ExpanderAttach.CornerRadius="10"
+                          IsExpanded="{Binding ClientResource.UseGlobalResources}"
+                          IsEnabled="{Binding ClientResource.IsServer, Converter={StaticResource InverseBooleanConverter}}">
+                    <Expander.Header>
+                        <Border Height="50">
+                            <TextBlock Text="{lex:Loc InstanceResourcePage_UseGlobalResources}"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </Expander.Header>
+                    <ikw:SimpleStackPanel Spacing="10">
+                        <ikw:SimpleStackPanel.Resources>
+                            <DataTemplate x:Key="GlobalFileCardTemplate">
+                                <Border CornerRadius="10"
+                                        Padding="10">
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Border Grid.Column="0"
+                                                Width="40"
+                                                Height="40"
+                                                CornerRadius="10"
+                                                Background="{DynamicResource FontIconBackground}"
+                                                Margin="0,0,10,0">
+                                            <ui:FontIcon Icon="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                                                         FontSize="20"
+                                                         VerticalAlignment="Center"
+                                                         HorizontalAlignment="Center"/>
+                                        </Border>
+
+                                        <Grid Grid.Column="1"
+                                              RowDefinitions="*, *">
+                                            <TextBlock Grid.Row="0"
+                                                       Text="{Binding FileName}"
+                                                       FontSize="14"
+                                                       FontWeight="Bold"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Row="1"
+                                                       FontSize="12"
+                                                       VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_Downloaded}"/>
+                                                        <Setter Property="Foreground" Value="{DynamicResource SystemControlSuccessTextForegroundBrush}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="{x:Static models:GlobalFileStatus.NotFound}">
+                                                                <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_NotFound}"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="{x:Static models:GlobalFileStatus.VerifyFailed}">
+                                                                <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_VerifyFailed}"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Size, Converter={StaticResource BytesFormatConverter}}"
+                                                   FontSize="12"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ikw:SimpleStackPanel.Resources>
+
+                        <Border Background="{DynamicResource BlueCardBackground}"
+                                CornerRadius="10"
+                                Padding="5">
+                            <ContentControl Content="{Binding ClientResource.GlobalVersionJsonFile}"
+                                            ContentTemplate="{StaticResource GlobalFileCardTemplate}"
+                                            Tag="{x:Static ui:SegoeFluentIcons.Document}"/>
                         </Border>
 
-                        <ListBox ItemsSource="{Binding ClientResource.LanguageFiles}"
-                                 ItemTemplate="{StaticResource LanguageFileTemplate}"
-                                 ItemContainerStyle="{StaticResource ListBoxItemStyle}"/>
-                    </StackPanel>
+                        <Border Background="{DynamicResource GreenCardBackground}"
+                                CornerRadius="10"
+                                Padding="5">
+                            <ContentControl Content="{Binding ClientResource.GlobalAssetManifestFile}"
+                                            ContentTemplate="{StaticResource GlobalFileCardTemplate}"
+                                            Tag="{x:Static ui:SegoeFluentIcons.Document}"/>
+                        </Border>
+
+                        <Border Background="{DynamicResource RedCardBackground}"
+                                CornerRadius="10"
+                                Padding="5">
+                            <ContentControl Content="{Binding ClientResource.GlobalClientCoreFile}"
+                                            ContentTemplate="{StaticResource GlobalFileCardTemplate}"
+                                            Tag="{x:Static ui:SegoeFluentIcons.Package}"/>
+                        </Border>
+
+                        <Border Background="{DynamicResource PurpleCardBackground}"
+                                CornerRadius="10"
+                                Padding="5">
+                            <ContentControl Content="{Binding ClientResource.GlobalLanguageFile}"
+                                            ContentTemplate="{StaticResource GlobalFileCardTemplate}"
+                                            Tag="{x:Static ui:SegoeFluentIcons.LocaleLanguage}"/>
+                        </Border>
+                    </ikw:SimpleStackPanel>
                 </Expander>
             </ikw:SimpleStackPanel>
         </ScrollViewer>

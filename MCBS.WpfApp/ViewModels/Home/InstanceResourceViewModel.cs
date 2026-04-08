@@ -17,16 +17,19 @@ namespace MCBS.WpfApp.ViewModels.Home
         public InstanceResourceViewModel(
             PageNavigateCommand pageNavigateCommand,
             IInstanceListStorage instanceListStorage,
+            IViewModelFactory<ClientInstanceResourceViewModel> viewModelFactory,
             ILogger<InstanceResourceViewModel> logger) : base(pageNavigateCommand, instanceListStorage, logger)
         {
             ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
             _logger = logger;
+            _ViewModelFactory = viewModelFactory;
 
             WeakReferenceMessenger.Default.Register<MinecraftInstanceReloadedMessage>(this);
         }
-
+        
         private readonly ILogger<InstanceResourceViewModel> _logger;
+        private readonly IViewModelFactory<ClientInstanceResourceViewModel> _ViewModelFactory;
         private readonly Dictionary<string, ClientInstanceResourceViewModel> _clientResourceCache = [];
 
         protected override string PageToken => nameof(Pages.Home.InstanceResourcePage);
@@ -42,7 +45,7 @@ namespace MCBS.WpfApp.ViewModels.Home
             {
                 if (!_clientResourceCache.TryGetValue(CurrentInstance.InstanceName, out var clientResource))
                 {
-                    clientResource = new ClientInstanceResourceViewModel(CurrentInstance);
+                    clientResource = _ViewModelFactory.Create(CurrentInstance.InstanceName);
                     _clientResourceCache[CurrentInstance.InstanceName] = clientResource;
                 }
 

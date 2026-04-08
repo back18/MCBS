@@ -434,6 +434,21 @@
   <data name="InstanceResourcePage_LanguageFileList" xml:space="preserve">
     <value>语言文件列表</value>
   </data>
+  <data name="MessageBox_ServerAutoEnabledGlobalResources" xml:space="preserve">
+    <value>服务端实例已自动启用全局资源</value>
+  </data>
+  <data name="InstanceResourcePage_UseGlobalResources" xml:space="preserve">
+    <value>使用全局资源</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileStatus_Downloaded" xml:space="preserve">
+    <value>已下载</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileStatus_NotFound" xml:space="preserve">
+    <value>未找到</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileStatus_VerifyFailed" xml:space="preserve">
+    <value>校验失败</value>
+  </data>
   <data name="LaunchPage_InstanceResources" xml:space="preserve">
     <value>实例资源</value>
   </data>
