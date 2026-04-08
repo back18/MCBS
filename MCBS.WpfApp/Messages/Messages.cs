@@ -22,4 +22,6 @@ namespace MCBS.WpfApp.Messages
     public record MinecraftInstanceChangedMessage(string OldInstanceName, string NewInstanceName);
 
     public record MinecraftInstanceModifiedMessage(string InstanceName);
+
+    public record MinecraftInstanceReloadedMessage(string InstanceName);
 }

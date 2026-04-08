@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using MCBS.WpfApp.Commands;
+using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,7 +12,7 @@ using System.Text;
 
 namespace MCBS.WpfApp.ViewModels.Home
 {
-    public partial class InstanceResourceViewModel : LaunchViewModel
+    public partial class InstanceResourceViewModel : LaunchViewModel, IRecipient<MinecraftInstanceReloadedMessage>
     {
         public InstanceResourceViewModel(
             PageNavigateCommand pageNavigateCommand,
@@ -20,6 +22,8 @@ namespace MCBS.WpfApp.ViewModels.Home
             ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
             _logger = logger;
+
+            WeakReferenceMessenger.Default.Register<MinecraftInstanceReloadedMessage>(this);
         }
 
         private readonly ILogger<InstanceResourceViewModel> _logger;
@@ -47,6 +51,16 @@ namespace MCBS.WpfApp.ViewModels.Home
                 if (refreshCommand.CanExecute(null) && !refreshCommand.IsRunning)
                     await refreshCommand.ExecuteAsync(null);
             }
+        }
+
+        async void IRecipient<MinecraftInstanceReloadedMessage>.Receive(MinecraftInstanceReloadedMessage message)
+        {
+            if (CurrentInstance is null || CurrentInstance.InstanceName != message.InstanceName)
+                return;
+
+            IAsyncRelayCommand? refreshCommand = ClientResource?.RefreshCommand;
+            if (refreshCommand is not null && refreshCommand.CanExecute(null) && !refreshCommand.IsRunning)
+                await refreshCommand.ExecuteAsync(null);
         }
 
         [RelayCommand]

@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using MCBS.WpfApp.Attributes;
 using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Models;
@@ -18,7 +19,7 @@ using System.Windows;
 namespace MCBS.WpfApp.ViewModels.Home
 {
     [ExcludeFromDI]
-    public partial class InstanceSettingsViewModel : MinecraftSettingsViewModel
+    public partial class InstanceSettingsViewModel : MinecraftSettingsViewModel, IRecipient<MinecraftInstanceReloadedMessage>
     {
         public InstanceSettingsViewModel(
             ILoggerFactory loggerFactory,
@@ -31,6 +32,8 @@ namespace MCBS.WpfApp.ViewModels.Home
 
             _instanceListStorage = instanceListStorage;
             _instanceName = Guid.NewGuid().ToString();
+
+            WeakReferenceMessenger.Default.Register<MinecraftInstanceReloadedMessage>(this);
         }
 
         private readonly IInstanceListStorage _instanceListStorage;
@@ -79,11 +82,21 @@ namespace MCBS.WpfApp.ViewModels.Home
             }
         }
 
+        void IRecipient<MinecraftInstanceReloadedMessage>.Receive(MinecraftInstanceReloadedMessage message)
+        {
+            if (message.InstanceName != InstanceName)
+                return;
+
+            ConfigService = _instanceListStorage.GetInstanceStorage(message.InstanceName).GetConfig();
+            object model = ConfigService.GetCurrentConfig();
+            UpdateFromModel(model);
+        }
+
         protected override void ObservablePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             base.ObservablePropertyChanged(sender, e);
 
-            if (!string.IsNullOrEmpty(e.PropertyName) && e.PropertyName != nameof(InstanceName))
+            if (!string.IsNullOrEmpty(e.PropertyName) && e.PropertyName != nameof(HasErrors) && e.PropertyName != nameof(InstanceName))
                 WeakReferenceMessenger.Default.Send(new MinecraftInstanceModifiedMessage(InstanceName));
         }
 

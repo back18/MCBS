@@ -66,7 +66,9 @@ namespace MCBS.WpfApp.ViewModels.Settings
 
             JavaPath = typedModel.JavaPath;
             LaunchArguments = typedModel.LaunchArguments;
-            MclogRegexFilter = new ObservableCollection<string>(typedModel.MclogRegexFilter);
+
+            if (MclogRegexFilter is null || !MclogRegexFilter.SequenceEqual(typedModel.MclogRegexFilter))
+                MclogRegexFilter = new ObservableCollection<string>(typedModel.MclogRegexFilter);
         }
 
         [RelayCommand]

@@ -76,9 +76,12 @@ namespace MCBS.WpfApp.ViewModels.Settings
             BuildColorMappingCaches = typedModel.BuildColorMappingCaches;
             EnableCompressionCache = typedModel.EnableCompressionCache;
             LoadDllAppComponents = typedModel.LoadDllAppComponents;
-            SystemAppComponents = new ObservableCollection<string>(typedModel.SystemAppComponents);
             ServicesAppId = typedModel.ServicesAppId;
-            StartupChecklist = new ObservableCollection<string>(typedModel.StartupChecklist);
+
+            if (SystemAppComponents is null || !SystemAppComponents.SequenceEqual(typedModel.SystemAppComponents))
+                SystemAppComponents = new ObservableCollection<string>(typedModel.SystemAppComponents);
+            if (StartupChecklist is null || !StartupChecklist.SequenceEqual(typedModel.StartupChecklist))
+                StartupChecklist = new ObservableCollection<string>(typedModel.StartupChecklist);
         }
 
         [RelayCommand]

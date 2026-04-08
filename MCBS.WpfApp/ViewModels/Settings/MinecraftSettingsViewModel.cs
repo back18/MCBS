@@ -112,9 +112,11 @@ namespace MCBS.WpfApp.ViewModels.Settings
             ServerAddress = typedModel.ServerAddress;
             ServerPort = typedModel.ServerPort;
             Language = typedModel.Language;
-            ResourcePackList = new ObservableCollection<string>(typedModel.ResourcePackList);
             DownloadSource = typedModel.DownloadSource;
             CommunicationMode = typedModel.CommunicationMode;
+
+            if (ResourcePackList is null || !typedModel.ResourcePackList.SequenceEqual(ResourcePackList))
+                ResourcePackList = new ObservableCollection<string>(typedModel.ResourcePackList);
         }
 
         [RelayCommand]

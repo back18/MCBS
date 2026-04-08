@@ -135,9 +135,13 @@ namespace MCBS.WpfApp.ViewModels.Settings
             RightClickItemId = typedModel.RightClickItemId;
             TextEditorItemId = typedModel.TextEditorItemId;
             ScreenBuilderItemName = typedModel.ScreenBuilderItemName;
-            ScreenOperatorList = new ObservableCollection<string>(typedModel.ScreenOperatorList);
-            ScreenBuildOperatorList = new ObservableCollection<string>(typedModel.ScreenBuildOperatorList);
-            ScreenBlockBlacklist = new ObservableCollection<string>(typedModel.ScreenBlockBlacklist);
+
+            if (ScreenOperatorList is null || !typedModel.ScreenOperatorList.SequenceEqual(ScreenOperatorList))
+                ScreenOperatorList = new ObservableCollection<string>(typedModel.ScreenOperatorList);
+            if (ScreenBuildOperatorList is null || !typedModel.ScreenBuildOperatorList.SequenceEqual(ScreenBuildOperatorList))
+                ScreenBuildOperatorList = new ObservableCollection<string>(typedModel.ScreenBuildOperatorList);
+            if (ScreenBlockBlacklist is null || !typedModel.ScreenBlockBlacklist.SequenceEqual(ScreenBlockBlacklist))
+                ScreenBlockBlacklist = new ObservableCollection<string>(typedModel.ScreenBlockBlacklist);
         }
 
         [RelayCommand]

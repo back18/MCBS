@@ -126,6 +126,7 @@ namespace MCBS.WpfApp.ViewModels.Home
                             IConfigService configService = await configStorage.LoadConfigAsync();
                             var instance = (MinecraftInstanceConfig.Model)configService.GetCurrentConfig();
                             instanceList.Add(instance);
+                            WeakReferenceMessenger.Default.Send(new MinecraftInstanceReloadedMessage(instanceName));
                         }
                         catch (FileNotFoundException fnfex)
                         {
