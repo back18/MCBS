@@ -41,6 +41,9 @@ namespace MCBS.WpfApp.Pages.Settings
         {
             base.OnNavigatingFrom(e);
 
+            if (e.Cancel)
+                return;
+
             WeakReferenceMessenger.Default.Send(new PageNavigatingFromMessage(e), nameof(MinecraftConfig));
         }
 

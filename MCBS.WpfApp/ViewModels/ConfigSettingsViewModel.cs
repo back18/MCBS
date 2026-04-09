@@ -56,11 +56,17 @@ namespace MCBS.WpfApp.ViewModels
 
         void IRecipient<PageNavigatingFromMessage>.Receive(PageNavigatingFromMessage message)
         {
+            if (message.EventArgs.Cancel)
+                return;
+
             HandleErrors(message.EventArgs);
         }
 
         void IRecipient<MainWindowClosingMessage>.Receive(MainWindowClosingMessage message)
         {
+            if (message.EventArgs.Cancel)
+                return;
+
             HandleErrors(message.EventArgs);
             if (!message.EventArgs.Cancel)
                 HandleSave();

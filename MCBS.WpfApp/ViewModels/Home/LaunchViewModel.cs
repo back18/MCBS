@@ -79,13 +79,18 @@ namespace MCBS.WpfApp.ViewModels.Home
 
         async void IRecipient<MainWindowClosingMessage>.Receive(MainWindowClosingMessage message)
         {
+            if (message.EventArgs.Cancel)
+                return;
+
             await SaveCurrentInstance();
         }
 
         async void IRecipient<PageNavigatingFromMessage>.Receive(PageNavigatingFromMessage message)
         {
-            if (!message.EventArgs.Cancel)
-                await SaveCurrentInstance();
+            if (message.EventArgs.Cancel)
+                return;
+
+            await SaveCurrentInstance();
         }
 
         async void IRecipient<PageNavigatedToMessage>.Receive(PageNavigatedToMessage message)

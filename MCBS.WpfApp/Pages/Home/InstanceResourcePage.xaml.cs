@@ -43,6 +43,9 @@ namespace MCBS.WpfApp.Pages.Home
         {
             base.OnNavigatingFrom(e);
 
+            if (e.Cancel)
+                return;
+
             WeakReferenceMessenger.Default.Send(new PageNavigatingFromMessage(e), nameof(InstanceResourcePage));
         }
     }
