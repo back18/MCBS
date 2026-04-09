@@ -42,13 +42,18 @@ namespace MCBS.WpfApp.Helpers
                 navigationService.RemoveBackEntry();
         }
 
-        public static void NavigateOnly(this NavigationService navigationService, object content)
+        public static bool NavigateOnly(this NavigationService navigationService, object content)
         {
             ArgumentNullException.ThrowIfNull(navigationService, nameof(navigationService));
             ArgumentNullException.ThrowIfNull(content, nameof(content));
 
             navigationService.Navigated += RemoveBackHandler;
-            navigationService.Navigate(content);
+            bool success = navigationService.Navigate(content);
+
+            if (!success)
+                navigationService.Navigated -= RemoveBackHandler;
+
+            return success;
         }
 
         private static void RemoveBackHandler(object sender, NavigationEventArgs e)
