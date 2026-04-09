@@ -41,6 +41,8 @@ namespace MCBS.WpfApp
         private readonly IServiceProvider _serviceProvider;
 
         private readonly Dictionary<Type, Type> _routeCache = [];
+        private object? _latestSelectedItem;
+        private bool _isNavigationSyncing;
 
         public NavigationService NavigationService => MainFrame.NavigationService;
 
@@ -56,21 +58,50 @@ namespace MCBS.WpfApp
 
         private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            Type? pageType = args.IsSettingsSelected ? typeof(SettingsPage) : args.SelectedItemContainer.Tag as Type;
-            object? content = MainFrame.Content;
-
-            if (content is not null && content.GetType() is Type type &&
-               (type.Equals(pageType) || GetRootPageType(type).Equals(pageType)))
+            if (_isNavigationSyncing)
                 return;
 
-            if (args.IsSettingsSelected)
+            object? latestSelectedItem = args.SelectedItem;
+            try
             {
-                SettingsPage settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
-                MainFrame.Navigate(settingsPage);
+                Type? pageType = args.IsSettingsSelected ? typeof(SettingsPage) : args.SelectedItemContainer.Tag as Type;
+                object? content = MainFrame.Content;
+
+                if (content is not null && content.GetType() is Type type &&
+                   (type.Equals(pageType) || GetRootPageType(type).Equals(pageType)))
+                    return;
+
+                bool navigated = false;
+                if (args.IsSettingsSelected)
+                {
+                    SettingsPage settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
+                    navigated = MainFrame.Navigate(settingsPage);
+                }
+                else if (pageType is not null && _serviceProvider.GetService(pageType) is Page page)
+                {
+                    navigated = MainFrame.Navigate(page);
+                }
+
+                if (!navigated)
+                {
+                    latestSelectedItem = _latestSelectedItem;
+                    Application.Current?.Dispatcher.BeginInvoke(() =>
+                    {
+                        try
+                        {
+                            _isNavigationSyncing = true;
+                            MainNavigationView.SelectedItem = latestSelectedItem;
+                        }
+                        finally
+                        {
+                            _isNavigationSyncing = false;
+                        }
+                    });
+                }
             }
-            else if (pageType is not null && _serviceProvider.GetService(pageType) is Page page)
+            finally
             {
-                MainFrame.Navigate(page);
+                _latestSelectedItem = latestSelectedItem;
             }
         }
 
