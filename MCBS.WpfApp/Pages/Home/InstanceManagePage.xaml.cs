@@ -26,7 +26,11 @@ namespace MCBS.WpfApp.Pages.Home
     /// InstanceManagePage.xaml 的交互逻辑
     /// </summary>
     [Route(Parent = typeof(LaunchPage))]
-    public partial class InstanceManagePage : Page, INavigationProvider, IRecipient<MinecraftInstanceChangedMessage>
+    public partial class InstanceManagePage : Page,
+        INavigationProvider,
+        IRecipient<MinecraftInstanceChangedMessage>,
+        IRecipient<MinecraftInstanceSwitchRequestMessage>,
+        IRecipient<UISynchronizationMessage>
     {
         public InstanceManagePage(
             InstanceManageViewModel instanceManageViewModel,
@@ -44,7 +48,10 @@ namespace MCBS.WpfApp.Pages.Home
             InitializeComponent();
 
             _frameNavigationProvider = new FrameNavigationProvider(CurrentInstanceSettingsFrame);
+
             WeakReferenceMessenger.Default.Register<MinecraftInstanceChangedMessage>(this);
+            WeakReferenceMessenger.Default.Register<MinecraftInstanceSwitchRequestMessage>(this);
+            WeakReferenceMessenger.Default.Register<UISynchronizationMessage, string>(this, nameof(InstanceManageViewModel));
         }
 
         private readonly FrameNavigationProvider _frameNavigationProvider;
@@ -59,7 +66,22 @@ namespace MCBS.WpfApp.Pages.Home
         void IRecipient<MinecraftInstanceChangedMessage>.Receive(MinecraftInstanceChangedMessage message)
         {
             _nextInstanceName = message.NewInstanceName;
-            SwitchInstancePage(message.NewInstanceName);
+        }
+
+        void IRecipient<MinecraftInstanceSwitchRequestMessage>.Receive(MinecraftInstanceSwitchRequestMessage message)
+        {
+            bool success = SwitchInstancePage(message.NewInstanceName);
+            message.Reply(success);
+        }
+
+        void IRecipient<UISynchronizationMessage>.Receive(UISynchronizationMessage message)
+        {
+            if (message.BindingPath == nameof(InstanceManageViewModel.SelectedInstance) &&
+                DataContext is InstanceManageViewModel viewModel)
+            {
+                var selectedInstance = viewModel.SelectedInstance;
+                InstanceListBox.SelectedIndex = selectedInstance is null ? -1 : viewModel.InstanceList.IndexOf(selectedInstance);
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -77,6 +99,13 @@ namespace MCBS.WpfApp.Pages.Home
             if (e.Cancel)
                 return;
 
+            bool success = SwitchInstancePage(string.Empty);
+            if (!success)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             WeakReferenceMessenger.Default.Send(new PageNavigatingFromMessage(e), nameof(InstanceManagePage));
             _backNavigationService.PopNavigation();
         }
@@ -87,10 +116,10 @@ namespace MCBS.WpfApp.Pages.Home
                 SwitchInstancePage(_nextInstanceName);
         }
 
-        private void SwitchInstancePage(string? instanceName)
+        private bool SwitchInstancePage(string? instanceName)
         {
             if (!IsLoaded && !string.IsNullOrEmpty(_currentInstanceName))
-                return;
+                return true;
 
             Page? instancePage;
             if (string.IsNullOrEmpty(instanceName))
@@ -103,10 +132,15 @@ namespace MCBS.WpfApp.Pages.Home
                 instancePage = _instancePageFactory.Create(instanceName, _frameNavigationProvider);
             }
 
-            _currentInstanceName = instanceName ?? string.Empty;
-            _pageCache[_currentInstanceName] = instancePage;
-            _frameNavigationProvider.NavigationService.NavigateOnly(instancePage);
-            _backNavigationService.NotifyNavigationChanged();
+            bool success = _frameNavigationProvider.NavigationService.NavigateOnly(instancePage);
+            if (success)
+            {
+                _backNavigationService.NotifyNavigationChanged();
+                _currentInstanceName = instanceName ?? string.Empty;
+                _pageCache[_currentInstanceName] = instancePage;
+            }
+
+            return success;
         }
     }
 }

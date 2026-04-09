@@ -21,8 +21,9 @@
     <Grid ColumnDefinitions="1*, 3*">
         <Grid Grid.Column="0"
               RowDefinitions="*, Auto">
-            <ListBox Grid.Row="0"
-                     SelectedItem="{Binding CurrentInstance}"
+            <ListBox x:Name="InstanceListBox"
+                     Grid.Row="0"
+                     SelectedItem="{Binding SelectedInstance}"
                      ItemsSource="{Binding InstanceList}"
                      ItemTemplate="{StaticResource MinecraftInstanceItemEditTemplate}"
                      Margin="5, 5, 5, 0">
@@ -49,10 +50,10 @@
             </ikw:SimpleStackPanel>
         </Grid>
         <Grid Grid.Column="1">
-            <Frame x:Name="CurrentInstanceSettingsFrame"
-                   Margin="5"
-                   JournalOwnership="OwnsJournal"
-                   NavigationUIVisibility="Hidden"/>
+            <ui:Frame x:Name="CurrentInstanceSettingsFrame"
+                      Margin="5"
+                      JournalOwnership="OwnsJournal"
+                      NavigationUIVisibility="Hidden"/>
         </Grid>
     </Grid>
 </ui:Page>
