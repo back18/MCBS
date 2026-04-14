@@ -34,6 +34,7 @@
                                                  VerticalAlignment="Center"
                                                  OnContent=""
                                                  OffContent=""
+                                                 IsEnabled="{Binding Path=(attached:ExpanderAttach.IsToggleSwitchEnabled), RelativeSource={RelativeSource TemplatedParent}}"
                                                  IsOn="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
                             </Grid>
                             <ContentPresenter x:Name="ExpandSite"

@@ -24,5 +24,25 @@ namespace MCBS.WpfApp.AttachedProperties
                 typeof(ExpanderAttach),
                 new PropertyMetadata(new CornerRadius(0)));
         #endregion
+
+        #region IsToggleSwitchEnabled
+        [AttachedPropertyBrowsableForType(typeof(Expander))]
+        public static bool GetIsToggleSwitchEnabled(Expander expander)
+        {
+            return (bool)expander.GetValue(IsToggleSwitchEnabledProperty);
+        }
+
+        public static void SetIsToggleSwitchEnabled(Expander expander, bool value)
+        {
+            expander.SetValue(IsToggleSwitchEnabledProperty, value);
+        }
+
+        public static readonly DependencyProperty IsToggleSwitchEnabledProperty =
+            DependencyProperty.RegisterAttached(
+                "IsToggleSwitchEnabled",
+                typeof(bool),
+                typeof(ExpanderAttach),
+                new PropertyMetadata(true));
+        #endregion
     }
 }

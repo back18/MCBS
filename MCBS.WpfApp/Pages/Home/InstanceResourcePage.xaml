@@ -268,7 +268,7 @@
                 <Expander Style="{StaticResource ExpanderToggleSwitchStyle}"
                           attached:ExpanderAttach.CornerRadius="10"
                           IsExpanded="{Binding ClientResource.UseGlobalResources}"
-                          IsEnabled="{Binding ClientResource.IsServer, Converter={StaticResource InverseBooleanConverter}}">
+                          attached:ExpanderAttach.IsToggleSwitchEnabled="{Binding ClientResource.IsServer, Converter={StaticResource InverseBooleanConverter}}">
                     <Expander.Header>
                         <Border Height="50">
                             <TextBlock Text="{lex:Loc InstanceResourcePage_UseGlobalResources}"
