@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MCBS.WpfApp.Events;
+using MCBS.WpfApp.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -26,4 +28,10 @@ namespace MCBS.WpfApp.Messages
     public record MinecraftInstanceReloadedMessage(string InstanceName);
 
     public record UISynchronizationMessage(string? BindingPath);
+
+    public record DownloadStartedMessage(IDownloadViewModel Owner, FileDownloadStartedEventArgs EventArgs);
+
+    public record DownloadCompletedMessage(IDownloadViewModel Owner, FileDownloadCompletedEventArgs EventArgs);
+
+    public record UnableDownloadMessage(IDownloadViewModel Owner, string ErrorMessage);
 }

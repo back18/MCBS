@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QuanLib.Downloader.Services;
+using QuanLib.Downloader.Services.Implementations;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Downloading;
 using System.Reflection;
@@ -69,6 +70,7 @@ namespace MCBS.WpfApp
         {
             services.AddSingleton(sp => Log4NetManager.Instance.GetProvider());
             services.AddSingleton<QuanLib.Core.ILoggerProvider>(sp => sp.GetRequiredService<ILog4NetProvider>());
+            services.AddTransient<IScopeProvider, GuidScopeProvider>();
 
             services.AddSingleton<IMcbsPathProvider, McbsPathProvider>();
             services.AddSingleton<IConfigPathProvider, ConfigPathProvider>();
@@ -98,8 +100,11 @@ namespace MCBS.WpfApp
             services.AddKeyedSingleton<IConfigLoadService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigLoadService>());
             services.AddKeyedSingleton<IConfigSaveService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigSaveService>());
             services.AddSingleton<IInstanceListStorage, InstanceListStorage>();
+            services.AddSingleton<ILanguageAssetMatchService, LanguageAssetMatchService>();
 
+            services.AddTransient<ILazyDownload, LazyDownload>();
             services.AddSingleton<IDownloadService, DownloadService>();
+            services.AddSingleton<IDownloadConfigurationProvider, DownloadConfigurationProvider>();
             services.AddKeyedSingleton<IMinecraftDownloadProvider, MojangDownloadProvider>("MOJANG");
             services.AddKeyedSingleton<IMinecraftDownloadProvider, BmclApiDownloadProvider>("BMCLAPI");
             services.AddKeyedSingleton<IFFmpegDownloadProvider, Win64FFmpegDownloadProvider>(nameof(OSPlatform.Windows));
