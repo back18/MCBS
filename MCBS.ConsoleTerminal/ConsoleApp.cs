@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QuanLib.Commands;
 using QuanLib.Downloader.Services;
+using QuanLib.Downloader.Services.Implementations;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Downloading;
@@ -125,11 +126,17 @@ namespace MCBS.ConsoleTerminal
             services.AddSingleton<ITomlConfigSaveService, TomlConfigSaveService>();
             services.AddKeyedSingleton<IConfigLoadService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigLoadService>());
             services.AddKeyedSingleton<IConfigSaveService>("TOML", (sp, _) => sp.GetRequiredService<ITomlConfigSaveService>());
+            services.AddSingleton<ILanguageAssetMatchService, LanguageAssetMatchService>();
 
             services.AddSingleton<IDownloadService, DownloadService>();
+            services.AddSingleton<IDownloadConfigurationProvider, DownloadConfigurationProvider>();
             services.AddSingleton<IDownloadProgressFormatter, DownloadProgressFormatter>();
             services.AddKeyedSingleton<IMinecraftDownloadProvider, MojangDownloadProvider>("MOJANG");
             services.AddKeyedSingleton<IMinecraftDownloadProvider, BmclApiDownloadProvider>("BMCLAPI");
+            services.AddKeyedScoped<IManifestResourceProvider, ManifestResourceProvider>("MANIFEST");
+            services.AddKeyedSingleton<IVersionResourceProvider, IndexFileResourceProvider>("INDEX_FILE");
+            services.AddKeyedSingleton<IVersionResourceProvider, ClientCoreResourceProvider>("CLIENT_CORE");
+            services.AddKeyedSingleton<IAssetResourceProvider, LanguageResourceProvider>("LANGUAGE");
             services.AddKeyedSingleton<IFFmpegDownloadProvider, Win64FFmpegDownloadProvider>(nameof(OSPlatform.Windows));
             services.AddKeyedSingleton<IFFmpegDownloadProvider, Linux64FFmpegDownloadProvider>(nameof(OSPlatform.Linux));
             services.AddSingleton(sp =>

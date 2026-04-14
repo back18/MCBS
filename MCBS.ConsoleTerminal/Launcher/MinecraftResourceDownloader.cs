@@ -1,6 +1,8 @@
-﻿using MCBS.Common.Services;
+﻿using MCBS.Common;
+using MCBS.Common.Services;
 using MCBS.ConsoleTerminal.Services;
 using MCBS.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QuanLib.Core;
@@ -23,6 +25,10 @@ namespace MCBS.ConsoleTerminal.Launcher
             IMinecraftConfigProvider configProvider,
             IMinecraftPathProvider pathProvider,
             IMinecraftDownloadProvider downloadProvider,
+            [FromKeyedServices("MANIFEST")] IManifestResourceProvider manifestResourceProvider,
+            [FromKeyedServices("INDEX_FILE")] IVersionResourceProvider indexFileResourceProvider,
+            [FromKeyedServices("CLIENT_CORE")] IVersionResourceProvider clientCoreResourceProvider,
+            [FromKeyedServices("LANGUAGE")] IAssetResourceProvider languageResourceProvider,
             IDownloadService downloadService,
             IAsyncHashComputeService hashComputeService,
             IDownloadProgressFormatter progressFormatter)
@@ -31,6 +37,10 @@ namespace MCBS.ConsoleTerminal.Launcher
             ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
             ArgumentNullException.ThrowIfNull(pathProvider, nameof(pathProvider));
             ArgumentNullException.ThrowIfNull(downloadProvider, nameof(downloadProvider));
+            ArgumentNullException.ThrowIfNull(manifestResourceProvider, nameof(manifestResourceProvider));
+            ArgumentNullException.ThrowIfNull(indexFileResourceProvider, nameof(indexFileResourceProvider));
+            ArgumentNullException.ThrowIfNull(clientCoreResourceProvider, nameof(clientCoreResourceProvider));
+            ArgumentNullException.ThrowIfNull(languageResourceProvider, nameof(languageResourceProvider));
             ArgumentNullException.ThrowIfNull(downloadService, nameof(downloadService));
             ArgumentNullException.ThrowIfNull(hashComputeService, nameof(hashComputeService));
             ArgumentNullException.ThrowIfNull(progressFormatter, nameof(progressFormatter));
@@ -39,6 +49,10 @@ namespace MCBS.ConsoleTerminal.Launcher
             _configProvider = configProvider;
             _pathProvider = pathProvider;
             _downloadProvider = downloadProvider;
+            _manifestResourceProvider = manifestResourceProvider;
+            _indexFileResourceProvider = indexFileResourceProvider;
+            _clientCoreResourceProvider = clientCoreResourceProvider;
+            _languageResourceProvider = languageResourceProvider;
             _downloadService = downloadService;
             _hashComputeService = hashComputeService;
             _progressFormatter = progressFormatter;
@@ -48,6 +62,10 @@ namespace MCBS.ConsoleTerminal.Launcher
         private readonly IMinecraftConfigProvider _configProvider;
         private readonly IMinecraftPathProvider _pathProvider;
         private readonly IMinecraftDownloadProvider _downloadProvider;
+        private readonly IManifestResourceProvider _manifestResourceProvider;
+        private readonly IVersionResourceProvider _indexFileResourceProvider;
+        private readonly IVersionResourceProvider _clientCoreResourceProvider;
+        private readonly IAssetResourceProvider _languageResourceProvider;
         private readonly IDownloadService _downloadService;
         private readonly IAsyncHashComputeService _hashComputeService;
         private readonly IDownloadProgressFormatter _progressFormatter;
@@ -56,14 +74,11 @@ namespace MCBS.ConsoleTerminal.Launcher
         public async Task StartAsync()
         {
             VersionJson versionJson = await LoadVersionJsonAsync().ConfigureAwait(false);
+            DownloadAsset indexFileAsset = _indexFileResourceProvider.GetDownloadAsset(versionJson);
+            DownloadAsset clientCoreAsset = _clientCoreResourceProvider.GetDownloadAsset(versionJson);
 
-            if (versionJson.GetIndexFile() is not NetworkAssetIndex indexFileAssetIndex)
-                throw new InvalidDataException("找不到索引文件资源");
-            if (versionJson.GetClientCore() is not NetworkAssetIndex clientCoreAssetIndex)
-                throw new InvalidDataException("找不到客户端核心文件资源");
-
-            await DownloadFileAsync(indexFileAssetIndex, _pathProvider.IndexFile).ConfigureAwait(false);
-            await DownloadFileAsync(clientCoreAssetIndex, _pathProvider.ClientCore).ConfigureAwait(false);
+            await DownloadFileAsync(indexFileAsset, new FileInfo(indexFileAsset.FilePath)).ConfigureAwait(false);
+            await DownloadFileAsync(clientCoreAsset, new FileInfo(clientCoreAsset.FilePath)).ConfigureAwait(false);
 
             string language = _configProvider.Config.Language;
             if (language != DEFAULT_LANGUAGE)
@@ -90,12 +105,9 @@ namespace MCBS.ConsoleTerminal.Launcher
             else
             {
                 VersionManifest versionManifest = await DownloadVersionManifestAsync().ConfigureAwait(false);
-                string version = _configProvider.Config.MinecraftVersion;
+                DownloadAsset downloadAsset = _manifestResourceProvider.GetDownloadAsset(versionManifest, _configProvider.Config.MinecraftVersion);
 
-                if (!versionManifest.TryGetValue(version, out var versionIndex))
-                    throw new InvalidDataException("找不到游戏版本资源: " + version);
-
-                using Stream stream = await DownloadAsync(_downloadProvider.RedirectUrl(versionIndex.Url), _pathProvider.VersionJson.FullName, true).ConfigureAwait(false);
+                using Stream stream = await DownloadAsync(downloadAsset.Url, downloadAsset.FilePath, true).ConfigureAwait(false);
                 using StreamReader reader = new(stream, Encoding.UTF8);
                 versionJsonText = await reader.ReadToEndAsync().ConfigureAwait(false);
             }
@@ -126,50 +138,37 @@ namespace MCBS.ConsoleTerminal.Launcher
             ArgumentNullException.ThrowIfNull(assetList, nameof(assetList));
             ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
 
-            string langFileName = language + ".json";
-            string langAssetPath = "minecraft/lang/" + langFileName;
-
-            if (!assetList.TryGetValue(langAssetPath, out var langAssetIndex))
-                throw new InvalidDataException("找不到语言文件资源: " + langAssetPath);
-
-            return DownloadAssetAsync(langAssetIndex, _pathProvider.Languages.CombineFile(langFileName));
+            DownloadAsset downloadAsset = _languageResourceProvider.GetDownloadAsset(assetList, language);
+            FileInfo fileInfo = new(downloadAsset.FilePath);
+            return DownloadFileAsync(downloadAsset, fileInfo);
         }
 
-        private async Task DownloadAssetAsync(AssetIndex assetIndex, FileInfo fileInfo)
+        private async Task DownloadFileAsync(DownloadAsset downloadAsset, FileInfo fileInfo)
         {
-            ArgumentNullException.ThrowIfNull(assetIndex, nameof(assetIndex));
+            ArgumentNullException.ThrowIfNull(downloadAsset, nameof(downloadAsset));
             ArgumentNullException.ThrowIfNull(fileInfo, nameof(fileInfo));
 
-            bool valid = await ValidateFileAsync(assetIndex, fileInfo).ConfigureAwait(false);
+            bool valid = await ValidateFileAsync(downloadAsset, fileInfo).ConfigureAwait(false);
             if (valid)
                 return;
 
-            await DownloadAsync(_downloadProvider.GetAssetUrl(assetIndex.Hash), fileInfo.FullName, false).ConfigureAwait(false);
+            await DownloadAsync(_downloadProvider.RedirectUrl(downloadAsset.Url), fileInfo.FullName, false).ConfigureAwait(false);
         }
 
-        private async Task DownloadFileAsync(NetworkAssetIndex networkAssetIndex, FileInfo fileInfo)
-        {
-            ArgumentNullException.ThrowIfNull(networkAssetIndex, nameof(networkAssetIndex));
-            ArgumentNullException.ThrowIfNull(fileInfo, nameof(fileInfo));
-
-            bool valid = await ValidateFileAsync(networkAssetIndex, fileInfo).ConfigureAwait(false);
-            if (valid)
-                return;
-
-            await DownloadAsync(_downloadProvider.RedirectUrl(networkAssetIndex.Url), fileInfo.FullName, false).ConfigureAwait(false);
-        }
-
-        private async Task<bool> ValidateFileAsync(AssetIndex assetIndex, FileInfo fileInfo)
+        private async Task<bool> ValidateFileAsync(DownloadAsset downloadAsset, FileInfo fileInfo)
         {
             if (!fileInfo.Exists)
                 return false;
 
-            if (fileInfo.Length != assetIndex.Size)
+            if (downloadAsset.FileSize >= 0 && fileInfo.Length != downloadAsset.FileSize)
                 return false;
 
+            if (string.IsNullOrEmpty(downloadAsset.HashValue))
+                return true;
+
             using FileStream fileStream = fileInfo.OpenRead();
-            string hash = await _hashComputeService.GetHashStringAsync(fileStream, assetIndex.HashType).ConfigureAwait(false);
-            return string.Equals(hash, assetIndex.Hash, StringComparison.OrdinalIgnoreCase);
+            string hash = await _hashComputeService.GetHashStringAsync(fileStream, downloadAsset.HashType).ConfigureAwait(false);
+            return string.Equals(hash, downloadAsset.HashValue, StringComparison.OrdinalIgnoreCase);
         }
 
         private Task<Stream> DownloadAsync(string url, CancellationToken cancellationToken = default)
