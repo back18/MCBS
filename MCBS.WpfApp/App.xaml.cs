@@ -142,6 +142,7 @@ namespace MCBS.WpfApp
 
             services.AddSingleton<IViewModelFactory<ClientInstanceResourceViewModel>, ClientInstanceResourceViewModel.Factory>();
             services.AddTransient<IMinecraftDownloadViewModelFactory, MinecraftDownloadViewModel.Factory>();
+            services.AddTransient<IGlobalInstanceResourceProvider, GlobalInstanceResourceProvider>();
 
             services.AddSingleton<ModernMessageBox>();
             services.AddSingleton<IMessageBoxService>(sp => sp.GetRequiredService<ModernMessageBox>());

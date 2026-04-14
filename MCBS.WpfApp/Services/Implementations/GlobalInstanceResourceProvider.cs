@@ -1,54 +1,71 @@
 ﻿using MCBS.Common.Services;
 using MCBS.Services;
+using MCBS.WpfApp.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QuanLib.IO.Extensions;
 using QuanLib.Minecraft.Downloading;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
-namespace MCBS.WpfApp.Models
+namespace MCBS.WpfApp.Services.Implementations
 {
-    public class GlobalInstanceResource
+    public class GlobalInstanceResourceProvider : IGlobalInstanceResourceProvider
     {
-        public GlobalInstanceResource(IMinecraftPathProvider pathProvider, IAsyncHashComputeService hashComputeService)
+        public GlobalInstanceResourceProvider(ILanguageAssetMatchService assetMatchService, IAsyncHashComputeService hashComputeService)
         {
-            ArgumentNullException.ThrowIfNull(pathProvider, nameof(pathProvider));
+            ArgumentNullException.ThrowIfNull(assetMatchService, nameof(assetMatchService));
             ArgumentNullException.ThrowIfNull(hashComputeService, nameof(hashComputeService));
 
-            _pathProvider = pathProvider;
+            _assetMatchService = assetMatchService;
             _hashComputeService = hashComputeService;
         }
 
-        private readonly IMinecraftPathProvider _pathProvider;
+        private readonly ILanguageAssetMatchService _assetMatchService;
         private readonly IAsyncHashComputeService _hashComputeService;
+        private IMinecraftPathProvider? _pathProvider;
 
         private NetworkAssetIndex? _indexFileAssetIndex;
         private NetworkAssetIndex? _clientCoreFileAssetIndex;
-        private Dictionary<string, AssetIndex> _languageFileAssetIndex = [];
+        private readonly Dictionary<string, AssetIndex> _languageFileAssets = [];
+
+        public bool HasPathProvider => _pathProvider is not null;
+
+        public void SetPathProvider(IMinecraftPathProvider pathProvider)
+        {
+            ArgumentNullException.ThrowIfNull(pathProvider, nameof(pathProvider));
+
+            _pathProvider = pathProvider;
+            _indexFileAssetIndex = null;
+            _clientCoreFileAssetIndex = null;
+            _languageFileAssets.Clear();
+        }
 
         public GlobalFileModel GetVersionJsonFile()
         {
-            FileInfo fileInfo = _pathProvider.VersionJson;
+            ThrowIfPathProviderNotSet();
 
+            FileInfo fileInfo = _pathProvider.VersionJson;
             if (!fileInfo.Exists || fileInfo.Length == 0)
                 return new GlobalFileModel(fileInfo.Name, 0, GlobalFileStatus.NotFound);
 
             return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.Downloaded);
         }
 
-        public async Task<GlobalFileModel> GetAssetManifestFileAsync()
+        public async Task<GlobalFileModel> GetAssetManifestFileAsync(bool refresh = false)
         {
-            FileInfo fileInfo = _pathProvider.IndexFile;
+            ThrowIfPathProviderNotSet();
 
+            FileInfo fileInfo = _pathProvider.IndexFile;
             if (!fileInfo.Exists || fileInfo.Length == 0)
                 return new GlobalFileModel(fileInfo.Name, 0, GlobalFileStatus.NotFound);
 
-            if (_indexFileAssetIndex is null)
+            if (refresh || _indexFileAssetIndex is null)
             {
-                VersionJson? versionJson = await TryReadVersionJsonAsync();
+                VersionJson? versionJson = await TryReadVersionJsonAsync(_pathProvider);
                 if (versionJson is null)
                     return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.VerifyFailed);
 
@@ -66,16 +83,17 @@ namespace MCBS.WpfApp.Models
             return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.Downloaded);
         }
 
-        public async Task<GlobalFileModel> GetClientCoreFileAsync()
+        public async Task<GlobalFileModel> GetClientCoreFileAsync(bool refresh = false)
         {
-            FileInfo fileInfo = _pathProvider.ClientCore;
+            ThrowIfPathProviderNotSet();
 
+            FileInfo fileInfo = _pathProvider.ClientCore;
             if (!fileInfo.Exists || fileInfo.Length == 0)
                 return new GlobalFileModel(fileInfo.Name, 0, GlobalFileStatus.NotFound);
 
-            if (_clientCoreFileAssetIndex is null)
+            if (refresh || _clientCoreFileAssetIndex is null)
             {
-                VersionJson? versionJson = await TryReadVersionJsonAsync();
+                VersionJson? versionJson = await TryReadVersionJsonAsync(_pathProvider);
                 if (versionJson is null)
                     return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.VerifyFailed);
 
@@ -93,29 +111,47 @@ namespace MCBS.WpfApp.Models
             return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.Downloaded);
         }
 
-        public async Task<GlobalFileModel> GetLanguageFileAsync(string language)
+        public async Task<GlobalFileModel> GetLanguageFileAsync(string language, bool refresh = false)
         {
             ArgumentException.ThrowIfNullOrEmpty(language, nameof(language));
+            ThrowIfPathProviderNotSet();
 
-            string langFileName = language + ".json";
-            FileInfo fileInfo = _pathProvider.Languages.CombineFile(langFileName);
+            string fileName = language;
+            if (!_pathProvider.Minecraft.Exists)
+                return new GlobalFileModel(fileName, 0, GlobalFileStatus.NotFound);
 
-            if (!fileInfo.Exists || fileInfo.Length == 0)
-                return new GlobalFileModel(fileInfo.Name, 0, GlobalFileStatus.NotFound);
+            DirectoryInfo directoryInfo = _pathProvider.Languages;
+            if (!directoryInfo.Exists)
+                return new GlobalFileModel(fileName, 0, GlobalFileStatus.NotFound);
 
-            if (!_languageFileAssetIndex.TryGetValue(language, out var assetIndex))
+            FileInfo[] fileInfos = directoryInfo.GetFiles(language + ".*");
+            if (fileInfos.Length == 0 || fileInfos.All(f => f.Length == 0))
+                return new GlobalFileModel(fileName, 0, GlobalFileStatus.NotFound);
+
+            AssetIndex? assetIndex = null;
+            if (refresh || !_languageFileAssets.TryGetValue(language, out assetIndex))
             {
-                AssetManifest? assetManifest = await TryReadAssetManifestAsync();
+                AssetManifest? assetManifest = await TryReadAssetManifestAsync(_pathProvider);
                 if (assetManifest is null)
-                    return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.VerifyFailed);
+                    return new GlobalFileModel(fileName, 0, GlobalFileStatus.VerifyFailed);
 
-                string langAssetPath = "minecraft/lang/" + langFileName;
-                if (!assetManifest.TryGetValue(langAssetPath, out assetIndex))
-                    return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.VerifyFailed);
+                string[] candidates = _assetMatchService.Match(language);
+                foreach (string candidate in candidates)
+                {
+                    if (assetManifest.TryGetValue(candidate, out assetIndex))
+                    {
+                        fileName = Path.GetFileName(candidate);
+                        break;
+                    }
+                }
 
-                _languageFileAssetIndex[language] = assetIndex;
+                if (assetIndex is null)
+                    return new GlobalFileModel(fileName, 0, GlobalFileStatus.VerifyFailed);
+
+                _languageFileAssets[language] = assetIndex;
             }
 
+            FileInfo fileInfo = _pathProvider.Languages.CombineFile(fileName);
             bool valid = await ValidateFileAsync(assetIndex, fileInfo);
             if (!valid)
                 return new GlobalFileModel(fileInfo.Name, fileInfo.Length, GlobalFileStatus.VerifyFailed);
@@ -136,11 +172,11 @@ namespace MCBS.WpfApp.Models
             return string.Equals(hash, assetIndex.Hash, StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task<VersionJson?> TryReadVersionJsonAsync()
+        private static async Task<VersionJson?> TryReadVersionJsonAsync(IMinecraftPathProvider pathProvider)
         {
             try
             {
-                if (_pathProvider.VersionJson.ReadAllTextAsyncIfExists(out var task))
+                if (pathProvider.VersionJson.ReadAllTextAsyncIfExists(out var task))
                 {
                     string json = await task;
                     return new VersionJson(JObject.Parse(json));
@@ -156,11 +192,11 @@ namespace MCBS.WpfApp.Models
             }
         }
 
-        private async Task<AssetManifest?> TryReadAssetManifestAsync()
+        private static async Task<AssetManifest?> TryReadAssetManifestAsync(IMinecraftPathProvider pathProvider)
         {
             try
             {
-                if (_pathProvider.IndexFile.ReadAllTextAsyncIfExists(out var task))
+                if (pathProvider.IndexFile.ReadAllTextAsyncIfExists(out var task))
                 {
                     string json = await task;
                     var model = JsonConvert.DeserializeObject<AssetManifest.Model>(json);
@@ -178,6 +214,13 @@ namespace MCBS.WpfApp.Models
             {
                 return null;
             }
+        }
+
+        [MemberNotNull(nameof(_pathProvider))]
+        private void ThrowIfPathProviderNotSet()
+        {
+            if (_pathProvider is null)
+                throw new InvalidOperationException("Path provider not set.");
         }
     }
 }

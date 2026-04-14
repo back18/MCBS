@@ -13,6 +13,7 @@
          xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
          xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
          xmlns:models="clr-namespace:MCBS.WpfApp.Models"
+         xmlns:controls="clr-namespace:MCBS.WpfApp.CustomControls"
          mc:Ignorable="d" 
          d:DesignHeight="450" d:DesignWidth="800"
          d:DataContext="{d:DesignInstance Type=viewmodels:InstanceResourceViewModel}"
@@ -278,57 +279,126 @@
                     <ikw:SimpleStackPanel Spacing="10">
                         <ikw:SimpleStackPanel.Resources>
                             <DataTemplate x:Key="GlobalFileCardTemplate">
-                                <Border CornerRadius="10"
-                                        Padding="10">
-                                    <Grid ColumnDefinitions="Auto, *, Auto">
-                                        <Border Grid.Column="0"
-                                                Width="40"
-                                                Height="40"
-                                                CornerRadius="10"
-                                                Background="{DynamicResource FontIconBackground}"
-                                                Margin="0,0,10,0">
-                                            <ui:FontIcon Icon="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentControl}}"
-                                                         FontSize="20"
-                                                         VerticalAlignment="Center"
-                                                         HorizontalAlignment="Center"/>
-                                        </Border>
+                                <Grid x:Name="CardGrid"
+                                      ColumnDefinitions="Auto, *, Auto"
+                                      Height="50"
+                                      Background="Transparent">
+                                    <Border Grid.Column="0"
+                                            Width="40"
+                                            Height="40"
+                                            CornerRadius="10"
+                                            Background="{DynamicResource FontIconBackground}"
+                                            Margin="0,0,10,0">
+                                        <ui:FontIcon Icon="{Binding IconData}"
+                                                     FontSize="20"
+                                                     VerticalAlignment="Center"
+                                                     HorizontalAlignment="Center"/>
+                                    </Border>
 
-                                        <Grid Grid.Column="1"
-                                              RowDefinitions="*, *">
-                                            <TextBlock Grid.Row="0"
-                                                       Text="{Binding FileName}"
-                                                       FontSize="14"
-                                                       FontWeight="Bold"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Row="1"
-                                                       FontSize="12"
-                                                       VerticalAlignment="Center">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_Downloaded}"/>
-                                                        <Setter Property="Foreground" Value="{DynamicResource SystemControlSuccessTextForegroundBrush}"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Status}" Value="{x:Static models:GlobalFileStatus.NotFound}">
-                                                                <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_NotFound}"/>
-                                                                <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Status}" Value="{x:Static models:GlobalFileStatus.VerifyFailed}">
-                                                                <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_VerifyFailed}"/>
-                                                                <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                        </Grid>
+                                    <Grid Grid.Column="1"
+                                          RowDefinitions="3*, 2*">
+                                        <TextBlock Grid.Row="0"
+                                                   Text="{Binding FileName}"
+                                                   FontSize="14"
+                                                   FontWeight="Bold"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="1"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Top">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_Downloaded}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource SystemControlSuccessTextForegroundBrush}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:GlobalFileStatus.NotFound}">
+                                                            <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_NotFound}"/>
+                                                            <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:GlobalFileStatus.VerifyFailed}">
+                                                            <Setter Property="Text" Value="{lex:Loc InstanceResourcePage_GlobalFileStatus_VerifyFailed}"/>
+                                                            <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
 
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding Size, Converter={StaticResource BytesFormatConverter}}"
+                                    <Grid Grid.Column="2">
+                                        <TextBlock Text="{Binding Size, Converter={StaticResource BytesFormatConverter}}"
                                                    FontSize="12"
                                                    HorizontalAlignment="Right"
-                                                   VerticalAlignment="Center"/>
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=CardGrid, Path=IsMouseOver}" Value="True">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding ElementName=DownloadButton, Path=IsBusy}" Value="{x:Null}"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </MultiDataTrigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding ElementName=DownloadButton, Path=IsBusy}" Value="True"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <controls:ProgressButton x:Name="DownloadButton"
+                                                                 HorizontalAlignment="Right"
+                                                                 VerticalAlignment="Center"
+                                                                 Theme="Success"
+                                                                 Width="120"
+                                                                 CornerRadius="5"
+                                                                 IsBusy="{Binding Tag.IsBusy, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                                                                 Progress="{Binding Tag.Progress, RelativeSource={RelativeSource AncestorType=ContentControl}}"
+                                                                 Command="{Binding Tag.StartCommand, RelativeSource={RelativeSource AncestorType=ContentControl}}">
+                                            <controls:ProgressButton.Style>
+                                                <Style TargetType="controls:ProgressButton">
+                                                    <Setter Property="Content" Value="{lex:Loc InstanceResourcePage_GlobalFileDownload_Retry}"/>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsBusy" Value="{x:Null}">
+                                                            <Setter Property="Content" Value="{lex:Loc InstanceResourcePage_GlobalFileDownload_Pending}"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsBusy" Value="True">
+                                                            <Setter Property="Content" Value="{Binding Progress, RelativeSource={RelativeSource Self}}"/>
+                                                            <Setter Property="ContentStringFormat" Value="{lex:Loc InstanceResourcePage_GlobalFileDownload_InProgress}"/>
+                                                        </Trigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding ElementName=CardGrid, Path=IsMouseOver}" Value="True"/>
+                                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsBusy}" Value="False"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsBusy}" Value="{x:Null}"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsBusy}" Value="True"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </MultiDataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </controls:ProgressButton.Style>
+                                        </controls:ProgressButton>
                                     </Grid>
-                                </Border>
+                                </Grid>
                             </DataTemplate>
                         </ikw:SimpleStackPanel.Resources>
 
@@ -337,7 +407,7 @@
                                 Padding="5">
                             <ContentControl Content="{Binding ClientResource.GlobalVersionJsonFile}"
                                             ContentTemplate="{StaticResource GlobalFileCardTemplate}"
-                                            Tag="{x:Static ui:SegoeFluentIcons.Document}"/>
+                                            Tag="{Binding ClientResource.Download.VersionJsonDownload}"/>
                         </Border>
 
                         <Border Background="{DynamicResource GreenCardBackground}"
@@ -345,7 +415,7 @@
                                 Padding="5">
                             <ContentControl Content="{Binding ClientResource.GlobalAssetManifestFile}"
                                             ContentTemplate="{StaticResource GlobalFileCardTemplate}"
-                                            Tag="{x:Static ui:SegoeFluentIcons.Document}"/>
+                                            Tag="{Binding ClientResource.Download.AssetManifestDownload}"/>
                         </Border>
 
                         <Border Background="{DynamicResource RedCardBackground}"
@@ -353,7 +423,7 @@
                                 Padding="5">
                             <ContentControl Content="{Binding ClientResource.GlobalClientCoreFile}"
                                             ContentTemplate="{StaticResource GlobalFileCardTemplate}"
-                                            Tag="{x:Static ui:SegoeFluentIcons.Package}"/>
+                                            Tag="{Binding ClientResource.Download.ClientCoreDownload}"/>
                         </Border>
 
                         <Border Background="{DynamicResource PurpleCardBackground}"
@@ -361,7 +431,7 @@
                                 Padding="5">
                             <ContentControl Content="{Binding ClientResource.GlobalLanguageFile}"
                                             ContentTemplate="{StaticResource GlobalFileCardTemplate}"
-                                            Tag="{x:Static ui:SegoeFluentIcons.LocaleLanguage}"/>
+                                            Tag="{Binding ClientResource.Download.LanguageFileDownload}"/>
                         </Border>
                     </ikw:SimpleStackPanel>
                 </Expander>
