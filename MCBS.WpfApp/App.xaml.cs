@@ -14,6 +14,7 @@ using MCBS.WpfApp.Messages;
 using MCBS.WpfApp.Services;
 using MCBS.WpfApp.Services.Implementations;
 using MCBS.WpfApp.ViewModels.DialogBoxs;
+using MCBS.WpfApp.ViewModels.Downloading;
 using MCBS.WpfApp.ViewModels.Home;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -140,6 +141,7 @@ namespace MCBS.WpfApp
             });
 
             services.AddSingleton<IViewModelFactory<ClientInstanceResourceViewModel>, ClientInstanceResourceViewModel.Factory>();
+            services.AddTransient<IMinecraftDownloadViewModelFactory, MinecraftDownloadViewModel.Factory>();
 
             services.AddSingleton<ModernMessageBox>();
             services.AddSingleton<IMessageBoxService>(sp => sp.GetRequiredService<ModernMessageBox>());
