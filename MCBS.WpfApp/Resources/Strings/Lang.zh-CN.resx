@@ -452,4 +452,21 @@
   <data name="LaunchPage_InstanceResources" xml:space="preserve">
     <value>实例资源</value>
   </data>
+  <data name="InstanceResourcePage_GlobalFileDownload_Retry" xml:space="preserve">
+    <value>重新下载</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileDownload_Pending" xml:space="preserve">
+    <value>等待中</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileDownload_InProgress" xml:space="preserve">
+    <value>正在下载 {0:P0}</value>
+  </data>
+  <data name="MessageBox_Error_DownloadFailed" xml:space="preserve">
+    <value>文件 "{0}" 下载失败，是否重试？
+{1}</value>
+  </data>
+  <data name="MessageBox_Error_UnableDownload" xml:space="preserve">
+    <value>无法加载下载任务，请参阅日志了解详细信息。
+{0}</value>
+  </data>
 </root>

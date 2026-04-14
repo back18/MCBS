@@ -452,4 +452,21 @@
   <data name="LaunchPage_InstanceResources" xml:space="preserve">
     <value>Instance Resources</value>
   </data>
+  <data name="InstanceResourcePage_GlobalFileDownload_Retry" xml:space="preserve">
+    <value>Redownload</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileDownload_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="InstanceResourcePage_GlobalFileDownload_InProgress" xml:space="preserve">
+    <value>Downloading {0:P0}</value>
+  </data>
+  <data name="MessageBox_Error_DownloadFailed" xml:space="preserve">
+    <value>File '{0}' download failed, do you want to retry?
+{1}</value>
+  </data>
+  <data name="MessageBox_Error_UnableDownload" xml:space="preserve">
+    <value>Unable to load download task, please refer to the log for details.
+{0}</value>
+  </data>
 </root>

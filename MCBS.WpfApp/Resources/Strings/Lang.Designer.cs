@@ -340,6 +340,33 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Downloading {0:P0} 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_GlobalFileDownload_InProgress {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_GlobalFileDownload_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Pending 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_GlobalFileDownload_Pending {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_GlobalFileDownload_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Redownload 的本地化字符串。
+        /// </summary>
+        public static string InstanceResourcePage_GlobalFileDownload_Retry {
+            get {
+                return ResourceManager.GetString("InstanceResourcePage_GlobalFileDownload_Retry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Downloaded 的本地化字符串。
         /// </summary>
         public static string InstanceResourcePage_GlobalFileStatus_Downloaded {
@@ -630,6 +657,16 @@ namespace MCBS.WpfApp.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 File &apos;{0}&apos; download failed, do you want to retry?
+        ///{1} 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Error_DownloadFailed {
+            get {
+                return ResourceManager.GetString("MessageBox_Error_DownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Failed to rename instance: &quot;{0}&quot; -&gt; &quot;{1}&quot;
         ///{2} 的本地化字符串。
         /// </summary>
@@ -646,6 +683,16 @@ namespace MCBS.WpfApp.Resources.Strings {
         public static string MessageBox_Error_UnableAccessInstanceList {
             get {
                 return ResourceManager.GetString("MessageBox_Error_UnableAccessInstanceList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Unable to load download task, please refer to the log for details.
+        ///{0} 的本地化字符串。
+        /// </summary>
+        public static string MessageBox_Error_UnableDownload {
+            get {
+                return ResourceManager.GetString("MessageBox_Error_UnableDownload", resourceCulture);
             }
         }
         
