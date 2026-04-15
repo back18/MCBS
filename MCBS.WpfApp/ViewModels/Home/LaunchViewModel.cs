@@ -43,7 +43,7 @@ namespace MCBS.WpfApp.ViewModels.Home
         }
 
         private bool _instanceChanged = true;
-        private bool _instanceModified = false;
+        private readonly List<string> _modifiedInstances = [];
 
         protected readonly IInstanceListStorage InstanceListStorage;
         private readonly ILogger<LaunchViewModel> _logger;
@@ -74,7 +74,7 @@ namespace MCBS.WpfApp.ViewModels.Home
 
         void IRecipient<MinecraftInstanceModifiedMessage>.Receive(MinecraftInstanceModifiedMessage message)
         {
-            _instanceModified = true;
+            _modifiedInstances.Add(message.InstanceName);
         }
 
         async void IRecipient<MainWindowClosingMessage>.Receive(MainWindowClosingMessage message)
@@ -95,8 +95,12 @@ namespace MCBS.WpfApp.ViewModels.Home
 
         async void IRecipient<PageNavigatedToMessage>.Receive(PageNavigatedToMessage message)
         {
-            if (_instanceChanged || _instanceModified)
-                await Reload();
+            if (_instanceChanged || _modifiedInstances.Count > 0)
+            {
+                IAsyncRelayCommand command = ReloadCommand;
+                if (!command.IsRunning && command.CanExecute(null))
+                    await command.ExecuteAsync(null);
+            }
         }
 
         [RelayCommand]
@@ -120,45 +124,61 @@ namespace MCBS.WpfApp.ViewModels.Home
             }
             else
             {
-                if (_instanceModified || !InstanceList.Select(s => s.InstanceName).SequenceEqual(instanceIndex.InstanceList))
+                if (_modifiedInstances.Count > 0 || !InstanceList.Select(s => s.InstanceName).SequenceEqual(instanceIndex.InstanceList))
                 {
                     List<MinecraftInstanceConfig.Model> instanceList = [];
+
                     foreach (string instanceName in instanceIndex.InstanceList)
                     {
+                        if (!_modifiedInstances.Contains(instanceName))
+                        {
+                            var instance = InstanceList.FirstOrDefault(i => i.InstanceName == instanceName);
+                            if (instance is not null)
+                            {
+                                instanceList.Add(instance);
+                                continue;
+                            }
+                        }
+
                         try
                         {
                             IConfigStorage configStorage = InstanceListStorage.GetInstanceStorage(instanceName);
                             IConfigService configService = await configStorage.LoadConfigAsync();
                             var instance = (MinecraftInstanceConfig.Model)configService.GetCurrentConfig();
+
                             instanceList.Add(instance);
                             WeakReferenceMessenger.Default.Send(new MinecraftInstanceReloadedMessage(instanceName));
+
+                            if (_logger.IsEnabled(LogLevel.Information))
+                                _logger.LogInformation("实例 \"{InstanceName}\" 重载成功", instanceName);
                         }
                         catch (FileNotFoundException fnfex)
                         {
-                            _logger.LogWarning(fnfex, "实例列表重载时，实例“{InstanceName}”的配置文件未找到，已跳过", instanceName);
+                            _logger.LogWarning(fnfex, "实例列表重载时，实例 \"{InstanceName}\" 的配置文件未找到，已跳过", instanceName);
                             try
                             {
                                 await InstanceListStorage.RemoveInstanceAsync(instanceName);
                             }
                             catch (Exception ex)
                             {
-                                _logger.LogError(ex, "实例列表重载时，实例“{InstanceName}”的配置文件未找到，尝试从索引中移除失败", instanceName);
+                                _logger.LogError(ex, "实例列表重载时，实例 \"{InstanceName}\" 的配置文件未找到，尝试从索引中移除失败", instanceName);
                             }
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "实例列表重载失败，实例“{InstanceName}”无法加载", instanceName);
+                            _logger.LogError(ex, "实例列表重载失败，实例 \"{InstanceName}\" 无法加载", instanceName);
                             return;
                         }
                     }
+
                     InstanceList = new ObservableCollection<MinecraftInstanceConfig.Model>(instanceList);
                 }
 
-                if (_instanceModified || !instanceIndex.CurrentInstance.Equals(GetInstanceName()))
+                if (_modifiedInstances.Count > 0 || !instanceIndex.CurrentInstance.Equals(GetInstanceName()))
                     CurrentInstance = InstanceList.FirstOrDefault(i => i.InstanceName == instanceIndex.CurrentInstance);
             }
 
-            _instanceModified = false;
+            _modifiedInstances.Clear();
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("实例列表重载成功，当前选中实例: \"{InstanceName}\"", GetInstanceName());
         }
@@ -176,7 +196,7 @@ namespace MCBS.WpfApp.ViewModels.Home
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "当前选中实例“{InstanceName}”无法写入索引", GetInstanceName());
+                _logger.LogError(ex, "当前选中实例 \"{InstanceName}\" 无法写入索引", GetInstanceName());
             }
         }
 
