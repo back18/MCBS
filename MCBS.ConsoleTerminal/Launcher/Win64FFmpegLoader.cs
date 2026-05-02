@@ -142,8 +142,7 @@ namespace MCBS.ConsoleTerminal.Launcher
             FileInfo fileInfo = _pathProvider.Bin.CombineFile(fileName);
             using FileStream fileStream = fileInfo.Create();
 
-            ZipItem zipItem = zipPack.GetFile(zipPath);
-            using Stream zipStream = zipItem.OpenStream();
+            using Stream zipStream = zipPack.ReadFile(zipPath);
             await zipStream.CopyToAsync(fileStream).ConfigureAwait(false);
 
             fileStream.Seek(0, SeekOrigin.Begin);

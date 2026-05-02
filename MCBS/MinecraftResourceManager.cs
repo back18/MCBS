@@ -1,7 +1,7 @@
 ﻿using MCBS.Drawing;
 using QuanLib.Core;
 using QuanLib.Game;
-using QuanLib.Minecraft.ResourcePack.Language;
+using QuanLib.Minecraft.Resource;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,12 @@ namespace MCBS
         public static bool IsLoaded { get; private set; }
 
         public static LanguageManager LanguageManager
+        {
+            get => GetNotNull(field);
+            private set => field = value;
+        }
+
+        public static BlockTextureManager BlockTextureManager
         {
             get => GetNotNull(field);
             private set => field = value;
@@ -47,6 +53,8 @@ namespace MCBS
                 throw new InvalidOperationException("方块颜色映射管理器完成已初始化，无法重复初始化");
             IsLoaded = true;
 
+            LanguageManager = model.LanguageManager;
+            BlockTextureManager = model.BlockTextureManager;
             HashBlockMapping = model.HashBlockMapping;
             Rgba32BlockMappings = model.Rgba32BlockMappings.AsReadOnly();
             ColorMappingCaches = model.ColorMappingCaches.AsReadOnly();
@@ -80,6 +88,8 @@ namespace MCBS
         public class Model
         {
             public required LanguageManager LanguageManager { get; set; }
+
+            public required BlockTextureManager BlockTextureManager { get; set; }
 
             public required HashBlockMapping HashBlockMapping { get; set; }
 

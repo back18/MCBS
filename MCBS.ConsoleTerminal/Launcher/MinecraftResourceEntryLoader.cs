@@ -3,7 +3,8 @@ using QuanLib.Core;
 using QuanLib.Core.Extensions;
 using QuanLib.IO.Extensions;
 using QuanLib.IO.Zip;
-using QuanLib.Minecraft.ResourcePack;
+using QuanLib.Minecraft.Resource;
+using QuanLib.Minecraft.Resource.Services;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -16,20 +17,24 @@ namespace MCBS.ConsoleTerminal.Launcher
         public MinecraftResourceEntryLoader(
             ILoggerProvider loggerProvider,
             IMinecraftPathProvider pathProvider,
-            IMinecraftConfigProvider configProvider)
+            IMinecraftConfigProvider configProvider,
+            IResourceEntryLoader resourceEntryLoader)
         {
             ArgumentNullException.ThrowIfNull(loggerProvider, nameof(loggerProvider));
             ArgumentNullException.ThrowIfNull(pathProvider, nameof(pathProvider));
             ArgumentNullException.ThrowIfNull(configProvider, nameof(configProvider));
+            ArgumentNullException.ThrowIfNull(resourceEntryLoader, nameof(resourceEntryLoader));
 
             _logger = loggerProvider.GetLogger();
             _pathProvider = pathProvider;
             _configProvider = configProvider;
+            _resourceEntryLoader = resourceEntryLoader;
         }
 
         private readonly ILogger _logger;
         private readonly IMinecraftPathProvider _pathProvider;
         private readonly IMinecraftConfigProvider _configProvider;
+        private readonly IResourceEntryLoader _resourceEntryLoader;
 
         public async Task<ResourceEntryManager> LoadAsync()
         {
@@ -43,18 +48,18 @@ namespace MCBS.ConsoleTerminal.Launcher
                 {
                     ZipPack[] resourcePacks = await LoadResourcePacksAsync(resourceFiles);
                     resourcePacks = resourcePacks.LeftAddend(clientCorePack);
-                    resources = ResourcePackReader.Load(resourcePacks);
+                    resources = _resourceEntryLoader.LoadResourceEntry(resourcePacks);
                 }
                 catch (Exception ex)
                 {
                     _logger.Error($"Minecraft资源包（{ObjectFormatter.Format(resourceFiles.Select(s => s.Name))}）加载失败", ex);
                     _logger.Info("尝试以安全模式仅加载原版资源包");
-                    resources = ResourcePackReader.Load([clientCorePack]);
+                    resources = _resourceEntryLoader.LoadResourceEntry([clientCorePack]);
                 }
             }
             else
             {
-                resources = ResourcePackReader.Load([clientCorePack]);
+                resources = _resourceEntryLoader.LoadResourceEntry([clientCorePack]);
             }
 
             _logger.Info($"Minecraft资源包加载完成，共加载 {resources.Count} 个资源包");
@@ -72,7 +77,7 @@ namespace MCBS.ConsoleTerminal.Launcher
             {
                 using FileStream languageStream = File.OpenRead(languagePath);
                 string languageName = "/assets/minecraft/lang/" + Path.GetFileName(languagePath);
-                zipPack.AddFile(languageName, languageStream);
+                zipPack.WriteFile(languageName, languageStream);
             }
 
             return zipPack;

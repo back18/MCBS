@@ -1,5 +1,6 @@
 ﻿using QuanLib.Minecraft;
-using QuanLib.Minecraft.ResourcePack.Block;
+using QuanLib.Minecraft.Resource;
+using QuanLib.Minecraft.Resource.Textures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,17 +11,17 @@ namespace MCBS.Drawing.Extensions
     {
         extension (BlockTextureManager source)
         {
-            public BlockTexture[] GetBlockTextures()
+            public ICubeBlockTexture[] GetBlockTextures()
             {
                 return source.Values.ToArray();
             }
 
-            public BlockTexture[] GetBlockTextures(IEnumerable<BlockState> blacklist)
+            public ICubeBlockTexture[] GetBlockTextures(IEnumerable<BlockState> blacklist)
             {
                 ArgumentNullException.ThrowIfNull(blacklist, nameof(blacklist));
 
-                List<BlockTexture> result = [];
-                foreach (BlockTexture blockTexture in source.Values)
+                List<ICubeBlockTexture> result = [];
+                foreach (ICubeBlockTexture blockTexture in source.Values)
                 {
                     if (!BlockState.TryParse(blockTexture.BlockId, out var blockState))
                         continue;

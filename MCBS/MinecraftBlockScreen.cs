@@ -486,7 +486,7 @@ namespace MCBS
 
         private async Task<int> GetGameTickAsync()
         {
-            string outputPattern = CommandManager.TimeQueryGametimeCommand.Output.PatternText;
+            string outputPattern = CommandManager.TimeQueryGametimeCommand.Output.RegexPattern;
             string output;
 
             try

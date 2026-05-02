@@ -16,6 +16,8 @@ using QuanLib.Downloader.Services.Implementations;
 using QuanLib.IO.Extensions;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Downloading;
+using QuanLib.Minecraft.Resource.Services;
+using QuanLib.Minecraft.Resource.Services.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -154,6 +156,16 @@ namespace MCBS.ConsoleTerminal
                 else
                     throw new PlatformNotSupportedException("不支持的操作系统平台: " + Environment.OSVersion.VersionString);
             });
+
+            services.AddSingleton<IResourceEntryLoader, ResourceEntryLoader>();
+            services.AddSingleton<ILanguageFormatConverter, LanguageFormatConverter>();
+            services.AddSingleton<ILanguageTemplateParser, LanguageTemplateParser>();
+            services.AddSingleton<ILanguageLoadService, LanguageLoadService>();
+            services.AddSingleton<IBlockStateParser, BlockStateParser>();
+            services.AddSingleton<IBlockStateLoader, BlockStateLoader>();
+            services.AddSingleton<IBlockModelLoader, BlockModelLoader>();
+            services.AddSingleton<IBlockTextureLoader, BlockTextureLoader>();
+            services.AddSingleton<IBlockTextureLoadService, BlockTextureLoadService>();
 
             services.AddSingleton<IColorToIndexConverter, ColorToIndexConverter>();
             services.AddSingleton<IColorMappingBuildService, ColorMappingBuildService>();
