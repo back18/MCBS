@@ -1,6 +1,6 @@
 ﻿using QuanLib.Game;
 using QuanLib.Minecraft;
-using QuanLib.Minecraft.ResourcePack.Block;
+using QuanLib.Minecraft.Resource.Textures;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace MCBS.Drawing
 {
     public class Rgba32BlockMapping : IBlockMapping<Rgba32>
     {
-        public Rgba32BlockMapping(Facing facing, BlockTexture[] blockTextures)
+        public Rgba32BlockMapping(Facing facing, ICubeBlockTexture[] blockTextures)
         {
             ArgumentNullException.ThrowIfNull(blockTextures, nameof(blockTextures));
 
@@ -21,15 +21,15 @@ namespace MCBS.Drawing
             _color2Block = [];
             _block2Color = [];
 
-            foreach (BlockTexture blockTexture in blockTextures)
+            foreach (ICubeBlockTexture blockTexture in blockTextures)
             {
                 if (!BlockState.TryParse(blockTexture.BlockId, out var blockState))
                     continue;
 
-                Rgba32 color = blockTexture.Textures[facing].AverageColor;
                 string blockId = blockTexture.BlockId;
+                Rgba32 color = blockTexture.GetTexture(facing).AverageColor;
 
-                if (blockTexture.BlockType == BlockType.CubeAll)
+                if (blockTexture.IsCubeAll)
                     _color2Block[color] = blockId;
                 else
                     _color2Block.TryAdd(color, blockId);

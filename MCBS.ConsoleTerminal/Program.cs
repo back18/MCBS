@@ -9,7 +9,7 @@ using QuanLib.Core;
 using QuanLib.Logging;
 using QuanLib.Minecraft.Command.Events;
 using QuanLib.Minecraft.Instance;
-using QuanLib.Minecraft.ResourcePack;
+using QuanLib.Minecraft.Resource;
 using System.Diagnostics;
 using System.Text;
 
