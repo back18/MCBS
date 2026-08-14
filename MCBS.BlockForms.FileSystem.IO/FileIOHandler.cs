@@ -172,9 +172,19 @@ namespace MCBS.BlockForms.FileSystem.IO
                     baseDir = baseDir.TrimEnd(Path.DirectorySeparatorChar);
                     foreach (string file in files)
                     {
-                        string subPath = file[(baseDir.Length + 1)..];
-                        string path = Path.Combine(destDir, subPath);
-                        result.Add(new(file, path));
+                        int splitIndex = baseDir.Length + 1;
+                        if (splitIndex >= file.Length)
+                            continue;
+                        string subPath = file[splitIndex..];
+                        try
+                        {
+                            string path = Path.Combine(destDir, subPath);
+                            result.Add(new(file, path));
+                        }
+                        catch
+                        {
+                            // 忽略包含特殊字符导致的路径组合失败的文件
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -216,9 +226,19 @@ namespace MCBS.BlockForms.FileSystem.IO
                     baseDir = baseDir.TrimEnd(Path.DirectorySeparatorChar);
                     foreach (string directory in directorys)
                     {
-                        string subPath = directory[(baseDir.Length + 1)..];
-                        string path = Path.Combine(destDir, subPath);
-                        result.Add(new(directory, path));
+                        int splitIndex = baseDir.Length + 1;
+                        if (splitIndex >= directory.Length)
+                            continue;
+                        string subPath = directory[splitIndex..];
+                        try
+                        {
+                            string path = Path.Combine(destDir, subPath);
+                            result.Add(new(directory, path));
+                        }
+                        catch
+                        {
+                            // 忽略包含特殊字符导致的路径组合失败
+                        }
                     }
                 }
                 catch (Exception ex)
